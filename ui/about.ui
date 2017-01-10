@@ -1,0 +1,34 @@
+<ui version="4.0" >
+ <class>DialogAbout</class>
+ <widget class="QDialog" name="DialogAbout" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>337</width>
+    <height>202</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>SPIERSedit 2.0</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout" >
+   <item>
+    <widget class="QTextBrowser" name="textBrowser" >
+     <property name="textInteractionFlags" >
+      <set>Qt::NoTextInteraction</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="pushButton" >
+     <property name="text" >
+      <string>Close</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
