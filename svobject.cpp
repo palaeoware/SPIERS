@@ -9,7 +9,6 @@
 #include "vtkDataArray.h"
 #include "svglwidget.h"
 
-
 #include <QDebug>
 #include <QApplication>
 #include <QDir>
