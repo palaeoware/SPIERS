@@ -6,8 +6,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 # RJG change for ubuntu - installed from here: https://launchpad.net/~elvstone/+archive/ubuntu/vtk7
 #INCLUDEPATH += "C:/Program Files (x86)/VTK/include/vtk-7.0"
-INCLUDEPATH += /opt/VTK-7.0.0
-INCLUDEPATH += /opt/VTK-7.0.0/include/vtk-7.0
+INCLUDEPATH += ./VTK-7.0.0
+INCLUDEPATH += ./VTK-7.0.0/include/vtk-7.0
 
 SOURCES += main.cpp \
     mainwindow.cpp \
@@ -48,8 +48,16 @@ FORMS += mainwindow.ui \
     quickhelpbox.ui \
     aboutdialog.ui
 
+#RJG for linux
+DEPENDPATH += ./VTK-7.0.0/lib/
+MOC_DIR += build
+OBJECTS_DIR += build
+RC_FILE = icon.rc
+
+
 #RJG change for ubuntu
 LIBS += -L/opt/VTK-7.0.0/lib \ #-L"C:/program files (x86)/vtk/lib" \
+ -L/opt/VTK-7.0.0/include/vtk-7.0 \
 #-lvtkInfovisCore-7.0 \
 -lvtkCommonExecutionModel-7.0 \
 -lvtkCommonDataModel-7.0 \
@@ -147,10 +155,3 @@ LIBS += -L/opt/VTK-7.0.0/lib \ #-L"C:/program files (x86)/vtk/lib" \
 #-lvtkzlib-7.0 \
 #-lgdi32 \
 
-#RJG for linux
-DEPENDPATH += /opt/VTK-7.0.0/lib
-MOC_DIR += build
-OBJECTS_DIR += build
-RC_FILE = icon.rc
-
-#OTHER_FILES +=
