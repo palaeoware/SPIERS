@@ -4,10 +4,8 @@ TEMPLATE = app
 RESOURCES = sview.qrc
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-# RJG change for ubuntu - installed from here: https://launchpad.net/~elvstone/+archive/ubuntu/vtk7
+# RJG change for ubuntu - installed VTK from here, then just copied libraries folder into porgamme directory: https://launchpad.net/~elvstone/+archive/ubuntu/vtk7
 #INCLUDEPATH += "C:/Program Files (x86)/VTK/include/vtk-7.0"
-INCLUDEPATH += ./VTK-7.0.0/
-INCLUDEPATH += ./VTK-7.0.0/include/vtk-7.0/
 
 SOURCES += main.cpp \
     mainwindow.cpp \
@@ -49,15 +47,18 @@ FORMS += mainwindow.ui \
     aboutdialog.ui
 
 #RJG for linux
-DEPENDPATH += ./VTK-7.0.0/lib/
 MOC_DIR += build
 OBJECTS_DIR += build
 RC_FILE = icon.rc
 
+INCLUDEPATH += $$PWD/VTK-7.0.0/include
+INCLUDEPATH += $$PWD/VTK-7.0.0/include/vtk-7.0/
+DEPENDPATH += $$PWD/VTK-7.0.0/include
+DEPENDPATH += $$PWD/VTK-7.0.0/lib/
 
-#RJG change for ubuntu
-LIBS += -L ./VTK-7.0.0/lib \ #-L"C:/program files (x86)/vtk/lib" \
- -L/opt/VTK-7.0.0/include/vtk-7.0 \
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/VTK-7.0.0/lib/release/ -lvtkCommonExecutionModel-7.0
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/VTK-7.0.0/lib/debug/ -lvtkCommonExecutionModel-7.0
+else:unix: LIBS += -L$$PWD/VTK-7.0.0/lib/ -lvtkCommonExecutionModel-7.0 \
 #-lvtkInfovisCore-7.0 \
 -lvtkCommonExecutionModel-7.0 \
 -lvtkCommonDataModel-7.0 \
@@ -154,4 +155,3 @@ LIBS += -L ./VTK-7.0.0/lib \ #-L"C:/program files (x86)/vtk/lib" \
 #-lvtktiff-7.0 \
 #-lvtkzlib-7.0 \
 #-lgdi32 \
-

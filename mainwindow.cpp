@@ -46,7 +46,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 //Constructor sets up VTK widget and one-shot timer to do load. Nothing else.
 {
-    specificprogress=0;
+  specificprogress=0;
   ui->setupUi(this);
   MainWin=this; //set global pointer to this window
 
@@ -112,8 +112,6 @@ MainWindow::MainWindow(QWidget *parent)
   PBtimer->setInterval(100);//10 times per second at most
   QObject::connect(PBtimer,SIGNAL(timeout()),this,SLOT(showSpecificProgress()));
   PBtimer->start();
-
-
 
   time = new QTime(); //used by spin timer
   time->start();
@@ -222,7 +220,7 @@ void MainWindow::UpdateGL()
 //Timer handlers
 void MainWindow::StartTimer_fired()
 //start up timer should fire this only once - starts SPV load process
-{
+{ QMessageBox::warning(this,"Got here","Reached here");
     //Some General initialisation
     NextActualDlist=1;
 
@@ -247,7 +245,6 @@ void MainWindow::StartTimer_fired()
 		*/
 agin:
         FilterKeys=false;
-
         fname = QFileDialog::getOpenFileName(
                          this,
                          "Select SPIERSview file",
@@ -1301,14 +1298,13 @@ void MainWindow::on_actionSet_Resampling_triggered()
     SetResample();
 }
 
-
-void MainWindow::on_actionOff_triggered() {SetSmoothing(0);};
-void MainWindow::on_actionVery_Weak_triggered()  {SetSmoothing(1);};
-void MainWindow::on_actionWeak_triggered() {SetSmoothing(2);};
+void MainWindow::on_actionOff_triggered() {SetSmoothing(0);}
+void MainWindow::on_actionVery_Weak_triggered()  {SetSmoothing(1);}
+void MainWindow::on_actionWeak_triggered() {SetSmoothing(2);}
 void MainWindow::on_actionMedium_2_triggered() {SetSmoothing(3);}
-void MainWindow::on_actionStrongish_triggered() {SetSmoothing(4);};
-void MainWindow::on_actionStrong_triggered() {SetSmoothing(5);};
-void MainWindow::on_actionStrongest_triggered() {SetSmoothing(6);};
+void MainWindow::on_actionStrongish_triggered() {SetSmoothing(4);}
+void MainWindow::on_actionStrong_triggered() {SetSmoothing(5);}
+void MainWindow::on_actionStrongest_triggered() {SetSmoothing(6);}
 void MainWindow::on_actionSmoothing_Custom_triggered()
 {
     bool flag;
@@ -1318,12 +1314,12 @@ void MainWindow::on_actionSmoothing_Custom_triggered()
     if (flag) SetSmoothing(0-temp);
 }
 
-void MainWindow::on_actionOff_2_triggered() {SetIslands(0);};
-void MainWindow::on_actionRemove_Tiny_triggered() {SetIslands(1);};
-void MainWindow::on_actionRemove_Small_triggered() {SetIslands(2);};
-void MainWindow::on_actionRemove_Medium_triggered() {SetIslands(3);};
-void MainWindow::on_actionRemove_Large_triggered() {SetIslands(4);};
-void MainWindow::on_actionRemove_All_triggered() {SetIslands(5);};
+void MainWindow::on_actionOff_2_triggered() {SetIslands(0);}
+void MainWindow::on_actionRemove_Tiny_triggered() {SetIslands(1);}
+void MainWindow::on_actionRemove_Small_triggered() {SetIslands(2);}
+void MainWindow::on_actionRemove_Medium_triggered() {SetIslands(3);}
+void MainWindow::on_actionRemove_Large_triggered() {SetIslands(4);}
+void MainWindow::on_actionRemove_All_triggered() {SetIslands(5);}
 void MainWindow::on_actionIsland_Removal_Custom_triggered()
 {
     bool flag;
@@ -1430,11 +1426,11 @@ void MainWindow::on_actionResurface_Now_triggered()
 }
 
 
-void  MainWindow::on_actionOpaque_2_triggered() {SetTrans(0);};
-void  MainWindow::on_action75_Opaque_2_triggered() {SetTrans(1);};
-void  MainWindow::on_action62_Opaque_triggered(){SetTrans(2);};
-void  MainWindow::on_action50_Opaque_triggered(){SetTrans(3);};
-void  MainWindow::on_action25_Opaque_triggered(){SetTrans(4);};
+void  MainWindow::on_actionOpaque_2_triggered() {SetTrans(0);}
+void  MainWindow::on_action75_Opaque_2_triggered() {SetTrans(1);}
+void  MainWindow::on_action62_Opaque_triggered(){SetTrans(2);}
+void  MainWindow::on_action50_Opaque_triggered(){SetTrans(3);}
+void  MainWindow::on_action25_Opaque_triggered(){SetTrans(4);}
 
 void  MainWindow::on_actionTransparency_Custom_triggered()
 {
@@ -1445,10 +1441,10 @@ void  MainWindow::on_actionTransparency_Custom_triggered()
     if (flag) SetTrans(0-temp);
 }
 
-void  MainWindow::on_actionMatte_triggered() {SetShininess(0);};
-void  MainWindow::on_actionSlightly_Shiny_triggered() {SetShininess(1);};
-void  MainWindow::on_actionFairly_Shiny_triggered() {SetShininess(2);};
-void  MainWindow::on_actionShiny_triggered() {SetShininess(3);};
+void  MainWindow::on_actionMatte_triggered() {SetShininess(0);}
+void  MainWindow::on_actionSlightly_Shiny_triggered() {SetShininess(1);}
+void  MainWindow::on_actionFairly_Shiny_triggered() {SetShininess(2);}
+void  MainWindow::on_actionShiny_triggered() {SetShininess(3);}
 void  MainWindow::on_actionShininessCustom_triggered()
 {
     bool flag;
