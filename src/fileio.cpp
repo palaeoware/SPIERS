@@ -4,7 +4,7 @@ SPIERSedit 2: fileio.cpp
 
 Contents:
 Functions to load/save data from image files
-Functions to load/save settings files
+Functions to load/save settings
 Function to apply default settings to all global variables
 Also caching functions for file IO
 
@@ -232,7 +232,7 @@ void LoadColourData(int fnum)
 	mutex.lock();
 	//check cache
 	int i;
-	if (RenderCache) goto past;
+    if (RenderCache) goto past;
 	
 	i=CacheIndex(fnum);
 	if (i>=0)
@@ -244,7 +244,7 @@ void LoadColourData(int fnum)
 			{
 				ColArray.loadFromData(*(Caches[i]->ColDataCompressed));
 			}
-			 else goto past;
+             else goto past;
 		}
 		else
 		{
@@ -252,15 +252,14 @@ void LoadColourData(int fnum)
 			{
 				ColArray=*(Caches[i]->ColData);
 			}
-			 else goto past;
+             else goto past;
 		 }
 	}
 	else
 	{
 past:  //so can get here with a valid cache entry but no colour file
 //		qDebug()<<"Didn't find cache entry, loading from disk";
-
-		QImage Data(Files.at(fnum)); //load
+        QImage Data(Files.at(fnum)); //load
                 if (Data.isNull())
                     Error("Couldn't load source data file in LoadColourData: "+Files.at(fnum));
 		if (Data.width()!=cwidth || Data.height()!=cheight) {
@@ -1948,8 +1947,11 @@ void ReadSettings()
 	{
 		in>>dummy;
 		
-		dummy=path + dummy.mid(qMax(dummy.lastIndexOf("\\"),dummy.lastIndexOf("/")));
+        dummy=path + dummy.mid(qMax(dummy.lastIndexOf("\\"),dummy.lastIndexOf("/")));
 		
+        //RJG - Linux doesn't like backslashes - leads to accoasional, odd errors with cache when moving windows -->linux
+        dummy.replace("\\","/");
+
 		Files.append(dummy);
 	}
   	
