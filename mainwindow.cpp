@@ -220,7 +220,7 @@ void MainWindow::UpdateGL()
 //Timer handlers
 void MainWindow::StartTimer_fired()
 //start up timer should fire this only once - starts SPV load process
-{ QMessageBox::warning(this,"Got here","Reached here");
+{
     //Some General initialisation
     NextActualDlist=1;
 

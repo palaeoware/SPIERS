@@ -4,7 +4,8 @@ TEMPLATE = app
 RESOURCES = sview.qrc
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-# RJG change for ubuntu - installed VTK from here, then just copied libraries folder into porgamme directory: https://launchpad.net/~elvstone/+archive/ubuntu/vtk7
+# RJG change for ubuntu - installed VTK from package, then just copied libraries folder into progamme directory: https://launchpad.net/~elvstone/+archive/ubuntu/vtk7
+#Included libraries, and then RPATH in order that can load libraries on run, as long as they are in sub folder.
 #INCLUDEPATH += "C:/Program Files (x86)/VTK/include/vtk-7.0"
 
 SOURCES += main.cpp \
@@ -55,6 +56,9 @@ INCLUDEPATH += $$PWD/VTK-7.0.0/include
 INCLUDEPATH += $$PWD/VTK-7.0.0/include/vtk-7.0/
 DEPENDPATH += $$PWD/VTK-7.0.0/include
 DEPENDPATH += $$PWD/VTK-7.0.0/lib/
+
+#RJG - this ensures that as long as the VTK libraries are in the distribution folder, the software will launch
+QMAKE_RPATHDIR += $$PWD/VTK-7.0.0/lib/
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/VTK-7.0.0/lib/release/ -lvtkCommonExecutionModel-7.0
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/VTK-7.0.0/lib/debug/ -lvtkCommonExecutionModel-7.0
