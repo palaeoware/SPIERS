@@ -36,7 +36,7 @@ Main Window class - lots of functions to
 
 #include <QColorDialog>
 #include <QFileDialog>
-#include <QShortCut>
+#include <QShortcut>
 #include <QTimer>
 #include <QTime>
 #include <QInputDialog>

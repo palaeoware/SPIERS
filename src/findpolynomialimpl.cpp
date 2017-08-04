@@ -1,6 +1,6 @@
 #include "findpolynomialimpl.h"
 #include "globals.h"
-#include "display.h"
+#include "Display.h"
 #include "fileio.h"
 #include <math.h>
 #include <QDebug>
