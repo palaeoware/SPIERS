@@ -36,13 +36,14 @@ Main Window class - lots of functions to
 
 #include <QColorDialog>
 #include <QFileDialog>
-#include <QShortcut>
+#include <QShortCut>
 #include <QTimer>
 #include <QTime>
 #include <QInputDialog>
 #include <QPicture>
 #include <QPainter>
 #include <QHeaderView>
+#include <QFileInfo>
 
 bool temptestflag=false;
 
@@ -806,14 +807,31 @@ void MainWindowImpl::openRecentFile()
 	FullSettingsFileName=fname;
     //Got filename - go as per file open (code copied!)
 
-	ReadSettings();			
+    QFileInfo fi (FullSettingsFileName);
+    if (fi.exists())
+    {
+        ReadSettings();
 
-	if (Active) {Active=false; Brush.Brush_Flag_Restart(); ClearImages();}
-	
-	SetUpGUIFromSettings();	
-	RecentFile(fname);
+        if (Active) {Active=false; Brush.Brush_Flag_Restart(); ClearImages();}
 
-	Start();
+        SetUpGUIFromSettings();
+        RecentFile(fname);
+
+        Start();
+    }
+    else
+    {
+        Message("File "+FullSettingsFileName+" not found");
+        for (int i=0; i<RecentFileList.count(); i++)
+        {
+            if (RecentFileList[i].File==fname)
+            {
+                RecentFileList.removeAt(i);
+                BuildRecentFiles();
+                break;
+            }
+        }
+    }
 }
 
 void MainWindowImpl::openMore()
@@ -1866,3 +1884,13 @@ void MainWindowImpl::on_actionAb_out_triggered()
 }
 
 
+
+void MainWindowImpl::on_actionTEST_triggered()
+{
+
+    foreach (OutputObject *o, OutputObjects)
+    {
+        o->ComponentSegments.append(1);
+    }
+    RefreshOO();
+}

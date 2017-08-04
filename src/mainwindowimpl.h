@@ -210,6 +210,8 @@ private slots:
 
 	void autosave();
 	
+    void on_actionTEST_triggered();
+
 private:
     void MakeUndo(QString type);
 	void RefreshMasks();	

@@ -285,7 +285,8 @@ void Brush_class::ThreeDBrushPixels(QList <int> *X, QList <int> *Y, int *PointCo
 //	offset=QInputDialog::getDouble(mainwin, "Test - offset in slices",
 //                                        "Slices:", 0, -10000, 10000, 2, &ok);
 	//for now assume it's a circle 
-	double R = (double)Brush_Size * PixPerMM * (double)ColMonoScale;
+    //qDebug()<<"offset is "<<offset;
+    double R = (double)Brush_Size * PixPerMM * (double)ColMonoScale;
 	double O = offset * (1.0/(SlicePerMM));
 	//O and R are in mm.
 	if (O<R)
@@ -412,6 +413,7 @@ bool Brush_class::draw(int x, int y)
 
 void Brush_class::brighten(int x, int y, int segment, int effect)
 {
+    //qDebug()<<x<<y<<segment<<effect;
 	int n;
 	int soft_effect=10-mainwin->SpinSoft->value();
 	//work out real values for this

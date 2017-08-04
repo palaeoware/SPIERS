@@ -339,7 +339,7 @@ void ScanlineFill(int c , int mycol, QImage *Thresh, struct PointList *LPointLis
 	                    }
 	                    else  //mask colours
 	                    {
-	                        Mask *M = MasksSettings[Masks[(fheight-n-1)*fwidth + m]];
+                            Mask *M = MasksSettings[(quint8)Masks[(fheight-n-1)*fwidth + m]];
 	                        RED(data,apos) = (uchar) M->ForeColour[0];
 	                        GREEN(data,apos) = (uchar) M->ForeColour[1];
 	                        BLUE(data,apos) = (uchar) M->ForeColour[2];
@@ -427,7 +427,7 @@ void ScanlineFillOutput(int c , uchar *data, struct PointList *LPointList, QList
                 if (fill)
                 {
                 	if (m>=0) //watch for 'off left' errors
-                                                if ((*UseMasks)[Masks[(fheight-1-n)*fwidth+m]]) data[n*fwidth+m]=setval;
+                                                if ((*UseMasks)[(quint8)Masks[(fheight-1-n)*fwidth+m]]) data[n*fwidth+m]=setval;
                 }
          	}
         }
@@ -495,7 +495,7 @@ void DrawCurveOutput(int c, int file, uchar *data, QList <bool> *UseMasks, bool 
                     	LPointList.Y.append(sy);
                    }
                    if (sy >= 0 && sy < fheight && sx >= 0 && sx < fwidth)
-                            if ((*UseMasks)[Masks[(fheight-1-sy)*fwidth+sx]]) data[sy * fwidth + sx]=setval;
+                            if ((*UseMasks)[(quint8)Masks[(fheight-1-sy)*fwidth+sx]]) data[sy * fwidth + sx]=setval;
                                 //setcval(data,sy*fwidth+sx,setval);
                }
             }
@@ -525,7 +525,7 @@ void DrawCurveOutput(int c, int file, uchar *data, QList <bool> *UseMasks, bool 
                    sy = CatmullRomSpline(sm2, p->Y[sn - 1], p->Y[sn], p->Y[sn + 1], p->Y[sn + 2]);
        
                    if (sy >= 0 && sy < fheight && sx >= 0 && sx < fwidth)
-                            if ((*UseMasks)[Masks[(fheight-1-sy)*fwidth+sx]]) data[sy * fwidth + sx]=setval;
+                            if ((*UseMasks)[(quint8)Masks[(fheight-1-sy)*fwidth+sx]]) data[sy * fwidth + sx]=setval;
                                 //setcval(data,sy*fwidth+sx,setval);
                }
             }
@@ -619,14 +619,14 @@ void DrawCurve(int c, int mycol, int file, QImage *Thresh)
                        {
                        		//if (SegsFlag) //this is 'show segs in masks mode 
                        		//{
-                      	    //   Mask *M = MasksSettings[Masks[(fheight-sy-1)*fwidth + sx]];
+                            //   Mask *M = MasksSettings[(quint8)Masks[(fheight-sy-1)*fwidth + sx]];
                       		//	RED(data,apos) = (uchar)(r/2  + M->ForeColour[0] / 2);
                            	//	GREEN(data,apos) = (uchar)(g/2  + M->ForeColour[1] / 2);
                             //	BLUE(data,apos) = (uchar)(b/2  + M->ForeColour[2] / 2);
                         	//}
 							//else //background - no seg over 128
                      	    //{
-                     	       Mask *M = MasksSettings[Masks[(fheight-sy-1)*fwidth + sx]];
+                               Mask *M = MasksSettings[(quint8)Masks[(fheight-sy-1)*fwidth + sx]];
 	                           RED(data,apos) = (uchar) M->ForeColour[0];
 	                           GREEN(data,apos) = (uchar) M->ForeColour[1];
 	                           BLUE(data,apos) = (uchar) M->ForeColour[2];
@@ -673,7 +673,7 @@ void DrawCurve(int c, int mycol, int file, QImage *Thresh)
                        }
                        else  //mask colours
                        {
-                     	   Mask *M = MasksSettings[Masks[(fheight-sy-1)*fwidth + sx]];
+                           Mask *M = MasksSettings[(quint8)Masks[(fheight-sy-1)*fwidth + sx]];
                            RED(data,apos) = (uchar) M->ForeColour[0];
                            GREEN(data,apos) = (uchar) M->ForeColour[1];
                            BLUE(data,apos) = (uchar) M->ForeColour[2];

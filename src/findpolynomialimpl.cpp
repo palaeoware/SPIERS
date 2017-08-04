@@ -1,6 +1,6 @@
 #include "findpolynomialimpl.h"
 #include "globals.h"
-#include "Display.h"
+#include "display.h"
 #include "fileio.h"
 #include <math.h>
 #include <QDebug>
@@ -401,7 +401,7 @@ void findpolynomialImpl::find()
                                 if (Locks[invertedpos*2])
 				{
                                     //found a pixel
-					if 	(MasksSettings[Masks[invertedpos]]->Show) //don't include hidden masks
+                    if 	(MasksSettings[(quint8)Masks[invertedpos]]->Show) //don't include hidden masks
 					{	
 						int r=0,g=0,b=0;
 						

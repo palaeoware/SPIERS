@@ -22,7 +22,7 @@ extern void ShowInfo(int x, int y)
 	{
 		o<<"("<<x<<","<<y<<") ";
 		o<<"["<<lx<<","<<ly<<"]\n";
-		QString mn=MasksSettings[Masks[(fheight-ly-1)*fwidth+lx]]->Name; if (mn.length()>=15) mn=mn.left(12)+"..."; 
+        QString mn=MasksSettings[(quint8)Masks[(fheight-ly-1)*fwidth+lx]]->Name; if (mn.length()>=15) mn=mn.left(12)+"...";
 		o<<mn<<" (";
 	
 		int seg=SegmentMap[ly*fwidth+lx];

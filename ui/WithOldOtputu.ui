@@ -1,0 +1,3725 @@
+<ui version="4.0" >
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>793</width>
+    <height>1022</height>
+   </rect>
+  </property>
+  <property name="sizePolicy" >
+   <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize" >
+   <size>
+    <width>200</width>
+    <height>200</height>
+   </size>
+  </property>
+  <property name="windowTitle" >
+   <string>SPIERSEdit - Version 2.0 - No files loaded</string>
+  </property>
+  <property name="dockNestingEnabled" >
+   <bool>false</bool>
+  </property>
+  <property name="dockOptions" >
+   <set>QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks</set>
+  </property>
+  <widget class="QWidget" name="centralwidget" >
+   <layout class="QVBoxLayout" >
+    <item>
+     <widget class="QDockWidget" name="DockOutputSettings" >
+      <property name="enabled" >
+       <bool>false</bool>
+      </property>
+      <property name="sizePolicy" >
+       <sizepolicy vsizetype="Minimum" hsizetype="Preferred" >
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize" >
+       <size>
+        <width>0</width>
+        <height>300</height>
+       </size>
+      </property>
+      <property name="floating" >
+       <bool>false</bool>
+      </property>
+      <property name="features" >
+       <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable|QDockWidget::NoDockWidgetFeatures</set>
+      </property>
+      <property name="allowedAreas" >
+       <set>Qt::RightDockWidgetArea</set>
+      </property>
+      <property name="windowTitle" >
+       <string>Output/Render</string>
+      </property>
+      <widget class="QWidget" name="dockWidgetContents_8" >
+       <layout class="QVBoxLayout" >
+        <item>
+         <widget class="QTabWidget" name="OutputTabs" >
+          <property name="tabShape" >
+           <enum>QTabWidget::Rounded</enum>
+          </property>
+          <property name="currentIndex" >
+           <number>0</number>
+          </property>
+          <widget class="QWidget" name="tabSettings" >
+           <attribute name="title" >
+            <string>Settings</string>
+           </attribute>
+           <layout class="QHBoxLayout" >
+            <item>
+             <layout class="QGridLayout" >
+              <item row="0" column="0" >
+               <layout class="QHBoxLayout" >
+                <item>
+                 <widget class="QLabel" name="label_9" >
+                  <property name="text" >
+                   <string>Scale: Slices/mm</string>
+                  </property>
+                  <property name="alignment" >
+                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QDoubleSpinBox" name="Slices_Per_MM" >
+                  <property name="sizePolicy" >
+                   <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="buttonSymbols" >
+                   <enum>QAbstractSpinBox::UpDownArrows</enum>
+                  </property>
+                  <property name="maximum" >
+                   <double>10000.000000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="0" column="1" >
+               <layout class="QHBoxLayout" >
+                <item>
+                 <widget class="QLabel" name="label_3" >
+                  <property name="text" >
+                   <string>Pixels/mm</string>
+                  </property>
+                  <property name="alignment" >
+                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QDoubleSpinBox" name="Pixels_Per_MM" >
+                  <property name="sizePolicy" >
+                   <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximum" >
+                   <double>10000.000000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="1" column="0" >
+               <layout class="QHBoxLayout" >
+                <item>
+                 <widget class="QLabel" name="label_10" >
+                  <property name="text" >
+                   <string>Edge move (mm/slice): Down</string>
+                  </property>
+                  <property name="alignment" >
+                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QDoubleSpinBox" name="Edge_Down_MM" >
+                  <property name="sizePolicy" >
+                   <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximum" >
+                   <double>10000.000000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="1" column="1" >
+               <layout class="QHBoxLayout" >
+                <item>
+                 <widget class="QLabel" name="label_11" >
+                  <property name="text" >
+                   <string>Left</string>
+                  </property>
+                  <property name="alignment" >
+                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QDoubleSpinBox" name="Edge_Left_MM" >
+                  <property name="sizePolicy" >
+                   <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximum" >
+                   <double>10000.000000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="2" column="0" >
+               <widget class="QCheckBox" name="CheckMirror" >
+                <property name="layoutDirection" >
+                 <enum>Qt::RightToLeft</enum>
+                </property>
+                <property name="text" >
+                 <string>Mirror Model</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1" >
+               <layout class="QHBoxLayout" >
+                <item>
+                 <widget class="QLabel" name="label_12" >
+                  <property name="text" >
+                   <string>Facet limit (KTr)</string>
+                  </property>
+                  <property name="alignment" >
+                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSpinBox" name="MaxTrianglesSB" >
+                  <property name="sizePolicy" >
+                   <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimum" >
+                   <number>1</number>
+                  </property>
+                  <property name="maximum" >
+                   <number>50000</number>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="3" column="0" >
+               <layout class="QHBoxLayout" >
+                <item>
+                 <widget class="QLabel" name="label_16" >
+                  <property name="text" >
+                   <string>Files: First</string>
+                  </property>
+                  <property name="alignment" >
+                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSpinBox" name="FirstFile" >
+                  <property name="sizePolicy" >
+                   <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimum" >
+                   <number>1</number>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="3" column="1" >
+               <layout class="QHBoxLayout" >
+                <item>
+                 <widget class="QLabel" name="label_17" >
+                  <property name="text" >
+                   <string>Last</string>
+                  </property>
+                  <property name="alignment" >
+                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSpinBox" name="LastFile" >
+                  <property name="sizePolicy" >
+                   <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimum" >
+                   <number>1</number>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="4" column="0" >
+               <layout class="QHBoxLayout" >
+                <item>
+                 <widget class="QLabel" name="label_13" >
+                  <property name="text" >
+                   <string>Downsample: XY</string>
+                  </property>
+                  <property name="alignment" >
+                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSpinBox" name="DownsampleXY" >
+                  <property name="sizePolicy" >
+                   <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimum" >
+                   <number>1</number>
+                  </property>
+                  <property name="maximum" >
+                   <number>10</number>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_14" >
+                  <property name="text" >
+                   <string>Z</string>
+                  </property>
+                  <property name="alignment" >
+                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSpinBox" name="DownsampleZ" >
+                  <property name="sizePolicy" >
+                   <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimum" >
+                   <number>1</number>
+                  </property>
+                  <property name="maximum" >
+                   <number>10</number>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="4" column="1" >
+               <layout class="QHBoxLayout" >
+                <item>
+                 <widget class="QLabel" name="label_15" >
+                  <property name="text" >
+                   <string>Pixel Sensitivity</string>
+                  </property>
+                  <property name="alignment" >
+                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSpinBox" name="PixelSensitivity" >
+                  <property name="sizePolicy" >
+                   <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimum" >
+                   <number>1</number>
+                  </property>
+                  <property name="maximum" >
+                   <number>10</number>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tabObjects" >
+           <attribute name="title" >
+            <string>Objects</string>
+           </attribute>
+           <layout class="QHBoxLayout" >
+            <item>
+             <widget class="QTreeWidget" name="treeWidgetInputPieces" >
+              <property name="alternatingRowColors" >
+               <bool>true</bool>
+              </property>
+              <property name="iconSize" >
+               <size>
+                <width>8</width>
+                <height>8</height>
+               </size>
+              </property>
+              <property name="rootIsDecorated" >
+               <bool>false</bool>
+              </property>
+              <property name="itemsExpandable" >
+               <bool>false</bool>
+              </property>
+              <property name="sortingEnabled" >
+               <bool>true</bool>
+              </property>
+              <property name="animated" >
+               <bool>true</bool>
+              </property>
+              <property name="columnCount" >
+               <number>4</number>
+              </property>
+              <column>
+               <property name="text" >
+                <string>Name</string>
+               </property>
+              </column>
+              <column>
+               <property name="text" >
+                <string>Mask</string>
+               </property>
+              </column>
+              <column>
+               <property name="text" >
+                <string>Segment</string>
+               </property>
+              </column>
+              <column>
+               <property name="text" >
+                <string>Curve</string>
+               </property>
+              </column>
+             </widget>
+            </item>
+            <item>
+             <widget class="QFrame" name="frame" >
+              <property name="sizePolicy" >
+               <sizepolicy vsizetype="Preferred" hsizetype="Maximum" >
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="maximumSize" >
+               <size>
+                <width>90</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="frameShape" >
+               <enum>QFrame::StyledPanel</enum>
+              </property>
+              <property name="frameShadow" >
+               <enum>QFrame::Raised</enum>
+              </property>
+              <layout class="QVBoxLayout" >
+               <item>
+                <widget class="QPushButton" name="AddPiece" >
+                 <property name="text" >
+                  <string>Add</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer>
+                 <property name="orientation" >
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" >
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <layout class="QVBoxLayout" >
+                 <item>
+                  <widget class="QLabel" name="label_18" >
+                   <property name="text" >
+                    <string>Resample</string>
+                   </property>
+                   <property name="alignment" >
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QSpinBox" name="spinBox_8" >
+                   <property name="alignment" >
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                   <property name="suffix" >
+                    <string>%</string>
+                   </property>
+                   <property name="minimum" >
+                    <number>1</number>
+                   </property>
+                   <property name="maximum" >
+                    <number>100</number>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <spacer>
+                 <property name="orientation" >
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" >
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <layout class="QVBoxLayout" >
+                 <item>
+                  <widget class="QLabel" name="label_19" >
+                   <property name="text" >
+                    <string>Next Key</string>
+                   </property>
+                   <property name="alignment" >
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="NextKey" >
+                   <property name="inputMask" >
+                    <string>>N;A</string>
+                   </property>
+                   <property name="maxLength" >
+                    <number>1</number>
+                   </property>
+                   <property name="alignment" >
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <spacer>
+                 <property name="orientation" >
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" >
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QPushButton" name="RemovePiece" >
+                 <property name="text" >
+                  <string>Remove</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QTreeWidget" name="treeWidgetOutput" >
+              <column>
+               <property name="text" >
+                <string>Name</string>
+               </property>
+              </column>
+              <column>
+               <property name="text" >
+                <string>Key</string>
+               </property>
+              </column>
+              <column>
+               <property name="text" >
+                <string>Resample</string>
+               </property>
+              </column>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tab3Dview" >
+           <attribute name="title" >
+            <string>3Dview</string>
+           </attribute>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item>
+     <widget class="QDockWidget" name="DockSegmentsSettings" >
+      <property name="enabled" >
+       <bool>true</bool>
+      </property>
+      <property name="floating" >
+       <bool>false</bool>
+      </property>
+      <property name="features" >
+       <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable|QDockWidget::NoDockWidgetFeatures</set>
+      </property>
+      <property name="allowedAreas" >
+       <set>Qt::LeftDockWidgetArea|Qt::NoDockWidgetArea|Qt::RightDockWidgetArea</set>
+      </property>
+      <property name="windowTitle" >
+       <string>Segments</string>
+      </property>
+      <widget class="QWidget" name="dockWidgetContents_6" >
+       <layout class="QVBoxLayout" >
+        <item>
+         <widget class="QTreeWidget" name="SegmentsTreeWidget" >
+          <property name="editTriggers" >
+           <set>QAbstractItemView::NoEditTriggers</set>
+          </property>
+          <property name="selectionMode" >
+           <enum>QAbstractItemView::ExtendedSelection</enum>
+          </property>
+          <property name="textElideMode" >
+           <enum>Qt::ElideMiddle</enum>
+          </property>
+          <property name="rootIsDecorated" >
+           <bool>false</bool>
+          </property>
+          <property name="uniformRowHeights" >
+           <bool>true</bool>
+          </property>
+          <column>
+           <property name="text" >
+            <string/>
+           </property>
+          </column>
+          <column>
+           <property name="text" >
+            <string/>
+           </property>
+          </column>
+          <column>
+           <property name="text" >
+            <string>Segment Name</string>
+           </property>
+          </column>
+          <column>
+           <property name="text" >
+            <string/>
+           </property>
+          </column>
+          <column>
+           <property name="text" >
+            <string/>
+           </property>
+          </column>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" >
+          <item>
+           <widget class="QPushButton" name="SegmentAdd" >
+            <property name="minimumSize" >
+             <size>
+              <width>50</width>
+              <height>16</height>
+             </size>
+            </property>
+            <property name="text" >
+             <string>New</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="SegmentDelete" >
+            <property name="minimumSize" >
+             <size>
+              <width>50</width>
+              <height>16</height>
+             </size>
+            </property>
+            <property name="text" >
+             <string>Delete</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="SegmentMoveUp" >
+            <property name="minimumSize" >
+             <size>
+              <width>50</width>
+              <height>16</height>
+             </size>
+            </property>
+            <property name="text" >
+             <string>Up</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="SegmentMoveDown" >
+            <property name="minimumSize" >
+             <size>
+              <width>50</width>
+              <height>16</height>
+             </size>
+            </property>
+            <property name="text" >
+             <string>Down</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item>
+     <widget class="QDockWidget" name="DockHist" >
+      <property name="floating" >
+       <bool>false</bool>
+      </property>
+      <property name="features" >
+       <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable|QDockWidget::NoDockWidgetFeatures</set>
+      </property>
+      <property name="allowedAreas" >
+       <set>Qt::RightDockWidgetArea</set>
+      </property>
+      <property name="windowTitle" >
+       <string>Histogram</string>
+      </property>
+      <widget class="QWidget" name="dockWidgetContents_7" />
+     </widget>
+    </item>
+    <item>
+     <widget class="QDockWidget" name="DockMasksSettings" >
+      <property name="enabled" >
+       <bool>true</bool>
+      </property>
+      <property name="floating" >
+       <bool>true</bool>
+      </property>
+      <property name="features" >
+       <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable|QDockWidget::NoDockWidgetFeatures</set>
+      </property>
+      <property name="allowedAreas" >
+       <set>Qt::LeftDockWidgetArea|Qt::NoDockWidgetArea|Qt::RightDockWidgetArea</set>
+      </property>
+      <property name="windowTitle" >
+       <string>Masks</string>
+      </property>
+      <widget class="QWidget" name="dockWidgetContents_5" >
+       <layout class="QVBoxLayout" >
+        <item>
+         <widget class="QTreeWidget" name="MasksTreeWidget" >
+          <property name="editTriggers" >
+           <set>QAbstractItemView::NoEditTriggers</set>
+          </property>
+          <property name="alternatingRowColors" >
+           <bool>false</bool>
+          </property>
+          <property name="selectionMode" >
+           <enum>QAbstractItemView::ExtendedSelection</enum>
+          </property>
+          <property name="selectionBehavior" >
+           <enum>QAbstractItemView::SelectRows</enum>
+          </property>
+          <property name="textElideMode" >
+           <enum>Qt::ElideMiddle</enum>
+          </property>
+          <property name="rootIsDecorated" >
+           <bool>false</bool>
+          </property>
+          <property name="uniformRowHeights" >
+           <bool>true</bool>
+          </property>
+          <property name="columnCount" >
+           <number>7</number>
+          </property>
+          <column>
+           <property name="text" >
+            <string/>
+           </property>
+          </column>
+          <column>
+           <property name="text" >
+            <string/>
+           </property>
+          </column>
+          <column>
+           <property name="text" >
+            <string/>
+           </property>
+          </column>
+          <column>
+           <property name="text" >
+            <string>Mask Name</string>
+           </property>
+          </column>
+          <column>
+           <property name="text" >
+            <string/>
+           </property>
+          </column>
+          <column>
+           <property name="text" >
+            <string/>
+           </property>
+          </column>
+          <column>
+           <property name="text" >
+            <string/>
+           </property>
+          </column>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" >
+          <item>
+           <widget class="QPushButton" name="MaskAdd" >
+            <property name="minimumSize" >
+             <size>
+              <width>50</width>
+              <height>16</height>
+             </size>
+            </property>
+            <property name="text" >
+             <string>New</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="MaskDelete" >
+            <property name="minimumSize" >
+             <size>
+              <width>50</width>
+              <height>16</height>
+             </size>
+            </property>
+            <property name="text" >
+             <string>Delete</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="MaskMoveUp" >
+            <property name="minimumSize" >
+             <size>
+              <width>50</width>
+              <height>16</height>
+             </size>
+            </property>
+            <property name="text" >
+             <string>Up</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="MaskMoveDown" >
+            <property name="minimumSize" >
+             <size>
+              <width>50</width>
+              <height>16</height>
+             </size>
+            </property>
+            <property name="text" >
+             <string>Down</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item>
+     <widget class="QDockWidget" name="DockCurvesSettings" >
+      <property name="enabled" >
+       <bool>true</bool>
+      </property>
+      <property name="floating" >
+       <bool>true</bool>
+      </property>
+      <property name="features" >
+       <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable|QDockWidget::NoDockWidgetFeatures</set>
+      </property>
+      <property name="allowedAreas" >
+       <set>Qt::LeftDockWidgetArea|Qt::NoDockWidgetArea|Qt::RightDockWidgetArea</set>
+      </property>
+      <property name="windowTitle" >
+       <string>Curves</string>
+      </property>
+      <widget class="QWidget" name="dockWidgetContents_4" >
+       <layout class="QVBoxLayout" >
+        <item>
+         <widget class="QTreeWidget" name="CurvesTreeWidget" >
+          <property name="selectionMode" >
+           <enum>QAbstractItemView::ExtendedSelection</enum>
+          </property>
+          <property name="textElideMode" >
+           <enum>Qt::ElideMiddle</enum>
+          </property>
+          <property name="rootIsDecorated" >
+           <bool>false</bool>
+          </property>
+          <property name="uniformRowHeights" >
+           <bool>true</bool>
+          </property>
+          <column>
+           <property name="text" >
+            <string/>
+           </property>
+          </column>
+          <column>
+           <property name="text" >
+            <string>Curve Name</string>
+           </property>
+          </column>
+          <column>
+           <property name="text" >
+            <string/>
+           </property>
+          </column>
+          <column>
+           <property name="text" >
+            <string>Segment</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" >
+          <item>
+           <widget class="QPushButton" name="Curve_Add" >
+            <property name="minimumSize" >
+             <size>
+              <width>50</width>
+              <height>16</height>
+             </size>
+            </property>
+            <property name="text" >
+             <string>New</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="CurveDelete" >
+            <property name="minimumSize" >
+             <size>
+              <width>50</width>
+              <height>16</height>
+             </size>
+            </property>
+            <property name="text" >
+             <string>Delete</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="CurveMoveUp" >
+            <property name="minimumSize" >
+             <size>
+              <width>50</width>
+              <height>16</height>
+             </size>
+            </property>
+            <property name="text" >
+             <string>Up</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="CurveMoveDown" >
+            <property name="minimumSize" >
+             <size>
+              <width>50</width>
+              <height>16</height>
+             </size>
+            </property>
+            <property name="text" >
+             <string>Down</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item>
+     <widget class="QDockWidget" name="SliceSelector" >
+      <property name="enabled" >
+       <bool>false</bool>
+      </property>
+      <property name="sizePolicy" >
+       <sizepolicy vsizetype="Preferred" hsizetype="Fixed" >
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize" >
+       <size>
+        <width>170</width>
+        <height>40</height>
+       </size>
+      </property>
+      <property name="maximumSize" >
+       <size>
+        <width>16777215</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="floating" >
+       <bool>false</bool>
+      </property>
+      <property name="features" >
+       <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable|QDockWidget::NoDockWidgetFeatures</set>
+      </property>
+      <property name="allowedAreas" >
+       <set>Qt::LeftDockWidgetArea|Qt::NoDockWidgetArea|Qt::RightDockWidgetArea</set>
+      </property>
+      <property name="windowTitle" >
+       <string>Slice Selector</string>
+      </property>
+      <widget class="QWidget" name="dockWidgetContents_3" >
+       <layout class="QHBoxLayout" >
+        <item>
+         <widget class="QListWidget" name="SliceSelectorList" >
+          <property name="selectionMode" >
+           <enum>QAbstractItemView::ExtendedSelection</enum>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGraphicsView" name="graphicsView" >
+      <property name="cursor" stdset="0" >
+       <cursorShape>CrossCursor</cursorShape>
+      </property>
+      <property name="mouseTracking" >
+       <bool>true</bool>
+      </property>
+      <property name="interactive" >
+       <bool>true</bool>
+      </property>
+      <property name="sceneRect" >
+       <rectf>
+        <x>0.000000000000000</x>
+        <y>0.000000000000000</y>
+        <width>0.000000000000000</width>
+        <height>0.000000000000000</height>
+       </rectf>
+      </property>
+      <property name="alignment" >
+       <set>Qt::AlignCenter</set>
+      </property>
+      <property name="transformationAnchor" >
+       <enum>QGraphicsView::AnchorViewCenter</enum>
+      </property>
+      <property name="resizeAnchor" >
+       <enum>QGraphicsView::AnchorViewCenter</enum>
+      </property>
+      <property name="viewportUpdateMode" >
+       <enum>QGraphicsView::FullViewportUpdate</enum>
+      </property>
+      <property name="optimizationFlags" >
+       <enum>QGraphicsView::DontSavePainterState</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" >
+      <property name="spacing" >
+       <number>6</number>
+      </property>
+      <property name="leftMargin" >
+       <number>0</number>
+      </property>
+      <property name="topMargin" >
+       <number>0</number>
+      </property>
+      <property name="rightMargin" >
+       <number>0</number>
+      </property>
+      <property name="bottomMargin" >
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QSlider" name="SliderPos" >
+        <property name="enabled" >
+         <bool>false</bool>
+        </property>
+        <property name="orientation" >
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="tickPosition" >
+         <enum>QSlider::TicksBothSides</enum>
+        </property>
+        <property name="tickInterval" >
+         <number>10</number>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="spinBox" >
+        <property name="enabled" >
+         <bool>false</bool>
+        </property>
+        <property name="sizePolicy" >
+         <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>793</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile" >
+    <property name="title" >
+     <string>File</string>
+    </property>
+    <widget class="QMenu" name="menuOpen_Recent" >
+     <property name="title" >
+      <string>Open Recent</string>
+     </property>
+     <addaction name="separator" />
+     <addaction name="actionMore" />
+    </widget>
+    <addaction name="actionNew" />
+    <addaction name="actionImport" />
+    <addaction name="actionOpen" />
+    <addaction name="menuOpen_Recent" />
+    <addaction name="actionSave_As" />
+    <addaction name="actionSave_Settings" />
+    <addaction name="separator" />
+    <addaction name="actionSettings" />
+    <addaction name="separator" />
+    <addaction name="actionExit" />
+   </widget>
+   <widget class="QMenu" name="menuMode" >
+    <property name="enabled" >
+     <bool>false</bool>
+    </property>
+    <property name="title" >
+     <string>Mode</string>
+    </property>
+    <addaction name="actionBright" />
+    <addaction name="actionSegment" />
+    <addaction name="actionRecalc" />
+    <addaction name="actionCurve" />
+    <addaction name="actionLock" />
+    <addaction name="actionMask" />
+    <addaction name="separator" />
+    <addaction name="actionToggle_Source" />
+    <addaction name="actionThreshold" />
+    <addaction name="separator" />
+    <addaction name="actionShowMasks" />
+    <addaction name="actionShowSegs" />
+    <addaction name="separator" />
+    <addaction name="actionInvert_locking_for_this_slice" />
+    <addaction name="actionHistogram_shows_selected" />
+   </widget>
+   <widget class="QMenu" name="menuWindow" >
+    <property name="enabled" >
+     <bool>true</bool>
+    </property>
+    <property name="title" >
+     <string>Window</string>
+    </property>
+    <addaction name="actionMain_Toolbox" />
+    <addaction name="actionSlice_Selector" />
+    <addaction name="separator" />
+    <addaction name="actionGeneration" />
+    <addaction name="actionMasks" />
+    <addaction name="actionSegments" />
+    <addaction name="actionCurves" />
+    <addaction name="actionOutput" />
+    <addaction name="actionHistorgram" />
+   </widget>
+   <widget class="QMenu" name="menuBrush" >
+    <property name="enabled" >
+     <bool>false</bool>
+    </property>
+    <property name="title" >
+     <string>Brush</string>
+    </property>
+    <addaction name="action1_x_1" />
+    <addaction name="action2_x_2" />
+    <addaction name="action3_x_3" />
+    <addaction name="action4_x_4" />
+    <addaction name="action5_x_5" />
+    <addaction name="action8_x_8" />
+    <addaction name="action15_x_15" />
+    <addaction name="action30_x_30" />
+    <addaction name="action50_x_50" />
+    <addaction name="action200_x_200" />
+    <addaction name="separator" />
+    <addaction name="actionSquare" />
+   </widget>
+   <widget class="QMenu" name="menuSegments" >
+    <property name="enabled" >
+     <bool>false</bool>
+    </property>
+    <property name="title" >
+     <string>Segments</string>
+    </property>
+    <addaction name="actionCreate_new_segment" />
+    <addaction name="actionDelete_selected_segments" />
+    <addaction name="actionSwap_Segments" />
+    <addaction name="separator" />
+    <addaction name="actionCopy_segment_from_next_slice" />
+    <addaction name="actionCopy_segment_from_previous_slice" />
+    <addaction name="separator" />
+    <addaction name="actionLock_selected_segments" />
+    <addaction name="actionUnlock_selected_segments" />
+    <addaction name="actionActivate_selected_segments" />
+    <addaction name="actionDeactivate_selected_segments" />
+   </widget>
+   <widget class="QMenu" name="menuMasks" >
+    <property name="enabled" >
+     <bool>false</bool>
+    </property>
+    <property name="title" >
+     <string>Masks</string>
+    </property>
+    <addaction name="actionNew_mask" />
+    <addaction name="actionDelete_selected_mask_s" />
+    <addaction name="separator" />
+    <addaction name="actionCopy_selected_from_Previous" />
+    <addaction name="actionCopy_all_from_previous" />
+    <addaction name="actionCopy_selected_from_next" />
+    <addaction name="actionCopy_all_from_next" />
+    <addaction name="separator" />
+    <addaction name="actionCopy_selected_on_and_advance" />
+    <addaction name="actionCopy_all_on_and_advance" />
+    <addaction name="actionCopy_selected_back_and_advance" />
+    <addaction name="actionCopy_all_back_and_adance" />
+    <addaction name="separator" />
+    <addaction name="actionHidden_masks_locked_for_generation" />
+    <addaction name="actionSegment_brush_applies_masks" />
+    <addaction name="separator" />
+    <addaction name="actionLock_mask_under_cursor" />
+    <addaction name="actionUnlock_mask_under_cursor" />
+    <addaction name="separator" />
+    <addaction name="actionCreate_mask_from_curve" />
+    <addaction name="separator" />
+    <addaction name="actionLock_Selected_Masks" />
+    <addaction name="actionUnlock_Selected_Masks" />
+    <addaction name="actionShow_Selected_Masks" />
+    <addaction name="actionUnShow_Selected_Masks" />
+    <addaction name="actionWrite_Selected_Masks" />
+    <addaction name="actionUnWrite_Selected_Masks" />
+   </widget>
+   <widget class="QMenu" name="menuCurves" >
+    <property name="enabled" >
+     <bool>false</bool>
+    </property>
+    <property name="title" >
+     <string>Curves</string>
+    </property>
+    <addaction name="actionCopyCurvesFromPrevious" />
+    <addaction name="actionCopy_from_current_slice_to_selected" />
+    <addaction name="actionCopyCurvesFromNext" />
+    <addaction name="actionCopyCurvesToCurrent" />
+    <addaction name="separator" />
+    <addaction name="actionCurve_markers_as_crosses" />
+    <addaction name="actionLock_curve_shape" />
+    <addaction name="actionResize_keeping_curve_shape" />
+    <addaction name="separator" />
+    <addaction name="actionAdd_new_point" />
+    <addaction name="actionRemove_node_under_cursor" />
+    <addaction name="actionRemove_selected_curves_from_selected_slices" />
+   </widget>
+   <widget class="QMenu" name="menuHelp" >
+    <property name="title" >
+     <string>Help</string>
+    </property>
+    <addaction name="actionAb_out" />
+    <addaction name="actionKeyboard_Commands" />
+   </widget>
+   <widget class="QMenu" name="menuUndo" >
+    <property name="enabled" >
+     <bool>false</bool>
+    </property>
+    <property name="title" >
+     <string>Undo</string>
+    </property>
+    <addaction name="actionUndo" />
+    <addaction name="actionRedo" />
+   </widget>
+   <widget class="QMenu" name="menuOutput" >
+    <property name="enabled" >
+     <bool>false</bool>
+    </property>
+    <property name="title" >
+     <string>Output</string>
+    </property>
+    <addaction name="actionSave_Objects" />
+    <addaction name="actionLoad_Objects" />
+    <addaction name="separator" />
+    <addaction name="actionOutput_SPIERSview" />
+    <addaction name="actionExport_DXF" />
+    <addaction name="separator" />
+    <addaction name="actionAuto_Update" />
+    <addaction name="actionUpdate_View" />
+   </widget>
+   <addaction name="menuFile" />
+   <addaction name="menuOutput" />
+   <addaction name="menuUndo" />
+   <addaction name="menuMode" />
+   <addaction name="menuBrush" />
+   <addaction name="menuMasks" />
+   <addaction name="menuSegments" />
+   <addaction name="menuCurves" />
+   <addaction name="menuWindow" />
+   <addaction name="menuHelp" />
+  </widget>
+  <widget class="QStatusBar" name="statusbar" >
+   <property name="sizeGripEnabled" >
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QDockWidget" name="dockWidget_Main" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="sizePolicy" >
+    <sizepolicy vsizetype="Expanding" hsizetype="Fixed" >
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize" >
+    <size>
+     <width>130</width>
+     <height>600</height>
+    </size>
+   </property>
+   <property name="maximumSize" >
+    <size>
+     <width>16777215</width>
+     <height>16777215</height>
+    </size>
+   </property>
+   <property name="features" >
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable|QDockWidget::NoDockWidgetFeatures</set>
+   </property>
+   <property name="allowedAreas" >
+    <set>Qt::LeftDockWidgetArea</set>
+   </property>
+   <property name="windowTitle" >
+    <string>Main Toolbox</string>
+   </property>
+   <attribute name="dockWidgetArea" >
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents" >
+    <layout class="QVBoxLayout" >
+     <property name="spacing" >
+      <number>0</number>
+     </property>
+     <property name="leftMargin" >
+      <number>0</number>
+     </property>
+     <property name="topMargin" >
+      <number>0</number>
+     </property>
+     <property name="rightMargin" >
+      <number>0</number>
+     </property>
+     <property name="bottomMargin" >
+      <number>0</number>
+     </property>
+     <item>
+      <layout class="QVBoxLayout" >
+       <property name="leftMargin" >
+        <number>2</number>
+       </property>
+       <property name="topMargin" >
+        <number>2</number>
+       </property>
+       <property name="rightMargin" >
+        <number>2</number>
+       </property>
+       <property name="bottomMargin" >
+        <number>2</number>
+       </property>
+       <item>
+        <widget class="QGroupBox" name="groupBox_4" >
+         <property name="sizePolicy" >
+          <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize" >
+          <size>
+           <width>158</width>
+           <height>51</height>
+          </size>
+         </property>
+         <property name="maximumSize" >
+          <size>
+           <width>2000</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="title" >
+          <string>Brush Size</string>
+         </property>
+         <layout class="QHBoxLayout" >
+          <property name="spacing" >
+           <number>2</number>
+          </property>
+          <property name="leftMargin" >
+           <number>2</number>
+          </property>
+          <property name="topMargin" >
+           <number>2</number>
+          </property>
+          <property name="rightMargin" >
+           <number>2</number>
+          </property>
+          <property name="bottomMargin" >
+           <number>2</number>
+          </property>
+          <item>
+           <widget class="QSlider" name="horizontalSlider_2" >
+            <property name="minimum" >
+             <number>1</number>
+            </property>
+            <property name="maximum" >
+             <number>200</number>
+            </property>
+            <property name="pageStep" >
+             <number>25</number>
+            </property>
+            <property name="orientation" >
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="tickPosition" >
+             <enum>QSlider::TicksAbove</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="BrushSize" >
+            <property name="minimum" >
+             <number>1</number>
+            </property>
+            <property name="maximum" >
+             <number>200</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_7" >
+         <property name="sizePolicy" >
+          <sizepolicy vsizetype="Minimum" hsizetype="Expanding" >
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize" >
+          <size>
+           <width>120</width>
+           <height>100</height>
+          </size>
+         </property>
+         <property name="title" >
+          <string>Brightness Mode</string>
+         </property>
+         <layout class="QGridLayout" >
+          <property name="leftMargin" >
+           <number>2</number>
+          </property>
+          <property name="topMargin" >
+           <number>2</number>
+          </property>
+          <property name="rightMargin" >
+           <number>2</number>
+          </property>
+          <property name="bottomMargin" >
+           <number>2</number>
+          </property>
+          <property name="horizontalSpacing" >
+           <number>2</number>
+          </property>
+          <property name="verticalSpacing" >
+           <number>2</number>
+          </property>
+          <item row="0" column="0" >
+           <widget class="QLabel" name="label_6" >
+            <property name="text" >
+             <string>Up</string>
+            </property>
+            <property name="alignment" >
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1" >
+           <widget class="QLabel" name="label_7" >
+            <property name="text" >
+             <string>Down</string>
+            </property>
+            <property name="alignment" >
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2" >
+           <widget class="QLabel" name="label_8" >
+            <property name="text" >
+             <string>Soft</string>
+            </property>
+            <property name="alignment" >
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0" >
+           <widget class="QSlider" name="verticalSlider" >
+            <property name="sizePolicy" >
+             <sizepolicy vsizetype="Expanding" hsizetype="Minimum" >
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="layoutDirection" >
+             <enum>Qt::RightToLeft</enum>
+            </property>
+            <property name="minimum" >
+             <number>1</number>
+            </property>
+            <property name="value" >
+             <number>10</number>
+            </property>
+            <property name="orientation" >
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="invertedAppearance" >
+             <bool>true</bool>
+            </property>
+            <property name="invertedControls" >
+             <bool>false</bool>
+            </property>
+            <property name="tickPosition" >
+             <enum>QSlider::TicksBothSides</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1" >
+           <widget class="QSlider" name="verticalSlider_2" >
+            <property name="sizePolicy" >
+             <sizepolicy vsizetype="Expanding" hsizetype="Minimum" >
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="layoutDirection" >
+             <enum>Qt::RightToLeft</enum>
+            </property>
+            <property name="minimum" >
+             <number>1</number>
+            </property>
+            <property name="value" >
+             <number>10</number>
+            </property>
+            <property name="orientation" >
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="invertedAppearance" >
+             <bool>true</bool>
+            </property>
+            <property name="invertedControls" >
+             <bool>false</bool>
+            </property>
+            <property name="tickPosition" >
+             <enum>QSlider::TicksBothSides</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2" >
+           <widget class="QSlider" name="verticalSlider_3" >
+            <property name="sizePolicy" >
+             <sizepolicy vsizetype="Expanding" hsizetype="Minimum" >
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="layoutDirection" >
+             <enum>Qt::RightToLeft</enum>
+            </property>
+            <property name="minimum" >
+             <number>0</number>
+            </property>
+            <property name="maximum" >
+             <number>10</number>
+            </property>
+            <property name="value" >
+             <number>0</number>
+            </property>
+            <property name="orientation" >
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="invertedAppearance" >
+             <bool>true</bool>
+            </property>
+            <property name="invertedControls" >
+             <bool>false</bool>
+            </property>
+            <property name="tickPosition" >
+             <enum>QSlider::TicksBothSides</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0" >
+           <widget class="QSpinBox" name="SpinUp" >
+            <property name="minimum" >
+             <number>1</number>
+            </property>
+            <property name="value" >
+             <number>10</number>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1" >
+           <widget class="QSpinBox" name="SpinDown" >
+            <property name="minimum" >
+             <number>1</number>
+            </property>
+            <property name="value" >
+             <number>10</number>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2" >
+           <widget class="QSpinBox" name="SpinSoft" >
+            <property name="minimum" >
+             <number>0</number>
+            </property>
+            <property name="maximum" >
+             <number>10</number>
+            </property>
+            <property name="value" >
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_5" >
+         <property name="sizePolicy" >
+          <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize" >
+          <size>
+           <width>158</width>
+           <height>81</height>
+          </size>
+         </property>
+         <property name="title" >
+          <string>Masks</string>
+         </property>
+         <layout class="QHBoxLayout" >
+          <property name="spacing" >
+           <number>2</number>
+          </property>
+          <property name="leftMargin" >
+           <number>2</number>
+          </property>
+          <property name="topMargin" >
+           <number>2</number>
+          </property>
+          <property name="rightMargin" >
+           <number>2</number>
+          </property>
+          <property name="bottomMargin" >
+           <number>2</number>
+          </property>
+          <item>
+           <layout class="QGridLayout" >
+            <item row="0" column="0" >
+             <widget class="QLabel" name="label" >
+              <property name="text" >
+               <string>L</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1" >
+             <widget class="QComboBox" name="MaskBoxLeft" >
+              <property name="sizePolicy" >
+               <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0" >
+             <widget class="QLabel" name="label_2" >
+              <property name="text" >
+               <string>R</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1" >
+             <widget class="QComboBox" name="MaskBoxRight" />
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_6" >
+         <property name="sizePolicy" >
+          <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize" >
+          <size>
+           <width>158</width>
+           <height>81</height>
+          </size>
+         </property>
+         <property name="title" >
+          <string>Segments</string>
+         </property>
+         <layout class="QHBoxLayout" >
+          <property name="spacing" >
+           <number>2</number>
+          </property>
+          <property name="leftMargin" >
+           <number>2</number>
+          </property>
+          <property name="topMargin" >
+           <number>2</number>
+          </property>
+          <property name="rightMargin" >
+           <number>2</number>
+          </property>
+          <property name="bottomMargin" >
+           <number>2</number>
+          </property>
+          <item>
+           <layout class="QGridLayout" >
+            <item row="0" column="0" >
+             <widget class="QLabel" name="label_4" >
+              <property name="text" >
+               <string>L</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0" >
+             <widget class="QLabel" name="label_5" >
+              <property name="sizePolicy" >
+               <sizepolicy vsizetype="Preferred" hsizetype="Maximum" >
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text" >
+               <string>R</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QGridLayout" >
+            <item row="0" column="0" >
+             <widget class="QComboBox" name="SegBoxLeft" />
+            </item>
+            <item row="1" column="0" >
+             <widget class="QComboBox" name="SegBoxRight" />
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox" >
+         <property name="sizePolicy" >
+          <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize" >
+          <size>
+           <width>158</width>
+           <height>51</height>
+          </size>
+         </property>
+         <property name="title" >
+          <string>Magnification</string>
+         </property>
+         <layout class="QHBoxLayout" >
+          <property name="spacing" >
+           <number>2</number>
+          </property>
+          <property name="leftMargin" >
+           <number>2</number>
+          </property>
+          <property name="topMargin" >
+           <number>2</number>
+          </property>
+          <property name="rightMargin" >
+           <number>2</number>
+          </property>
+          <property name="bottomMargin" >
+           <number>2</number>
+          </property>
+          <item>
+           <widget class="QSlider" name="horizontalSlider" >
+            <property name="minimum" >
+             <number>1</number>
+            </property>
+            <property name="maximum" >
+             <number>16</number>
+            </property>
+            <property name="pageStep" >
+             <number>4</number>
+            </property>
+            <property name="orientation" >
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="tickPosition" >
+             <enum>QSlider::TicksAbove</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="ZoomBox" >
+            <property name="minimum" >
+             <number>1</number>
+            </property>
+            <property name="maximum" >
+             <number>16</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_2" >
+         <property name="sizePolicy" >
+          <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize" >
+          <size>
+           <width>158</width>
+           <height>68</height>
+          </size>
+         </property>
+         <property name="title" >
+          <string>Source Min/Max levels</string>
+         </property>
+         <layout class="QVBoxLayout" >
+          <property name="spacing" >
+           <number>2</number>
+          </property>
+          <property name="leftMargin" >
+           <number>2</number>
+          </property>
+          <property name="topMargin" >
+           <number>2</number>
+          </property>
+          <property name="rightMargin" >
+           <number>2</number>
+          </property>
+          <property name="bottomMargin" >
+           <number>2</number>
+          </property>
+          <item>
+           <widget class="QScrollBar" name="MinSlider" >
+            <property name="maximum" >
+             <number>255</number>
+            </property>
+            <property name="pageStep" >
+             <number>20</number>
+            </property>
+            <property name="value" >
+             <number>0</number>
+            </property>
+            <property name="orientation" >
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QScrollBar" name="MaxSlider" >
+            <property name="maximum" >
+             <number>255</number>
+            </property>
+            <property name="pageStep" >
+             <number>20</number>
+            </property>
+            <property name="value" >
+             <number>255</number>
+            </property>
+            <property name="orientation" >
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_3" >
+         <property name="sizePolicy" >
+          <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize" >
+          <size>
+           <width>158</width>
+           <height>51</height>
+          </size>
+         </property>
+         <property name="title" >
+          <string>Source transparency</string>
+         </property>
+         <layout class="QHBoxLayout" >
+          <property name="spacing" >
+           <number>2</number>
+          </property>
+          <property name="leftMargin" >
+           <number>2</number>
+          </property>
+          <property name="topMargin" >
+           <number>2</number>
+          </property>
+          <property name="rightMargin" >
+           <number>2</number>
+          </property>
+          <property name="bottomMargin" >
+           <number>2</number>
+          </property>
+          <item>
+           <widget class="QSlider" name="TransSlider" >
+            <property name="minimum" >
+             <number>0</number>
+            </property>
+            <property name="maximum" >
+             <number>15</number>
+            </property>
+            <property name="pageStep" >
+             <number>4</number>
+            </property>
+            <property name="orientation" >
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="invertedAppearance" >
+             <bool>false</bool>
+            </property>
+            <property name="tickPosition" >
+             <enum>QSlider::TicksAbove</enum>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockWidget_Generate" >
+   <property name="enabled" >
+    <bool>true</bool>
+   </property>
+   <property name="sizePolicy" >
+    <sizepolicy vsizetype="Minimum" hsizetype="Minimum" >
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize" >
+    <size>
+     <width>140</width>
+     <height>180</height>
+    </size>
+   </property>
+   <property name="maximumSize" >
+    <size>
+     <width>16777215</width>
+     <height>16777215</height>
+    </size>
+   </property>
+   <property name="floating" >
+    <bool>false</bool>
+   </property>
+   <property name="features" >
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable|QDockWidget::NoDockWidgetFeatures</set>
+   </property>
+   <property name="allowedAreas" >
+    <set>Qt::LeftDockWidgetArea|Qt::NoDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle" >
+    <string>Generation</string>
+   </property>
+   <attribute name="dockWidgetArea" >
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2" >
+    <layout class="QVBoxLayout" >
+     <item>
+      <widget class="QTabWidget" name="tabWidget" >
+       <property name="currentIndex" >
+        <number>0</number>
+       </property>
+       <widget class="QWidget" name="tabLinear" >
+        <attribute name="title" >
+         <string>Linear</string>
+        </attribute>
+        <layout class="QHBoxLayout" >
+         <property name="leftMargin" >
+          <number>2</number>
+         </property>
+         <property name="topMargin" >
+          <number>2</number>
+         </property>
+         <property name="rightMargin" >
+          <number>2</number>
+         </property>
+         <property name="bottomMargin" >
+          <number>2</number>
+         </property>
+         <item>
+          <layout class="QVBoxLayout" >
+           <item>
+            <layout class="QHBoxLayout" >
+             <item>
+              <layout class="QVBoxLayout" >
+               <item>
+                <widget class="QSpinBox" name="LinearRedSpinBox" >
+                 <property name="prefix" >
+                  <string>R: </string>
+                 </property>
+                 <property name="maximum" >
+                  <number>255</number>
+                 </property>
+                 <property name="value" >
+                  <number>100</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QVBoxLayout" >
+               <item>
+                <widget class="QSpinBox" name="LinearGreenSpinBox" >
+                 <property name="prefix" >
+                  <string>G: </string>
+                 </property>
+                 <property name="maximum" >
+                  <number>255</number>
+                 </property>
+                 <property name="value" >
+                  <number>100</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QVBoxLayout" >
+               <item>
+                <widget class="QSpinBox" name="LinearBlueSpinBox" >
+                 <property name="prefix" >
+                  <string>B: </string>
+                 </property>
+                 <property name="maximum" >
+                  <number>255</number>
+                 </property>
+                 <property name="value" >
+                  <number>100</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" >
+             <item>
+              <widget class="QLabel" name="label_23" >
+               <property name="text" >
+                <string>Global</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="LinearGlobalSlider" >
+               <property name="minimum" >
+                <number>1</number>
+               </property>
+               <property name="maximum" >
+                <number>500</number>
+               </property>
+               <property name="pageStep" >
+                <number>30</number>
+               </property>
+               <property name="orientation" >
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="tickPosition" >
+                <enum>QSlider::TicksBothSides</enum>
+               </property>
+               <property name="tickInterval" >
+                <number>50</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="LinearGlobalSpinBox" >
+               <property name="sizePolicy" >
+                <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimum" >
+                <number>1</number>
+               </property>
+               <property name="maximum" >
+                <number>500</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tabPolynomial" >
+        <attribute name="title" >
+         <string>Poly</string>
+        </attribute>
+        <layout class="QVBoxLayout" >
+         <item>
+          <layout class="QHBoxLayout" >
+           <item>
+            <widget class="QLabel" name="label_24" >
+             <property name="text" >
+              <string>Sparsity</string>
+             </property>
+             <property name="alignment" >
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSlider" name="SliderSparsity" >
+             <property name="minimum" >
+              <number>1</number>
+             </property>
+             <property name="maximum" >
+              <number>10</number>
+             </property>
+             <property name="orientation" >
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="tickPosition" >
+              <enum>QSlider::TicksBothSides</enum>
+             </property>
+             <property name="tickInterval" >
+              <number>1</number>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSpinBox" name="SpinBoxSparsity" >
+             <property name="sizePolicy" >
+              <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="focusPolicy" >
+              <enum>Qt::NoFocus</enum>
+             </property>
+             <property name="alignment" >
+              <set>Qt::AlignCenter</set>
+             </property>
+             <property name="minimum" >
+              <number>1</number>
+             </property>
+             <property name="maximum" >
+              <number>10</number>
+             </property>
+             <property name="value" >
+              <number>10</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" >
+           <item>
+            <widget class="QLabel" name="label_25" >
+             <property name="text" >
+              <string>Order</string>
+             </property>
+             <property name="alignment" >
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSlider" name="SliderOrder" >
+             <property name="minimum" >
+              <number>1</number>
+             </property>
+             <property name="maximum" >
+              <number>9</number>
+             </property>
+             <property name="orientation" >
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="tickPosition" >
+              <enum>QSlider::TicksBothSides</enum>
+             </property>
+             <property name="tickInterval" >
+              <number>1</number>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSpinBox" name="SpinBoxOrder" >
+             <property name="sizePolicy" >
+              <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="focusPolicy" >
+              <enum>Qt::NoFocus</enum>
+             </property>
+             <property name="alignment" >
+              <set>Qt::AlignCenter</set>
+             </property>
+             <property name="minimum" >
+              <number>1</number>
+             </property>
+             <property name="maximum" >
+              <number>100</number>
+             </property>
+             <property name="value" >
+              <number>9</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" >
+           <item>
+            <widget class="QLabel" name="label_26" >
+             <property name="text" >
+              <string>Retries</string>
+             </property>
+             <property name="alignment" >
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSlider" name="SliderRetries" >
+             <property name="minimum" >
+              <number>1</number>
+             </property>
+             <property name="maximum" >
+              <number>100</number>
+             </property>
+             <property name="orientation" >
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="tickPosition" >
+              <enum>QSlider::TicksBothSides</enum>
+             </property>
+             <property name="tickInterval" >
+              <number>10</number>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSpinBox" name="SpinBoxRetries" >
+             <property name="sizePolicy" >
+              <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="focusPolicy" >
+              <enum>Qt::NoFocus</enum>
+             </property>
+             <property name="alignment" >
+              <set>Qt::AlignCenter</set>
+             </property>
+             <property name="minimum" >
+              <number>1</number>
+             </property>
+             <property name="maximum" >
+              <number>100</number>
+             </property>
+             <property name="value" >
+              <number>9</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" >
+           <item>
+            <widget class="QLabel" name="label_27" >
+             <property name="text" >
+              <string>Converge</string>
+             </property>
+             <property name="alignment" >
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSpinBox" name="SpinBoxConverge" >
+             <property name="sizePolicy" >
+              <sizepolicy vsizetype="Fixed" hsizetype="MinimumExpanding" >
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="focusPolicy" >
+              <enum>Qt::NoFocus</enum>
+             </property>
+             <property name="alignment" >
+              <set>Qt::AlignCenter</set>
+             </property>
+             <property name="suffix" >
+              <string> (250)</string>
+             </property>
+             <property name="minimum" >
+              <number>1</number>
+             </property>
+             <property name="maximum" >
+              <number>10</number>
+             </property>
+             <property name="value" >
+              <number>1</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" >
+           <item>
+            <widget class="QLabel" name="label_28" >
+             <property name="text" >
+              <string>Contrast</string>
+             </property>
+             <property name="alignment" >
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSlider" name="SliderContrast" >
+             <property name="minimum" >
+              <number>1</number>
+             </property>
+             <property name="maximum" >
+              <number>10</number>
+             </property>
+             <property name="orientation" >
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="tickPosition" >
+              <enum>QSlider::TicksBothSides</enum>
+             </property>
+             <property name="tickInterval" >
+              <number>1</number>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSpinBox" name="SpinBoxContrast" >
+             <property name="sizePolicy" >
+              <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="focusPolicy" >
+              <enum>Qt::NoFocus</enum>
+             </property>
+             <property name="alignment" >
+              <set>Qt::AlignCenter</set>
+             </property>
+             <property name="minimum" >
+              <number>1</number>
+             </property>
+             <property name="maximum" >
+              <number>10</number>
+             </property>
+             <property name="value" >
+              <number>9</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tabRange" >
+        <attribute name="title" >
+         <string>Range</string>
+        </attribute>
+       </widget>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" >
+       <property name="leftMargin" >
+        <number>2</number>
+       </property>
+       <property name="topMargin" >
+        <number>2</number>
+       </property>
+       <property name="rightMargin" >
+        <number>2</number>
+       </property>
+       <property name="bottomMargin" >
+        <number>2</number>
+       </property>
+       <item>
+        <widget class="QCheckBox" name="GenInvert" >
+         <property name="text" >
+          <string>Invert</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="GenerateAuto" >
+         <property name="text" >
+          <string>Auto</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="GenerateButton" >
+         <property name="text" >
+          <string>Generate</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QToolBar" name="toolBar" >
+   <property name="enabled" >
+    <bool>true</bool>
+   </property>
+   <property name="orientation" >
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <attribute name="toolBarArea" >
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak" >
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionBright" />
+   <addaction name="actionSegment" />
+   <addaction name="actionRecalc" />
+   <addaction name="actionCurve" />
+   <addaction name="actionLock" />
+   <addaction name="actionMask" />
+   <addaction name="separator" />
+   <addaction name="actionUndo" />
+   <addaction name="actionRedo" />
+  </widget>
+  <action name="actionA_command" >
+   <property name="text" >
+    <string>Open...</string>
+   </property>
+  </action>
+  <action name="actionMain_Toolbox" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Main Toolbox</string>
+   </property>
+   <property name="shortcut" >
+    <string>F1</string>
+   </property>
+  </action>
+  <action name="actionGeneration" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="checked" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Generation</string>
+   </property>
+   <property name="shortcut" >
+    <string>F3</string>
+   </property>
+  </action>
+  <action name="actionMasks" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="checked" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Masks</string>
+   </property>
+   <property name="shortcut" >
+    <string>F4</string>
+   </property>
+  </action>
+  <action name="actionSegments" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Segments</string>
+   </property>
+   <property name="shortcut" >
+    <string>F5</string>
+   </property>
+  </action>
+  <action name="actionCurves" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Curves</string>
+   </property>
+   <property name="shortcut" >
+    <string>F6</string>
+   </property>
+  </action>
+  <action name="actionSlice_Selector" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Slice Selector</string>
+   </property>
+   <property name="shortcut" >
+    <string>F2</string>
+   </property>
+  </action>
+  <action name="actionSave_Settings" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="text" >
+    <string>Save Settings</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionOutput_and_Render" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="text" >
+    <string>Output and Render</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionExit" >
+   <property name="text" >
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionOpen" >
+   <property name="text" >
+    <string>Open...</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionBright" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="enabled" >
+    <bool>true</bool>
+   </property>
+   <property name="icon" >
+    <iconset>../bulb.bmp</iconset>
+   </property>
+   <property name="text" >
+    <string>Bright</string>
+   </property>
+   <property name="toolTip" >
+    <string>Brightness Mode</string>
+   </property>
+   <property name="statusTip" >
+    <string>Brightness Mode</string>
+   </property>
+   <property name="shortcut" >
+    <string>B</string>
+   </property>
+   <property name="shortcutContext" >
+    <enum>Qt::WindowShortcut</enum>
+   </property>
+  </action>
+  <action name="actionSegment" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="icon" >
+    <iconset>../segment.bmp</iconset>
+   </property>
+   <property name="text" >
+    <string>Segment</string>
+   </property>
+   <property name="toolTip" >
+    <string>Segmentation (Pure Colour) Mode</string>
+   </property>
+   <property name="statusTip" >
+    <string>Segmentation (Pure Colour) Mode</string>
+   </property>
+   <property name="shortcut" >
+    <string>M</string>
+   </property>
+   <property name="shortcutContext" >
+    <enum>Qt::WindowShortcut</enum>
+   </property>
+  </action>
+  <action name="actionRecalc" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="icon" >
+    <iconset>../Recalc.bmp</iconset>
+   </property>
+   <property name="text" >
+    <string>Recalc</string>
+   </property>
+   <property name="statusTip" >
+    <string>Recalculate Mode</string>
+   </property>
+   <property name="whatsThis" >
+    <string>Recalculate Mode</string>
+   </property>
+   <property name="shortcut" >
+    <string>Z</string>
+   </property>
+  </action>
+  <action name="actionCurve" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="icon" >
+    <iconset>../Curves.bmp</iconset>
+   </property>
+   <property name="text" >
+    <string>Curve</string>
+   </property>
+   <property name="toolTip" >
+    <string>Curves Mode</string>
+   </property>
+   <property name="statusTip" >
+    <string>Curves Mode</string>
+   </property>
+   <property name="shortcut" >
+    <string>C</string>
+   </property>
+  </action>
+  <action name="actionLock" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="icon" >
+    <iconset>../Lock.bmp</iconset>
+   </property>
+   <property name="text" >
+    <string>Lock / Select</string>
+   </property>
+   <property name="toolTip" >
+    <string>Lock/Selection Mode</string>
+   </property>
+   <property name="statusTip" >
+    <string>Lock/Selection Mode</string>
+   </property>
+   <property name="shortcut" >
+    <string>X</string>
+   </property>
+  </action>
+  <action name="actionMask" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="icon" >
+    <iconset>../Masks.bmp</iconset>
+   </property>
+   <property name="text" >
+    <string>Mask</string>
+   </property>
+   <property name="iconText" >
+    <string>Mask </string>
+   </property>
+   <property name="toolTip" >
+    <string>Mask Mode</string>
+   </property>
+   <property name="statusTip" >
+    <string>Mask Mode</string>
+   </property>
+   <property name="shortcut" >
+    <string>K</string>
+   </property>
+  </action>
+  <action name="action1_x_1" >
+   <property name="enabled" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>1 x 1</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+1</string>
+   </property>
+  </action>
+  <action name="action2_x_2" >
+   <property name="text" >
+    <string>2 x 2</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+2</string>
+   </property>
+  </action>
+  <action name="action3_x_3" >
+   <property name="text" >
+    <string>3 x 3</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+3</string>
+   </property>
+  </action>
+  <action name="action4_x_4" >
+   <property name="text" >
+    <string>4 x 4</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+4</string>
+   </property>
+  </action>
+  <action name="action5_x_5" >
+   <property name="text" >
+    <string>5 x 5</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+5</string>
+   </property>
+  </action>
+  <action name="action8_x_8" >
+   <property name="text" >
+    <string>8 x 8</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+6</string>
+   </property>
+  </action>
+  <action name="action15_x_15" >
+   <property name="text" >
+    <string>15 x 15</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+7</string>
+   </property>
+  </action>
+  <action name="action30_x_30" >
+   <property name="text" >
+    <string>30 x 30</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+8</string>
+   </property>
+  </action>
+  <action name="action50_x_50" >
+   <property name="text" >
+    <string>50 x 50</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+9</string>
+   </property>
+  </action>
+  <action name="action200_x_200" >
+   <property name="text" >
+    <string>200 x 200</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+0</string>
+   </property>
+  </action>
+  <action name="actionSquare" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Square</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Return</string>
+   </property>
+  </action>
+  <action name="actionCircle" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="checked" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Circle</string>
+   </property>
+   <property name="shortcut" >
+    <string>Return</string>
+   </property>
+  </action>
+  <action name="actionToggle_Source" >
+   <property name="text" >
+    <string>Toggle Source</string>
+   </property>
+   <property name="shortcut" >
+    <string>Space</string>
+   </property>
+  </action>
+  <action name="actionThreshold" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="checked" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Threshold</string>
+   </property>
+  </action>
+  <action name="actionShowMasks" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Show Masks in Segment Mode</string>
+   </property>
+  </action>
+  <action name="actionShowSegs" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Show Segments in Masks Mode</string>
+   </property>
+  </action>
+  <action name="actionAb_out" >
+   <property name="text" >
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionKeyboard_Commands" >
+   <property name="text" >
+    <string>Keyboard Commands</string>
+   </property>
+  </action>
+  <action name="actionCopy_selected_from_Previous" >
+   <property name="text" >
+    <string>Copy selected from previous</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+F1</string>
+   </property>
+  </action>
+  <action name="actionCopy_all_from_previous" >
+   <property name="text" >
+    <string>Copy all from previous</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+F2</string>
+   </property>
+  </action>
+  <action name="actionCopy_selected_from_next" >
+   <property name="text" >
+    <string>Copy selected from next</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+F12</string>
+   </property>
+  </action>
+  <action name="actionCopy_all_from_next" >
+   <property name="text" >
+    <string>Copy all from next</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+F11</string>
+   </property>
+  </action>
+  <action name="actionCopy_selected_on_and_advance" >
+   <property name="text" >
+    <string>Copy selected on and advance</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Shift+F1</string>
+   </property>
+  </action>
+  <action name="actionCopy_all_on_and_advance" >
+   <property name="text" >
+    <string>Copy all on and advance</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Shift+F2</string>
+   </property>
+  </action>
+  <action name="actionCopy_selected_back_and_advance" >
+   <property name="text" >
+    <string>Copy selected back and advance</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Shift+F12</string>
+   </property>
+  </action>
+  <action name="actionCopy_all_back_and_adance" >
+   <property name="text" >
+    <string>Copy all back and advance</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Shift+F11</string>
+   </property>
+  </action>
+  <action name="actionHidden_masks_locked_for_generation" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Hidden masks locked for generation</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+H</string>
+   </property>
+  </action>
+  <action name="actionSegment_brush_applies_masks" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Segment brush applies masks</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+A</string>
+   </property>
+  </action>
+  <action name="actionInvert_locking_for_this_slice" >
+   <property name="text" >
+    <string>Invert lock / selection</string>
+   </property>
+  </action>
+  <action name="actionLock_mask_under_cursor" >
+   <property name="text" >
+    <string>Lock mask under cursor</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+K</string>
+   </property>
+  </action>
+  <action name="actionUnlock_mask_under_cursor" >
+   <property name="text" >
+    <string>Unlock mask under cursor</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+U</string>
+   </property>
+  </action>
+  <action name="actionCreate_mask_from_curve" >
+   <property name="text" >
+    <string>Create mask from curve</string>
+   </property>
+  </action>
+  <action name="actionSwap_Segments" >
+   <property name="text" >
+    <string>Swap left/right segments</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+W</string>
+   </property>
+   <property name="visible" >
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionLock_segments" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Lock segments</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+L</string>
+   </property>
+  </action>
+  <action name="actionCopy_segment_from_next_slice" >
+   <property name="text" >
+    <string>Copy selected from next slice</string>
+   </property>
+  </action>
+  <action name="actionCopy_segment_from_previous_slice" >
+   <property name="text" >
+    <string>Copy selected from previous slice</string>
+   </property>
+  </action>
+  <action name="actionCopyCurvesFromPrevious" >
+   <property name="enabled" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Copy from previous slice to selected</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Shift+F5</string>
+   </property>
+  </action>
+  <action name="actionCopy_selected_from_next_slice" >
+   <property name="text" >
+    <string>Copy selected from next slice</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionCopy_all_from_previous_slice" >
+   <property name="text" >
+    <string>Copy all from previous slice</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Shift+F5</string>
+   </property>
+  </action>
+  <action name="actionCopyCurvesFromNext" >
+   <property name="text" >
+    <string>Copy from next slice to selected</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Shift+F6</string>
+   </property>
+  </action>
+  <action name="actionCopyCurvesToCurrent" >
+   <property name="text" >
+    <string>Copy from selected slice to current</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Alt+Shift+F6</string>
+   </property>
+  </action>
+  <action name="actionCurve_markers_as_crosses" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Curve markers as crosses</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+X</string>
+   </property>
+  </action>
+  <action name="actionCreate_curve_as_simple_circle" >
+   <property name="text" >
+    <string>Create curve as simple circle</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+I</string>
+   </property>
+  </action>
+  <action name="actionLock_curve_shape" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Lock curve shape</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+E</string>
+   </property>
+  </action>
+  <action name="actionResize_keeping_curve_shape" >
+   <property name="text" >
+    <string>Resize curves on selected slices...</string>
+   </property>
+  </action>
+  <action name="actionNew" >
+   <property name="text" >
+    <string>New...</string>
+   </property>
+  </action>
+  <action name="actionImport" >
+   <property name="text" >
+    <string>Import SPIERSedit 1.1...</string>
+   </property>
+  </action>
+  <action name="actionSave_As" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="text" >
+    <string>Save As...</string>
+   </property>
+  </action>
+  <action name="actionMore" >
+   <property name="text" >
+    <string>More...</string>
+   </property>
+  </action>
+  <action name="actionUndo" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="icon" >
+    <iconset>../undo.bmp</iconset>
+   </property>
+   <property name="text" >
+    <string>Undo</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Z</string>
+   </property>
+  </action>
+  <action name="actionRedo" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="icon" >
+    <iconset>../redo.bmp</iconset>
+   </property>
+   <property name="text" >
+    <string>Redo</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Y</string>
+   </property>
+  </action>
+  <action name="actionOutput" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Output/Render</string>
+   </property>
+   <property name="shortcut" >
+    <string>F7</string>
+   </property>
+  </action>
+  <action name="actionSave_Objects" >
+   <property name="text" >
+    <string>Save Objects</string>
+   </property>
+  </action>
+  <action name="actionLoad_Objects" >
+   <property name="text" >
+    <string>Load Objects</string>
+   </property>
+  </action>
+  <action name="actionOutput_SPIERSview" >
+   <property name="text" >
+    <string>Export SPIERSview</string>
+   </property>
+  </action>
+  <action name="actionExport_DXF" >
+   <property name="text" >
+    <string>Export DXF</string>
+   </property>
+  </action>
+  <action name="actionAuto_Update" >
+   <property name="text" >
+    <string>Auto Update</string>
+   </property>
+  </action>
+  <action name="actionUpdate_View" >
+   <property name="text" >
+    <string>Update View</string>
+   </property>
+  </action>
+  <action name="actionLock_Selected_Masks" >
+   <property name="text" >
+    <string>Lock Selected Masks</string>
+   </property>
+  </action>
+  <action name="actionUnlock_Selected_Masks" >
+   <property name="text" >
+    <string>Unlock Selected Masks</string>
+   </property>
+  </action>
+  <action name="actionShow_Selected_Masks" >
+   <property name="text" >
+    <string>Show Selected Masks</string>
+   </property>
+  </action>
+  <action name="actionUnShow_Selected_Masks" >
+   <property name="text" >
+    <string>UnShow Selected Masks</string>
+   </property>
+  </action>
+  <action name="actionWrite_Selected_Masks" >
+   <property name="text" >
+    <string>Write Selected Masks</string>
+   </property>
+  </action>
+  <action name="actionUnWrite_Selected_Masks" >
+   <property name="text" >
+    <string>UnWrite Selected Masks</string>
+   </property>
+  </action>
+  <action name="actionLock_selected_segments" >
+   <property name="text" >
+    <string>Lock selected segments</string>
+   </property>
+  </action>
+  <action name="actionUnlock_selected_segments" >
+   <property name="text" >
+    <string>Unlock selected segments</string>
+   </property>
+  </action>
+  <action name="actionActivate_selected_segments" >
+   <property name="text" >
+    <string>Activate selected segments</string>
+   </property>
+  </action>
+  <action name="actionDeactivate_selected_segments" >
+   <property name="text" >
+    <string>Deactivate selected segments</string>
+   </property>
+  </action>
+  <action name="actionNew_mask" >
+   <property name="text" >
+    <string>New mask</string>
+   </property>
+  </action>
+  <action name="actionDelete_selected_mask_s" >
+   <property name="text" >
+    <string>Delete selected mask(s)</string>
+   </property>
+  </action>
+  <action name="actionCreate_new_segment" >
+   <property name="text" >
+    <string>Create new segment</string>
+   </property>
+  </action>
+  <action name="actionDelete_selected_segments" >
+   <property name="text" >
+    <string>Delete selected segment(s)</string>
+   </property>
+  </action>
+  <action name="actionSettings" >
+   <property name="text" >
+    <string>Settings...</string>
+   </property>
+  </action>
+  <action name="actionHistorgram" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Histogram</string>
+   </property>
+   <property name="shortcut" >
+    <string>F8</string>
+   </property>
+  </action>
+  <action name="actionHistogram_shows_selected" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="checked" >
+    <bool>false</bool>
+   </property>
+   <property name="enabled" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Histogram shows selected</string>
+   </property>
+  </action>
+  <action name="actionAdd_new_point" >
+   <property name="text" >
+    <string>Add new node under cursor</string>
+   </property>
+   <property name="shortcut" >
+    <string>=</string>
+   </property>
+  </action>
+  <action name="actionRemove_node_under_cursor" >
+   <property name="text" >
+    <string>Remove node under cursor</string>
+   </property>
+   <property name="shortcut" >
+    <string>-</string>
+   </property>
+  </action>
+  <action name="actionCopy_from_current_slice_to_selected" >
+   <property name="text" >
+    <string>Copy from current slice to selected</string>
+   </property>
+   <property name="shortcut" >
+    <string>Shift+F5</string>
+   </property>
+  </action>
+  <action name="actionRemove_selected_curves_from_selected_slices" >
+   <property name="text" >
+    <string>Remove curves from selected slices</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>horizontalSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>ZoomBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>97</x>
+     <y>719</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>156</x>
+     <y>717</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>ZoomBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>horizontalSlider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>156</x>
+     <y>717</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>104</x>
+     <y>719</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSlider_2</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>BrushSize</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>66</x>
+     <y>112</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>156</x>
+     <y>121</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>BrushSize</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>horizontalSlider_2</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>121</x>
+     <y>116</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>77</x>
+     <y>120</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>verticalSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SpinUp</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>33</x>
+     <y>230</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>52</x>
+     <y>492</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SpinUp</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>verticalSlider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>53</x>
+     <y>492</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>32</x>
+     <y>218</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SpinDown</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>verticalSlider_2</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>105</x>
+     <y>492</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>105</x>
+     <y>398</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>verticalSlider_2</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SpinDown</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>83</x>
+     <y>203</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>105</x>
+     <y>492</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>verticalSlider_3</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SpinSoft</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>156</x>
+     <y>250</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>156</x>
+     <y>492</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SpinSoft</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>verticalSlider_3</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>156</x>
+     <y>492</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>156</x>
+     <y>250</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SliderPos</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>540</x>
+     <y>849</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>588</x>
+     <y>844</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SliderPos</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>588</x>
+     <y>844</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>540</x>
+     <y>849</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>LinearGlobalSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>LinearGlobalSpinBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>32861</x>
+     <y>32327</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>32861</x>
+     <y>32327</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>LinearGlobalSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>LinearGlobalSlider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>32861</x>
+     <y>32327</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>32861</x>
+     <y>32327</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SliderSparsity</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SpinBoxSparsity</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>699</x>
+     <y>212</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>803</x>
+     <y>229</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SpinBoxSparsity</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SliderSparsity</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>803</x>
+     <y>229</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>755</x>
+     <y>234</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SliderOrder</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SpinBoxOrder</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>755</x>
+     <y>357</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>803</x>
+     <y>352</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SpinBoxOrder</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SliderOrder</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>803</x>
+     <y>352</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>755</x>
+     <y>357</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SliderRetries</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SpinBoxRetries</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>755</x>
+     <y>480</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>803</x>
+     <y>475</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SpinBoxRetries</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SliderRetries</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>803</x>
+     <y>475</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>755</x>
+     <y>480</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SliderContrast</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SpinBoxContrast</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>755</x>
+     <y>717</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>803</x>
+     <y>712</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SpinBoxContrast</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SliderContrast</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>803</x>
+     <y>712</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>755</x>
+     <y>717</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

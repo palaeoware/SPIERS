@@ -10,7 +10,7 @@ Now used in several other circumstances too
 #include "globals.h"
 #include "copyingimpl.h"
 #include "fileio.h"
-#include "Display.h"
+#include "display.h"
 #include "output.h"
 #include "curves.h"
 #include "brush.h"
@@ -513,7 +513,7 @@ void CopyingImpl::MaskCopy(int fromfile, MainWindowImpl *mw)
 					{
 						//OK, copy stored mask data to this mask array
 						for (int n=0; n<fsize; n++)
-							if ((int)(FromMasks[n])==j && MasksSettings[Masks[n]]->Lock==false) {Masks[n]=(uchar)j; dflag=true;}
+                            if ((int)((quint8)FromMasks[n])==j && MasksSettings[(quint8)Masks[n]]->Lock==false) {Masks[n]=(uchar)j; dflag=true;}
 					}
 				}
 				if (dflag) SaveMasks(k); 			
@@ -543,7 +543,7 @@ void CopyingImpl::MaskCopy2(int fromfile, MainWindowImpl *mw) //this is copy fro
 			{
 				//OK, copy stored mask data to this mask array
 				for (int n=0; n<fsize; n++)
-					if ((int)(Masks[n])==j && MasksSettings[ToMasks[n]]->Lock==false) ToMasks[n]=(uchar)j;
+                    if ((int)((quint8)Masks[n])==j && MasksSettings[(quint8)ToMasks[n]]->Lock==false) ToMasks[n]=(uchar)j;
 			}
 		}
 		Masks=ToMasks;
@@ -593,7 +593,7 @@ void CopyingImpl::CurvesToMasks(MainWindowImpl *mw) //create a mask from a curve
 				LoadMasks(i);
 				for (int j=0; j<fheight; j++)
 				for (int k=0; k<fwidth; k++)
-					if (array[(fheight-1-j)*fwidth+k]) if (MasksSettings[Masks[j*fwidth+k]]->Lock==false) Masks[j*fwidth+k]=SelectedMask;
+                    if (array[(fheight-1-j)*fwidth+k]) if (MasksSettings[(quint8)Masks[j*fwidth+k]]->Lock==false) Masks[j*fwidth+k]=SelectedMask;
 				SaveMasks(i); 
 			}
 			LoadMasks(CurrentFile);
@@ -744,7 +744,7 @@ void CopyingImpl::Apply3DBrush(int button)
 	{
                 //FilesDirty[wfile]=true;
 
-		Brush.resize(Brush_Size, 2, qAbs(Stretches[wfile]-BaseOffset));	
+        Brush.resize(Brush_Size, 2, qAbs(Stretches[wfile]-BaseOffset));
 	
 		//do the brushing
 		switch (CurrentMode)
@@ -776,7 +776,7 @@ void CopyingImpl::Apply3DBrush(int button)
 		progressBar->setValue(count++); qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
 		WriteAllData(wfile);
 		//attempt to load next file in sequence
-                if (Brush.PixelCount==0) if (forwards) {forwards=false; wfile=CurrentFile-1;} else {done=true;goto past;} //switch direction - or stop!
+                if (Brush.PixelCount==0) if (forwards) {forwards=false; wfile=CurrentFile-1; goto past;} else {done=true;goto past;} //switch direction - or stop!
 			
 		if (forwards) wfile++; else wfile--;
 		if (wfile>=Files.count() || wfile<0) 

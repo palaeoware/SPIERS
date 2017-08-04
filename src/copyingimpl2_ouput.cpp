@@ -1,7 +1,7 @@
 #include "copyingimpl.h"
 #include "globals.h"
 #include "fileio.h"
-#include "Display.h"
+#include "display.h"
 #include "output.h"
 #include "curves.h"
 #include "brush.h"
@@ -742,18 +742,6 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
     if (flag<2) 
 	{
 		outputfile = QFileDialog::getSaveFileName(0, "SPIERSview File Name", "", "SPIERSview files (*.spv)");
-		/*QFileDialog dialog(this);
-		dialog.setFileMode(QFileDialog::AnyFile);
-		dialog.setNameFilter("SPIERSview File Name (*.spv)");
-		dialog.setViewMode(QFileDialog::Detail);
-
-		QStringList files;
-		if (dialog.exec())
-			files = dialog.selectedFiles();
-		else return;
-		outputfile=files[0];
-		*/
-
 	}
     else //temp file
     {
@@ -1001,7 +989,7 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
                             for (int x=0; x<fwidth; x++)
                             {
                                 //work out segment - not in a function for speed
-                                if (((*UseMasks)[Masks[y*fwidth+x]]))
+                                if (((*UseMasks)[(quint8)Masks[y*fwidth+x]]))
                                 {
                                         int high = 128;
                                         seg = -1;
@@ -1051,7 +1039,7 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
                             for (int x=0; x<fwidth; x++)
                             //work out segment - not in a function for speed
                             {
-                                if (((*UseMasks)[Masks[y*fwidth+x]]))
+                                if (((*UseMasks)[(quint8)Masks[y*fwidth+x]]))
                                 {
                                         int high = 128;
                                         seg = -1;

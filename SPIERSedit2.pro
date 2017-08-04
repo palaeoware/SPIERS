@@ -96,5 +96,5 @@ TEMPLATE = app
 RESOURCES = src/SPIERSedit.qrc
 ICON = src/edit.icns
 RC_FILE = src/icon.rc
-LIBS += -L"C:\\Qt\\Qt5.1\\ported64\\lib" \
-    -l z
+#LIBS += -L"C:\\Qt\\Qt5.1\\ported64\\lib" \
+#    -llibz

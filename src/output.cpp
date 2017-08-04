@@ -122,7 +122,7 @@ void PopulateOutputArray (int *FullOutArrayCount, QByteArray *FullOutArray, int 
                             for (int x=0; x<fwidth; x++)
                             {
                                 //work out segment - not in a function for speed
-                                    if ((UseMasks[Masks[y*fwidth+x]]))
+                                    if ((UseMasks[(quint8)Masks[y*fwidth+x]]))
                                 {
                                         int high = 128;
                                         seg = -1;
@@ -169,7 +169,7 @@ void PopulateOutputArray (int *FullOutArrayCount, QByteArray *FullOutArray, int 
                             for (int x=0; x<fwidth; x++)
                                 //work out segment - not in a function for speed
                                 {
-                                        if ((UseMasks[Masks[y*fwidth+x]]))
+                                        if ((UseMasks[(quint8)Masks[y*fwidth+x]]))
                                 {
                                         int high = 128;
                                         seg = -1;
@@ -412,7 +412,7 @@ void PopulateOutputArray (int *FullOutArrayCount, QByteArray *FullOutArray, int 
 		            for (int x=0; x<fwidth; x++)
 		            {
 		            	//work out segment - not in a function for speed
-			            if ((UseMasks[Masks[y*fwidth+x]]))
+                        if ((UseMasks[(quint8)Masks[y*fwidth+x]]))
 		                {
 		                	int high = 128;
 			                seg = -1;
@@ -455,7 +455,7 @@ void PopulateOutputArray (int *FullOutArrayCount, QByteArray *FullOutArray, int 
 		            for (int x=0; x<fwidth; x++)
 		            	//work out segment - not in a function for speed
 			        {
-			        	if ((UseMasks[Masks[y*fwidth+x]]))
+                        if ((UseMasks[(quint8)Masks[y*fwidth+x]]))
 		                {
 		                	int high = 128;
 			                seg = -1;

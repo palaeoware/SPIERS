@@ -11,7 +11,7 @@ handling range generation
 #include "myrangescene.h"
 #include "globals.h"
 #include "mainwindowimpl.h"
-#include "Display.h"
+#include "display.h"
 
 #include <QList>
 #include <QPen>

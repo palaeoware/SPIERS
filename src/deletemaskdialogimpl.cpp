@@ -92,7 +92,7 @@ void DeleteMaskDialogImpl::on_buttonBox_accepted()
 	for (int i=0; i<Files.count(); i++)
 	{
 		LoadMasks(i);
-		for (int j=0; j<Masks.size(); j++) Masks[j]=ToMasks[(int)Masks[j]]; // new mask from table
+        for (int j=0; j<Masks.size(); j++) Masks[j]=ToMasks[(quint8)Masks[j]]; // new mask from table
 		SaveMasks(i);
 		progressBar->setValue(i+1);
 		qApp->processEvents(QEventLoop::ExcludeUserInputEvents); 

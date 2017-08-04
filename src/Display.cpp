@@ -116,14 +116,14 @@ QImage GenerateThresh()
         for (x=0; x<fwidth; x++)
         {
         	invertedpos=(fheight-1-y)*fwidth +x;
-      	    if (!(MasksSettings[Masks[invertedpos]]->Show))
+            if (!(MasksSettings[(quint8)Masks[invertedpos]]->Show))
             {
              	m = n * 4;
                 if (maskmode)
                 {
-				    RED(data,m) = (uchar) (MasksSettings[Masks[invertedpos]]->BackColour[0]);
-				    GREEN(data,m) = (uchar) (MasksSettings[Masks[invertedpos]]->BackColour[1]);
-				    BLUE(data,m) = (uchar) (MasksSettings[Masks[invertedpos]]->BackColour[2]);
+                    RED(data,m) = (uchar) (MasksSettings[(quint8)Masks[invertedpos]]->BackColour[0]);
+                    GREEN(data,m) = (uchar) (MasksSettings[(quint8)Masks[invertedpos]]->BackColour[1]);
+                    BLUE(data,m) = (uchar) (MasksSettings[(quint8)Masks[invertedpos]]->BackColour[2]);
                 }
 				else
                 {
@@ -172,30 +172,30 @@ QImage GenerateThresh()
                     {
 						if (seg>=0)
 						{
-                            RED(data,m) = (uchar)((Segments[seg]->Colour[0])/2  + (MasksSettings[Masks[invertedpos]]->ForeColour[0] / 2));
-                            GREEN(data,m) = (uchar)((Segments[seg]->Colour[1])/2  + (MasksSettings[Masks[invertedpos]]->ForeColour[1] / 2));
-                            BLUE(data,m) = (uchar)((Segments[seg]->Colour[2])/2  + (MasksSettings[Masks[invertedpos]]->ForeColour[2] / 2));
+                            RED(data,m) = (uchar)((Segments[seg]->Colour[0])/2  + (MasksSettings[(quint8)Masks[invertedpos]]->ForeColour[0] / 2));
+                            GREEN(data,m) = (uchar)((Segments[seg]->Colour[1])/2  + (MasksSettings[(quint8)Masks[invertedpos]]->ForeColour[1] / 2));
+                            BLUE(data,m) = (uchar)((Segments[seg]->Colour[2])/2  + (MasksSettings[(quint8)Masks[invertedpos]]->ForeColour[2] / 2));
                         }
 						else //background - no seg over 128
                         {
-						    RED(data,m) = (uchar) (MasksSettings[Masks[invertedpos]]->BackColour[0]);
-						    GREEN(data,m) = (uchar) (MasksSettings[Masks[invertedpos]]->BackColour[1]);
-						    BLUE(data,m) = (uchar) (MasksSettings[Masks[invertedpos]]->BackColour[2]);
+                            RED(data,m) = (uchar) (MasksSettings[(quint8)Masks[invertedpos]]->BackColour[0]);
+                            GREEN(data,m) = (uchar) (MasksSettings[(quint8)Masks[invertedpos]]->BackColour[1]);
+                            BLUE(data,m) = (uchar) (MasksSettings[(quint8)Masks[invertedpos]]->BackColour[2]);
                         }
                     }
 					else
 					{
                         if (seg>=0)
 						{
-                            RED(data,m) = (uchar)(MasksSettings[Masks[invertedpos]]->ForeColour[0]);
-                            GREEN(data,m) = (uchar)(MasksSettings[Masks[invertedpos]]->ForeColour[1]);
-                            BLUE(data,m) = (uchar)(MasksSettings[Masks[invertedpos]]->ForeColour[2]);
+                            RED(data,m) = (uchar)(MasksSettings[(quint8)Masks[invertedpos]]->ForeColour[0]);
+                            GREEN(data,m) = (uchar)(MasksSettings[(quint8)Masks[invertedpos]]->ForeColour[1]);
+                            BLUE(data,m) = (uchar)(MasksSettings[(quint8)Masks[invertedpos]]->ForeColour[2]);
                         }
 						else //background - no seg over 128
 						{
-						    RED(data,m) = (uchar) (MasksSettings[Masks[invertedpos]]->BackColour[0]);
-						    GREEN(data,m) = (uchar) (MasksSettings[Masks[invertedpos]]->BackColour[1]);
-						    BLUE(data,m) = (uchar) (MasksSettings[Masks[invertedpos]]->BackColour[2]);
+                            RED(data,m) = (uchar) (MasksSettings[(quint8)Masks[invertedpos]]->BackColour[0]);
+                            GREEN(data,m) = (uchar) (MasksSettings[(quint8)Masks[invertedpos]]->BackColour[1]);
+                            BLUE(data,m) = (uchar) (MasksSettings[(quint8)Masks[invertedpos]]->BackColour[2]);
 						}
 					}
                 }
@@ -205,15 +205,15 @@ QImage GenerateThresh()
 					{
                         if (seg >= 0)
                         {
-						    RED(data,m) = (uchar)((Segments[seg]->Colour[0])/2  + (MasksSettings[Masks[invertedpos]]->ForeColour[0] / 2));
-                            GREEN(data,m) = (uchar)((Segments[seg]->Colour[1])/2  + (MasksSettings[Masks[invertedpos]]->ForeColour[1] / 2));
-                            BLUE(data,m) = (uchar)((Segments[seg]->Colour[2])/2  + (MasksSettings[Masks[invertedpos]]->ForeColour[2] / 2));
+                            RED(data,m) = (uchar)((Segments[seg]->Colour[0])/2  + (MasksSettings[(quint8)Masks[invertedpos]]->ForeColour[0] / 2));
+                            GREEN(data,m) = (uchar)((Segments[seg]->Colour[1])/2  + (MasksSettings[(quint8)Masks[invertedpos]]->ForeColour[1] / 2));
+                            BLUE(data,m) = (uchar)((Segments[seg]->Colour[2])/2  + (MasksSettings[(quint8)Masks[invertedpos]]->ForeColour[2] / 2));
 		                }
 						else //background - no seg over 128
 						{
-						    RED(data,m) = (uchar) (MasksSettings[Masks[invertedpos]]->BackColour[0]);
-						    GREEN(data,m) = (uchar) (MasksSettings[Masks[invertedpos]]->BackColour[1]);
-						    BLUE(data,m) = (uchar) (MasksSettings[Masks[invertedpos]]->BackColour[2]);
+                            RED(data,m) = (uchar) (MasksSettings[(quint8)Masks[invertedpos]]->BackColour[0]);
+                            GREEN(data,m) = (uchar) (MasksSettings[(quint8)Masks[invertedpos]]->BackColour[1]);
+                            BLUE(data,m) = (uchar) (MasksSettings[(quint8)Masks[invertedpos]]->BackColour[2]);
 						}
                     }
 					else
@@ -528,7 +528,7 @@ QByteArray DoMaskLocking()
 	{
 		int hpos=(fheight-y-1)*fwidth+x;
 		if (Locks[hpos*2]) newlocks[fwidth*y+x]=(uchar) 255;
-		if (HiddenMasksLockedForGeneration) if (!MasksSettings[Masks[hpos]]->Show) newlocks[fwidth*y+x]=255;
+        if (HiddenMasksLockedForGeneration) if (!MasksSettings[(quint8)Masks[hpos]]->Show) newlocks[fwidth*y+x]=255;
 	}
 	return newlocks;	
 }

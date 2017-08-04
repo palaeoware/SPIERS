@@ -6,8 +6,6 @@
 #include <QMutexLocker>
 #include <QByteArray>
 
-//warning - this no longer used, probably not working!
-
 MyThread* BackThread;
 
  void MyThread::run()
@@ -30,10 +28,8 @@ bool MyThread::TryCaching(int fnumber)
 
 		int d=Data->format();
 		if (d!=QImage::Format_RGB32 && d!=QImage::Format_ARGB32 && d!=QImage::Format_Indexed8)
-        {
-            qDebug()<<"Format code is "<<d;
-            Error("File is not in a valid format - [1]");
-        }
+            Error("File is not in a valid format");
+		
 		QList <QImage *> glist;
 		//GREYS
 		for (int seg=0; seg<SegmentCount; seg++)

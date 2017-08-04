@@ -14,7 +14,9 @@ bool KeysafeSpinBox::event(QEvent *event)
 {
     if (event->type() == QEvent::KeyPress)
     {
+
         QKeyEvent *ke = (QKeyEvent *)event;
+        //qDebug()<<"Key press "<<ke->key();
         if (ke->key() == Qt::Key_Space)
         {
             return true;

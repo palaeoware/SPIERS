@@ -20,7 +20,7 @@
 #include "histogram.h"
 #include <QColorDialog>
 #include <QFileDialog>
-#include <QShortcut>
+#include <QShortCut>
 #include <QTimer>
 #include <QTime>
 #include <QInputDialog>
@@ -132,7 +132,7 @@ void MainWindowImpl::SetUpDocks()
 	toolBar->addWidget(l1);
 
         BrushSize = new KeysafeSpinBox;
-	BrushSize->setKeyboardTracking(false);
+    BrushSize->setKeyboardTracking(true);
 	BrushSize->setMinimum(1);
 	BrushSize->setMaximum(2000);
 	BrushSize->setValue(1);
