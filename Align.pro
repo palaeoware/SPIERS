@@ -18,18 +18,18 @@ FORMS = ui/mainwindow.ui \
 HEADERS = src/mainwindowimpl.h \
     src/globals.h \
     src/scene.h \
-    src/dialogaboutimpl.h \
     SPIERScommon/netmodule.h \
     src/darkstyletheme.h \
-    src/version.h
+    src/version.h \
+    src/about.h
 
 SOURCES = src/mainwindowimpl.cpp \
     src/main.cpp \
     src/globals.cpp \
     src/scene.cpp \
-    src/dialogaboutimpl.cpp \
     SPIERScommon/netmodule.cpp \
-    src/darkstyletheme.cpp
+    src/darkstyletheme.cpp \
+    src/about.cpp
 
 RESOURCES = align.qrc
 

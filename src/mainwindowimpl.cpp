@@ -26,6 +26,7 @@
 #include <QUrl>
 #include <QVBoxLayout>
 
+#include "about.h"
 #include "mainwindowimpl.h"
 #include "version.h"
 #include "globals.h"
@@ -3295,8 +3296,8 @@ void MainWindowImpl::resizeCropH(int value)
 //About
 void MainWindowImpl::on_actionAbout_triggered()
 {
-    DialogAboutImpl d;
-    d.exec();
+    About adialogue;
+    adialogue.exec();
 }
 
 //Lock file to changes - all done in the apply changes function
