@@ -46,8 +46,7 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
 {
     //Set up initial variables
     setupUi(this);
-    QIcon alignIcon(":/alignicon.png");
-    qApp->setWindowIcon(alignIcon);
+    setWindowIcon(QIcon (":/alignicon.png"));
 
     files_directory = "";
     scene = new CustomScene;

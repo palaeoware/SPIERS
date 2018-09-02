@@ -19,16 +19,18 @@ HEADERS = src/mainwindowimpl.h \
     src/globals.h \
     src/scene.h \
     src/dialogaboutimpl.h \
-    SPIERScommon/netmodule.h
+    SPIERScommon/netmodule.h \
+    src/darkstyletheme.h
 
 SOURCES = src/mainwindowimpl.cpp \
     src/main.cpp \
     src/globals.cpp \
     src/scene.cpp \
     src/dialogaboutimpl.cpp \
-    SPIERScommon/netmodule.cpp
+    SPIERScommon/netmodule.cpp \
+    src/darkstyletheme.cpp
 
-RESOURCES = src/align.qrc
+RESOURCES = align.qrc
 
 RC_FILE = src/exeicon.rc
 
