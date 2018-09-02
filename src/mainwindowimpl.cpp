@@ -27,8 +27,9 @@
 #include <QVBoxLayout>
 
 #include "mainwindowimpl.h"
-#include <math.h>
+#include "version.h"
 #include "globals.h"
+#include <math.h>
 #include <qbitmap.h>
 
 #define PI 3.14159265
@@ -47,6 +48,12 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     //Set up initial variables
     setupUi(this);
     setWindowIcon(QIcon (":/alignicon.png"));
+
+    QString version;
+    version.sprintf("%d.%d.%d", MAJORVERSION, MINORVERSION, PATCHVERSION);
+    setWindowTitle(QString(PRODUCTNAME) + " v" + version);
+
+    showMaximized();
 
     files_directory = "";
     scene = new CustomScene;
@@ -174,7 +181,7 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     //Can't use set widget for more than one widget
     layoutwidget = new QWidget;
     layoutwidget->setLayout(markerLayout);
-    layoutwidget->setMaximumWidth(200);
+    layoutwidget->setMaximumWidth(500);
     markersDialogue->setWidget(layoutwidget);
 
     //Add docker but hide until needed
@@ -255,7 +262,7 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
 
     layout3widget = new QWidget;
     layout3widget->setLayout(cropLayout);
-    layout3widget->setMaximumWidth(200);
+    layout3widget->setMaximumWidth(500);
     cropDock->setWidget(layout3widget);
 
     addDockWidget(Qt::RightDockWidgetArea, cropDock);
@@ -284,7 +291,7 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
 
     layout2widget = new QWidget;
     layout2widget->setLayout(infoLayout);
-    layout2widget->setMaximumWidth(200);
+    layout2widget->setMaximumWidth(500);
     layout2widget->setMaximumHeight(200);
     info->setWidget(layout2widget);
 
@@ -316,7 +323,7 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     layout5widget = new QWidget;
     layout5widget->setLayout(autoLayout);
     autoAlign->setWidget(layout5widget);
-    autoAlign->setMaximumWidth(200);
+    autoAlign->setMaximumWidth(500);
     addDockWidget(Qt::LeftDockWidgetArea, autoAlign);
     autoAlign->hide();
 
@@ -1696,7 +1703,10 @@ void MainWindowImpl::on_actionOpen_triggered()
         actionInfo->setChecked(false);
 
         notes->clear();
-        this->setWindowTitle("SPIERS Align 2.0");
+
+        QString version;
+        version.sprintf("%d.%d.%d", MAJORVERSION, MINORVERSION, PATCHVERSION);
+        this->setWindowTitle(QString(PRODUCTNAME) + " v" + version);
     }
     CurrentImage = 0;
 
@@ -1870,15 +1880,12 @@ void MainWindowImpl::on_actionOpen_triggered()
     height = Dimensions.height();
 
     CurrentScale = 1;
-
     RedrawImage();
+    on_actionFit_Window_triggered();
 
     actionAdd_Markers->trigger();
     actionInfo->trigger();
     actionAuto_align->trigger();
-
-
-
 }
 
 void MainWindowImpl::LogText(QString text)
@@ -1932,11 +1939,15 @@ void  MainWindowImpl::RedrawImage()
     //Do it based on height and width of firt image - can do it so each image is nicely centred using newimage.height & width
     //But this means the images are no longer aligned, this prevents proper alignment...
     LogText("*6\t");
+
     //Title bar
-    QString output = "SPIERS Align 2.0 - " + ImageList[CurrentImage]->FileName;
+
+    QString version;
+    version.sprintf("%d.%d.%d - ", MAJORVERSION, MINORVERSION, PATCHVERSION);
+    QString output = version + ImageList[CurrentImage]->FileName;
     QString output2;
     output2.sprintf(" - (%d/%d)", CurrentImage + 1, ImageList.count());
-    this->setWindowTitle(output + output2);
+    this->setWindowTitle(QString(PRODUCTNAME) + " v" + output + output2);
 
     LogText("*7\t");
     //Rescale view
@@ -2266,9 +2277,6 @@ void MainWindowImpl::on_actionAuto_align_triggered (bool checked)
         autoAlign->hide();
     }
 }
-
-
-
 
 //Setup markers
 void MainWindowImpl::on_actionAdd_Markers_triggered(bool checked)

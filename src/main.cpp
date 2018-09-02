@@ -4,8 +4,9 @@
 #include <QString>
 #include <QStyle>
 
-#include "mainwindowimpl.h"
 #include "darkstyletheme.h"
+#include "mainwindowimpl.h"
+#include "version.h"
 #include "SPIERScommon/netmodule.h"
 
 
@@ -28,6 +29,7 @@ int main(int argc, char **argv)
     QPixmap splashPixmap(":/palaeoware_logo_square.png");
     QSplashScreen splash(splashPixmap, Qt::WindowStaysOnTopHint);
     splash.show();
+    splash.showMessage("<font><b>" + QString(PRODUCTNAME) + "</b></font>", Qt::AlignHCenter, Qt::white);
 
     QApplication::processEvents();
 

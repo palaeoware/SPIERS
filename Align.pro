@@ -20,7 +20,8 @@ HEADERS = src/mainwindowimpl.h \
     src/scene.h \
     src/dialogaboutimpl.h \
     SPIERScommon/netmodule.h \
-    src/darkstyletheme.h
+    src/darkstyletheme.h \
+    src/version.h
 
 SOURCES = src/mainwindowimpl.cpp \
     src/main.cpp \
