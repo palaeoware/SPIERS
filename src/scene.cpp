@@ -878,7 +878,8 @@ if (event->buttons() == Qt::LeftButton && markersUp==1)
 
 void CustomScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-	selection=-1;
+    Q_UNUSED(event);
+    selection=-1;
         flagup=0;
         flagupselection=-1;
 	if(markersUp==1)
