@@ -16,7 +16,6 @@
  */
 
 #include "about.h"
-//#include "../ui/ui_about.h"
 #include "version.h"
 #include "mainwindowimpl.h"
 
@@ -35,14 +34,14 @@ About::About(QWidget *parent) :
     ui->header->setPixmap(picture_1);
     ui->header->setAlignment(Qt::AlignCenter);
 
-    ui->textLabel_1->setText(mainWindow->windowTitle());
+    ui->textLabel_1->setText(TheMainWindow->windowTitle());
     ui->textLabel_1->setObjectName("aboutTextLabel1");
     ui->textLabel_1->setAlignment(Qt::AlignCenter);
 
     ui->textLabel_2->setWordWrap(true);
     ui->textLabel_2->setText("This version of " + QString(PRODUCTNAME) +
                              " was compiled on the date shown above. It was coded by:"
-                             "<br><br><b>Mark Sutton</b> (m.sutton@imperial.ac.uk)<br><b>Russell Garwood</b> (russell.garwood@gmail.com)<br><b>Alan R.T. Spencer</b> (alan.spencer@imperial.ac.uk)"
+                             "<br><br><b>Russell Garwood</b> (russell.garwood@gmail.com)<br><b>Mark Sutton</b> (m.sutton@imperial.ac.uk)<br><b>Alan R.T. Spencer</b> (alan.spencer@imperial.ac.uk)"
                              "<br><br>Reports are appreciated, and comments, suggestions, and feature requests are welcome.");
     ui->textLabel_2->setAlignment(Qt::AlignCenter);
 

@@ -12,10 +12,10 @@ MOC_DIR = build
 
 UI_DIR = build
 
-FORMS = ui/mainwindow.ui \
+FORMS += ui/mainwindow.ui \
     ui/about.ui
 
-HEADERS = src/mainwindowimpl.h \
+HEADERS += src/mainwindowimpl.h \
     src/globals.h \
     src/scene.h \
     SPIERScommon/netmodule.h \
@@ -23,7 +23,7 @@ HEADERS = src/mainwindowimpl.h \
     src/version.h \
     src/about.h
 
-SOURCES = src/mainwindowimpl.cpp \
+SOURCES += src/mainwindowimpl.cpp \
     src/main.cpp \
     src/globals.cpp \
     src/scene.cpp \
@@ -31,8 +31,8 @@ SOURCES = src/mainwindowimpl.cpp \
     src/darkstyletheme.cpp \
     src/about.cpp
 
-RESOURCES = align.qrc
+RESOURCES += align.qrc
 
-RC_FILE = src/exeicon.rc
+RC_FILE += src/exeicon.rc
 
-TEMPLATE = app
+TEMPLATE += app

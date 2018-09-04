@@ -2,14 +2,12 @@
 #define ABOUT_H
 
 #include <QDialog>
+#include "ui_about.h"
 
 namespace Ui {
 class About;
 }
 
-/**
- * @brief The About class
- */
 class About : public QDialog
 {
     Q_OBJECT
