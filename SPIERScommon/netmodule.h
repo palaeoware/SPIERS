@@ -43,7 +43,7 @@ public:
     QProgressDialog *ProgressDialog;
     QString ErrorText;
     QString DownloadURL;
-    void doDownload(QString url, QString FileName, QProgressBar *pb);
+    void doDownload(QString url, QString fileName, QProgressBar *pb);
     void getUpdate(QString url,QString SaveFile);
 
 private:

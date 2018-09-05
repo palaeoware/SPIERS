@@ -113,14 +113,14 @@ void NetModule::getUpdate(QString url, QString SaveFile)
     connect(reply, SIGNAL(downloadProgress (qint64 , qint64 )), this, SLOT(progress(qint64 , qint64 )));
 }
 
-void NetModule::doDownload(QString url, QString FileName, QProgressBar *pb)
+void NetModule::doDownload(QString url, QString fileName, QProgressBar *pb)
 {
-//    qDebug()<<"Donwloading "<<url<<"to"<<FileName;
+//    qDebug()<<"Donwloading "<<url<<"to"<<fileName;
     DownloadDone=false;
     DownloadError=false;
     ErrorText="";
     ProgressBar=pb;
-    output.setFileName(FileName);
+    output.setFileName(fileName);
     DoingCheck=false;
 
     if (!output.open(QIODevice::WriteOnly))

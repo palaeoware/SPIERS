@@ -20,18 +20,19 @@ class MainWindowImpl : public QMainWindow, public Ui::MainWindow
 public:
     MainWindowImpl( QWidget *parent = 0, Qt::WindowFlags f = 0 );
     ~MainWindowImpl();
+
     void LogText(QString text);
-    void RedrawImage();
-    void RedrawJustDecorations();
-    void RedrawJustCropBox();
-    void RedrawJustAM();
+    void redrawImage();
+    void redrawJustDecorations();
+    void redrawJustCropBox();
+    void redrawJustAM();
     void on_actionLock_File_triggered(bool checked);
-    void BuildRecentFiles();
+    void buildRecentFiles();
     int width, height;
 
 private slots:
-    void on_actionLoad_settings_file_triggered();
-    void on_actionCompress_dataset_triggered();
+    void on_actionLoad_Settings_File_triggered();
+    void on_actionCompress_Dataset_triggered();
     void on_actionSwap_Image_With_Next_triggered();
     void on_actionRotate_Clockwise_Less_2_triggered();
     void on_actionReset_Scene_triggered();
@@ -39,15 +40,15 @@ private slots:
     void on_actionHide_Image_triggered();
     void on_actionShow_Image_triggered();
     void on_actionShow_All_triggered();
-    void on_actionAdvance_to_hidden_triggered();
+    void on_actionAdvance_To_Hidden_triggered();
     void on_actionRetreat_To_Hidden_triggered();
     void on_actionSave_Backup_triggered();
     void on_actionSave_triggered();
     void on_actionLock_Forward_triggered(bool checked);
     void on_actionLock_Back_triggered(bool checked);
     void on_actionMove_Forward_Back_triggered();
-    void on_actionApply_propogation_triggered();
-    void on_actionPropogate_mode_triggered(bool checked);
+    void on_actionApply_Propogation_triggered();
+    void on_actionPropogate_Mode_triggered(bool checked);
     void on_actionCrop_triggered();
     void on_actionMove_Marker_Left_triggered();
     void on_actionMove_Marker_Right_triggered();
@@ -79,7 +80,6 @@ private slots:
     void on_actionRotate_Anticlockwise_Less_triggered();
     void on_actionRotate_Clockwise_triggered();
     void on_actionRotate_Anticlockwise_triggered();
-    void on_horizontalSlider_valueChanged(int value);
     void on_actionZoom_In_triggered();
     void on_actionZoom_Out_triggered();
     void on_actionZoom_100_triggered();
@@ -89,6 +89,9 @@ private slots:
     void on_actionOpen_triggered();
     void on_actionInfo_triggered(bool checked);
     void on_actionManual_triggered();
+    void on_actionAdd_Markers_triggered(bool checked);
+    void on_actionAuto_Align_triggered (bool checked);
+    void on_horizontalSlider_valueChanged(int value);
 
     void selectMarker();
     void changeRed(int value);
@@ -96,9 +99,7 @@ private slots:
     void changeBlue(int value);
     void changeShape();
     void addMarker();
-    void removeMarker();
-    void on_actionAdd_Markers_triggered(bool checked);
-    void on_actionAuto_align_triggered (bool checked);
+    void removeMarkerSlot();
     void aMTopLeftXChanged(int value);
     void aMTopLeftYChanged(int value);
     void aMWidthChanged(int value);
@@ -106,34 +107,31 @@ private slots:
     void aMThicknessChanged(int value);
     void aMHorizChanged(int value);
     void aMVertChanged(int value);
-    void executeAlign_triggered();
+    void executeAlignTriggered();
     void openRecentFile();
     void changeMarkerSize(int size);
     void markersLockToggled();
     void autoMarkersToggled();
     void autoMarkersAlign();
     void autoMarkersGrid ();
-    void setupAlign_triggered();
+    void setupAlignTriggered();
     void okClicked();
     void resizeCropW(int value);
     void resizeCropH(int value);
-    void Clear_List();
+    void clearList();
 
 private:
-    QString files_directory;
-    CustomScene *scene;
-    QGraphicsPixmapItem *pixMapPointer;
-    QPointF topleft;
     void rotate (qreal rotateAngle);
     void resize(qreal sizeChange);
     void lateralShift(qreal shiftSize);
     void redrawShift();
     void verticalShift(qreal shiftSize);
-    QDir Directory;
-    int PropogateImage, PropogateStep, LockImage;
-    int redValue, greenValue, blueValue;
-    int verbose;
-    QStringList dirlist;
+    void redrawDecorations();
+
+    CustomScene *scene;
+    QGraphicsPixmapItem *pixMapPointer;
+    QDir filesDirectory;
+    QStringList drectoryFileList;
     QDockWidget *markersDialogue;
     QDockWidget *info, *cropDock, *aMOptions, *autoAlign;
     QDial *red, *red2;
@@ -144,11 +142,15 @@ private:
     QHBoxLayout *horizontalLayout1, *horizontalLayout2, *horizontalLayout3, *horizontalLayout4, *horizontalLayout5, *horizontalLayout6, *horizontalLayout7, *horizontalLayout8;
     QSpinBox *mThickness, *mSize, *cropWidth, *cropHeight;
     QSpinBox *aMTopLeftX, *aMTopLeftY, *aMWidth, *aMHeight, *aMThickness, *aMHoriz, *aMVert;
-    QWidget *layoutwidget, *layout2widget, *layout3widget, *layout4widget, *layout5widget;
+    QWidget *layoutWidgetOne, *layoutWidgetTwo, *layoutWidgetThree, *layoutWidgetFour, *layoutWidgetFive;
     QPlainTextEdit *notes;
-    void RedrawDecorations();
     QRectF sceneRectangle;
     QPushButton *lockMarkers, *autoMarkers, *grid, *setupAlign;
+    QString filesDirectoryString;
+    int propogateImage, propogateStep, lockImage;
+    int redValue, greenValue, blueValue;
+    int verbose;
+
 };
 
 extern MainWindowImpl *TheMainWindow;

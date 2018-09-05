@@ -91,8 +91,8 @@
     <addaction name="menuOpen_RecentFile"/>
     <addaction name="actionSave"/>
     <addaction name="actionSave_Backup"/>
-    <addaction name="actionLoad_settings_file"/>
-    <addaction name="actionCompress_dataset"/>
+    <addaction name="actionLoad_Settings_File"/>
+    <addaction name="actionCompress_Dataset"/>
     <addaction name="actionConstant_autosave"/>
    </widget>
    <widget class="QMenu" name="menuTransform">
@@ -154,7 +154,7 @@
     <addaction name="actionHide_Image"/>
     <addaction name="actionShow_Image"/>
     <addaction name="actionShow_All"/>
-    <addaction name="actionAdvance_to_hidden"/>
+    <addaction name="actionAdvance_To_Hidden"/>
     <addaction name="actionRetreat_To_Hidden"/>
    </widget>
    <widget class="QMenu" name="menuMagnification">
@@ -176,8 +176,8 @@
     <property name="title">
      <string>Locking/Propagation</string>
     </property>
-    <addaction name="actionPropogate_mode"/>
-    <addaction name="actionApply_propogation"/>
+    <addaction name="actionPropogate_Mode"/>
+    <addaction name="actionApply_Propogation"/>
     <addaction name="separator"/>
     <addaction name="actionLock_Forward"/>
     <addaction name="actionLock_Back"/>
@@ -193,7 +193,7 @@
     </property>
     <addaction name="actionAdd_Markers"/>
     <addaction name="actionCreate_Crop_Area"/>
-    <addaction name="actionAuto_align"/>
+    <addaction name="actionAuto_Align"/>
     <addaction name="actionInfo"/>
    </widget>
    <addaction name="menuDsvdsvdasv"/>
@@ -667,7 +667,7 @@
     <string>Ctrl+Shift+X</string>
    </property>
   </action>
-  <action name="actionPropogate_mode">
+  <action name="actionPropogate_Mode">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -681,7 +681,7 @@
     <string>Propagate mode</string>
    </property>
   </action>
-  <action name="actionApply_propogation">
+  <action name="actionApply_Propogation">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -779,7 +779,7 @@
     <string>Ctrl+Shift+=</string>
    </property>
   </action>
-  <action name="actionAdvance_to_hidden">
+  <action name="actionAdvance_To_Hidden">
    <property name="text">
     <string>Advance To Hidden</string>
    </property>
@@ -864,7 +864,7 @@
     <string>More</string>
    </property>
   </action>
-  <action name="actionLoad_settings_file">
+  <action name="actionLoad_Settings_File">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -872,7 +872,7 @@
     <string>Load Settings File</string>
    </property>
   </action>
-  <action name="actionCompress_dataset">
+  <action name="actionCompress_Dataset">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -909,7 +909,7 @@
     <string>F2</string>
    </property>
   </action>
-  <action name="actionAuto_align">
+  <action name="actionAuto_Align">
    <property name="checkable">
     <bool>true</bool>
    </property>

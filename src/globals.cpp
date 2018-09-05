@@ -1,41 +1,44 @@
 #include "globals.h"
+
 //ImageData Constructor
 ImageData::ImageData(QString fn)
 {
-	FileName=fn;
+    fileName = fn;
 }
 
-MarkerData::MarkerData(QRectF *startrect, int shp)
+MarkerData::MarkerData(QRectF *startRectangle, int shp)
 {
-	markerRect=startrect;
-	shape=shp;
-	markerPointer=NULL;
+    markerRect = startRectangle;
+    shape = shp;
+    markerPointer = NULL;
 }
 
-QList <QGraphicsLineItem *> linePointers;
-QList <MarkerData *> markers;
-QList <ImageData *> ImageList;
-QList <PropogationData *> Propogation;
-//MarkerData *append;
-int CurrentImage;
+void writeSuperGlobals();
+void showInfo(int x, int y);
+void readSuperGlobals();
+void recentFile(QString fname);
+
+int currentImage;
 int selectedMarker;
-QListWidget *markerList, *fileList;
 int markersUp, markersLocked, setupFlag;
 int cropUp, infoChecked, autoMarkersUp;
-qreal CurrentScale;
-QRect *CropArea, *GridOutline, *autoEdgeOne, *autoEdgeTwo;
-QStringList RecentFileList;
-void WriteSuperGlobals();
-void showInfo(int x, int y);
-void ReadSuperGlobals();
-void RecentFile(QString fname);
-QLabel *infoLabel;
 int cropping;
-QString FullSettingsFileName;
-int scenedx,scenedy;
+int sceneDX, sceneDY;
+int flagup = 0, flagupselection = -1;
+
+qreal currentScale;
+
 QGraphicsItemGroup *autoMarkersGroup;
-QPushButton *add, *swapbutton, *removeM, *executeAlign, *resetImage ;
-QTransform aM, setupM, setupM2;
 QGraphicsRectItem *amRectPointer, *rectPointer, *suRectPointer, *suRectPointer2;
-int flagup=0, flagupselection=-1;
+QLabel *infoLabel;
+QList <QGraphicsLineItem *> linePointers;
+QList <MarkerData *> markers;
+QList <ImageData *> imageList;
+QList <PropogationData *> propogation;
+QListWidget *markerList, *fileList;
+QPushButton *add, *swapButton, *removeMarker, *executeAlign, *resetImage ;
+QRect *cropArea, *gridOutline, *autoEdgeOne, *autoEdgeTwo;
+QStringList recentFileList;
+QString fullSettingsFileName;
+QTransform aM, setupM, setupM2;
 

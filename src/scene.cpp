@@ -87,7 +87,7 @@ void CustomScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 	if(event->button()==Qt::RightButton)
 	{
 		markers[selectedMarker]->markerRect->moveTo((double)x,(double)y);
-		TheMainWindow->RedrawImage();
+		TheMainWindow->redrawImage();
 	}
 
 
@@ -112,16 +112,16 @@ showInfo(x,y);
 if(cropUp==1)
 		{
                 QApplication::restoreOverrideCursor();
-                if(abs(y-CropArea->bottom())<50 && abs(x-CropArea->left())<50)QApplication::setOverrideCursor(Qt::SizeBDiagCursor);
-                else if(abs(y-CropArea->bottom())<50 && abs(x-CropArea->right())<50)QApplication::setOverrideCursor(Qt::SizeFDiagCursor);
-                else if(abs(y-CropArea->top())<50 && abs(x-CropArea->left())<50)QApplication::setOverrideCursor(Qt::SizeFDiagCursor);
-                else if(abs(y-CropArea->top())<50 && abs(x-CropArea->right())<50)QApplication::setOverrideCursor(Qt::SizeBDiagCursor);
+                if(abs(y-cropArea->bottom())<50 && abs(x-cropArea->left())<50)QApplication::setOverrideCursor(Qt::SizeBDiagCursor);
+                else if(abs(y-cropArea->bottom())<50 && abs(x-cropArea->right())<50)QApplication::setOverrideCursor(Qt::SizeFDiagCursor);
+                else if(abs(y-cropArea->top())<50 && abs(x-cropArea->left())<50)QApplication::setOverrideCursor(Qt::SizeFDiagCursor);
+                else if(abs(y-cropArea->top())<50 && abs(x-cropArea->right())<50)QApplication::setOverrideCursor(Qt::SizeBDiagCursor);
 		else{
-                                if(abs(x-CropArea->right())<50 && y>CropArea->top()&& y<CropArea->bottom())QApplication::setOverrideCursor(Qt::SizeHorCursor);
-                                else if(abs(x-CropArea->left())<50 && y>CropArea->top()&& y<CropArea->bottom())QApplication::setOverrideCursor(Qt::SizeHorCursor);
-                                else if(abs(y-CropArea->top())<50 && x<CropArea->right() && x>CropArea->left())QApplication::setOverrideCursor(Qt::SizeVerCursor);
-                                else if(abs(y-CropArea->bottom())<50 && x<CropArea->right() && x>CropArea->left())QApplication::setOverrideCursor(Qt::SizeVerCursor);
-                                else if(y>CropArea->top()&& y<CropArea->bottom()&& x<CropArea->right() && x>CropArea->left())QApplication::setOverrideCursor(Qt::SizeAllCursor);
+                                if(abs(x-cropArea->right())<50 && y>cropArea->top()&& y<cropArea->bottom())QApplication::setOverrideCursor(Qt::SizeHorCursor);
+                                else if(abs(x-cropArea->left())<50 && y>cropArea->top()&& y<cropArea->bottom())QApplication::setOverrideCursor(Qt::SizeHorCursor);
+                                else if(abs(y-cropArea->top())<50 && x<cropArea->right() && x>cropArea->left())QApplication::setOverrideCursor(Qt::SizeVerCursor);
+                                else if(abs(y-cropArea->bottom())<50 && x<cropArea->right() && x>cropArea->left())QApplication::setOverrideCursor(Qt::SizeVerCursor);
+                                else if(y>cropArea->top()&& y<cropArea->bottom()&& x<cropArea->right() && x>cropArea->left())QApplication::setOverrideCursor(Qt::SizeAllCursor);
                         }
 		
 	}
@@ -200,11 +200,11 @@ if(autoMarkersUp==1)
                      aMi.map(x,y,&mappedX,&mappedY);
 
                      QApplication::restoreOverrideCursor();
-                     if(abs(mappedY-GridOutline->bottom())<100 && abs(mappedX-GridOutline->left())<50)QApplication::setOverrideCursor(Qt::OpenHandCursor);
-                     else if(abs(mappedY-GridOutline->bottom())<100 && abs(mappedX-GridOutline->right())<50)QApplication::setOverrideCursor(Qt::OpenHandCursor);
-                     else if(abs(mappedY-GridOutline->top())<100 && abs(mappedX-GridOutline->left())<50)QApplication::setOverrideCursor(Qt::OpenHandCursor);
-                     else if(abs(mappedY-GridOutline->top())<100 && abs(mappedX-GridOutline->right())<50)QApplication::setOverrideCursor(Qt::OpenHandCursor);
-                     else if(mappedY>GridOutline->top()&& mappedY<GridOutline->bottom() && mappedX<GridOutline->right() && mappedX>GridOutline->left())QApplication::setOverrideCursor(Qt::SizeAllCursor);
+                     if(abs(mappedY-gridOutline->bottom())<100 && abs(mappedX-gridOutline->left())<50)QApplication::setOverrideCursor(Qt::OpenHandCursor);
+                     else if(abs(mappedY-gridOutline->bottom())<100 && abs(mappedX-gridOutline->right())<50)QApplication::setOverrideCursor(Qt::OpenHandCursor);
+                     else if(abs(mappedY-gridOutline->top())<100 && abs(mappedX-gridOutline->left())<50)QApplication::setOverrideCursor(Qt::OpenHandCursor);
+                     else if(abs(mappedY-gridOutline->top())<100 && abs(mappedX-gridOutline->right())<50)QApplication::setOverrideCursor(Qt::OpenHandCursor);
+                     else if(mappedY>gridOutline->top()&& mappedY<gridOutline->bottom() && mappedX<gridOutline->right() && mappedX>gridOutline->left())QApplication::setOverrideCursor(Qt::SizeAllCursor);
 
                 }
     }
@@ -213,16 +213,16 @@ if(event->buttons() == Qt::LeftButton && cropUp==1)
         {
 		if (selection==-1)
 		{
-                                if(abs(y-CropArea->bottom())<50 && abs(x-CropArea->left())<50)selection=1;
-                                else if(abs(y-CropArea->bottom())<50 && abs(x-CropArea->right())<50)selection=2;
-                                else if(abs(y-CropArea->top())<50 && abs(x-CropArea->left())<50)selection=3;
-                                else if(abs(y-CropArea->top())<50 && abs(x-CropArea->right())<50)selection=4;
+                                if(abs(y-cropArea->bottom())<50 && abs(x-cropArea->left())<50)selection=1;
+                                else if(abs(y-cropArea->bottom())<50 && abs(x-cropArea->right())<50)selection=2;
+                                else if(abs(y-cropArea->top())<50 && abs(x-cropArea->left())<50)selection=3;
+                                else if(abs(y-cropArea->top())<50 && abs(x-cropArea->right())<50)selection=4;
 				else
 				{
-                                        if(abs(x-CropArea->right())<50)selection=5;
-                                        else if(abs(x-CropArea->left())<50)selection=6;
-                                        else if(abs(y-CropArea->top())<50)selection=7;
-                                        else if(abs(y-CropArea->bottom())<50)selection=8;
+                                        if(abs(x-cropArea->right())<50)selection=5;
+                                        else if(abs(x-cropArea->left())<50)selection=6;
+                                        else if(abs(y-cropArea->top())<50)selection=7;
+                                        else if(abs(y-cropArea->bottom())<50)selection=8;
 					else selection=9;
 				}
 		}
@@ -230,52 +230,52 @@ if(event->buttons() == Qt::LeftButton && cropUp==1)
 //**************************************************************
 //Here is where I need to set hard limits for position of crop box
 
-		QRect OldRect=*CropArea;
-        int w=CropArea->width();
-        int h=CropArea->height();
+		QRect OldRect=*cropArea;
+        int w=cropArea->width();
+        int h=cropArea->height();
 
-        if(selection==1)CropArea->setBottomLeft(position.toPoint());
-		else if(selection==2)CropArea->setBottomRight(position.toPoint());
-		else if(selection==3)CropArea->setTopLeft(position.toPoint());
-		else if(selection==4)CropArea->setTopRight(position.toPoint());
+        if(selection==1)cropArea->setBottomLeft(position.toPoint());
+		else if(selection==2)cropArea->setBottomRight(position.toPoint());
+		else if(selection==3)cropArea->setTopLeft(position.toPoint());
+		else if(selection==4)cropArea->setTopRight(position.toPoint());
 		else
 		{
-            if(selection==5)CropArea->setRight(x);
-            else if(selection==6)CropArea->setLeft(x);
-            else if(selection==7)CropArea->setTop(y);
-            else if(selection==8)CropArea->setBottom(y);
+            if(selection==5)cropArea->setRight(x);
+            else if(selection==6)cropArea->setLeft(x);
+            else if(selection==7)cropArea->setTop(y);
+            else if(selection==8)cropArea->setBottom(y);
 			else if(selection==9)
 				{
                 QPoint topLeftCorner((x-(w/2)),(y-(h/2)));
-				CropArea->moveTopLeft(topLeftCorner);
+				cropArea->moveTopLeft(topLeftCorner);
 				}
 		}
 		
 
-		if (CropArea->width()<20) *CropArea=OldRect;
-		if (CropArea->height()<20) *CropArea=OldRect;
+		if (cropArea->width()<20) *cropArea=OldRect;
+		if (cropArea->height()<20) *cropArea=OldRect;
 
 if (selection==9)
         {
-            if (CropArea->right()>TheMainWindow->width){QPoint topLeftCorner((TheMainWindow->width-w),(y-(h/2)));CropArea->moveTopLeft(topLeftCorner);}
-            if (CropArea->left()<0){QPoint topLeftCorner(0,(y-(h/2)));CropArea->moveTopLeft(topLeftCorner);}
-            if (CropArea->top()<0){QPoint topLeftCorner(x-(w/2),0);CropArea->moveTopLeft(topLeftCorner);}
-            if (CropArea->bottom()>TheMainWindow->height){QPoint topLeftCorner(x-(w/2),TheMainWindow->height-h);CropArea->moveTopLeft(topLeftCorner);}
+            if (cropArea->right()>TheMainWindow->width){QPoint topLeftCorner((TheMainWindow->width-w),(y-(h/2)));cropArea->moveTopLeft(topLeftCorner);}
+            if (cropArea->left()<0){QPoint topLeftCorner(0,(y-(h/2)));cropArea->moveTopLeft(topLeftCorner);}
+            if (cropArea->top()<0){QPoint topLeftCorner(x-(w/2),0);cropArea->moveTopLeft(topLeftCorner);}
+            if (cropArea->bottom()>TheMainWindow->height){QPoint topLeftCorner(x-(w/2),TheMainWindow->height-h);cropArea->moveTopLeft(topLeftCorner);}
 
-            if (CropArea->left()<1 && CropArea->top()<1) *CropArea=OldRect;
-            if (CropArea->right()>TheMainWindow->width && CropArea->top()<1) *CropArea=OldRect;
-            if (CropArea->right()>TheMainWindow->width-2 && CropArea->bottom()>TheMainWindow->height-2) *CropArea=OldRect;
-            if (CropArea->left()<1 && CropArea->bottom()>TheMainWindow->height-2) *CropArea=OldRect;
+            if (cropArea->left()<1 && cropArea->top()<1) *cropArea=OldRect;
+            if (cropArea->right()>TheMainWindow->width && cropArea->top()<1) *cropArea=OldRect;
+            if (cropArea->right()>TheMainWindow->width-2 && cropArea->bottom()>TheMainWindow->height-2) *cropArea=OldRect;
+            if (cropArea->left()<1 && cropArea->bottom()>TheMainWindow->height-2) *cropArea=OldRect;
         }
         else
             {
-            if (CropArea->right()>TheMainWindow->width)CropArea->setRight(TheMainWindow->width-1);
-            if (CropArea->left()<0)CropArea->setLeft(0);
-            if (CropArea->top()<0)CropArea->setTop(0);
-            if (CropArea->bottom()>TheMainWindow->height)CropArea->setBottom(TheMainWindow->height-1);
+            if (cropArea->right()>TheMainWindow->width)cropArea->setRight(TheMainWindow->width-1);
+            if (cropArea->left()<0)cropArea->setLeft(0);
+            if (cropArea->top()<0)cropArea->setTop(0);
+            if (cropArea->bottom()>TheMainWindow->height)cropArea->setBottom(TheMainWindow->height-1);
             }
 
-        TheMainWindow->RedrawJustCropBox();
+        TheMainWindow->redrawJustCropBox();
 	}
 
 if(event->buttons() == Qt::LeftButton && autoMarkersUp==1)
@@ -287,10 +287,10 @@ if(event->buttons() == Qt::LeftButton && autoMarkersUp==1)
      int flag=-1;
      int mappedX, mappedY;
 
-     int B=GridOutline->bottom();
-     int T=GridOutline->top();
-     int L=GridOutline->left();
-     int R=GridOutline->right();
+     int B=gridOutline->bottom();
+     int T=gridOutline->top();
+     int L=gridOutline->left();
+     int R=gridOutline->right();
 
      float w2, h2;
 
@@ -330,28 +330,28 @@ if(event->buttons() == Qt::LeftButton && autoMarkersUp==1)
                     {
                     while(mappedX>L && mappedY>B){aM.translate(w2,h2).rotate(-1.).translate(-1.*w2,-1.*h2);aMi=aM.inverted();aMi.map(x,y,&mappedX,&mappedY);}
                     while(mappedX<L && mappedY<B){aM.translate(w2,h2).rotate(1.).translate(-1.*w2,-1.*h2);aMi=aM.inverted();aMi.map(x,y,&mappedX,&mappedY);}
-                    TheMainWindow->RedrawJustAM();
+                    TheMainWindow->redrawJustAM();
                      }
         //Bottom right
         if (flagupselection==1)
                     {
                     while(mappedX<R && mappedY>B){aM.translate(w2,h2).rotate(1.).translate(-1.*w2,-1.*h2);aMi=aM.inverted();aMi.map(x,y,&mappedX,&mappedY);}
                     while(mappedX>R && mappedY<B){aM.translate(w2,h2).rotate(-1.).translate(-1.*w2,-1.*h2);aMi=aM.inverted();aMi.map(x,y,&mappedX,&mappedY);}
-                    TheMainWindow->RedrawJustAM();
+                    TheMainWindow->redrawJustAM();
                     }
         //Top Left
         if (flagupselection==2)
                     {
                     while(mappedX>L && mappedY<T){aM.translate(w2,h2).rotate(1.).translate(-1.*w2,-1.*h2);aMi=aM.inverted();aMi.map(x,y,&mappedX,&mappedY);}
                     while(mappedX<L && mappedY>T){aM.translate(w2,h2).rotate(-1.).translate(-1.*w2,-1.*h2);aMi=aM.inverted();aMi.map(x,y,&mappedX,&mappedY);}
-                    TheMainWindow->RedrawJustAM();
+                    TheMainWindow->redrawJustAM();
                     }
         //Top Right
         if (flagupselection==3)
                     {
                     while(mappedX<R && mappedY<T){aM.translate(w2,h2).rotate(-1.).translate(-1.*w2,-1.*h2);aMi=aM.inverted();aMi.map(x,y,&mappedX,&mappedY);}
                     while(mappedX>R && mappedY>T){aM.translate(w2,h2).rotate(1.).translate(-1.*w2,-1.*h2);aMi=aM.inverted();aMi.map(x,y,&mappedX,&mappedY);}
-                    TheMainWindow->RedrawJustAM();
+                    TheMainWindow->redrawJustAM();
                     }
 
         //Translate
@@ -435,7 +435,7 @@ if(event->buttons() == Qt::LeftButton && autoMarkersUp==1)
                                             aMi.map(x,y,&mappedX,&mappedY);
                                              }
 
-                    TheMainWindow->RedrawJustAM();
+                    TheMainWindow->redrawJustAM();
                     }
 
        }
@@ -528,53 +528,53 @@ if(event->buttons() == Qt::LeftButton && setupFlag==1)
                     {
                     while(mappedX>L && mappedY>B){setupM.translate(midW,midH).rotate(-1.).translate(-1.*midW,-1.*midH);setupMi=setupM.inverted();setupMi.map(x,y,&mappedX,&mappedY);}
                     while(mappedX<L && mappedY<B){setupM.translate(midW,midH).rotate(1.).translate(-1.*midW,-1*midH);setupMi=setupM.inverted();setupMi.map(x,y,&mappedX,&mappedY);}
-                    TheMainWindow->RedrawJustAM();
+                    TheMainWindow->redrawJustAM();
                      }
     //Bottom right
         if (flagupselection==1)
                     {
                     while(mappedX<R && mappedY>B){setupM.translate(midW,midH).rotate(1.).translate(-1.*midW,-1.*midH);setupMi=setupM.inverted();setupMi.map(x,y,&mappedX,&mappedY);}
                     while(mappedX>R && mappedY<B){setupM.translate(midW,midH).rotate(-1.).translate(-1.*midW,-1.*midH);setupMi=setupM.inverted();setupMi.map(x,y,&mappedX,&mappedY);}
-                    TheMainWindow->RedrawJustAM();
+                    TheMainWindow->redrawJustAM();
                     }
     //Top Left
         if (flagupselection==2)
                     {
                     while(mappedX>L && mappedY<T){setupM.translate(midW,midH).rotate(1.).translate(-1.*midW,-1.*midH);setupMi=setupM.inverted();setupMi.map(x,y,&mappedX,&mappedY);}
                     while(mappedX<L && mappedY>T){setupM.translate(midW,midH).rotate(-1.).translate(-1.*midW,-1.*midH);setupMi=setupM.inverted();setupMi.map(x,y,&mappedX,&mappedY);}
-                    TheMainWindow->RedrawJustAM();
+                    TheMainWindow->redrawJustAM();
                     }
     //Top Right
         if (flagupselection==3)
                     {
                     while(mappedX<R && mappedY<T){setupM.translate(midW,midH).rotate(-1.).translate(-1.*midW,-1.*midH);setupMi=setupM.inverted();setupMi.map(x,y,&mappedX,&mappedY);}
                     while(mappedX>R && mappedY>T){setupM.translate(midW,midH).rotate(1.).translate(-1.*midW,-1.*midH);setupMi=setupM.inverted();setupMi.map(x,y,&mappedX,&mappedY);}
-                    TheMainWindow->RedrawJustAM();
+                    TheMainWindow->redrawJustAM();
                     }
     //Resize Right
         if (flagupselection==4)
                     {
                     if(mappedX!=R){autoEdgeOne->setRight(mappedX);setupMi=setupM.inverted();setupMi.map(x,y,&mappedX,&mappedY);}
-                    TheMainWindow->RedrawJustAM();
+                    TheMainWindow->redrawJustAM();
                     }
     //Resize Left
         if (flagupselection==5)
                     {
                     if(mappedX!=L){autoEdgeOne->setLeft(mappedX);setupMi=setupM.inverted();setupMi.map(x,y,&mappedX,&mappedY);}
-                    TheMainWindow->RedrawJustAM();
+                    TheMainWindow->redrawJustAM();
                     }
     //Resize Top
             if (flagupselection==6)
                         {
                        if(mappedY!=T){autoEdgeOne->setTop(mappedY);setupMi=setupM.inverted();setupMi.map(x,y,&mappedX,&mappedY);}
-                       TheMainWindow->RedrawJustAM();
+                       TheMainWindow->redrawJustAM();
                         }
 
     //Resize Bottom
         if (flagupselection==7)
                     {
                    if(mappedY!=B){autoEdgeOne->setBottom(mappedY);setupMi=setupM.inverted();setupMi.map(x,y,&mappedX,&mappedY);}
-                   TheMainWindow->RedrawJustAM();
+                   TheMainWindow->redrawJustAM();
                     }
 
 
@@ -661,7 +661,7 @@ if(event->buttons() == Qt::LeftButton && setupFlag==1)
                                      }
 
 
-                    TheMainWindow->RedrawJustAM();
+                    TheMainWindow->redrawJustAM();
                     }
 
         //Bottom Left 2
@@ -669,53 +669,53 @@ if(event->buttons() == Qt::LeftButton && setupFlag==1)
                            {
                            while(mappedX2>L2 && mappedY2>B2){setupM2.translate(midW2,midH2).rotate(-1.).translate(-1.*midW2,-1.*midH2);setupMi2=setupM2.inverted();setupMi2.map(x,y,&mappedX2,&mappedY2);}
                            while(mappedX2<L2 && mappedY2<B2){setupM2.translate(midW2,midH2).rotate(1.).translate(-1.*midW2,-1*midH2);setupMi2=setupM2.inverted();setupMi2.map(x,y,&mappedX2,&mappedY2);}
-                           TheMainWindow->RedrawJustAM();
+                           TheMainWindow->redrawJustAM();
                             }
            //Bottom right 2
                if (flagupselection==10)
                            {
                            while(mappedX2<R2 && mappedY2>B2){setupM2.translate(midW2,midH2).rotate(1.).translate(-1.*midW2,-1.*midH2);setupMi2=setupM2.inverted();setupMi2.map(x,y,&mappedX2,&mappedY2);}
                            while(mappedX2>R2 && mappedY2<B2){setupM2.translate(midW2,midH2).rotate(-1.).translate(-1.*midW2,-1.*midH2);setupMi2=setupM2.inverted();setupMi2.map(x,y,&mappedX2,&mappedY2);}
-                           TheMainWindow->RedrawJustAM();
+                           TheMainWindow->redrawJustAM();
                            }
            //Top Left 2
                if (flagupselection==11)
                            {
                            while(mappedX2>L2 && mappedY2<T2){setupM2.translate(midW2,midH2).rotate(1.).translate(-1.*midW2,-1.*midH2);setupMi2=setupM2.inverted();setupMi2.map(x,y,&mappedX2,&mappedY2);}
                            while(mappedX2<L2 && mappedY2>T2){setupM2.translate(midW2,midH2).rotate(-1.).translate(-1.*midW2,-1.*midH2);setupMi2=setupM2.inverted();setupMi2.map(x,y,&mappedX2,&mappedY2);}
-                           TheMainWindow->RedrawJustAM();
+                           TheMainWindow->redrawJustAM();
                            }
            //Top Right 2
                if (flagupselection==12)
                            {
                            while(mappedX2<R2 && mappedY2<T2){setupM2.translate(midW2,midH2).rotate(-1.).translate(-1.*midW2,-1.*midH2);setupMi2=setupM2.inverted();setupMi2.map(x,y,&mappedX2,&mappedY2);}
                            while(mappedX2>R2 && mappedY2>T2){setupM2.translate(midW2,midH2).rotate(1.).translate(-1.*midW2,-1.*midH2);setupMi2=setupM2.inverted();setupMi2.map(x,y,&mappedX2,&mappedY2);}
-                           TheMainWindow->RedrawJustAM();
+                           TheMainWindow->redrawJustAM();
                            }
            //Resize Right 2
                if (flagupselection==13)
                            {
                            if(mappedX2!=R2){autoEdgeTwo->setRight(mappedX2);setupMi2=setupM2.inverted();setupMi2.map(x,y,&mappedX2,&mappedY2);}
-                           TheMainWindow->RedrawJustAM();
+                           TheMainWindow->redrawJustAM();
                            }
            //Resize Left 2
                if (flagupselection==14)
                            {
                            if(mappedX2!=L2){autoEdgeTwo->setLeft(mappedX2);setupMi2=setupM2.inverted();setupMi2.map(x,y,&mappedX2,&mappedY2);}
-                           TheMainWindow->RedrawJustAM();
+                           TheMainWindow->redrawJustAM();
                            }
            //Resize Top 2
                    if (flagupselection==15)
                                {
                               if(mappedY2!=T2){autoEdgeTwo->setTop(mappedY2);setupMi2=setupM2.inverted();setupMi2.map(x,y,&mappedX2,&mappedY2);}
-                              TheMainWindow->RedrawJustAM();
+                              TheMainWindow->redrawJustAM();
                                }
 
            //Resize Bottom 2
                if (flagupselection==16)
                            {
                           if(mappedY2!=B2){autoEdgeTwo->setBottom(mappedY2);setupMi2=setupM2.inverted();setupMi2.map(x,y,&mappedX2,&mappedY2);}
-                          TheMainWindow->RedrawJustAM();
+                          TheMainWindow->redrawJustAM();
                            }
 
 
@@ -802,7 +802,7 @@ if(event->buttons() == Qt::LeftButton && setupFlag==1)
                                             }
 
 
-                           TheMainWindow->RedrawJustAM();
+                           TheMainWindow->redrawJustAM();
                            }
 
  }
@@ -814,12 +814,12 @@ if (event->buttons() == Qt::LeftButton && markersUp==1)
 			{
 			if (selection==-1)
                             {
-                            scenedx=x-(int)markers[selectedMarker]->markerRect->left();
-                            scenedy=y-(int)markers[selectedMarker]->markerRect->top();
+                            sceneDX=x-(int)markers[selectedMarker]->markerRect->left();
+                            sceneDY=y-(int)markers[selectedMarker]->markerRect->top();
                             selection=1;
                             }
 			
-			if(selection==1 && scenedx<300 && scenedy<300)markers[selectedMarker]->markerRect->moveTo(((double)x-(double)scenedx),((double)y-(double)scenedy));
+			if(selection==1 && sceneDX<300 && sceneDY<300)markers[selectedMarker]->markerRect->moveTo(((double)x-(double)sceneDX),((double)y-(double)sceneDY));
 			}
 
 		
@@ -833,11 +833,11 @@ if (event->buttons() == Qt::LeftButton && markersUp==1)
 									else
 											{
 											selection=3; 
-											markers[selectedMarker]->dx = markers[selectedMarker]->linePoint.x() - markers[selectedMarker]->markerRect->x();
-											markers[selectedMarker]->dy = markers[selectedMarker]->linePoint.y() - markers[selectedMarker]->markerRect->bottom();
+											markers[selectedMarker]->dX = markers[selectedMarker]->linePoint.x() - markers[selectedMarker]->markerRect->x();
+											markers[selectedMarker]->dY = markers[selectedMarker]->linePoint.y() - markers[selectedMarker]->markerRect->bottom();
 											
-											scenedx=x-((int)markers[selectedMarker]->linePoint.x()-(int)(0.5*markers[selectedMarker]->dx));
-											scenedy=y-((int)markers[selectedMarker]->linePoint.y()-(int)(0.5*markers[selectedMarker]->dy));
+											sceneDX=x-((int)markers[selectedMarker]->linePoint.x()-(int)(0.5*markers[selectedMarker]->dX));
+											sceneDY=y-((int)markers[selectedMarker]->linePoint.y()-(int)(0.5*markers[selectedMarker]->dY));
 											}
 							}
 			else
@@ -849,26 +849,26 @@ if (event->buttons() == Qt::LeftButton && markersUp==1)
 									}
 					if(selection==2)
 					 				markers[selectedMarker]->markerRect->moveTo((double)x,(double)y);
-					if(selection==3 && scenedx<300 && scenedy<300)
+					if(selection==3 && sceneDX<300 && sceneDY<300)
 									{
 									 markers[selectedMarker]->markerRect->moveTo
 									(
 									 
 									 	(
-									 		(double)x-(markers[selectedMarker]->dx/2.+(double)scenedx)
+									 		(double)x-(markers[selectedMarker]->dX/2.+(double)sceneDX)
 									 	),
 									 	(
-									 		(double)y-(markers[selectedMarker]->dy/2.+(double)scenedy)
+									 		(double)y-(markers[selectedMarker]->dY/2.+(double)sceneDY)
 									 	)
 									 );
-									 markers[selectedMarker]->linePoint.setX((markers[selectedMarker]->markerRect->x()+(markers[selectedMarker]->dx)));
-									 markers[selectedMarker]->linePoint.setY((markers[selectedMarker]->markerRect->bottom()+(markers[selectedMarker]->dy)));
+									 markers[selectedMarker]->linePoint.setX((markers[selectedMarker]->markerRect->x()+(markers[selectedMarker]->dX)));
+									 markers[selectedMarker]->linePoint.setY((markers[selectedMarker]->markerRect->bottom()+(markers[selectedMarker]->dY)));
 									}
 					
 					}
 		
 			}
-		TheMainWindow->RedrawJustDecorations();
+		TheMainWindow->redrawJustDecorations();
 		}
 
 
@@ -884,8 +884,8 @@ void CustomScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         flagupselection=-1;
 	if(markersUp==1)
 		{
-			markers[selectedMarker]->dx=0.0;
-			markers[selectedMarker]->dy=0.0;
+			markers[selectedMarker]->dX=0.0;
+			markers[selectedMarker]->dY=0.0;
 		}	
         QApplication::restoreOverrideCursor();
 }

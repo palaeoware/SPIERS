@@ -1,70 +1,73 @@
 #ifndef __GLOBALS_H__
 #define __GLOBALS_H__
-#include <QString>
-#include <QList>
-#include <QTransform>
-#include <QListWidget>
-#include <QGraphicsScene>
-#include <QPointF>
-#include <QMenu>
-#include <QLabel>
-#include <QGraphicsItemGroup>
-#include <QPushButton>
-#include <QCursor>
 
-class ImageData 
+#include <QCursor>
+#include <QGraphicsItemGroup>
+#include <QGraphicsScene>
+#include <QLabel>
+#include <QList>
+#include <QListWidget>
+#include <QMenu>
+#include <QPointF>
+#include <QPushButton>
+#include <QString>
+#include <QTransform>
+
+class ImageData
 {
-	public:
-	ImageData(QString fn);
-	QString FileName;
-	QTransform m;
-	bool hidden;
-	int format;
+public:
+    ImageData(QString fn);
+    QString fileName;
+    QTransform m;
+    bool hidden;
+    int format;
 };
 
 class PropogationData
 {
-	public:
-	int transformation;
-	qreal value;
+public:
+    int transformation;
+    qreal value;
 };
+
 class MarkerData
 {
-	public:
-	MarkerData(QRectF *startrect, int shp);
-	QRectF *markerRect;
-	int shape;
-	QGraphicsItem *markerPointer;
-	QPointF linePoint;
-	qreal dx, dy;
+public:
+    MarkerData(QRectF *startRectangle, int shp);
+    QRectF *markerRect;
+    int shape;
+    QGraphicsItem *markerPointer;
+    QPointF linePoint;
+    qreal dX, dY;
 };
-extern QList <QGraphicsLineItem *> linePointers;
-extern QList <MarkerData *> markers;
+
+extern void writeSuperGlobals();
+extern void readSuperGlobals();
+extern void showInfo(int, int);
+extern void recentFile(QString);
+
 extern int selectedMarker;
-extern QList <ImageData *> ImageList;
-extern QList <PropogationData *> Propogation;
-extern int CurrentImage;
-extern qreal CurrentScale;
-extern QListWidget *markerList, *fileList;
-extern void ForceRedrawImage();
+extern int currentImage;
 extern int markersUp, markersLocked, setupFlag;
 extern int cropUp, infoChecked, autoMarkersUp;
 extern int cropping;
-extern int scenedx,scenedy;
-extern QRect *CropArea, *GridOutline, *autoEdgeOne, *autoEdgeTwo;
-extern QStringList RecentFileList;
-extern QLabel *infoLabel;
-extern QPushButton *add, *swapbutton, *removeM, *executeAlign, *resetImage ;
-extern void WriteSuperGlobals();
-extern void ReadSuperGlobals();
-extern void showInfo(int, int);
-extern void RecentFile(QString);
-extern QString FullSettingsFileName;
+extern int sceneDX, sceneDY;
+extern int flagup, flagupselection;
+
 extern QGraphicsItemGroup *autoMarkersGroup;
 extern QGraphicsRectItem *rectPointer, *suRectPointer, *suRectPointer2;
 extern QGraphicsRectItem *amRectPointer;
+extern QLabel *infoLabel;
+extern QList <QGraphicsLineItem *> linePointers;
+extern QList <MarkerData *> markers;
+extern QList <ImageData *> imageList;
+extern QList <PropogationData *> propogation;
+extern QListWidget *markerList, *fileList;
+extern QPushButton *add, *swapButton, *removeMarker, *executeAlign, *resetImage ;
+extern qreal currentScale;
+extern QRect *cropArea, *gridOutline, *autoEdgeOne, *autoEdgeTwo;
+extern QString fullSettingsFileName;
+extern QStringList recentFileList;
 extern QTransform aM, setupM, setupM2;
-extern int flagup, flagupselection;
-//extern QCursor *rotate2c;
 
 #endif // __GLOBALS_H__

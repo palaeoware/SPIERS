@@ -56,12 +56,12 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
 
     showMaximized();
 
-    files_directory = "";
+    filesDirectoryString = "";
     scene = new CustomScene;
     graphicsView->setScene(scene);
     graphicsView->setMouseTracking(true);
     sceneRectangle = scene->sceneRect();
-    CurrentImage = -1;
+    currentImage = -1;
     cropping = 0;
     markersUp = 0;
     cropUp = 0;
@@ -113,9 +113,9 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     mThickness->setMinimum(1);
     mSize->setMinimum(1);
 
-    swapbutton = new QPushButton("&Toggle shape", markersDialogue);
+    swapButton = new QPushButton("&Toggle shape", markersDialogue);
     add = new QPushButton("Add marker", markersDialogue);
-    removeM = new QPushButton("Remove marker", markersDialogue);
+    removeMarker = new QPushButton("Remove marker", markersDialogue);
     QPushButton *align = new QPushButton("AM: &Align", markersDialogue);
     grid = new QPushButton("AM: &Edit Grid", markersDialogue);
     grid->setCheckable(true);
@@ -148,10 +148,10 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
 
     horizontalLayout6 = new QHBoxLayout;
     horizontalLayout6->addWidget(add);
-    horizontalLayout6->addWidget(removeM);
+    horizontalLayout6->addWidget(removeMarker);
 
     horizontalLayout7 = new QHBoxLayout;
-    horizontalLayout7->addWidget(swapbutton);
+    horizontalLayout7->addWidget(swapButton);
     horizontalLayout7->addWidget(lockMarkers);
 
     horizontalLayout8 = new QHBoxLayout;
@@ -180,10 +180,10 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
 
     //Dockwidget has inbuilt protected layout, so apply layout to widget and add this docker
     //Can't use set widget for more than one widget
-    layoutwidget = new QWidget;
-    layoutwidget->setLayout(markerLayout);
-    layoutwidget->setMaximumWidth(500);
-    markersDialogue->setWidget(layoutwidget);
+    layoutWidgetOne = new QWidget;
+    layoutWidgetOne->setLayout(markerLayout);
+    layoutWidgetOne->setMaximumWidth(500);
+    markersDialogue->setWidget(layoutWidgetOne);
 
     //Add docker but hide until needed
     addDockWidget(Qt::RightDockWidgetArea, markersDialogue);
@@ -261,10 +261,10 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
 
     cropLayout->addWidget(executeCrop);
 
-    layout3widget = new QWidget;
-    layout3widget->setLayout(cropLayout);
-    layout3widget->setMaximumWidth(500);
-    cropDock->setWidget(layout3widget);
+    layoutWidgetThree = new QWidget;
+    layoutWidgetThree->setLayout(cropLayout);
+    layoutWidgetThree->setMaximumWidth(500);
+    cropDock->setWidget(layoutWidgetThree);
 
     addDockWidget(Qt::RightDockWidgetArea, cropDock);
     cropDock->hide();
@@ -290,11 +290,11 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
 
     infoLayout->addWidget(notes);
 
-    layout2widget = new QWidget;
-    layout2widget->setLayout(infoLayout);
-    layout2widget->setMaximumWidth(500);
-    layout2widget->setMaximumHeight(200);
-    info->setWidget(layout2widget);
+    layoutWidgetTwo = new QWidget;
+    layoutWidgetTwo->setLayout(infoLayout);
+    layoutWidgetTwo->setMaximumWidth(500);
+    layoutWidgetTwo->setMaximumHeight(200);
+    info->setWidget(layoutWidgetTwo);
 
     addDockWidget(Qt::RightDockWidgetArea, info);
     info->hide();
@@ -321,9 +321,9 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     resetImage = new QPushButton("Reset Image", autoAlign);
     autoLayout->addWidget(resetImage);
 
-    layout5widget = new QWidget;
-    layout5widget->setLayout(autoLayout);
-    autoAlign->setWidget(layout5widget);
+    layoutWidgetFive = new QWidget;
+    layoutWidgetFive->setLayout(autoLayout);
+    autoAlign->setWidget(layoutWidgetFive);
     autoAlign->setMaximumWidth(500);
     addDockWidget(Qt::LeftDockWidgetArea, autoAlign);
     autoAlign->hide();
@@ -385,9 +385,9 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     aMVertLayout->addLayout(aMGridLayout);
     aMVertLayout->addWidget(ok);
 
-    layout4widget = new QWidget;
-    layout4widget->setLayout(aMVertLayout);
-    aMOptions->setWidget(layout4widget);
+    layoutWidgetFour = new QWidget;
+    layoutWidgetFour->setLayout(aMVertLayout);
+    aMOptions->setWidget(layoutWidgetFour);
 
     aMOptions->setFloating(true);
     aMOptions->move(10, 10);
@@ -395,16 +395,16 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     aMOptions->hide();
 
     //Build recently used files list
-    ReadSuperGlobals();
-    BuildRecentFiles();
+    readSuperGlobals();
+    buildRecentFiles();
 
     TheMainWindow = this;
 
     //Link custom slots to signals for the widgets in dockers
     connect(markerList, SIGNAL(itemSelectionChanged () ), this, SLOT(selectMarker() ));
     connect(add, SIGNAL(clicked () ), this, SLOT(addMarker() ));
-    connect(removeM, SIGNAL(clicked () ), this, SLOT(removeMarker() ));
-    connect(swapbutton, SIGNAL(clicked ()), this, SLOT(changeShape() ));
+    connect(removeMarker, SIGNAL(clicked () ), this, SLOT(removeMarkerSlot() ));
+    connect(swapButton, SIGNAL(clicked ()), this, SLOT(changeShape() ));
     connect(mThickness, SIGNAL(valueChanged(int)), this, SLOT(selectMarker() ));
     connect(mSize, SIGNAL(valueChanged(int)), this, SLOT(changeMarkerSize(int) ));
     connect(lockMarkers, SIGNAL(clicked()), this, SLOT(markersLockToggled() ));
@@ -415,10 +415,9 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     connect(cropWidth, SIGNAL(valueChanged(int)), this, SLOT(resizeCropW(int) ));
     connect(cropHeight, SIGNAL(valueChanged(int)), this, SLOT(resizeCropH(int) ));
     connect(ok, SIGNAL(clicked ()), this, SLOT(okClicked() ));
-    connect(executeAlign, SIGNAL(clicked ()), this, SLOT(executeAlign_triggered() ));
+    connect(executeAlign, SIGNAL(clicked ()), this, SLOT(executeAlignTriggered() ));
     connect(resetImage, SIGNAL(clicked ()), this, SLOT(on_actionReset_Image_triggered() ));
-    connect(setupAlign, SIGNAL(clicked ()), this, SLOT(setupAlign_triggered() ));
-
+    connect(setupAlign, SIGNAL(clicked ()), this, SLOT(setupAlignTriggered() ));
     connect(aMTopLeftX, SIGNAL(valueChanged(int)), this, SLOT(aMTopLeftXChanged(int) ));
     connect(aMTopLeftY, SIGNAL(valueChanged(int)), this, SLOT(aMTopLeftYChanged(int) ));
     connect(aMWidth, SIGNAL(valueChanged(int)), this, SLOT(aMWidthChanged(int) ));
@@ -444,10 +443,10 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
 }
 
 //Reads values from the regsitry.
-void ReadSuperGlobals()
+void readSuperGlobals()
 {
     //Clear recentfilelist just in case already exists
-    RecentFileList.clear();
+    recentFileList.clear();
     QString t1;
     //New settings to be read from the registry
     QSettings settings("Mark Sutton", "SPIERSalign 2.0");
@@ -456,48 +455,48 @@ void ReadSuperGlobals()
         //Read files from registry
         settings.setArrayIndex(i);
         QString rf;
-        rf = settings.value("FileName").toString();
-        RecentFileList.append(rf);
+        rf = settings.value("fileName").toString();
+        recentFileList.append(rf);
     }
     settings.endArray();
 
 }
 
 //Write values to registry - only called in destructor as recentfiles is stored while program runs
-void WriteSuperGlobals()
+void writeSuperGlobals()
 {
     //New settings to be written
     QSettings settings("Mark Sutton", "SPIERSalign 2.0");
     settings.beginWriteArray("RecentFiles");
     int loop;
-    if (RecentFileList.size() > 20)loop = 20;
-    else loop = RecentFileList.size();
+    if (recentFileList.size() > 20)loop = 20;
+    else loop = recentFileList.size();
 
     for (int i = 0; i < loop; ++i) {
         //RFileList written into setting array & registry
         settings.setArrayIndex(i);
-        settings.setValue("FileName", RecentFileList.at(i));
+        settings.setValue("fileName", recentFileList.at(i));
     }
     settings.endArray();
 }
 
 
 
-//Moves a file to the top of RecentFileList
-void RecentFile(QString fname)
+//Moves a file to the top of recentFileList
+void recentFile(QString fname)
 {
     int n;
     //move this file to the top of the list
-    for (n = 0; n < RecentFileList.count(); n++) {
-        if (RecentFileList[n] == fname) {
-            RecentFileList.removeAt(n);
+    for (n = 0; n < recentFileList.count(); n++) {
+        if (recentFileList[n] == fname) {
+            recentFileList.removeAt(n);
             break;
         }
 
     }
     QString rf(fname);
-    RecentFileList.prepend(rf);
-    TheMainWindow->BuildRecentFiles();
+    recentFileList.prepend(rf);
+    TheMainWindow->buildRecentFiles();
 }
 
 
@@ -512,7 +511,7 @@ void showInfo(int x, int y)
     if (markersLocked == 1 && autoMarkersUp == 0)o << "Markers locked\n";
     else if (markersLocked == 1 && autoMarkersUp == 1)o << "Auto markers\n";
     else if (cropUp == 1)o << "Crop\n";
-    else if (TheMainWindow->actionPropogate_mode->isChecked())o << "Propogate Mode\n";
+    else if (TheMainWindow->actionPropogate_Mode->isChecked())o << "Propogate Mode\n";
     else if (TheMainWindow->actionLock_Forward->isChecked())o << "Forward Lock\n";
     else if (TheMainWindow->actionLock_Back->isChecked())o << "Backward Lock\n";
     else o << "Normal Align Mode\n";
@@ -521,7 +520,7 @@ void showInfo(int x, int y)
     if (x < 0 || x > TheMainWindow->width || y < 0 || y > TheMainWindow->height )o << " (---, ---)\n";
     else o << "(" << x << "," << y << ")\n";
 
-    QString fn = ImageList[CurrentImage]->FileName;
+    QString fn = imageList[currentImage]->fileName;
     lastsep = fn.lastIndexOf("/");
     fn = fn.mid(lastsep + 1);
 
@@ -534,7 +533,7 @@ void showInfo(int x, int y)
 
 
 //Rebuilds GUI recent file list, called when list is changed
-void MainWindowImpl::BuildRecentFiles()
+void MainWindowImpl::buildRecentFiles()
 {
 
     int lastsep;
@@ -553,7 +552,7 @@ void MainWindowImpl::BuildRecentFiles()
         }
     }
     //Add all
-    foreach (QString rf, RecentFileList) {
+    foreach (QString rf, recentFileList) {
         //Last separator in path
         lastsep = rf.lastIndexOf("/");
         name = rf.mid(lastsep + 1);
@@ -564,7 +563,7 @@ void MainWindowImpl::BuildRecentFiles()
     }
 
     QAction *ClearList = new QAction("Clear List", this);
-    connect(ClearList, SIGNAL(triggered()), this, SLOT(Clear_List()));
+    connect(ClearList, SIGNAL(triggered()), this, SLOT(clearList()));
 
     menuOpen_RecentFile->addSeparator();
     menuOpen_RecentFile->addAction(ClearList);
@@ -572,11 +571,11 @@ void MainWindowImpl::BuildRecentFiles()
 }
 
 //Clear RUF list
-void MainWindowImpl::Clear_List()
+void MainWindowImpl::clearList()
 {
-    RecentFileList.clear();
-    WriteSuperGlobals();
-    TheMainWindow->BuildRecentFiles();
+    recentFileList.clear();
+    writeSuperGlobals();
+    TheMainWindow->buildRecentFiles();
 }
 
 //Open a file from the recently used files list slot
@@ -586,7 +585,7 @@ void MainWindowImpl::openRecentFile()
     QAction *action = qobject_cast<QAction *>(sender());
     //Bodge to extract name stored in status tip
     QString fname = action->statusTip();
-    FullSettingsFileName = fname;
+    fullSettingsFileName = fname;
     on_actionOpen_triggered();
 }
 
@@ -596,7 +595,7 @@ void MainWindowImpl::selectMarker()
     if (markersLocked == 1)return;
     if (selectedMarker < 0)selectedMarker = 0;
     selectedMarker = markerList->currentRow();
-    RedrawJustDecorations();
+    redrawJustDecorations();
 }
 
 //Change marker size slot
@@ -608,7 +607,7 @@ void MainWindowImpl::changeMarkerSize(int size)
     for (int i = 0; i < markers.count(); i++) {
         markers[i]->markerRect->setSize(newSize);
     }
-    RedrawJustDecorations();
+    redrawJustDecorations();
 }
 
 void MainWindowImpl::markersLockToggled()
@@ -621,9 +620,9 @@ void MainWindowImpl::markersLockToggled()
         mThickness->setEnabled(false);
         mSize->setEnabled(false);
         add->setEnabled(false);
-        removeM->setEnabled(false);
-        swapbutton->setEnabled(false);
-        RedrawImage();
+        removeMarker->setEnabled(false);
+        swapButton->setEnabled(false);
+        redrawImage();
         showInfo(-1, -1);
     } else                              {
 
@@ -632,9 +631,9 @@ void MainWindowImpl::markersLockToggled()
         mThickness->setEnabled(true);
         mSize->setEnabled(true);
         add->setEnabled(true);
-        removeM->setEnabled(true);
-        swapbutton->setEnabled(true);
-        RedrawImage();
+        removeMarker->setEnabled(true);
+        swapButton->setEnabled(true);
+        redrawImage();
         showInfo(-1, -1);
     }
 }
@@ -651,21 +650,21 @@ void MainWindowImpl::autoMarkersToggled()
         int x = width / 8;
         int y = height / 8;
 
-        GridOutline = new QRect(x, y, width - (2 * x), height - (2 * y));
+        gridOutline = new QRect(x, y, width - (2 * x), height - (2 * y));
         autoMarkersGroup = new QGraphicsItemGroup();
 
-        RedrawImage();
+        redrawImage();
 
         if (aMTopLeftX->value() < 2 && aMTopLeftY->value() < 2) {
             aMTopLeftX->setMaximum(width - 50);
             aMTopLeftY->setMaximum(height - 50);
-            aMWidth->setValue(GridOutline->width());
-            aMHeight->setValue(GridOutline->height());
+            aMWidth->setValue(gridOutline->width());
+            aMHeight->setValue(gridOutline->height());
             aMHoriz->setValue(5);
             aMVert->setValue(5);
             aMThickness->setValue(2);
-            aMTopLeftX->setValue(GridOutline->x());
-            aMTopLeftY->setValue(GridOutline->y());
+            aMTopLeftX->setValue(gridOutline->x());
+            aMTopLeftY->setValue(gridOutline->y());
         }
     }
 
@@ -677,13 +676,13 @@ void MainWindowImpl::autoMarkersToggled()
         lockMarkers->setEnabled(true);
         autoMarkersUp = 0;
         showInfo(-1, -1);
-        delete GridOutline;
+        delete gridOutline;
         delete autoMarkersGroup;
         autoMarkersGroup = NULL;
         markersLockToggled();
         linePointers.clear();
         QApplication::restoreOverrideCursor();
-        RedrawImage();
+        redrawImage();
     }
 }
 
@@ -694,7 +693,7 @@ void MainWindowImpl::okClicked()
 }
 
 
-void MainWindowImpl::setupAlign_triggered()
+void MainWindowImpl::setupAlignTriggered()
 {
     if (setupAlign->isChecked() == true) {
         if (cropUp == 1) {
@@ -707,7 +706,7 @@ void MainWindowImpl::setupAlign_triggered()
         if (autoEdgeOne == NULL)autoEdgeOne = new QRect((width / 4), (height / 4), 500, 100);
         if (autoEdgeTwo == NULL)autoEdgeTwo = new QRect((width - width / 4), (height / 4), 100, 500);
         setupFlag = 1;
-        RedrawImage();
+        redrawImage();
         QMessageBox::about(0, "Auto-align Setup",
                            "Please drag, rotate and resize both boxes so each contains 3/4 of one edge on all the slices you wish to align. The edges should be a minimum of 45 degrees apart. When complete click the Setup button again.");
     } else {
@@ -721,7 +720,7 @@ void MainWindowImpl::setupAlign_triggered()
         markersDialogue->setEnabled(true);
         executeAlign->setDisabled(false);
         setupFlag = 0;
-        RedrawImage();
+        redrawImage();
 
         QMessageBox notice;
         notice.addButton(QMessageBox::Ok);
@@ -733,7 +732,7 @@ void MainWindowImpl::setupAlign_triggered()
     }
 }
 
-void MainWindowImpl::executeAlign_triggered()
+void MainWindowImpl::executeAlignTriggered()
 {
     if (cropUp == 1) {
         setupAlign->setChecked(false);
@@ -747,7 +746,7 @@ void MainWindowImpl::executeAlign_triggered()
 //Current image a+bx and next imabe a+bx for 2 edges on each....
     double CIa1 = 0., CIa2 = 0., CIb1 = 0., CIb2 = 0.;
     double NIa1 = 0., NIa2 = 0., NIb1 = 0., NIb2 = 0.;
-    int CI = CurrentImage;
+    int CI = currentImage;
 
 //Work out selection from list
     int start = -1, end = -1;
@@ -762,13 +761,13 @@ void MainWindowImpl::executeAlign_triggered()
         QMessageBox::about(0, "Auto-align error", "Please select - at minimum - a single slice to align");
         return;
     }
-    if (start == end && start == CurrentImage) {
+    if (start == end && start == currentImage) {
         QMessageBox::about(0, "Auto-align error", "You only have the current image - against which others are aligned - selected. Please select some to align");
         return;
     }
 
-//Work out edges on CurrentImage - then for loop to compare rest to this.
-    RedrawImage();
+//Work out edges on currentImage - then for loop to compare rest to this.
+    redrawImage();
     QImage alignImage = pixMapPointer->pixmap().toImage();
     if (alignImage.isGrayscale() == true)alignImage = pixMapPointer->pixmap().toImage().convertToFormat(QImage::Format_RGB32);
 
@@ -1047,7 +1046,7 @@ void MainWindowImpl::executeAlign_triggered()
     if ((QMessageBox::question(0, "Control edges found",
                                "Are the edges correctly marked on the image? This is the image all others will be aligned to. If the edges are incorrect cancel, and try another slice, or adjusting the setup boxes.",
                                QMessageBox::Ok, QMessageBox::Cancel)) == 4194304) {
-        RedrawImage();
+        redrawImage();
         return;
     }
 
@@ -1064,8 +1063,8 @@ void MainWindowImpl::executeAlign_triggered()
 
             QString output = QString("Aligning - Processing %1/%2").arg(z - start).arg(end - start);
 
-            CurrentImage = z;
-            RedrawImage();
+            currentImage = z;
+            redrawImage();
 
             statusbar->showMessage(output);
             //pixmap pointer = current scene image
@@ -1299,7 +1298,7 @@ void MainWindowImpl::executeAlign_triggered()
                 verticalShift(CIcornerY - NIcornerY);
                 lateralShift(CIcornerX - NIcornerX);
                 //qDebug()<<CIcornerY-NIcornerY<<CIcornerX-NIcornerX;
-                RedrawImage();
+                redrawImage();
 
                 //Now rotate:
                 //Calculate angle...
@@ -1349,7 +1348,7 @@ void MainWindowImpl::executeAlign_triggered()
                 }
 
                 //Apply rotation
-                QImage Rotate(ImageList[CurrentImage]->FileName);
+                QImage Rotate(imageList[currentImage]->fileName);
 
                 //Apply by drawing QImage with painter - allows for shifts.
                 QImage ToDraw(width, height, QImage::Format_RGB32);
@@ -1357,21 +1356,21 @@ void MainWindowImpl::executeAlign_triggered()
                 paint.begin(&ToDraw);
 
                 //Transform here so rotates around middle - allows translate
-                paint.setWorldTransform(ImageList[CurrentImage]->m);
+                paint.setWorldTransform(imageList[currentImage]->m);
                 paint.setRenderHint(QPainter::SmoothPixmapTransform);
                 paint.translate((CIcornerX), (CIcornerY));
                 paint.rotate(avangle);
                 paint.translate(-(CIcornerX), -(CIcornerY));
-                ImageList[CurrentImage]->m = paint.worldTransform();
+                imageList[currentImage]->m = paint.worldTransform();
                 QPointF leftCorner(0.0, 0.0);
 
                 paint.drawImage(leftCorner, Rotate);
                 paint.end();
 
-                QString savename = ImageList[CurrentImage]->FileName + ".xxx";
-                if (ImageList[CurrentImage]->format == 0)ToDraw.save(savename, "BMP", 100);
-                if (ImageList[CurrentImage]->format == 1)ToDraw.save(savename, "JPG", 100);
-                if (ImageList[CurrentImage]->format == 2)ToDraw.save(savename, "PNG", 50);
+                QString savename = imageList[currentImage]->fileName + ".xxx";
+                if (imageList[currentImage]->format == 0)ToDraw.save(savename, "BMP", 100);
+                if (imageList[currentImage]->format == 1)ToDraw.save(savename, "JPG", 100);
+                if (imageList[currentImage]->format == 2)ToDraw.save(savename, "PNG", 50);
 
                 /*rotate(angleBetween);
 
@@ -1390,12 +1389,12 @@ void MainWindowImpl::executeAlign_triggered()
                 verticalShift(VS);
                 lateralShift(LS);*/
 
-                RedrawImage();
+                redrawImage();
             }//ends the else...
         }//end the if
     }//ends the for
-    CurrentImage = CI;
-    RedrawImage();
+    currentImage = CI;
+    redrawImage();
 }//ends the function
 
 void MainWindowImpl::autoMarkersGrid ()
@@ -1412,45 +1411,45 @@ void MainWindowImpl::autoMarkersGrid ()
 void MainWindowImpl::aMTopLeftXChanged(int value)
 {
     if (value < 2 || aMTopLeftY->value() < 2)return;
-    GridOutline->setRect(value, aMTopLeftY->value(), aMWidth->value(), aMHeight->value());
-    RedrawJustAM();
+    gridOutline->setRect(value, aMTopLeftY->value(), aMWidth->value(), aMHeight->value());
+    redrawJustAM();
 }
 
 void MainWindowImpl::aMTopLeftYChanged(int value)
 {
     if (value < 2 || aMTopLeftX->value() < 2)return;
-    GridOutline->setRect(aMTopLeftX->value(), value, aMWidth->value(), aMHeight->value());
-    RedrawJustAM();
+    gridOutline->setRect(aMTopLeftX->value(), value, aMWidth->value(), aMHeight->value());
+    redrawJustAM();
 }
 
 void MainWindowImpl::aMWidthChanged(int value)
 {
-    GridOutline->setWidth(value);
-    RedrawJustAM();
+    gridOutline->setWidth(value);
+    redrawJustAM();
 }
 
 void MainWindowImpl::aMHeightChanged(int value)
 {
-    GridOutline->setHeight(value);
-    RedrawJustAM();
+    gridOutline->setHeight(value);
+    redrawJustAM();
 }
 
 void MainWindowImpl::aMThicknessChanged(int value)
 {
     Q_UNUSED(value);
-    RedrawJustAM();
+    redrawJustAM();
 }
 
 void MainWindowImpl::aMHorizChanged(int value)
 {
     Q_UNUSED(value);
-    RedrawJustAM();
+    redrawJustAM();
 }
 
 void MainWindowImpl::aMVertChanged(int value)
 {
     Q_UNUSED(value);
-    RedrawJustAM();
+    redrawJustAM();
 }
 
 
@@ -1467,14 +1466,14 @@ void MainWindowImpl::autoMarkersAlign()
     }
 
     //If current image has already been moved need to fix
-    if (!ImageList[CurrentImage]->m.isIdentity()) {
+    if (!imageList[currentImage]->m.isIdentity()) {
         //Scaling
-        qreal m11 = ImageList[CurrentImage]->m.m11();
+        qreal m11 = imageList[currentImage]->m.m11();
         //Translation
-        qreal m31 = ImageList[CurrentImage]->m.m31();
-        qreal m32 = ImageList[CurrentImage]->m.m32();
+        qreal m31 = imageList[currentImage]->m.m31();
+        qreal m32 = imageList[currentImage]->m.m32();
         //Shearing
-        qreal m12 = ImageList[CurrentImage]->m.m12();
+        qreal m12 = imageList[currentImage]->m.m12();
 
         long double angle = atan2(m12, m11);
 
@@ -1483,17 +1482,17 @@ void MainWindowImpl::autoMarkersAlign()
         aMi.translate(m31, m32);
 
         /*QString errormessage;
-        QTextStream(&errormessage)<<"M21\t"<<ImageList[CurrentImage]->m.m21()<<"M12\t"<<ImageList[CurrentImage]->m.m12();
+        QTextStream(&errormessage)<<"M21\t"<<imageList[currentImage]->m.m21()<<"M12\t"<<imageList[currentImage]->m.m12();
         QMessageBox::warning(0,"Error",errormessage, QMessageBox::Ok);*/
     }
 
-    ImageList[CurrentImage]->m = aMi;
-    QImage OldImage(ImageList[CurrentImage]->FileName);
+    imageList[currentImage]->m = aMi;
+    QImage OldImage(imageList[currentImage]->fileName);
     QImage ToDraw(width, height, QImage::Format_RGB32);
     QPainter paint;
     paint.begin(&ToDraw);
 
-    paint.setWorldTransform(ImageList[CurrentImage]->m);
+    paint.setWorldTransform(imageList[currentImage]->m);
     paint.setRenderHint(QPainter::SmoothPixmapTransform);
 
     QPointF leftCorner(0.0, 0.0);
@@ -1526,14 +1525,14 @@ void MainWindowImpl::autoMarkersAlign()
         ToDraw = tempToDraw;
     }
 
-    QString savename = ImageList[CurrentImage]->FileName + ".xxx";
-    if (ImageList[CurrentImage]->format == 0)ToDraw.save(savename, "BMP", 100);
-    if (ImageList[CurrentImage]->format == 1)ToDraw.save(savename, "JPG", 100);
-    if (ImageList[CurrentImage]->format == 2)ToDraw.save(savename, "PNG", 50);
+    QString savename = imageList[currentImage]->fileName + ".xxx";
+    if (imageList[currentImage]->format == 0)ToDraw.save(savename, "BMP", 100);
+    if (imageList[currentImage]->format == 1)ToDraw.save(savename, "JPG", 100);
+    if (imageList[currentImage]->format == 2)ToDraw.save(savename, "PNG", 50);
 
     aM.reset();
 
-    RedrawImage();
+    redrawImage();
 
 
 
@@ -1550,11 +1549,11 @@ void MainWindowImpl::addMarker()
     markerList->addItem(output);
     markerList->setCurrentRow(markers.count() - 1);
     selectedMarker = (markers.count() - 1);
-    RedrawJustDecorations();
+    redrawJustDecorations();
 }
 
 //Remove marker slot
-void MainWindowImpl::removeMarker()
+void MainWindowImpl::removeMarkerSlot()
 {
     if (markersLocked == 1)return;
     if (markers.count() == 5) {
@@ -1566,7 +1565,7 @@ void MainWindowImpl::removeMarker()
     markers.removeLast();
     markerList->takeItem((markers.count()));
 
-    RedrawImage();
+    redrawImage();
 }
 
 //Change marker shape slot
@@ -1580,44 +1579,44 @@ void MainWindowImpl::changeShape()
     } else if (markers[selectedMarker]->shape == 1) {
         markers[selectedMarker]->shape = 0;
     }
-    RedrawImage();
+    redrawImage();
 }
 
 //Red change slot
 void MainWindowImpl::changeRed(int value)
 {
     redValue = value;
-    RedrawImage();
+    redrawImage();
 }
 
 //Green change slot
 void MainWindowImpl::changeGreen(int value)
 {
     greenValue = value;
-    RedrawImage();
+    redrawImage();
 }
 
 //Blue change slot
 void MainWindowImpl::changeBlue(int value)
 {
     blueValue = value;
-    RedrawImage();
+    redrawImage();
 }
 
 
 //Destructor
 MainWindowImpl::~MainWindowImpl()
 {
-    if (CurrentImage != -1) {
-        WriteSuperGlobals();
+    if (currentImage != -1) {
+        writeSuperGlobals();
         actionSave_Backup->trigger();
         int i = 0;
 
         //Write to settings file
         on_actionSave_triggered();
 
-        qDeleteAll(ImageList.begin(), ImageList.end());
-        ImageList.clear();
+        qDeleteAll(imageList.begin(), imageList.end());
+        imageList.clear();
         linePointers.clear();
         for (i = 0; i < markers.count(); i++) {
             delete markers[i];
@@ -1634,17 +1633,17 @@ void MainWindowImpl::on_actionOpen_triggered()
 {
     int i, x, j = 0;
     //Reset all variables and menus so opening another image set is posssible
-    if (CurrentImage != -1) {
-        files_directory = "";
-        CurrentImage = -1;
+    if (currentImage != -1) {
+        filesDirectoryString = "";
+        currentImage = -1;
         rectPointer = NULL;
         amRectPointer = NULL;
 
         //Write to settings file
         on_actionSave_triggered();
 
-        qDeleteAll(ImageList.begin(), ImageList.end());
-        ImageList.clear();
+        qDeleteAll(imageList.begin(), imageList.end());
+        imageList.clear();
         linePointers.clear();
         qDeleteAll(markers.begin(), markers.end());
         markers.clear();
@@ -1673,15 +1672,15 @@ void MainWindowImpl::on_actionOpen_triggered()
         menuMagnification->setEnabled(false);
         actionSave->setEnabled(false);
         actionSave_Backup->setEnabled(false);
-        actionLoad_settings_file->setEnabled(false);
-        actionCompress_dataset->setEnabled(false);
+        actionLoad_Settings_File->setEnabled(false);
+        actionCompress_Dataset->setEnabled(false);
 
         actionSelect_Marker->setEnabled(false);
 
         actionLock_Forward->setChecked(false);
         actionLock_Back->setChecked(false);
         actionLock_File->setChecked(false);
-        actionPropogate_mode->setChecked(false);
+        actionPropogate_Mode->setChecked(false);
 
         markersUp = 0;
         infoChecked = 0;
@@ -1709,42 +1708,42 @@ void MainWindowImpl::on_actionOpen_triggered()
         version.sprintf("%d.%d.%d", MAJORVERSION, MINORVERSION, PATCHVERSION);
         this->setWindowTitle(QString(PRODUCTNAME) + " v" + version);
     }
-    CurrentImage = 0;
+    currentImage = 0;
 
-    if (FullSettingsFileName.isEmpty()) {
-        files_directory = QFileDialog::getExistingDirectory(this, tr("Select folder containing image files"),
-                                                            "d:/", QFileDialog::ShowDirsOnly);
-        if (files_directory == "") return; //dialogue cancelled
-        Directory = files_directory; //construct directory object
+    if (fullSettingsFileName.isEmpty()) {
+        filesDirectoryString = QFileDialog::getExistingDirectory(this, tr("Select folder containing image files"),
+                                                                 "d:/", QFileDialog::ShowDirsOnly);
+        if (filesDirectoryString == "") return; //dialogue cancelled
+        filesDirectory = filesDirectoryString; //construct directory object
     }
 
     else {
-        files_directory = FullSettingsFileName;
-        Directory = files_directory;
-        FullSettingsFileName = "";
+        filesDirectoryString = fullSettingsFileName;
+        filesDirectory = filesDirectoryString;
+        fullSettingsFileName = "";
     }
 
-    RecentFile(files_directory);
+    recentFile(filesDirectoryString);
 
     QStringList FilterList;
     FilterList << "*.bmp" << "*.jpg" << "*.jpeg" << "*.png";
-    dirlist = Directory.entryList(FilterList, QDir::Files, QDir::Name);
+    drectoryFileList = filesDirectory.entryList(FilterList, QDir::Files, QDir::Name);
 
-    if (dirlist.count() == 0) {
+    if (drectoryFileList.count() == 0) {
         QMessageBox::warning(0, "Error", "No image files in this folder.", QMessageBox::Ok);
         return;
     }
 
 
-    for (i = 0; i < dirlist.count(); i++) {
-        ImageData *newimage = new ImageData(files_directory + "/" + dirlist[i]); //create data structure
-        ImageList.append(newimage);
-        fileList->addItem(dirlist[i]);
+    for (i = 0; i < drectoryFileList.count(); i++) {
+        ImageData *newimage = new ImageData(filesDirectoryString + "/" + drectoryFileList[i]); //create data structure
+        imageList.append(newimage);
+        fileList->addItem(drectoryFileList[i]);
     }
 
     //Read from settings and apply matrices
-    x = ImageList.count();
-    QString filename = Directory.absolutePath() + "/settings.txt";
+    x = imageList.count();
+    QString filename = filesDirectory.absolutePath() + "/settings.txt";
 
     if (QFile::exists(filename) == true) {
         int numberMarkers = 0;
@@ -1761,7 +1760,7 @@ void MainWindowImpl::on_actionOpen_triggered()
             QStringList list = line.split("\t");
             if (i < x) {
                 //Check image names have not been modified
-                if (!list[0].endsWith(dirlist[i], Qt::CaseInsensitive)) {
+                if (!list[0].endsWith(drectoryFileList[i], Qt::CaseInsensitive)) {
                     if ((QMessageBox::question(0, "Error",
                                                "Image sequence has been modified. This will prevent the dataset loading correctly. If this is because you have appended images to the end of the dataset click OK, otherwise click cancel to return.",
                                                QMessageBox::Ok, QMessageBox::Cancel)) == 4194304)return;
@@ -1778,8 +1777,8 @@ void MainWindowImpl::on_actionOpen_triggered()
                             red->setValue(list[3].toInt());
                             green->setValue(list[4].toInt());
                             blue ->setValue(list[5].toInt());
-                            CurrentImage = list[6].toInt();
-                            if (CurrentImage < 0)CurrentImage = 0;
+                            currentImage = list[6].toInt();
+                            if (currentImage < 0)currentImage = 0;
                         }
                         i = x;
                     }
@@ -1791,8 +1790,8 @@ void MainWindowImpl::on_actionOpen_triggered()
                     m22 = list[4].toDouble();
                     m21 = list[5].toDouble();
                     m12 = list[6].toDouble();
-                    ImageList[i]->m.setMatrix(m11, m12, 0., m21, m22, 0., mdx, mdy, 1.);
-                    ImageList[i]->hidden = list[7].toInt();
+                    imageList[i]->m.setMatrix(m11, m12, 0., m21, m22, 0., mdx, mdy, 1.);
+                    imageList[i]->hidden = list[7].toInt();
                 }
             } else if (i == x) {
                 //Can take this if out when everyone has settings files written by the new version which save colour etc.
@@ -1808,8 +1807,8 @@ void MainWindowImpl::on_actionOpen_triggered()
                     red->setValue(list[3].toInt());
                     green->setValue(list[4].toInt());
                     blue ->setValue(list[5].toInt());
-                    CurrentImage = list[6].toInt();
-                    if (CurrentImage < 0)CurrentImage = 0;
+                    currentImage = list[6].toInt();
+                    if (currentImage < 0)currentImage = 0;
                     if (list.size() > 7) {
                         if (list[7].toInt() > 0)lockMarkers->toggle();
                         markersLockToggled();
@@ -1841,30 +1840,30 @@ void MainWindowImpl::on_actionOpen_triggered()
         settings.flush();
         settings.close();
     } else {
-        for (i = 0; i < ImageList.count(); i++)ImageList[i]->hidden = false;
+        for (i = 0; i < imageList.count(); i++)imageList[i]->hidden = false;
         mSize->setValue(10);
         mThickness->setValue(5);
     }
 
-    for (i = 0; i < ImageList.count(); i++) {
-        ImageList[i]->format = -1;
-        if (ImageList[i]->FileName.endsWith(".png", Qt::CaseInsensitive))ImageList[i]->format = 2;
-        if (ImageList[i]->FileName.endsWith(".jpg", Qt::CaseInsensitive) || ImageList[i]->FileName.endsWith(".jpeg", Qt::CaseInsensitive))ImageList[i]->format = 1;
-        if (ImageList[i]->FileName.endsWith(".bmp", Qt::CaseInsensitive))ImageList[i]->format = 0;
-        if (ImageList[i]->format == -1) {
+    for (i = 0; i < imageList.count(); i++) {
+        imageList[i]->format = -1;
+        if (imageList[i]->fileName.endsWith(".png", Qt::CaseInsensitive))imageList[i]->format = 2;
+        if (imageList[i]->fileName.endsWith(".jpg", Qt::CaseInsensitive) || imageList[i]->fileName.endsWith(".jpeg", Qt::CaseInsensitive))imageList[i]->format = 1;
+        if (imageList[i]->fileName.endsWith(".bmp", Qt::CaseInsensitive))imageList[i]->format = 0;
+        if (imageList[i]->format == -1) {
             QMessageBox::warning(0, "Error", "Please check extensions - should be either .jpg, .jpeg, .bmp or .png", QMessageBox::Ok);
             return;
         }
     }
 
     //Set maxima for slider and spin box
-    horizontalSlider->setMaximum(dirlist.count());
-    horizontalSlider->setTickInterval(dirlist.count() / 20);
-    spinBox->setMaximum(dirlist.count());
+    horizontalSlider->setMaximum(drectoryFileList.count());
+    horizontalSlider->setTickInterval(drectoryFileList.count() / 20);
+    spinBox->setMaximum(drectoryFileList.count());
 
     //Enable menu
     spinBox->setEnabled(true);
-    spinBox->setValue(CurrentImage + 1);
+    spinBox->setValue(currentImage + 1);
     horizontalSlider->setEnabled(true);
     menuNavigate->setEnabled(true);
     menuLocking_Propagation->setEnabled(true);
@@ -1873,25 +1872,25 @@ void MainWindowImpl::on_actionOpen_triggered()
     menuMagnification->setEnabled(true);
     actionSave->setEnabled(true);
     actionSave_Backup->setEnabled(true);
-    actionLoad_settings_file->setEnabled(true);
-    actionCompress_dataset->setEnabled(true);
+    actionLoad_Settings_File->setEnabled(true);
+    actionCompress_Dataset->setEnabled(true);
 
-    QImage Dimensions(ImageList[CurrentImage]->FileName);
+    QImage Dimensions(imageList[currentImage]->fileName);
     width = Dimensions.width();
     height = Dimensions.height();
 
-    CurrentScale = 1;
-    RedrawImage();
+    currentScale = 1;
+    redrawImage();
     on_actionFit_Window_triggered();
 
     actionAdd_Markers->trigger();
     actionInfo->trigger();
-    actionAuto_align->trigger();
+    actionAuto_Align->trigger();
 }
 
 void MainWindowImpl::LogText(QString text)
 {
-    QString filename = Directory.absolutePath() + "/log.txt";
+    QString filename = filesDirectory.absolutePath() + "/log.txt";
     QFile log(filename);
 
     log.open(QFile::Append);
@@ -1903,16 +1902,16 @@ void MainWindowImpl::LogText(QString text)
 }
 
 //Redraw Image
-void  MainWindowImpl::RedrawImage()
+void  MainWindowImpl::redrawImage()
 {
     QString Outstring;
     QTextStream out(&Outstring);
 
-    out << "Starting.. Current Image is " << CurrentImage << "\t";
+    out << "Starting.. Current Image is " << currentImage << "\t";
 
     LogText(Outstring);
 
-    if (CurrentImage < 0)return;
+    if (currentImage < 0)return;
     LogText("*1\t");
     //Dismantles group and also destroys group item
     if (autoMarkersGroup != NULL && autoMarkersGroup->scene() != 0) {
@@ -1945,22 +1944,22 @@ void  MainWindowImpl::RedrawImage()
 
     QString version;
     version.sprintf("%d.%d.%d - ", MAJORVERSION, MINORVERSION, PATCHVERSION);
-    QString output = version + ImageList[CurrentImage]->FileName;
+    QString output = version + imageList[currentImage]->fileName;
     QString output2;
-    output2.sprintf(" - (%d/%d)", CurrentImage + 1, ImageList.count());
+    output2.sprintf(" - (%d/%d)", currentImage + 1, imageList.count());
     this->setWindowTitle(QString(PRODUCTNAME) + " v" + output + output2);
 
     LogText("*7\t");
     //Rescale view
     graphicsView->resetMatrix ();
     LogText("*8\t");
-    graphicsView->scale(CurrentScale, CurrentScale);
+    graphicsView->scale(currentScale, currentScale);
     LogText("*9\t");
     //Draw image
     QPixmap newimage;
-    QString loadname = ImageList[CurrentImage]->FileName + ".xxx";
+    QString loadname = imageList[currentImage]->fileName + ".xxx";
     if (QFile::exists(loadname) == true)newimage.load(loadname);
-    else newimage.load(ImageList[CurrentImage]->FileName);
+    else newimage.load(imageList[currentImage]->fileName);
     LogText("*10\t");
     pixMapPointer = scene->addPixmap(newimage);
     pixMapPointer->setZValue(0);
@@ -1968,20 +1967,20 @@ void  MainWindowImpl::RedrawImage()
     showInfo(-1, -1);
     if (actionConstant_autosave->isChecked())on_actionSave_triggered();
     LogText("*12\t");
-    RedrawDecorations();
+    redrawDecorations();
     LogText("...Done\n");
 }
 
 //Redraw crop area and markers
-void  MainWindowImpl::RedrawDecorations()
+void  MainWindowImpl::redrawDecorations()
 {
     QBrush brush(Qt::NoBrush);
     QColor colour(redValue, greenValue, blueValue);
     statusbar->clearMessage();
-    if (ImageList[CurrentImage]->hidden == true)statusbar->showMessage("This image is hidden.");
-    if (actionPropogate_mode->isChecked())statusbar->showMessage("Propogation mode");
-    if (actionLock_Back->isChecked() && !actionPropogate_mode->isChecked())statusbar->showMessage("Backward File Locking mode");
-    if (actionLock_Forward->isChecked() && !actionPropogate_mode->isChecked())statusbar->showMessage("Forward File Locking mode");
+    if (imageList[currentImage]->hidden == true)statusbar->showMessage("This image is hidden.");
+    if (actionPropogate_Mode->isChecked())statusbar->showMessage("propogation mode");
+    if (actionLock_Back->isChecked() && !actionPropogate_Mode->isChecked())statusbar->showMessage("Backward File Locking mode");
+    if (actionLock_Forward->isChecked() && !actionPropogate_Mode->isChecked())statusbar->showMessage("Forward File Locking mode");
 
     if (setupFlag == 1) {
         QPen pen;
@@ -2008,18 +2007,18 @@ void  MainWindowImpl::RedrawDecorations()
         amPen.setWidth(aMThickness->value());
         amPen.setColor(colour);
 
-        amRectPointer = scene->addRect(*GridOutline, amPen, brush);
-        //autoMarkersGroup->addToGroup(scene->addRect(*GridOutline,amPen,brush));
+        amRectPointer = scene->addRect(*gridOutline, amPen, brush);
+        //autoMarkersGroup->addToGroup(scene->addRect(*gridOutline,amPen,brush));
 
         autoMarkersGroup->addToGroup(amRectPointer);
 
         //Change 5 below for more or less lines in grid - eventually user set...
-        int L = GridOutline->left();
-        int R = GridOutline->right();
+        int L = gridOutline->left();
+        int R = gridOutline->right();
         int JH = (R - L) / (aMVert->value() + 1);
 
-        int T = GridOutline->top();
-        int B = GridOutline->bottom();
+        int T = gridOutline->top();
+        int B = gridOutline->bottom();
         int JV = (B - T) / (aMHoriz->value() + 1);
 
         //Fix rounding errors so there isn't a last line very close to edge
@@ -2043,7 +2042,7 @@ void  MainWindowImpl::RedrawDecorations()
         autoMarkersGroup->setZValue(1);
     }
 
-    if (actionCreate_Crop_Area->isChecked() && CropArea != NULL) {
+    if (actionCreate_Crop_Area->isChecked() && cropArea != NULL) {
 
         QPen pen;
         pen.setCosmetic(true);
@@ -2052,13 +2051,13 @@ void  MainWindowImpl::RedrawDecorations()
         pen.setColor(colour);
 
         //rectPointer is removed with other graphics items above - no need to kill here.
-        rectPointer = scene->addRect(*CropArea, pen, brush);
+        rectPointer = scene->addRect(*cropArea, pen, brush);
         rectPointer->setZValue(1);
 
         if (cropping != 1) {
             QString output = "Crop mode enabled - crop area";
             QString output2;
-            output2.sprintf(" - %d pixels wide, %d pixels high)", CropArea->width(), CropArea->height());
+            output2.sprintf(" - %d pixels wide, %d pixels high)", cropArea->width(), cropArea->height());
             statusbar->showMessage(output + output2);
         }
     }
@@ -2087,9 +2086,9 @@ void  MainWindowImpl::RedrawDecorations()
 }
 
 //Redraw Just markers
-void  MainWindowImpl::RedrawJustDecorations()
+void  MainWindowImpl::redrawJustDecorations()
 {
-    if (CurrentImage < 0)return;
+    if (currentImage < 0)return;
     int i, numberMarkers = markers.count();
     QBrush brush(Qt::NoBrush);
     for (i = 0; i < numberMarkers; i++)if (markers[i]->markerPointer != NULL)scene->removeItem(markers[i]->markerPointer);
@@ -2112,9 +2111,9 @@ void  MainWindowImpl::RedrawJustDecorations()
 }
 
 //Redraw just Auto markers
-void  MainWindowImpl::RedrawJustAM()
+void  MainWindowImpl::redrawJustAM()
 {
-    if (CurrentImage < 0)return;
+    if (currentImage < 0)return;
 
     if (autoMarkersUp == 1) {
         if (autoMarkersGroup != NULL && autoMarkersGroup->scene() != 0)scene->destroyItemGroup(autoMarkersGroup);
@@ -2134,10 +2133,10 @@ void  MainWindowImpl::RedrawJustAM()
         QColor colour(redValue, greenValue, blueValue);
         statusbar->clearMessage();
 
-        if (ImageList[CurrentImage]->hidden == true)statusbar->showMessage("This image is hidden.");
-        if (actionPropogate_mode->isChecked())statusbar->showMessage("Propogation mode");
-        if (actionLock_Back->isChecked() && !actionPropogate_mode->isChecked())statusbar->showMessage("Backward File Locking mode");
-        if (actionLock_Forward->isChecked() && !actionPropogate_mode->isChecked())statusbar->showMessage("Forward File Locking mode");
+        if (imageList[currentImage]->hidden == true)statusbar->showMessage("This image is hidden.");
+        if (actionPropogate_Mode->isChecked())statusbar->showMessage("propogation mode");
+        if (actionLock_Back->isChecked() && !actionPropogate_Mode->isChecked())statusbar->showMessage("Backward File Locking mode");
+        if (actionLock_Forward->isChecked() && !actionPropogate_Mode->isChecked())statusbar->showMessage("Forward File Locking mode");
 
         autoMarkersGroup = new QGraphicsItemGroup();
 
@@ -2148,18 +2147,18 @@ void  MainWindowImpl::RedrawJustAM()
         amPen.setWidth(aMThickness->value());
         amPen.setColor(colour);
 
-        amRectPointer = scene->addRect(*GridOutline, amPen, brush);
+        amRectPointer = scene->addRect(*gridOutline, amPen, brush);
 
 
         autoMarkersGroup->addToGroup(amRectPointer);
 
         //Change 5 below for more or less lines in grid - eventually user set...
-        int L = GridOutline->left();
-        int R = GridOutline->right();
+        int L = gridOutline->left();
+        int R = gridOutline->right();
         int JH = (R - L) / (aMVert->value() + 1);
 
-        int T = GridOutline->top();
-        int B = GridOutline->bottom();
+        int T = gridOutline->top();
+        int B = gridOutline->bottom();
         int JV = (B - T) / (aMHoriz->value() + 1);
 
         //Fix rounding errors so there isn't a last line very close to edge
@@ -2232,7 +2231,7 @@ void  MainWindowImpl::RedrawJustAM()
 
 
 //Redraw just crop box
-void  MainWindowImpl::RedrawJustCropBox()
+void  MainWindowImpl::redrawJustCropBox()
 {
     if (cropUp == 0)return;
     if (rectPointer != NULL) {
@@ -2247,13 +2246,13 @@ void  MainWindowImpl::RedrawJustCropBox()
     pen.setStyle(Qt::DashLine);
     pen.setColor(colour);
 
-    rectPointer = scene->addRect(*CropArea, pen, brush);
+    rectPointer = scene->addRect(*cropArea, pen, brush);
     rectPointer->setZValue(1);
     QString output = "Crop mode enabled - crop area";
     QString output2;
-    output2.sprintf(" - %d pixels wide, %d pixels high)", CropArea->width(), CropArea->height());
-    cropWidth->setValue(CropArea->width());
-    cropHeight->setValue(CropArea->height());
+    output2.sprintf(" - %d pixels wide, %d pixels high)", cropArea->width(), cropArea->height());
+    cropWidth->setValue(cropArea->width());
+    cropHeight->setValue(cropArea->height());
     statusbar->showMessage(output + output2);
 }
 
@@ -2269,7 +2268,7 @@ void MainWindowImpl::on_actionInfo_triggered(bool checked)
     }
 }
 
-void MainWindowImpl::on_actionAuto_align_triggered (bool checked)
+void MainWindowImpl::on_actionAuto_Align_triggered (bool checked)
 {
     if (checked == true) {
         autoAlign->show();
@@ -2287,17 +2286,17 @@ void MainWindowImpl::on_actionAdd_Markers_triggered(bool checked)
         if (actionCreate_Crop_Area->isChecked()) {
 
             actionCreate_Crop_Area->setChecked(false);
-            delete CropArea;
+            delete cropArea;
             cropUp = 0;
             cropDock->hide();
-            //If this is not NULLed here still points to CropArea and when you try delete it in redraw image it crashes....
+            //If this is not NULLed here still points to cropArea and when you try delete it in redraw image it crashes....
             rectPointer = NULL;
             QApplication::setOverrideCursor(Qt::ArrowCursor);
-            RedrawImage();
+            redrawImage();
         }
 
         selectedMarker = 0;
-        layout2widget->setMaximumHeight(200);
+        layoutWidgetTwo->setMaximumHeight(200);
         markersUp = 1;
         red->setValue(redValue);
         green->setValue(greenValue);
@@ -2312,7 +2311,7 @@ void MainWindowImpl::on_actionAdd_Markers_triggered(bool checked)
         markersDialogue->hide();
     }
 
-    RedrawImage();
+    redrawImage();
 }
 
 // Select markers
@@ -2321,7 +2320,7 @@ void MainWindowImpl::on_actionSelect_Marker_triggered()
     selectedMarker++;
     if (selectedMarker >= markerList->count())selectedMarker = 0;
     markerList->setCurrentRow(selectedMarker);
-    RedrawImage();
+    redrawImage();
 }
 
 //Move selected markers
@@ -2330,46 +2329,46 @@ void MainWindowImpl::on_actionSelect_Marker_triggered()
 void MainWindowImpl::on_actionMove_Marker_Left_triggered()
 {
     markers[selectedMarker]->markerRect->translate(-2., 0.);
-    RedrawImage();
+    redrawImage();
 }
 
 void MainWindowImpl::on_actionMove_Marker_Right_triggered()
 {
     markers[selectedMarker]->markerRect->translate(2., 0.);
-    RedrawImage();
+    redrawImage();
 }
 
 void MainWindowImpl::on_actionMove_Marker_Up_triggered()
 {
     markers[selectedMarker]->markerRect->translate(0., -2.);
-    RedrawImage();
+    redrawImage();
 }
 
 void MainWindowImpl::on_actionMove_Marker_Down_triggered()
 {
     markers[selectedMarker]->markerRect->translate(0., 2.);
-    RedrawImage();
+    redrawImage();
 }
 
 //Zoom In
 void MainWindowImpl::on_actionZoom_In_triggered()
 {
-    CurrentScale += .1;
-    RedrawImage();
+    currentScale += .1;
+    redrawImage();
 }
 
 //Zoom out
 void MainWindowImpl::on_actionZoom_Out_triggered()
 {
-    if (CurrentScale > .2)CurrentScale -= .1;
-    RedrawImage();
+    if (currentScale > .2)currentScale -= .1;
+    redrawImage();
 }
 
 //Zoom 100%
 void MainWindowImpl::on_actionZoom_100_triggered()
 {
-    CurrentScale = 1.0;
-    RedrawImage();
+    currentScale = 1.0;
+    redrawImage();
 }
 
 //Zoom fit
@@ -2378,8 +2377,8 @@ void MainWindowImpl::on_actionFit_Window_triggered()
     graphicsView->fitInView(pixMapPointer, Qt::KeepAspectRatio);
     QTransform m;
     m = graphicsView->transform();
-    CurrentScale = m.m11();
-    RedrawImage();
+    currentScale = m.m11();
+    redrawImage();
 }
 
 //Rotate C/W
@@ -2419,8 +2418,8 @@ void MainWindowImpl::on_actionRotate_Anticlockwise_Less_triggered()
 ////Rotate function
 void MainWindowImpl::rotate (qreal rotateAngle)
 {
-    if (actionLock_File->isChecked() || CurrentImage == -1)return;
-    QImage Rotate(ImageList[CurrentImage]->FileName);
+    if (actionLock_File->isChecked() || currentImage == -1)return;
+    QImage Rotate(imageList[currentImage]->fileName);
 
     //Apply by drawing QImage with painter - allows for shifts.
     QImage ToDraw(width, height, QImage::Format_RGB32);
@@ -2428,23 +2427,23 @@ void MainWindowImpl::rotate (qreal rotateAngle)
     paint.begin(&ToDraw);
 
     //Transform here so rotates around middle - allows translate
-    paint.setWorldTransform(ImageList[CurrentImage]->m);
+    paint.setWorldTransform(imageList[currentImage]->m);
     paint.setRenderHint(QPainter::SmoothPixmapTransform);
     paint.translate((width / 2), (height / 2));
     paint.rotate(rotateAngle);
     paint.translate(-(width / 2), -(height / 2));
-    ImageList[CurrentImage]->m = paint.worldTransform();
+    imageList[currentImage]->m = paint.worldTransform();
     QPointF leftCorner(0.0, 0.0);
 
     paint.drawImage(leftCorner, Rotate);
 
     //For propogation mode - record transformations in propogation list.
-    if (actionPropogate_mode->isChecked()) {
+    if (actionPropogate_Mode->isChecked()) {
         PropogationData *newdata = new PropogationData();
-        Propogation.append(newdata);
-        Propogation[PropogateStep]->transformation = 1;
-        Propogation[PropogateStep]->value = rotateAngle;
-        PropogateStep++;
+        propogation.append(newdata);
+        propogation[propogateStep]->transformation = 1;
+        propogation[propogateStep]->value = rotateAngle;
+        propogateStep++;
     }
 
     paint.end();
@@ -2473,12 +2472,12 @@ void MainWindowImpl::rotate (qreal rotateAngle)
         ToDraw = tempToDraw;
     }
 
-    QString savename = ImageList[CurrentImage]->FileName + ".xxx";
-    if (ImageList[CurrentImage]->format == 0)ToDraw.save(savename, "BMP", 100);
-    if (ImageList[CurrentImage]->format == 1)ToDraw.save(savename, "JPG", 100);
-    if (ImageList[CurrentImage]->format == 2)ToDraw.save(savename, "PNG", 50);
+    QString savename = imageList[currentImage]->fileName + ".xxx";
+    if (imageList[currentImage]->format == 0)ToDraw.save(savename, "BMP", 100);
+    if (imageList[currentImage]->format == 1)ToDraw.save(savename, "JPG", 100);
+    if (imageList[currentImage]->format == 2)ToDraw.save(savename, "PNG", 50);
 
-    RedrawImage();
+    redrawImage();
 }
 ////
 
@@ -2518,30 +2517,30 @@ void MainWindowImpl::on_actionShrink_Less_triggered()
 ////Enlarge/Shrink Function
 void MainWindowImpl::resize(qreal sizeChange)
 {
-    if (actionLock_File->isChecked() || CurrentImage == -1)return;
-    QImage Enlarge(ImageList[CurrentImage]->FileName);
+    if (actionLock_File->isChecked() || currentImage == -1)return;
+    QImage Enlarge(imageList[currentImage]->fileName);
 
     //Apply transformation here to allow them to occur around centre point
     QImage ToDraw(width, height, QImage::Format_RGB32);
     QPainter paint;
     paint.begin(&ToDraw);
-    paint.setWorldTransform(ImageList[CurrentImage]->m);
+    paint.setWorldTransform(imageList[currentImage]->m);
     paint.setRenderHint(QPainter::SmoothPixmapTransform);
     paint.translate((width / 2), (height / 2));
     paint.scale(sizeChange, sizeChange);
     paint.translate(-(width / 2), -(height / 2));
-    ImageList[CurrentImage]->m = paint.worldTransform();
+    imageList[currentImage]->m = paint.worldTransform();
     QPointF leftCorner(0.0, 0.0);
     paint.drawImage(leftCorner, Enlarge);
 
 
     //For propogation mode
-    if (actionPropogate_mode->isChecked()) {
+    if (actionPropogate_Mode->isChecked()) {
         PropogationData *newdata = new PropogationData();
-        Propogation.append(newdata);
-        Propogation[PropogateStep]->transformation = 2;
-        Propogation[PropogateStep]->value = sizeChange;
-        PropogateStep++;
+        propogation.append(newdata);
+        propogation[propogateStep]->transformation = 2;
+        propogation[propogateStep]->value = sizeChange;
+        propogateStep++;
     }
 
     paint.end();
@@ -2571,12 +2570,12 @@ void MainWindowImpl::resize(qreal sizeChange)
     }
 
 
-    QString savename = ImageList[CurrentImage]->FileName + ".xxx";
+    QString savename = imageList[currentImage]->fileName + ".xxx";
 
-    if (ImageList[CurrentImage]->format == 0)ToDraw.save(savename, "BMP", 100);
-    if (ImageList[CurrentImage]->format == 1)ToDraw.save(savename, "JPG", 100);
-    if (ImageList[CurrentImage]->format == 2)ToDraw.save(savename, "PNG", 50);
-    RedrawImage();
+    if (imageList[currentImage]->format == 0)ToDraw.save(savename, "BMP", 100);
+    if (imageList[currentImage]->format == 1)ToDraw.save(savename, "JPG", 100);
+    if (imageList[currentImage]->format == 2)ToDraw.save(savename, "PNG", 50);
+    redrawImage();
 }
 ////
 
@@ -2584,7 +2583,7 @@ void MainWindowImpl::resize(qreal sizeChange)
 
 void MainWindowImpl::on_actionShift_Right_Less_triggered()
 {
-    if (ImageList[CurrentImage]->m.m12() == 0.)rotate(.00001);
+    if (imageList[currentImage]->m.m12() == 0.)rotate(.00001);
     lateralShift(.5);
 }
 
@@ -2602,7 +2601,7 @@ void MainWindowImpl::on_actionShift_Right_More_triggered()
 
 void MainWindowImpl::on_actionShift_Left_less_triggered()
 {
-    if (ImageList[CurrentImage]->m.m12() == 0.)rotate(.00001);
+    if (imageList[currentImage]->m.m12() == 0.)rotate(.00001);
     lateralShift(-.5);
 }
 
@@ -2619,31 +2618,31 @@ void MainWindowImpl::on_actionShift_Left_More_triggered()
 ////Lateral shift function
 void MainWindowImpl::lateralShift(qreal shiftSize)
 {
-    if (actionLock_File->isChecked() || CurrentImage == -1)return;
-    //Manually edit matrix to make pure hoizontal movement, not movement in the dx of the matrix
+    if (actionLock_File->isChecked() || currentImage == -1)return;
+    //Manually edit matrix to make pure hoizontal movement, not movement in the dX of the matrix
     qreal m11, m12, m21, m22, mdx, mdy;
-    mdx = ImageList[CurrentImage]->m.dx();
-    mdy = ImageList[CurrentImage]->m.dy();
-    m11 = ImageList[CurrentImage]->m.m11();
-    m22 = ImageList[CurrentImage]->m.m22();
-    m21 = ImageList[CurrentImage]->m.m21();
-    m12 = ImageList[CurrentImage]->m.m12();
+    mdx = imageList[currentImage]->m.dx();
+    mdy = imageList[currentImage]->m.dy();
+    m11 = imageList[currentImage]->m.m11();
+    m22 = imageList[currentImage]->m.m22();
+    m21 = imageList[currentImage]->m.m21();
+    m12 = imageList[currentImage]->m.m12();
     mdx += shiftSize;
-    ImageList[CurrentImage]->m.setMatrix(m11, m12, 0., m21, m22, 0., mdx, mdy, 1.);
+    imageList[currentImage]->m.setMatrix(m11, m12, 0., m21, m22, 0., mdx, mdy, 1.);
 
 
     //For propogation mode
-    if (actionPropogate_mode->isChecked()) {
+    if (actionPropogate_Mode->isChecked()) {
         PropogationData *newdata = new PropogationData();
-        Propogation.append(newdata);
-        Propogation[PropogateStep]->transformation = 3;
-        Propogation[PropogateStep]->value = shiftSize;
-        PropogateStep++;
+        propogation.append(newdata);
+        propogation[propogateStep]->transformation = 3;
+        propogation[propogateStep]->value = shiftSize;
+        propogateStep++;
     }
 
 
     redrawShift();
-    RedrawImage();
+    redrawImage();
 }
 
 //Shift Up
@@ -2683,43 +2682,43 @@ void MainWindowImpl::on_actionShift_Down_Less_triggered()
 ////Vertical shift function
 void MainWindowImpl::verticalShift(qreal shiftSize)
 {
-    if (actionLock_File->isChecked() || CurrentImage == -1)return;
-    QImage Shift(ImageList[CurrentImage]->FileName);
+    if (actionLock_File->isChecked() || currentImage == -1)return;
+    QImage Shift(imageList[currentImage]->fileName);
 
-    //Manually edit matrix to make pure hoizontal movement, not movement in the dx of the matrix
+    //Manually edit matrix to make pure hoizontal movement, not movement in the dX of the matrix
     qreal m11, m12, m21, m22, mdx, mdy;
-    mdx = ImageList[CurrentImage]->m.dx();
-    mdy = ImageList[CurrentImage]->m.dy();
-    m11 = ImageList[CurrentImage]->m.m11();
-    m22 = ImageList[CurrentImage]->m.m22();
-    m21 = ImageList[CurrentImage]->m.m21();
-    m12 = ImageList[CurrentImage]->m.m12();
+    mdx = imageList[currentImage]->m.dx();
+    mdy = imageList[currentImage]->m.dy();
+    m11 = imageList[currentImage]->m.m11();
+    m22 = imageList[currentImage]->m.m22();
+    m21 = imageList[currentImage]->m.m21();
+    m12 = imageList[currentImage]->m.m12();
     mdy += shiftSize;
-    ImageList[CurrentImage]->m.setMatrix(m11, m12, 0., m21, m22, 0., mdx, mdy, 1.);
+    imageList[currentImage]->m.setMatrix(m11, m12, 0., m21, m22, 0., mdx, mdy, 1.);
 
     //For propogation mode
-    if (actionPropogate_mode->isChecked()) {
+    if (actionPropogate_Mode->isChecked()) {
         PropogationData *newdata = new PropogationData();
-        Propogation.append(newdata);
-        Propogation[PropogateStep]->transformation = 4;
-        Propogation[PropogateStep]->value = shiftSize;
-        PropogateStep++;
+        propogation.append(newdata);
+        propogation[propogateStep]->transformation = 4;
+        propogation[propogateStep]->value = shiftSize;
+        propogateStep++;
     }
 
 
     redrawShift();
-    RedrawImage();
+    redrawImage();
 }
 
 //Function to redraw the shifts for translation (both lateral and vertical need this code)
 void MainWindowImpl::redrawShift()
 {
-    QImage Shift(ImageList[CurrentImage]->FileName);
+    QImage Shift(imageList[currentImage]->fileName);
     QImage Shifted(width, height, QImage::Format_RGB32);
     QPainter paint;
     paint.begin(&Shifted);
     paint.setRenderHint(QPainter::SmoothPixmapTransform);
-    paint.setWorldTransform(ImageList[CurrentImage]->m);
+    paint.setWorldTransform(imageList[currentImage]->m);
     //0.0 because matrix applies is in fact mdx,mdy
     QPointF leftCorner(0.0, 0.0);
     paint.drawImage(leftCorner, Shift);
@@ -2751,19 +2750,19 @@ void MainWindowImpl::redrawShift()
         Shifted = tempToDraw;
     }
 
-    QString savename = ImageList[CurrentImage]->FileName + ".xxx";
-    if (ImageList[CurrentImage]->format == 0)Shifted.save(savename, "BMP", 100);
-    if (ImageList[CurrentImage]->format == 1)Shifted.save(savename, "JPG", 100);
-    if (ImageList[CurrentImage]->format == 2)Shifted.save(savename, "PNG", 50);
+    QString savename = imageList[currentImage]->fileName + ".xxx";
+    if (imageList[currentImage]->format == 0)Shifted.save(savename, "BMP", 100);
+    if (imageList[currentImage]->format == 1)Shifted.save(savename, "JPG", 100);
+    if (imageList[currentImage]->format == 2)Shifted.save(savename, "PNG", 50);
 }
 
 //Set up to record changes in propogation mode
-void MainWindowImpl::on_actionPropogate_mode_triggered(bool checked)
+void MainWindowImpl::on_actionPropogate_Mode_triggered(bool checked)
 {
     if (checked == true) {
         if (autoMarkersUp == 1) {
             QMessageBox::warning(0, "Error", "Automarkers doesn't work in propagate mode, please turn off and try again. ", QMessageBox::Ok);
-            actionPropogate_mode->setChecked(false);
+            actionPropogate_Mode->setChecked(false);
             return;
         }
 
@@ -2781,16 +2780,16 @@ void MainWindowImpl::on_actionPropogate_mode_triggered(bool checked)
 
         if (msgBox.clickedButton() != cancelButton) {
             int flag = 0;
-            LockImage = CurrentImage;
+            lockImage = currentImage;
 
             if (msgBox.clickedButton() == forwardButton) {
-                if (CurrentImage == ImageList.count() - 1) {
+                if (currentImage == imageList.count() - 1) {
                     QMessageBox::warning(0, "Error", "I'm afraid it's not possible to propogate forward from the last image - perhaps time for a coffee?", QMessageBox::Ok);
-                    actionPropogate_mode->setChecked(false);
+                    actionPropogate_Mode->setChecked(false);
                     return;
                 }
-                if (CurrentImage == 0)flag = 1;
-                actionApply_propogation->setEnabled(true);
+                if (currentImage == 0)flag = 1;
+                actionApply_Propogation->setEnabled(true);
                 actionLock_Forward->setChecked(true);
                 actionLock_Back->setChecked(false);
                 actionLock_File->setChecked(false);
@@ -2800,13 +2799,13 @@ void MainWindowImpl::on_actionPropogate_mode_triggered(bool checked)
                 actionLock_File->setEnabled(false);
             }
             if (msgBox.clickedButton() == backButton) {
-                if (CurrentImage == 0) {
+                if (currentImage == 0) {
                     QMessageBox::warning(0, "Error", "I'm afraid it's not possible to propogate back from the first image - perhaps time for a coffee?", QMessageBox::Ok);
-                    actionPropogate_mode->setChecked(false);
+                    actionPropogate_Mode->setChecked(false);
                     return;
                 }
-                if (CurrentImage == ImageList.count() - 1)flag = 1;
-                actionApply_propogation->setEnabled(true);
+                if (currentImage == imageList.count() - 1)flag = 1;
+                actionApply_Propogation->setEnabled(true);
                 actionLock_Forward->setChecked(false);
                 actionLock_Back->setChecked(true);
                 actionLock_File->setChecked(true);
@@ -2818,42 +2817,42 @@ void MainWindowImpl::on_actionPropogate_mode_triggered(bool checked)
 
 
             if (flag == 0) {
-                horizontalSlider->setMaximum(LockImage + 1);
-                spinBox->setMaximum(LockImage + 1);
-                horizontalSlider->setMinimum(LockImage);
-                spinBox->setMinimum(LockImage);
-                PropogateStep = 0;
-                PropogateImage = CurrentImage;
-                RedrawImage();
+                horizontalSlider->setMaximum(lockImage + 1);
+                spinBox->setMaximum(lockImage + 1);
+                horizontalSlider->setMinimum(lockImage);
+                spinBox->setMinimum(lockImage);
+                propogateStep = 0;
+                propogateImage = currentImage;
+                redrawImage();
             }
             if (flag == 1) {
                 actionLock_File->setChecked(false);
-                horizontalSlider->setMaximum(LockImage + 1);
-                spinBox->setMaximum(LockImage + 1);
-                horizontalSlider->setMinimum(LockImage + 1);
-                spinBox->setMinimum(LockImage + 1);
-                PropogateStep = 0;
-                PropogateImage = CurrentImage;
-                RedrawImage();
+                horizontalSlider->setMaximum(lockImage + 1);
+                spinBox->setMaximum(lockImage + 1);
+                horizontalSlider->setMinimum(lockImage + 1);
+                spinBox->setMinimum(lockImage + 1);
+                propogateStep = 0;
+                propogateImage = currentImage;
+                redrawImage();
             }
         } else {
-            actionPropogate_mode->setChecked(false);
+            actionPropogate_Mode->setChecked(false);
         }
     }
 
     if (checked == false) {
-        actionApply_propogation->setEnabled(false);
-        if (CurrentImage < 2) {
+        actionApply_Propogation->setEnabled(false);
+        if (currentImage < 2) {
             horizontalSlider->setEnabled(true);
             spinBox->setEnabled(true);
             horizontalSlider->setEnabled(true);
             spinBox->setEnabled(true);
         }
-        qDeleteAll(Propogation.begin(), Propogation.end());
-        Propogation.clear();
-        RedrawImage();
-        horizontalSlider->setMaximum(dirlist.count());
-        spinBox->setMaximum(dirlist.count());
+        qDeleteAll(propogation.begin(), propogation.end());
+        propogation.clear();
+        redrawImage();
+        horizontalSlider->setMaximum(drectoryFileList.count());
+        spinBox->setMaximum(drectoryFileList.count());
         horizontalSlider->setMinimum(1);
         spinBox->setMinimum(1);
 
@@ -2870,77 +2869,77 @@ void MainWindowImpl::on_actionPropogate_mode_triggered(bool checked)
     showInfo(-1, -1);
 }
 
-void MainWindowImpl::on_actionApply_propogation_triggered()
+void MainWindowImpl::on_actionApply_Propogation_triggered()
 {
     //Setup progress bar
     QProgressBar progress;
-    progress.setRange (PropogateImage + 1, ImageList.count());
+    progress.setRange (propogateImage + 1, imageList.count());
     progress.setAlignment(Qt::AlignHCenter);
     statusbar->addPermanentWidget(&progress);
 
     if (actionLock_Forward->isChecked()) {
         //Loop through images
-        for (int i = (PropogateImage + 1); i < ImageList.count(); i++) {
+        for (int i = (propogateImage + 1); i < imageList.count(); i++) {
             //Update message on status bar & progress bar
             progress.setValue(i);
             qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
 
-            QString output = "Propogation - ";// + ImageList[i]->FileName;
+            QString output = "propogation - ";// + imageList[i]->fileName;
             QString output2;
-            output2.sprintf("Processing (%d/%d)", i + 1, ImageList.count());
+            output2.sprintf("Processing (%d/%d)", i + 1, imageList.count());
             statusbar->showMessage(output + output2);
 
             //Start painter
-            QImage ApplyProp(ImageList[i]->FileName);
+            QImage ApplyProp(imageList[i]->fileName);
             QImage ToDraw(width, height, QImage::Format_RGB32);
             QPainter paint;
             paint.begin(&ToDraw);
             paint.setRenderHint(QPainter::SmoothPixmapTransform);
             //For each images loop through the transformation list
-            for (int j = 0; j < Propogation.count(); j++) {
+            for (int j = 0; j < propogation.count(); j++) {
                 //Rotate
-                if (Propogation[j]->transformation == 1) {
-                    paint.setWorldTransform(ImageList[i]->m);
+                if (propogation[j]->transformation == 1) {
+                    paint.setWorldTransform(imageList[i]->m);
                     paint.translate((width / 2), (height / 2));
-                    paint.rotate(Propogation[j]->value);
+                    paint.rotate(propogation[j]->value);
                     paint.translate(-(width / 2), -(height / 2));
-                    ImageList[i]->m = paint.worldTransform();
+                    imageList[i]->m = paint.worldTransform();
                 }
                 //Resize
-                if (Propogation[j]->transformation == 2) {
-                    paint.setWorldTransform(ImageList[i]->m);
+                if (propogation[j]->transformation == 2) {
+                    paint.setWorldTransform(imageList[i]->m);
                     paint.translate((width / 2), (height / 2));
-                    paint.scale(Propogation[j]->value, Propogation[j]->value);
+                    paint.scale(propogation[j]->value, propogation[j]->value);
                     paint.translate(-(width / 2), -(height / 2));
-                    ImageList[i]->m = paint.worldTransform();
+                    imageList[i]->m = paint.worldTransform();
                 }
                 //Lateral shift
-                if (Propogation[j]->transformation == 3) {
+                if (propogation[j]->transformation == 3) {
                     qreal m11, m12, m21, m22, mdx, mdy;
-                    mdx = ImageList[i]->m.dx();
-                    mdy = ImageList[i]->m.dy();
-                    m11 = ImageList[i]->m.m11();
-                    m22 = ImageList[i]->m.m22();
-                    m21 = ImageList[i]->m.m21();
-                    m12 = ImageList[i]->m.m12();
-                    mdx += Propogation[j]->value;
-                    ImageList[i]->m.setMatrix(m11, m12, 0., m21, m22, 0., mdx, mdy, 1.);
+                    mdx = imageList[i]->m.dx();
+                    mdy = imageList[i]->m.dy();
+                    m11 = imageList[i]->m.m11();
+                    m22 = imageList[i]->m.m22();
+                    m21 = imageList[i]->m.m21();
+                    m12 = imageList[i]->m.m12();
+                    mdx += propogation[j]->value;
+                    imageList[i]->m.setMatrix(m11, m12, 0., m21, m22, 0., mdx, mdy, 1.);
                 }
                 //Vertical shift
-                if (Propogation[j]->transformation == 4) {
+                if (propogation[j]->transformation == 4) {
                     qreal m11, m12, m21, m22, mdx, mdy;
-                    mdx = ImageList[i]->m.dx();
-                    mdy = ImageList[i]->m.dy();
-                    m11 = ImageList[i]->m.m11();
-                    m22 = ImageList[i]->m.m22();
-                    m21 = ImageList[i]->m.m21();
-                    m12 = ImageList[i]->m.m12();
-                    mdy += Propogation[j]->value;
-                    ImageList[i]->m.setMatrix(m11, m12, 0., m21, m22, 0., mdx, mdy, 1.);
+                    mdx = imageList[i]->m.dx();
+                    mdy = imageList[i]->m.dy();
+                    m11 = imageList[i]->m.m11();
+                    m22 = imageList[i]->m.m22();
+                    m21 = imageList[i]->m.m21();
+                    m12 = imageList[i]->m.m12();
+                    mdy += propogation[j]->value;
+                    imageList[i]->m.setMatrix(m11, m12, 0., m21, m22, 0., mdx, mdy, 1.);
                 }
             }
             //Finally draw and save new file
-            paint.setWorldTransform(ImageList[i]->m);
+            paint.setWorldTransform(imageList[i]->m);
             QPointF leftCorner(0.0, 0.0);
             paint.drawImage(leftCorner, ApplyProp);
             paint.end();
@@ -2969,78 +2968,78 @@ void MainWindowImpl::on_actionApply_propogation_triggered()
                 ToDraw = tempToDraw;
             }
 
-            QString savename = ImageList[i]->FileName + ".xxx";
-            if (ImageList[i]->format == 0)ToDraw.save(savename, "BMP", 100);
-            if (ImageList[i]->format == 1)ToDraw.save(savename, "JPG", 100);
-            if (ImageList[i]->format == 2)ToDraw.save(savename, "PNG", 50);
+            QString savename = imageList[i]->fileName + ".xxx";
+            if (imageList[i]->format == 0)ToDraw.save(savename, "BMP", 100);
+            if (imageList[i]->format == 1)ToDraw.save(savename, "JPG", 100);
+            if (imageList[i]->format == 2)ToDraw.save(savename, "PNG", 50);
         }
     } else if (actionLock_Back->isChecked()) {
-        int k = (PropogateImage + 1);
+        int k = (propogateImage + 1);
         int l = 0;
         //Loop through images
-        for (int i = PropogateImage - 2; i >= 0; i--) {
+        for (int i = propogateImage - 2; i >= 0; i--) {
             k++;
             l++;
             //Update message on status bar & progress bar
             progress.setValue(k);
             qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
 
-            QString output = "Propogation - ";
+            QString output = "propogation - ";
             QString output2;
-            output2.sprintf("Processing (%d/%d)", l, ImageList.count());
+            output2.sprintf("Processing (%d/%d)", l, imageList.count());
             statusbar->showMessage(output + output2);
 
             //Start painter
-            QImage ApplyProp(ImageList[i]->FileName);
+            QImage ApplyProp(imageList[i]->fileName);
             QImage ToDraw(width, height, QImage::Format_RGB32);
             QPainter paint;
             paint.begin(&ToDraw);
             paint.setRenderHint(QPainter::SmoothPixmapTransform);
             //For each images loop through the transformation list
-            for (int j = 0; j < Propogation.count(); j++) {
+            for (int j = 0; j < propogation.count(); j++) {
                 //Rotate
-                if (Propogation[j]->transformation == 1) {
-                    paint.setWorldTransform(ImageList[i]->m);
+                if (propogation[j]->transformation == 1) {
+                    paint.setWorldTransform(imageList[i]->m);
                     paint.translate((width / 2), (height / 2));
-                    paint.rotate(Propogation[j]->value);
+                    paint.rotate(propogation[j]->value);
                     paint.translate(-(width / 2), -(height / 2));
-                    ImageList[i]->m = paint.worldTransform();
+                    imageList[i]->m = paint.worldTransform();
                 }
                 //Resize
-                if (Propogation[j]->transformation == 2) {
-                    paint.setWorldTransform(ImageList[i]->m);
+                if (propogation[j]->transformation == 2) {
+                    paint.setWorldTransform(imageList[i]->m);
                     paint.translate((width / 2), (height / 2));
-                    paint.scale(Propogation[j]->value, Propogation[j]->value);
+                    paint.scale(propogation[j]->value, propogation[j]->value);
                     paint.translate(-(width / 2), -(height / 2));
-                    ImageList[i]->m = paint.worldTransform();
+                    imageList[i]->m = paint.worldTransform();
                 }
                 //Lateral shift
-                if (Propogation[j]->transformation == 3) {
+                if (propogation[j]->transformation == 3) {
                     qreal m11, m12, m21, m22, mdx, mdy;
-                    mdx = ImageList[i]->m.dx();
-                    mdy = ImageList[i]->m.dy();
-                    m11 = ImageList[i]->m.m11();
-                    m22 = ImageList[i]->m.m22();
-                    m21 = ImageList[i]->m.m21();
-                    m12 = ImageList[i]->m.m12();
-                    mdx += Propogation[j]->value;
-                    ImageList[i]->m.setMatrix(m11, m12, 0., m21, m22, 0., mdx, mdy, 1.);
+                    mdx = imageList[i]->m.dx();
+                    mdy = imageList[i]->m.dy();
+                    m11 = imageList[i]->m.m11();
+                    m22 = imageList[i]->m.m22();
+                    m21 = imageList[i]->m.m21();
+                    m12 = imageList[i]->m.m12();
+                    mdx += propogation[j]->value;
+                    imageList[i]->m.setMatrix(m11, m12, 0., m21, m22, 0., mdx, mdy, 1.);
                 }
                 //Vertical shift
-                if (Propogation[j]->transformation == 4) {
+                if (propogation[j]->transformation == 4) {
                     qreal m11, m12, m21, m22, mdx, mdy;
-                    mdx = ImageList[i]->m.dx();
-                    mdy = ImageList[i]->m.dy();
-                    m11 = ImageList[i]->m.m11();
-                    m22 = ImageList[i]->m.m22();
-                    m21 = ImageList[i]->m.m21();
-                    m12 = ImageList[i]->m.m12();
-                    mdy += Propogation[j]->value;
-                    ImageList[i]->m.setMatrix(m11, m12, 0., m21, m22, 0., mdx, mdy, 1.);
+                    mdx = imageList[i]->m.dx();
+                    mdy = imageList[i]->m.dy();
+                    m11 = imageList[i]->m.m11();
+                    m22 = imageList[i]->m.m22();
+                    m21 = imageList[i]->m.m21();
+                    m12 = imageList[i]->m.m12();
+                    mdy += propogation[j]->value;
+                    imageList[i]->m.setMatrix(m11, m12, 0., m21, m22, 0., mdx, mdy, 1.);
                 }
             }
             //Finally draw and save new file
-            paint.setWorldTransform(ImageList[i]->m);
+            paint.setWorldTransform(imageList[i]->m);
             QPointF leftCorner(0.0, 0.0);
             paint.drawImage(leftCorner, ApplyProp);
             paint.end();
@@ -3069,16 +3068,16 @@ void MainWindowImpl::on_actionApply_propogation_triggered()
                 ToDraw = tempToDraw;
             }
 
-            QString savename = ImageList[i]->FileName + ".xxx";
-            if (ImageList[i]->format == 0)ToDraw.save(savename, "BMP", 100);
-            if (ImageList[i]->format == 1)ToDraw.save(savename, "JPG", 100);
-            if (ImageList[i]->format == 2)ToDraw.save(savename, "PNG", 50);
+            QString savename = imageList[i]->fileName + ".xxx";
+            if (imageList[i]->format == 0)ToDraw.save(savename, "BMP", 100);
+            if (imageList[i]->format == 1)ToDraw.save(savename, "JPG", 100);
+            if (imageList[i]->format == 2)ToDraw.save(savename, "PNG", 50);
         }
     } else QMessageBox::warning(0, "Error", "You should never see this - propagation failed, email me.", QMessageBox::Ok);
 
     //Disable propogaiton mode
-    actionPropogate_mode->setChecked(false);
-    actionApply_propogation->setEnabled(false);
+    actionPropogate_Mode->setChecked(false);
+    actionApply_Propogation->setEnabled(false);
 
     actionLock_Forward->setChecked(false);
     actionLock_Back->setChecked(false);
@@ -3092,21 +3091,21 @@ void MainWindowImpl::on_actionApply_propogation_triggered()
     showInfo(-1, -1);
 
     //Reset slider
-    if (CurrentImage < 2) {
+    if (currentImage < 2) {
         horizontalSlider->setEnabled(true);
         spinBox->setEnabled(true);
         horizontalSlider->setEnabled(true);
         spinBox->setEnabled(true);
     }
-    horizontalSlider->setMaximum(dirlist.count());
-    spinBox->setMaximum(dirlist.count());
+    horizontalSlider->setMaximum(drectoryFileList.count());
+    spinBox->setMaximum(drectoryFileList.count());
     horizontalSlider->setMinimum(1);
     spinBox->setMinimum(1);
 
     //Delete propogation list
-    qDeleteAll(Propogation.begin(), Propogation.end());
-    Propogation.clear();
-    RedrawImage();
+    qDeleteAll(propogation.begin(), propogation.end());
+    propogation.clear();
+    redrawImage();
 
     //Clean statusbar
     statusbar->clearMessage();
@@ -3121,9 +3120,9 @@ void MainWindowImpl::on_actionCreate_Crop_Area_triggered(bool checked)
 
         autoAlign->setEnabled(false);
         if (setupFlag == 1)setupAlign->setChecked(false);
-        CropArea = new QRect((width / 4), (height / 4), 200, 200);
-        cropWidth->setValue(200);
-        cropHeight->setValue(200);
+        cropArea = new QRect((width / 4), (height / 4), 200, 200);
+        cropWidth->setValue(width / 2);
+        cropHeight->setValue(height / 2);
         red2->setValue(redValue);
         green2->setValue(greenValue);
         blue2->setValue(blueValue);
@@ -3134,7 +3133,7 @@ void MainWindowImpl::on_actionCreate_Crop_Area_triggered(bool checked)
                 lockMarkers->setEnabled(true);
                 autoMarkersUp = 0;
                 showInfo(-1, -1);
-                delete GridOutline;
+                delete gridOutline;
                 delete autoMarkersGroup;
                 autoMarkersGroup = NULL;
                 markersLockToggled();
@@ -3143,13 +3142,13 @@ void MainWindowImpl::on_actionCreate_Crop_Area_triggered(bool checked)
             markersUp = 0;
             markersDialogue->hide();
             actionAdd_Markers->setChecked(false);
-
         }
-        layout2widget->setMaximumHeight(300);
+
+        layoutWidgetTwo->setMaximumHeight(300);
         cropDock->show();
         actionCrop->setEnabled(true);
         cropUp = 1;
-        RedrawImage();
+        redrawImage();
     }
 
     if (checked == false) {
@@ -3163,14 +3162,14 @@ void MainWindowImpl::on_actionCreate_Crop_Area_triggered(bool checked)
         actionMove_Down->setEnabled(false);
         actionShrink_Down->setEnabled(false);
         actionCrop->setEnabled(false);
-        delete CropArea;
-        CropArea = NULL;
+        delete cropArea;
+        cropArea = NULL;
         rectPointer = NULL;
         cropUp = 0;
         cropDock->hide();
-        layout2widget->setMaximumHeight(200);
+        layoutWidgetTwo->setMaximumHeight(200);
         QApplication::setOverrideCursor(Qt::ArrowCursor);
-        RedrawImage();
+        redrawImage();
     }
 
 }
@@ -3182,20 +3181,20 @@ void MainWindowImpl::on_actionCrop_triggered()
     if ((QMessageBox::question(0, "Crop", "Are you sure you want to crop your images?", QMessageBox::Ok, QMessageBox::Cancel)) == 4194304)return;
     else {
         cropping = 1;
-        int count = ImageList.count(), min = 0, max = 0, format;
+        int count = imageList.count(), min = 0, max = 0, format;
 
         QStringList items;
-        for (int i = 0; i < count; i++) items <<  ImageList[i]->FileName;
+        for (int i = 0; i < count; i++) items <<  imageList[i]->fileName;
         bool ok;
         QString minfile = QInputDialog::getItem(this, "Start file", "Please choose the file from which you want to crop", items, 0, false, &ok);
         if (!ok) return;
-        for (int i = 0; i < count; i++)if (ImageList[i]->FileName == minfile)min = i;
+        for (int i = 0; i < count; i++)if (imageList[i]->fileName == minfile)min = i;
 
         QStringList items2;
-        for (int i = (min + 1); i < count; i++) items2 <<  ImageList[i]->FileName;
+        for (int i = (min + 1); i < count; i++) items2 <<  imageList[i]->fileName;
         QString maxfile = QInputDialog::getItem (this, "End file", "Please choose the file at which you want the crop to end", items2, items2.count() - 1, false, &ok);
         if (!ok) return;
-        for (int i = 0; i < count; i++)if (ImageList[i]->FileName == maxfile) max = i;
+        for (int i = 0; i < count; i++)if (imageList[i]->fileName == maxfile) max = i;
 
         QStringList formats;
         formats << "bmp" << "jpg" << "png" << "tiff";
@@ -3208,11 +3207,11 @@ void MainWindowImpl::on_actionCrop_triggered()
         else format = 3;
         if (format == 3)if ((QMessageBox::question(0, "Tiff format chosen",
                                                        "Tiffs cannot be used with SPIERS edit; this option should only be chosen if the files are to be used in VG Studio or similar software", QMessageBox::Ok, QMessageBox::Cancel)) == 4194304)return;
-        if (format != ImageList[min]->format)if ((QMessageBox::question(0, "Change format?", "The format chosen is different to the original images do you wish to proceed?", QMessageBox::Ok,
+        if (format != imageList[min]->format)if ((QMessageBox::question(0, "Change format?", "The format chosen is different to the original images do you wish to proceed?", QMessageBox::Ok,
                                                                             QMessageBox::Cancel)) == 4194304)return;
 
         //Create directory
-        QString dirname = Directory.absolutePath() + "/cut/";
+        QString dirname = filesDirectory.absolutePath() + "/cut/";
         QDir cut;
         if (cut.mkpath(dirname) == false)  {
             QMessageBox::warning(0, "Error", "Can't create cut folder for images", QMessageBox::Ok);
@@ -3221,7 +3220,7 @@ void MainWindowImpl::on_actionCrop_triggered()
         }
 
 
-        int StartImage = CurrentImage;
+        int StartImage = currentImage;
 
         //Setup status & progress bar
         QProgressBar progress;
@@ -3230,7 +3229,7 @@ void MainWindowImpl::on_actionCrop_triggered()
         statusbar->addPermanentWidget(&progress);
 
         //Normalise the crop rectangle to ensure it's valid...
-        *CropArea = CropArea->normalized();
+        *cropArea = cropArea->normalized();
         count = 0;
 
         for (int i = (min); i < (max + 1); i++) {
@@ -3244,11 +3243,11 @@ void MainWindowImpl::on_actionCrop_triggered()
             statusbar->showMessage(output + output2);
 
             QImage cropimage;
-            QString loadname = ImageList[i]->FileName + ".xxx";
+            QString loadname = imageList[i]->fileName + ".xxx";
             if (QFile::exists(loadname) == true)cropimage.load(loadname);
-            else cropimage.load(ImageList[i]->FileName);
-            QString filename = dirname + dirlist[i];
-            QImage cropped = cropimage.copy(*CropArea);
+            else cropimage.load(imageList[i]->fileName);
+            QString filename = dirname + drectoryFileList[i];
+            QImage cropped = cropimage.copy(*cropArea);
 
             int dot = filename.lastIndexOf(".");
 
@@ -3259,11 +3258,11 @@ void MainWindowImpl::on_actionCrop_triggered()
             if (format == 2)cropped.save(filename + ".png", "PNG", 50);
             if (format == 3)cropped.save(filename + ".tif", "TIFF", 100);
 
-            CurrentImage = i;
-            RedrawImage();
+            currentImage = i;
+            redrawImage();
         }
-        CurrentImage = StartImage;
-        RedrawImage();
+        currentImage = StartImage;
+        redrawImage();
 
 
 
@@ -3282,14 +3281,14 @@ void MainWindowImpl::on_actionCrop_triggered()
 //Slots to resize crop area from Spin boxes in crop dialogue
 void MainWindowImpl::resizeCropW(int value)
 {
-    CropArea->setWidth(value);
-    RedrawJustCropBox();
+    cropArea->setWidth(value);
+    redrawJustCropBox();
 }
 
 void MainWindowImpl::resizeCropH(int value)
 {
-    CropArea->setHeight(value);
-    RedrawJustCropBox();
+    cropArea->setHeight(value);
+    redrawJustCropBox();
 }
 
 
@@ -3312,33 +3311,33 @@ void MainWindowImpl::on_actionLock_File_triggered(bool checked)
 void MainWindowImpl::on_actionLock_Forward_triggered(bool checked)
 {
     if (checked == true)   {
-        LockImage = CurrentImage;
-        if (LockImage < 1) {
+        lockImage = currentImage;
+        if (lockImage < 1) {
             QMessageBox::warning(0, "Error", "This is the beginning of the dataset, locking diabled.", QMessageBox::Ok);
             actionLock_Forward->setChecked(false);
             return;
         }
-        if (!actionPropogate_mode->isChecked())statusbar->showMessage("Forward File Locking mode");
+        if (!actionPropogate_Mode->isChecked())statusbar->showMessage("Forward File Locking mode");
         else statusbar->showMessage("Forward propagation mode");
         if (actionLock_Back->isChecked ())   {
             actionLock_Back->setChecked(false);
             actionLock_File->setChecked(false);
         }
-        if (actionPropogate_mode->isChecked())   {
-            actionPropogate_mode->setChecked(false);
-            actionApply_propogation->setEnabled(false);
+        if (actionPropogate_Mode->isChecked())   {
+            actionPropogate_Mode->setChecked(false);
+            actionApply_Propogation->setEnabled(false);
         }
-        horizontalSlider->setMaximum(LockImage + 1);
-        spinBox->setMaximum(LockImage + 1);
-        horizontalSlider->setMinimum(LockImage);
-        spinBox->setMinimum(LockImage);
+        horizontalSlider->setMaximum(lockImage + 1);
+        spinBox->setMaximum(lockImage + 1);
+        horizontalSlider->setMinimum(lockImage);
+        spinBox->setMinimum(lockImage);
         actionMove_Forward_Back->setEnabled(true);
         actionLock_File->setEnabled(true);
     }
 
     if (checked == false)  {
-        horizontalSlider->setMaximum(dirlist.count());
-        spinBox->setMaximum(dirlist.count());
+        horizontalSlider->setMaximum(drectoryFileList.count());
+        spinBox->setMaximum(drectoryFileList.count());
         horizontalSlider->setMinimum(1);
         spinBox->setMinimum(1);
         actionMove_Forward_Back->setEnabled(false);
@@ -3353,35 +3352,35 @@ void MainWindowImpl::on_actionLock_Forward_triggered(bool checked)
 void MainWindowImpl::on_actionLock_Back_triggered(bool checked)
 {
     if (checked == true)   {
-        LockImage = CurrentImage;
-        if (LockImage < 1) {
+        lockImage = currentImage;
+        if (lockImage < 1) {
             QMessageBox::warning(0, "Error", "This is the beginning of the dataset, locking diabled.", QMessageBox::Ok);
             actionLock_Back->setChecked(false);
             return;
         }
 
-        if (!actionPropogate_mode->isChecked())statusbar->showMessage("Backward File Locking mode");
+        if (!actionPropogate_Mode->isChecked())statusbar->showMessage("Backward File Locking mode");
         else statusbar->showMessage("Backward propagation mode");
-        LockImage = CurrentImage;
+        lockImage = currentImage;
         if (actionLock_Forward->isChecked ())    {
             actionLock_Forward->setChecked(false);
             actionLock_File->setChecked(true);
         }
-        if (actionPropogate_mode->isChecked())   {
-            actionPropogate_mode->setChecked(false);
-            actionApply_propogation->setEnabled(false);
+        if (actionPropogate_Mode->isChecked())   {
+            actionPropogate_Mode->setChecked(false);
+            actionApply_Propogation->setEnabled(false);
         }
-        horizontalSlider->setMaximum(LockImage + 1);
-        spinBox->setMaximum(LockImage + 1);
-        horizontalSlider->setMinimum(LockImage);
-        spinBox->setMinimum(LockImage);
+        horizontalSlider->setMaximum(lockImage + 1);
+        spinBox->setMaximum(lockImage + 1);
+        horizontalSlider->setMinimum(lockImage);
+        spinBox->setMinimum(lockImage);
         actionMove_Forward_Back->setEnabled(true);
         actionLock_File->setEnabled(true);
     }
 
     if (checked == false)  {
-        horizontalSlider->setMaximum(dirlist.count());
-        spinBox->setMaximum(dirlist.count());
+        horizontalSlider->setMaximum(drectoryFileList.count());
+        spinBox->setMaximum(drectoryFileList.count());
         horizontalSlider->setMinimum(1);
         spinBox->setMinimum(1);
         actionMove_Forward_Back->setEnabled(false);
@@ -3395,26 +3394,26 @@ void MainWindowImpl::on_actionLock_Back_triggered(bool checked)
 void MainWindowImpl::on_actionMove_Forward_Back_triggered()
 {
     if (actionLock_Forward->isChecked()) {
-        if (horizontalSlider->maximum() > (ImageList.count() - 1)) {
+        if (horizontalSlider->maximum() > (imageList.count() - 1)) {
             QMessageBox::warning(0, "Error", "This is the end of the dataset, locking diabled.", QMessageBox::Ok);
             return;
         }
-        LockImage++;
-        horizontalSlider->setMaximum(LockImage + 1);
-        spinBox->setMaximum(LockImage + 1);
-        horizontalSlider->setMinimum(LockImage);
-        spinBox->setMinimum(LockImage);
+        lockImage++;
+        horizontalSlider->setMaximum(lockImage + 1);
+        spinBox->setMaximum(lockImage + 1);
+        horizontalSlider->setMinimum(lockImage);
+        spinBox->setMinimum(lockImage);
     }
     if (actionLock_Back->isChecked())   {
         if (horizontalSlider->minimum() < 2) {
             QMessageBox::warning(0, "Error", "This is the beginning of the dataset, locking diabled.", QMessageBox::Ok);
             return;
         }
-        LockImage--;
-        horizontalSlider->setMaximum(LockImage + 1);
-        spinBox->setMaximum(LockImage + 1);
-        horizontalSlider->setMinimum(LockImage);
-        spinBox->setMinimum(LockImage);
+        lockImage--;
+        horizontalSlider->setMaximum(lockImage + 1);
+        spinBox->setMaximum(lockImage + 1);
+        horizontalSlider->setMinimum(lockImage);
+        spinBox->setMinimum(lockImage);
     }
 }
 
@@ -3423,9 +3422,9 @@ void MainWindowImpl::on_horizontalSlider_valueChanged(int value)
 {
     QApplication::restoreOverrideCursor();
     if (autoMarkersUp == 1) aM.reset();
-    CurrentImage = value - 1;
-    fileList->setCurrentRow(CurrentImage);
-    RedrawImage();
+    currentImage = value - 1;
+    fileList->setCurrentRow(currentImage);
+    redrawImage();
 }
 
 //Save settings file
@@ -3434,22 +3433,22 @@ void MainWindowImpl::on_actionSave_triggered()
     int i;
 
     //Write to settings file
-    QString filename = Directory.absolutePath() + "/settings.txt";
+    QString filename = filesDirectory.absolutePath() + "/settings.txt";
     QFile settings(filename);
     settings.open(QFile::WriteOnly);
     QTextStream write(&settings);
-    for (i = 0; i < ImageList.count(); i++) {
-        write << ImageList[i]->FileName << "\t";
-        write << ImageList[i]->m.dx() << "\t";
-        write << ImageList[i]->m.dy() << "\t";
-        write << ImageList[i]->m.m11() << "\t";
-        write << ImageList[i]->m.m22() << "\t";
-        write << ImageList[i]->m.m21() << "\t";
-        write << ImageList[i]->m.m12() << "\t";
-        write << ImageList[i]->hidden << "\n";
+    for (i = 0; i < imageList.count(); i++) {
+        write << imageList[i]->fileName << "\t";
+        write << imageList[i]->m.dx() << "\t";
+        write << imageList[i]->m.dy() << "\t";
+        write << imageList[i]->m.m11() << "\t";
+        write << imageList[i]->m.m22() << "\t";
+        write << imageList[i]->m.m21() << "\t";
+        write << imageList[i]->m.m12() << "\t";
+        write << imageList[i]->hidden << "\n";
     }
 
-    write << markers.count() << "\t" << mSize->value() << "\t" << mThickness->value() << "\t" << redValue << "\t" << greenValue << "\t" << blueValue << "\t" << CurrentImage << "\t" <<
+    write << markers.count() << "\t" << mSize->value() << "\t" << mThickness->value() << "\t" << redValue << "\t" << greenValue << "\t" << blueValue << "\t" << currentImage << "\t" <<
           lockMarkers->isChecked() << "\t" << actionConstant_autosave->isChecked() << "\n";
 
     for (i = 0; i < markers.count(); i++) {
@@ -3469,22 +3468,22 @@ void MainWindowImpl::on_actionSave_Backup_triggered()
     int i;
 
     //Write to settings file
-    QString filename = Directory.absolutePath() + "/settings backup - " + date.toString("dd MMM yyyy - hh.mm.ss") + ".txt";
+    QString filename = filesDirectory.absolutePath() + "/settings backup - " + date.toString("dd MMM yyyy - hh.mm.ss") + ".txt";
     QFile settings(filename);
     settings.open(QFile::WriteOnly);
     QTextStream write(&settings);
-    for (i = 0; i < ImageList.count(); i++) {
-        write << ImageList[i]->FileName << "\t";
-        write << ImageList[i]->m.dx() << "\t";
-        write << ImageList[i]->m.dy() << "\t";
-        write << ImageList[i]->m.m11() << "\t";
-        write << ImageList[i]->m.m22() << "\t";
-        write << ImageList[i]->m.m21() << "\t";
-        write << ImageList[i]->m.m12() << "\t";
-        write << ImageList[i]->hidden << "\n";
+    for (i = 0; i < imageList.count(); i++) {
+        write << imageList[i]->fileName << "\t";
+        write << imageList[i]->m.dx() << "\t";
+        write << imageList[i]->m.dy() << "\t";
+        write << imageList[i]->m.m11() << "\t";
+        write << imageList[i]->m.m22() << "\t";
+        write << imageList[i]->m.m21() << "\t";
+        write << imageList[i]->m.m12() << "\t";
+        write << imageList[i]->hidden << "\n";
     }
 
-    write << markers.count() << "\t" << mSize->value() << "\t" << mThickness->value() << "\t" << redValue << "\t" << greenValue << "\t" << blueValue << "\t" << CurrentImage << "\t" <<
+    write << markers.count() << "\t" << mSize->value() << "\t" << mThickness->value() << "\t" << redValue << "\t" << greenValue << "\t" << blueValue << "\t" << currentImage << "\t" <<
           lockMarkers->isChecked() << "\t" << actionConstant_autosave->isChecked() << "\n";
 
     for (i = 0; i < markers.count(); i++) {
@@ -3499,51 +3498,51 @@ void MainWindowImpl::on_actionSave_Backup_triggered()
 //Hide current image
 void MainWindowImpl::on_actionHide_Image_triggered()
 {
-    if (CurrentImage == (ImageList.count() - 1)) {
+    if (currentImage == (imageList.count() - 1)) {
         QMessageBox::warning(0, "Error", "Cannot hide final Image.", QMessageBox::Ok);
         return;
     }
-    if (CurrentImage == 0) {
+    if (currentImage == 0) {
         QMessageBox::warning(0, "Error", "Cannot hide first image.", QMessageBox::Ok);
         return;
     }
 
-    ImageList[CurrentImage]->hidden = true;
+    imageList[currentImage]->hidden = true;
     statusbar->showMessage("This image is hidden.");
 }
 
 //Unhide current image
 void MainWindowImpl::on_actionShow_Image_triggered()
 {
-    ImageList[CurrentImage]->hidden = false;
+    imageList[currentImage]->hidden = false;
     statusbar->showMessage("This image is no longer hidden.");
 }
 
 //Unhide all images
 void MainWindowImpl::on_actionShow_All_triggered()
 {
-    for (int i = 0; i < ImageList.count(); i++)ImageList[i]->hidden = false;
+    for (int i = 0; i < imageList.count(); i++)imageList[i]->hidden = false;
     statusbar->showMessage("All images no longer hidden.");
 }
 
 //Advance ignoring hide
-void MainWindowImpl::on_actionAdvance_to_hidden_triggered()
+void MainWindowImpl::on_actionAdvance_To_Hidden_triggered()
 {
     if (spinBox->isEnabled() == false)return;
-    horizontalSlider->setValue(CurrentImage + 2);
-    if (actionPropogate_mode->isChecked() && CurrentImage == (PropogateImage))actionLock_File->setChecked(false);
-    if (actionLock_Forward->isChecked() && CurrentImage == LockImage)actionLock_File->setChecked(false);
-    if (actionLock_Back->isChecked() && CurrentImage == LockImage)actionLock_File->setChecked(true);
+    horizontalSlider->setValue(currentImage + 2);
+    if (actionPropogate_Mode->isChecked() && currentImage == (propogateImage))actionLock_File->setChecked(false);
+    if (actionLock_Forward->isChecked() && currentImage == lockImage)actionLock_File->setChecked(false);
+    if (actionLock_Back->isChecked() && currentImage == lockImage)actionLock_File->setChecked(true);
 }
 
 //Retreat ignoring hide
 void MainWindowImpl::on_actionRetreat_To_Hidden_triggered()
 {
     if (spinBox->isEnabled() == false)return;
-    horizontalSlider->setValue(CurrentImage);
-    if (actionPropogate_mode->isChecked() && CurrentImage == (PropogateImage - 1))actionLock_File->setChecked(true);
-    if (actionLock_Forward->isChecked() && CurrentImage == (LockImage - 1))actionLock_File->setChecked(true);
-    if (actionLock_Back->isChecked() && CurrentImage == (LockImage - 1))actionLock_File->setChecked(false);
+    horizontalSlider->setValue(currentImage);
+    if (actionPropogate_Mode->isChecked() && currentImage == (propogateImage - 1))actionLock_File->setChecked(true);
+    if (actionLock_Forward->isChecked() && currentImage == (lockImage - 1))actionLock_File->setChecked(true);
+    if (actionLock_Back->isChecked() && currentImage == (lockImage - 1))actionLock_File->setChecked(false);
 }
 
 //Next
@@ -3552,22 +3551,22 @@ void MainWindowImpl::on_actionNext_Image_triggered()
     QApplication::restoreOverrideCursor();
     if (spinBox->isEnabled() == false)return;
     if (autoMarkersUp == 1 && !actionLock_Forward->isChecked() && !actionLock_Back->isChecked()) aM.reset();
-    if (actionLock_Forward->isChecked() || actionLock_Back->isChecked())horizontalSlider->setValue(CurrentImage + 2);
+    if (actionLock_Forward->isChecked() || actionLock_Back->isChecked())horizontalSlider->setValue(currentImage + 2);
     else {
-        if (CurrentImage < (ImageList.count() - 1))CurrentImage++;
-        if (ImageList[CurrentImage]->hidden == true)while (ImageList[CurrentImage]->hidden == true && CurrentImage < (ImageList.count() - 1))CurrentImage++;
-        horizontalSlider->setValue(CurrentImage + 1);
-        fileList->setCurrentRow(CurrentImage);
+        if (currentImage < (imageList.count() - 1))currentImage++;
+        if (imageList[currentImage]->hidden == true)while (imageList[currentImage]->hidden == true && currentImage < (imageList.count() - 1))currentImage++;
+        horizontalSlider->setValue(currentImage + 1);
+        fileList->setCurrentRow(currentImage);
     }
-    //if (actionPropogate_mode->isChecked() && CurrentImage==(PropogateImage))actionLock_File->setChecked(false);
+    //if (actionPropogate_Mode->isChecked() && currentImage==(propogateImage))actionLock_File->setChecked(false);
     //Call redraw image again here so automarkers works in lock mode
-    if (actionLock_Forward->isChecked() && CurrentImage == LockImage) {
+    if (actionLock_Forward->isChecked() && currentImage == lockImage) {
         actionLock_File->setChecked(false);
-        RedrawImage();
+        redrawImage();
     }
-    if (actionLock_Back->isChecked() && CurrentImage == LockImage) {
+    if (actionLock_Back->isChecked() && currentImage == lockImage) {
         actionLock_File->setChecked(true);
-        RedrawImage();
+        redrawImage();
     }
 
 }
@@ -3578,21 +3577,21 @@ void MainWindowImpl::on_actionPrevious_Image_triggered()
     QApplication::restoreOverrideCursor();
     if (spinBox->isEnabled() == false)return;
     if (autoMarkersUp == 1 && !actionLock_Forward->isChecked() && !actionLock_Back->isChecked()) aM.reset();
-    if (actionLock_Forward->isChecked() || actionLock_Back->isChecked())horizontalSlider->setValue(CurrentImage);
+    if (actionLock_Forward->isChecked() || actionLock_Back->isChecked())horizontalSlider->setValue(currentImage);
     else {
-        if (CurrentImage > 0)CurrentImage--;
-        if (ImageList[CurrentImage]->hidden == true)while (ImageList[CurrentImage]->hidden == true && CurrentImage < (ImageList.count() - 1))CurrentImage--;
-        horizontalSlider->setValue(CurrentImage + 1);
-        fileList->setCurrentRow(CurrentImage);
+        if (currentImage > 0)currentImage--;
+        if (imageList[currentImage]->hidden == true)while (imageList[currentImage]->hidden == true && currentImage < (imageList.count() - 1))currentImage--;
+        horizontalSlider->setValue(currentImage + 1);
+        fileList->setCurrentRow(currentImage);
     }
-    //if (actionPropogate_mode->isChecked() && CurrentImage==(PropogateImage-1))actionLock_File->setChecked(true);
-    if (actionLock_Forward->isChecked() && CurrentImage == (LockImage - 1)) {
+    //if (actionPropogate_Mode->isChecked() && currentImage==(propogateImage-1))actionLock_File->setChecked(true);
+    if (actionLock_Forward->isChecked() && currentImage == (lockImage - 1)) {
         actionLock_File->setChecked(true);
-        RedrawImage();
+        redrawImage();
     }
-    if (actionLock_Back->isChecked() && CurrentImage == (LockImage - 1)) {
+    if (actionLock_Back->isChecked() && currentImage == (lockImage - 1)) {
         actionLock_File->setChecked(false);
-        RedrawImage();
+        redrawImage();
     }
 
 }
@@ -3600,79 +3599,79 @@ void MainWindowImpl::on_actionPrevious_Image_triggered()
 
 void MainWindowImpl::on_actionReset_Image_triggered()
 {
-    ImageList[CurrentImage]->m.reset();
-    QString loadname = ImageList[CurrentImage]->FileName + ".xxx";
+    imageList[currentImage]->m.reset();
+    QString loadname = imageList[currentImage]->fileName + ".xxx";
     if (QFile::exists(loadname) == true) {
         QFile deleteFile(loadname);
         deleteFile.remove();
     }
-    RedrawImage();
+    redrawImage();
 }
 
 void MainWindowImpl::on_actionReset_Scene_triggered()
 {
     QPixmap newimage;
-    QString loadname = ImageList[CurrentImage]->FileName + ".xxx";
+    QString loadname = imageList[currentImage]->fileName + ".xxx";
     if (QFile::exists(loadname) == true)newimage.load(loadname);
-    else newimage.load(ImageList[CurrentImage]->FileName);
+    else newimage.load(imageList[currentImage]->fileName);
     width = newimage.width();
     height = newimage.height();
 
-    RedrawImage();
+    redrawImage();
 }
 
 void MainWindowImpl::on_actionSwap_Image_With_Next_triggered()
 {
     int flag = 0;
-    if (ImageList[CurrentImage + 1]->hidden == 1)if ((QMessageBox::question(0, "Next image hidden", "The next image is hidden, still swap?", QMessageBox::Ok, QMessageBox::Cancel)) == 4194304)return;
+    if (imageList[currentImage + 1]->hidden == 1)if ((QMessageBox::question(0, "Next image hidden", "The next image is hidden, still swap?", QMessageBox::Ok, QMessageBox::Cancel)) == 4194304)return;
 
-    QString swapName = ImageList[CurrentImage]->FileName;
+    QString swapName = imageList[currentImage]->fileName;
     QFile Current(swapName);
-    Current.rename(ImageList[CurrentImage]->FileName + ".swap");
+    Current.rename(imageList[currentImage]->fileName + ".swap");
 
-    QString loadname = ImageList[CurrentImage]->FileName + ".xxx";
+    QString loadname = imageList[currentImage]->fileName + ".xxx";
     if (QFile::exists(loadname) == true) {
         flag = 1;
         QFile CurrentXXX(loadname);
         CurrentXXX.rename(loadname + ".swap");
     }
 
-    QString newFile = ImageList[CurrentImage + 1]->FileName;
+    QString newFile = imageList[currentImage + 1]->fileName;
     QFile newCurrent(newFile);
-    newCurrent.rename(ImageList[CurrentImage]->FileName);
+    newCurrent.rename(imageList[currentImage]->fileName);
 
-    QString newloadname = ImageList[CurrentImage + 1]->FileName + ".xxx";
+    QString newloadname = imageList[currentImage + 1]->fileName + ".xxx";
     if (QFile::exists(newloadname) == true) {
         QFile newCurrentXXX(newloadname);
         newCurrentXXX.rename(loadname);
     }
 
-    QFile previousCurrent(ImageList[CurrentImage]->FileName + ".swap");
-    previousCurrent.rename(ImageList[CurrentImage + 1]->FileName);
+    QFile previousCurrent(imageList[currentImage]->fileName + ".swap");
+    previousCurrent.rename(imageList[currentImage + 1]->fileName);
 
     if (flag == 1) {
         QFile old(loadname + ".swap");
-        old.rename(ImageList[CurrentImage + 1]->FileName + ".xxx");
+        old.rename(imageList[currentImage + 1]->fileName + ".xxx");
     }
 
-    QTransform M = ImageList[CurrentImage]->m;
-    ImageList[CurrentImage]->m = ImageList[CurrentImage + 1]->m;
-    ImageList[CurrentImage + 1]->m = M;
+    QTransform M = imageList[currentImage]->m;
+    imageList[currentImage]->m = imageList[currentImage + 1]->m;
+    imageList[currentImage + 1]->m = M;
 
-    bool ishidden = ImageList[CurrentImage]->hidden;
-    ImageList[CurrentImage]->hidden = ImageList[CurrentImage + 1]->hidden;
-    ImageList[CurrentImage + 1]->hidden = ishidden;
+    bool ishidden = imageList[currentImage]->hidden;
+    imageList[currentImage]->hidden = imageList[currentImage + 1]->hidden;
+    imageList[currentImage + 1]->hidden = ishidden;
 
-    int fileformat = ImageList[CurrentImage]->format;
-    ImageList[CurrentImage]->format = ImageList[CurrentImage + 1]->format;
-    ImageList[CurrentImage + 1]->format = fileformat;
+    int fileformat = imageList[currentImage]->format;
+    imageList[currentImage]->format = imageList[currentImage + 1]->format;
+    imageList[currentImage + 1]->format = fileformat;
 
-    RedrawImage();
+    redrawImage();
 }
 
-void MainWindowImpl::on_actionLoad_settings_file_triggered()
+void MainWindowImpl::on_actionLoad_Settings_File_triggered()
 {
-    if (CurrentImage == -1) {
+    if (currentImage == -1) {
         QMessageBox::warning(0, "Error", "Please open the dataset you wish to apply a settings file to.", QMessageBox::Ok);
         return;
     }
@@ -3692,8 +3691,8 @@ void MainWindowImpl::on_actionLoad_settings_file_triggered()
 
     QTextStream read(&settings);
 
-    int x = ImageList.count();
-    CurrentImage = -1;
+    int x = imageList.count();
+    currentImage = -1;
     i = -1;
     while (!read.atEnd()) {
         i++;
@@ -3701,7 +3700,7 @@ void MainWindowImpl::on_actionLoad_settings_file_triggered()
         QStringList list = line.split("\t");
         if (i < x) {
             //Check image list not modified - filenames should remain the same.
-            if (!list[0].endsWith(ImageList[i]->FileName, Qt::CaseInsensitive)) {
+            if (!list[0].endsWith(imageList[i]->fileName, Qt::CaseInsensitive)) {
                 QMessageBox::warning(0, "Error", "Image sequence has been modified. This will prevent the dataset loading correctly", QMessageBox::Ok);
                 return;
             } else {
@@ -3712,7 +3711,7 @@ void MainWindowImpl::on_actionLoad_settings_file_triggered()
                 m22 = list[4].toDouble();
                 m21 = list[5].toDouble();
                 m12 = list[6].toDouble();
-                ImageList[i]->m.setMatrix(m11, m12, 0., m21, m22, 0., mdx, mdy, 1.);
+                imageList[i]->m.setMatrix(m11, m12, 0., m21, m22, 0., mdx, mdy, 1.);
             }
         }
         if (i == x) {
@@ -3755,13 +3754,13 @@ void MainWindowImpl::on_actionLoad_settings_file_triggered()
 
     settings.flush();
     settings.close();
-    CurrentImage = 0;
-    for (i = 0; i < ImageList.count(); i++) {
-        ImageList[i]->format = -1;
-        if (ImageList[i]->FileName.endsWith(".png", Qt::CaseInsensitive))ImageList[i]->format = 2;
-        if (ImageList[i]->FileName.endsWith(".jpg", Qt::CaseInsensitive) || ImageList[i]->FileName.endsWith(".jpeg", Qt::CaseInsensitive))ImageList[i]->format = 1;
-        if (ImageList[i]->FileName.endsWith(".bmp", Qt::CaseInsensitive))ImageList[i]->format = 0;
-        if (ImageList[i]->format == -1) {
+    currentImage = 0;
+    for (i = 0; i < imageList.count(); i++) {
+        imageList[i]->format = -1;
+        if (imageList[i]->fileName.endsWith(".png", Qt::CaseInsensitive))imageList[i]->format = 2;
+        if (imageList[i]->fileName.endsWith(".jpg", Qt::CaseInsensitive) || imageList[i]->fileName.endsWith(".jpeg", Qt::CaseInsensitive))imageList[i]->format = 1;
+        if (imageList[i]->fileName.endsWith(".bmp", Qt::CaseInsensitive))imageList[i]->format = 0;
+        if (imageList[i]->format == -1) {
             QMessageBox::warning(0, "Error", "Please check extensions - should be either .jpg, .jpeg, .bmp or .png", QMessageBox::Ok);
             return;
         }
@@ -3769,11 +3768,11 @@ void MainWindowImpl::on_actionLoad_settings_file_triggered()
 
     //Setup progress bar
     QProgressBar progress;
-    progress.setRange (0, ImageList.count());
+    progress.setRange (0, imageList.count());
     progress.setAlignment(Qt::AlignHCenter);
     statusbar->addPermanentWidget(&progress);
 
-    int listLength = ImageList.count();
+    int listLength = imageList.count();
     //Loop through images
     for (int i = 0; i < listLength; i++) {
         progress.setValue(i);
@@ -3783,10 +3782,10 @@ void MainWindowImpl::on_actionLoad_settings_file_triggered()
         QString output2;
         output2.sprintf("Processing (%d/%d)", i + 1, listLength);
         statusbar->showMessage(output + output2);
-        if (!ImageList[i]->m.isIdentity()) {
+        if (!imageList[i]->m.isIdentity()) {
 
             //Start painter
-            QImage ApplySet(ImageList[i]->FileName);
+            QImage ApplySet(imageList[i]->fileName);
             QImage ToDraw(width, height, QImage::Format_RGB32);
             if (ApplySet.format() == QImage::Format_Indexed8)ToDraw.convertToFormat(QImage::Format_Indexed8);
             QPainter paint;
@@ -3794,7 +3793,7 @@ void MainWindowImpl::on_actionLoad_settings_file_triggered()
             paint.setRenderHint(QPainter::SmoothPixmapTransform);
 
             //Draw and save new file
-            paint.setWorldTransform(ImageList[i]->m);
+            paint.setWorldTransform(imageList[i]->m);
             QPointF leftCorner(0.0, 0.0);
             paint.drawImage(leftCorner, ApplySet);
             paint.end();
@@ -3824,23 +3823,23 @@ void MainWindowImpl::on_actionLoad_settings_file_triggered()
                 ToDraw = tempToDraw;
             }
 
-            QString savename = ImageList[i]->FileName + ".xxx";
-            if (ImageList[i]->format == 0)ToDraw.save(savename, "BMP", 100);
-            if (ImageList[i]->format == 1)ToDraw.save(savename, "JPG", 100);
-            if (ImageList[i]->format == 2)ToDraw.save(savename, "PNG", 50);
+            QString savename = imageList[i]->fileName + ".xxx";
+            if (imageList[i]->format == 0)ToDraw.save(savename, "BMP", 100);
+            if (imageList[i]->format == 1)ToDraw.save(savename, "JPG", 100);
+            if (imageList[i]->format == 2)ToDraw.save(savename, "PNG", 50);
 
-            RedrawImage();
+            redrawImage();
         } else {
-            QString loadname = ImageList[i]->FileName + ".xxx";
+            QString loadname = imageList[i]->fileName + ".xxx";
             if (QFile::exists(loadname) == true)QFile::remove(loadname);
         }
     }
 
 }
 
-void MainWindowImpl::on_actionCompress_dataset_triggered()
+void MainWindowImpl::on_actionCompress_Dataset_triggered()
 {
-    if (CurrentImage == -1) {
+    if (currentImage == -1) {
         QMessageBox::warning(0, "Error", "Please open the dataset you wish to compress.", QMessageBox::Ok);
         return;
     }
@@ -3849,7 +3848,7 @@ void MainWindowImpl::on_actionCompress_dataset_triggered()
                                "Are you sure you want to compress the dataset? It is recommended you only do this once you have finished working on it. All working .xxx files will be deleted, and the image files will be converted to PNGs. The settings file can later be reapplied to the dataset, but the converion to PNGs is permanent.",
                                QMessageBox::Ok, QMessageBox::Cancel)) == QMessageBox::Cancel)return;
 
-    int x = ImageList.count(), i, flag;
+    int x = imageList.count(), i, flag;
 
     //Setup progress bar
     QProgressBar progress;
@@ -3869,10 +3868,10 @@ void MainWindowImpl::on_actionCompress_dataset_triggered()
         statusbar->showMessage(output + output2);
 
         flag = 0;
-        QString loadname = ImageList[i]->FileName + ".xxx";
+        QString loadname = imageList[i]->fileName + ".xxx";
         if (QFile::exists(loadname) == true)QFile::remove(loadname);
 
-        QString filename = ImageList[i]->FileName;
+        QString filename = imageList[i]->fileName;
 
         int dot = filename.lastIndexOf(".");
 
@@ -3880,15 +3879,15 @@ void MainWindowImpl::on_actionCompress_dataset_triggered()
 
         filename = filename.left(dot);
 
-        QImage Compress(ImageList[i]->FileName);
+        QImage Compress(imageList[i]->fileName);
 
         QString savename = filename + ".png";
 
         Compress.save(savename, "PNG", 50);
 
         if (flag == 1) {
-            QFile::remove(ImageList[i]->FileName);
-            ImageList[i]->FileName = savename;
+            QFile::remove(imageList[i]->fileName);
+            imageList[i]->fileName = savename;
         }
     }
 
