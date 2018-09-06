@@ -98,7 +98,7 @@ private slots:
     void changeGreen(int value);
     void changeBlue(int value);
     void changeShape();
-    void addMarker();
+    void addMarkerSlot();
     void removeMarkerSlot();
     void aMTopLeftXChanged(int value);
     void aMTopLeftYChanged(int value);

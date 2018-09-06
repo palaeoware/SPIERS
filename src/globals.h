@@ -63,7 +63,7 @@ extern QList <MarkerData *> markers;
 extern QList <ImageData *> imageList;
 extern QList <PropogationData *> propogation;
 extern QListWidget *markerList, *fileList;
-extern QPushButton *add, *swapButton, *removeMarker, *executeAlign, *resetImage ;
+extern QPushButton *addMarker, *swapButton, *removeMarker, *executeAlign, *resetImage ;
 extern qreal currentScale;
 extern QRect *cropArea, *gridOutline, *autoEdgeOne, *autoEdgeTwo;
 extern QString fullSettingsFileName;

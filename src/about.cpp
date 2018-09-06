@@ -39,9 +39,9 @@ About::About(QWidget *parent) :
     ui->textLabel_1->setAlignment(Qt::AlignCenter);
 
     ui->textLabel_2->setWordWrap(true);
-    ui->textLabel_2->setText("This version of " + QString(PRODUCTNAME) +
-                             " was compiled on the date shown above. It was coded by:"
-                             "<br><br><b>Russell Garwood</b> (russell.garwood@gmail.com)<br><b>Mark Sutton</b> (m.sutton@imperial.ac.uk)<br><b>Alan R.T. Spencer</b> (alan.spencer@imperial.ac.uk)"
+    ui->textLabel_2->setText("This  software is " + QString(PRODUCTNAME) +
+                             ". It was coded by"
+                             " Russell Garwood (russell.garwood@gmail.com), with advice and assistance from Mark Sutton (m.sutton@imperial.ac.uk) and a GUI theme by  Alan R.T. Spencer (alan.spencer@imperial.ac.uk)"
                              "<br><br>Reports are appreciated, and comments, suggestions, and feature requests are welcome.");
     ui->textLabel_2->setAlignment(Qt::AlignCenter);
 

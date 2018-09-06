@@ -36,7 +36,7 @@ QList <MarkerData *> markers;
 QList <ImageData *> imageList;
 QList <PropogationData *> propogation;
 QListWidget *markerList, *fileList;
-QPushButton *add, *swapButton, *removeMarker, *executeAlign, *resetImage ;
+QPushButton *addMarker, *swapButton, *removeMarker, *executeAlign, *resetImage ;
 QRect *cropArea, *gridOutline, *autoEdgeOne, *autoEdgeTwo;
 QStringList recentFileList;
 QString fullSettingsFileName;

@@ -26,12 +26,13 @@
 #include <QUrl>
 #include <QVBoxLayout>
 
-#include "about.h"
-#include "mainwindowimpl.h"
-#include "version.h"
-#include "globals.h"
 #include <math.h>
 #include <qbitmap.h>
+
+#include "about.h"
+#include "globals.h"
+#include "mainwindowimpl.h"
+#include "version.h"
 
 #define PI 3.14159265
 #define TOLERANCE 20
@@ -114,7 +115,7 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     mSize->setMinimum(1);
 
     swapButton = new QPushButton("&Toggle shape", markersDialogue);
-    add = new QPushButton("Add marker", markersDialogue);
+    addMarker = new QPushButton("Add marker", markersDialogue);
     removeMarker = new QPushButton("Remove marker", markersDialogue);
     QPushButton *align = new QPushButton("AM: &Align", markersDialogue);
     grid = new QPushButton("AM: &Edit Grid", markersDialogue);
@@ -147,7 +148,7 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     horizontalLayout2->addWidget(mThickness);
 
     horizontalLayout6 = new QHBoxLayout;
-    horizontalLayout6->addWidget(add);
+    horizontalLayout6->addWidget(addMarker);
     horizontalLayout6->addWidget(removeMarker);
 
     horizontalLayout7 = new QHBoxLayout;
@@ -178,7 +179,7 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     markerLayout->addWidget(blueLabel);
     markerLayout->addWidget(blue);
 
-    //Dockwidget has inbuilt protected layout, so apply layout to widget and add this docker
+    //Dockwidget has inbuilt protected layout, so apply layout to widget and addMarker this docker
     //Can't use set widget for more than one widget
     layoutWidgetOne = new QWidget;
     layoutWidgetOne->setLayout(markerLayout);
@@ -402,7 +403,7 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
 
     //Link custom slots to signals for the widgets in dockers
     connect(markerList, SIGNAL(itemSelectionChanged () ), this, SLOT(selectMarker() ));
-    connect(add, SIGNAL(clicked () ), this, SLOT(addMarker() ));
+    connect(addMarker, SIGNAL(clicked () ), this, SLOT(addMarkerSlot() ));
     connect(removeMarker, SIGNAL(clicked () ), this, SLOT(removeMarkerSlot() ));
     connect(swapButton, SIGNAL(clicked ()), this, SLOT(changeShape() ));
     connect(mThickness, SIGNAL(valueChanged(int)), this, SLOT(selectMarker() ));
@@ -451,15 +452,14 @@ void readSuperGlobals()
     //New settings to be read from the registry
     QSettings settings("Mark Sutton", "SPIERSalign 2.0");
     int size = settings.beginReadArray("RecentFiles");
+    //Read files from registry
     for (int i = 0; i < size; ++i) {
-        //Read files from registry
         settings.setArrayIndex(i);
         QString rf;
         rf = settings.value("fileName").toString();
         recentFileList.append(rf);
     }
     settings.endArray();
-
 }
 
 //Write values to registry - only called in destructor as recentfiles is stored while program runs
@@ -469,7 +469,7 @@ void writeSuperGlobals()
     QSettings settings("Mark Sutton", "SPIERSalign 2.0");
     settings.beginWriteArray("RecentFiles");
     int loop;
-    if (recentFileList.size() > 20)loop = 20;
+    if (recentFileList.size() > 20) loop = 20;
     else loop = recentFileList.size();
 
     for (int i = 0; i < loop; ++i) {
@@ -479,8 +479,6 @@ void writeSuperGlobals()
     }
     settings.endArray();
 }
-
-
 
 //Moves a file to the top of recentFileList
 void recentFile(QString fname)
@@ -492,7 +490,6 @@ void recentFile(QString fname)
             recentFileList.removeAt(n);
             break;
         }
-
     }
     QString rf(fname);
     recentFileList.prepend(rf);
@@ -538,7 +535,6 @@ void MainWindowImpl::buildRecentFiles()
 
     int lastsep;
     QString name;
-    //int count=0;
     //Delete current menu items under recent
     QList <QAction *> currentactions = menuOpen_RecentFile->actions();
     foreach (QAction *thisact, currentactions) {
@@ -619,7 +615,7 @@ void MainWindowImpl::markersLockToggled()
         markerList->setEnabled(false);
         mThickness->setEnabled(false);
         mSize->setEnabled(false);
-        add->setEnabled(false);
+        addMarker->setEnabled(false);
         removeMarker->setEnabled(false);
         swapButton->setEnabled(false);
         redrawImage();
@@ -630,7 +626,7 @@ void MainWindowImpl::markersLockToggled()
         markerList->setEnabled(true);
         mThickness->setEnabled(true);
         mSize->setEnabled(true);
-        add->setEnabled(true);
+        addMarker->setEnabled(true);
         removeMarker->setEnabled(true);
         swapButton->setEnabled(true);
         redrawImage();
@@ -1539,7 +1535,7 @@ void MainWindowImpl::autoMarkersAlign()
 }
 
 //Add marker slot
-void MainWindowImpl::addMarker()
+void MainWindowImpl::addMarkerSlot()
 {
     if (markersLocked == 1)return;
     MarkerData *append = new MarkerData(new QRectF((qreal)(10), (qreal)(10), (qreal)mSize->value(), (qreal)mSize->value()), 0);
