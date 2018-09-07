@@ -24,7 +24,7 @@ int markersUp, markersLocked, setupFlag;
 int cropUp, infoChecked, autoMarkersUp;
 int cropping;
 int sceneDX, sceneDY;
-int flagup = 0, flagupselection = -1;
+int flagUp = 0, flagUpSelection = -1;
 
 qreal currentScale;
 

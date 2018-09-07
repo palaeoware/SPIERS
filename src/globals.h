@@ -52,7 +52,7 @@ extern int markersUp, markersLocked, setupFlag;
 extern int cropUp, infoChecked, autoMarkersUp;
 extern int cropping;
 extern int sceneDX, sceneDY;
-extern int flagup, flagupselection;
+extern int flagUp, flagUpSelection;
 
 extern QGraphicsItemGroup *autoMarkersGroup;
 extern QGraphicsRectItem *rectPointer, *suRectPointer, *suRectPointer2;

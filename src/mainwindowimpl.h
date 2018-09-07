@@ -153,7 +153,7 @@ private:
 
 };
 
-extern MainWindowImpl *TheMainWindow;
+extern MainWindowImpl *theMainWindow;
 #endif
 
 

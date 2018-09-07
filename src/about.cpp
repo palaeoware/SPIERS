@@ -34,7 +34,7 @@ About::About(QWidget *parent) :
     ui->header->setPixmap(picture_1);
     ui->header->setAlignment(Qt::AlignCenter);
 
-    ui->textLabel_1->setText(TheMainWindow->windowTitle());
+    ui->textLabel_1->setText(theMainWindow->windowTitle());
     ui->textLabel_1->setObjectName("aboutTextLabel1");
     ui->textLabel_1->setAlignment(Qt::AlignCenter);
 

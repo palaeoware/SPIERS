@@ -41,7 +41,7 @@
 #define GREEN(pointer, offset) pointer[offset+1]
 #define BLUE(pointer, offset) pointer[offset]
 
-MainWindowImpl *TheMainWindow;
+MainWindowImpl *theMainWindow;
 
 // Constructor
 MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
@@ -399,7 +399,8 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     readSuperGlobals();
     buildRecentFiles();
 
-    TheMainWindow = this;
+    //Pointer to main window
+    theMainWindow = this;
 
     //Link custom slots to signals for the widgets in dockers
     connect(markerList, SIGNAL(itemSelectionChanged () ), this, SLOT(selectMarker() ));
@@ -448,7 +449,6 @@ void readSuperGlobals()
 {
     //Clear recentfilelist just in case already exists
     recentFileList.clear();
-    QString t1;
     //New settings to be read from the registry
     QSettings settings("Mark Sutton", "SPIERSalign 2.0");
     int size = settings.beginReadArray("RecentFiles");
@@ -493,37 +493,37 @@ void recentFile(QString fname)
     }
     QString rf(fname);
     recentFileList.prepend(rf);
-    TheMainWindow->buildRecentFiles();
+    theMainWindow->buildRecentFiles();
 }
 
 
 void showInfo(int x, int y)
 {
     QString out;
-    QTextStream o(&out);
-    int lastsep;
+    QTextStream outStream(&out);
+    int lastSeperator;
 
     QLabel *label = infoLabel;
 
-    if (markersLocked == 1 && autoMarkersUp == 0)o << "Markers locked\n";
-    else if (markersLocked == 1 && autoMarkersUp == 1)o << "Auto markers\n";
-    else if (cropUp == 1)o << "Crop\n";
-    else if (TheMainWindow->actionPropogate_Mode->isChecked())o << "Propogate Mode\n";
-    else if (TheMainWindow->actionLock_Forward->isChecked())o << "Forward Lock\n";
-    else if (TheMainWindow->actionLock_Back->isChecked())o << "Backward Lock\n";
-    else o << "Normal Align Mode\n";
+    if (markersLocked == 1 && autoMarkersUp == 0)outStream << "Markers locked\n";
+    else if (markersLocked == 1 && autoMarkersUp == 1)outStream << "Auto markers\n";
+    else if (cropUp == 1)outStream << "Crop\n";
+    else if (theMainWindow->actionPropogate_Mode->isChecked())outStream << "Propogate Mode\n";
+    else if (theMainWindow->actionLock_Forward->isChecked())outStream << "Forward Lock\n";
+    else if (theMainWindow->actionLock_Back->isChecked())outStream << "Backward Lock\n";
+    else outStream << "Normal Align Mode\n";
 
 
-    if (x < 0 || x > TheMainWindow->width || y < 0 || y > TheMainWindow->height )o << " (---, ---)\n";
-    else o << "(" << x << "," << y << ")\n";
+    if (x < 0 || x > theMainWindow->width || y < 0 || y > theMainWindow->height )outStream << " (---, ---)\n";
+    else outStream << "(" << x << "," << y << ")\n";
 
     QString fn = imageList[currentImage]->fileName;
-    lastsep = fn.lastIndexOf("/");
-    fn = fn.mid(lastsep + 1);
+    lastSeperator = fn.lastIndexOf("/");
+    fn = fn.mid(lastSeperator + 1);
 
-    o << fn << "\n";
+    outStream << fn << "\n";
 
-    o << TheMainWindow->width << " x " << TheMainWindow->height << " pixels.\n";
+    outStream << theMainWindow->width << " x " << theMainWindow->height << " pixels.\n";
 
     label->setText(out);
 }
@@ -533,7 +533,7 @@ void showInfo(int x, int y)
 void MainWindowImpl::buildRecentFiles()
 {
 
-    int lastsep;
+    int lastSeperator;
     QString name;
     //Delete current menu items under recent
     QList <QAction *> currentactions = menuOpen_RecentFile->actions();
@@ -550,19 +550,19 @@ void MainWindowImpl::buildRecentFiles()
     //Add all
     foreach (QString rf, recentFileList) {
         //Last separator in path
-        lastsep = rf.lastIndexOf("/");
-        name = rf.mid(lastsep + 1);
+        lastSeperator = rf.lastIndexOf("/");
+        name = rf.mid(lastSeperator + 1);
         QAction *recentFileAction = new QAction(name, this);
         recentFileAction->setStatusTip(rf);
         connect(recentFileAction, SIGNAL(triggered()), this, SLOT(openRecentFile()));
         menuOpen_RecentFile->addAction(recentFileAction);
     }
 
-    QAction *ClearList = new QAction("Clear List", this);
-    connect(ClearList, SIGNAL(triggered()), this, SLOT(clearList()));
+    QAction *clearList = new QAction("Clear List", this);
+    connect(clearList, SIGNAL(triggered()), this, SLOT(clearList()));
 
     menuOpen_RecentFile->addSeparator();
-    menuOpen_RecentFile->addAction(ClearList);
+    menuOpen_RecentFile->addAction(clearList);
 
 }
 
@@ -571,7 +571,7 @@ void MainWindowImpl::clearList()
 {
     recentFileList.clear();
     writeSuperGlobals();
-    TheMainWindow->buildRecentFiles();
+    theMainWindow->buildRecentFiles();
 }
 
 //Open a file from the recently used files list slot
@@ -699,8 +699,10 @@ void MainWindowImpl::setupAlignTriggered()
         if (autoMarkers->isChecked() == true)autoMarkers->setChecked(false);
         markersDialogue->setEnabled(false);
         executeAlign->setDisabled(true);
-        if (autoEdgeOne == NULL)autoEdgeOne = new QRect((width / 4), (height / 4), 500, 100);
-        if (autoEdgeTwo == NULL)autoEdgeTwo = new QRect((width - width / 4), (height / 4), 100, 500);
+        int quarterWidth = width / 4;
+        int quarterHeight = height / 4;
+        if (autoEdgeOne == NULL)autoEdgeOne = new QRect(0, 0, width, quarterHeight);
+        if (autoEdgeTwo == NULL)autoEdgeTwo = new QRect(0, 0, quarterWidth, height);
         setupFlag = 1;
         redrawImage();
         QMessageBox::about(0, "Auto-align Setup",
@@ -1347,9 +1349,9 @@ void MainWindowImpl::executeAlignTriggered()
                 QImage Rotate(imageList[currentImage]->fileName);
 
                 //Apply by drawing QImage with painter - allows for shifts.
-                QImage ToDraw(width, height, QImage::Format_RGB32);
+                QImage imageToDraw(width, height, QImage::Format_RGB32);
                 QPainter paint;
-                paint.begin(&ToDraw);
+                paint.begin(&imageToDraw);
 
                 //Transform here so rotates around middle - allows translate
                 paint.setWorldTransform(imageList[currentImage]->m);
@@ -1364,9 +1366,9 @@ void MainWindowImpl::executeAlignTriggered()
                 paint.end();
 
                 QString savename = imageList[currentImage]->fileName + ".xxx";
-                if (imageList[currentImage]->format == 0)ToDraw.save(savename, "BMP", 100);
-                if (imageList[currentImage]->format == 1)ToDraw.save(savename, "JPG", 100);
-                if (imageList[currentImage]->format == 2)ToDraw.save(savename, "PNG", 50);
+                if (imageList[currentImage]->format == 0)imageToDraw.save(savename, "BMP", 100);
+                if (imageList[currentImage]->format == 1)imageToDraw.save(savename, "JPG", 100);
+                if (imageList[currentImage]->format == 2)imageToDraw.save(savename, "PNG", 50);
 
                 /*rotate(angleBetween);
 
@@ -1484,9 +1486,9 @@ void MainWindowImpl::autoMarkersAlign()
 
     imageList[currentImage]->m = aMi;
     QImage OldImage(imageList[currentImage]->fileName);
-    QImage ToDraw(width, height, QImage::Format_RGB32);
+    QImage imageToDraw(width, height, QImage::Format_RGB32);
     QPainter paint;
-    paint.begin(&ToDraw);
+    paint.begin(&imageToDraw);
 
     paint.setWorldTransform(imageList[currentImage]->m);
     paint.setRenderHint(QPainter::SmoothPixmapTransform);
@@ -1510,7 +1512,7 @@ void MainWindowImpl::autoMarkersAlign()
         else w4 = (width / 4) * 4 + 4; //round up
         tempToDraw.setColorTable(clut);
         //set up pointers to base of array - enables very fast access to data
-        uchar *data1 = (uchar *) ToDraw.bits(); //image is the source (XRGB) image
+        uchar *data1 = (uchar *) imageToDraw.bits(); //image is the source (XRGB) image
         uchar *data2 = (uchar *) tempToDraw.bits();
 
         for (int x = 0; x < width; x++)
@@ -1518,13 +1520,13 @@ void MainWindowImpl::autoMarkersAlign()
                 data2[y * w4 + x] = BLUE(data1, 4 * (y * width + x));
 
 
-        ToDraw = tempToDraw;
+        imageToDraw = tempToDraw;
     }
 
     QString savename = imageList[currentImage]->fileName + ".xxx";
-    if (imageList[currentImage]->format == 0)ToDraw.save(savename, "BMP", 100);
-    if (imageList[currentImage]->format == 1)ToDraw.save(savename, "JPG", 100);
-    if (imageList[currentImage]->format == 2)ToDraw.save(savename, "PNG", 50);
+    if (imageList[currentImage]->format == 0)imageToDraw.save(savename, "BMP", 100);
+    if (imageList[currentImage]->format == 1)imageToDraw.save(savename, "JPG", 100);
+    if (imageList[currentImage]->format == 2)imageToDraw.save(savename, "PNG", 50);
 
     aM.reset();
 
@@ -2418,9 +2420,9 @@ void MainWindowImpl::rotate (qreal rotateAngle)
     QImage Rotate(imageList[currentImage]->fileName);
 
     //Apply by drawing QImage with painter - allows for shifts.
-    QImage ToDraw(width, height, QImage::Format_RGB32);
+    QImage imageToDraw(width, height, QImage::Format_RGB32);
     QPainter paint;
-    paint.begin(&ToDraw);
+    paint.begin(&imageToDraw);
 
     //Transform here so rotates around middle - allows translate
     paint.setWorldTransform(imageList[currentImage]->m);
@@ -2457,7 +2459,7 @@ void MainWindowImpl::rotate (qreal rotateAngle)
         else w4 = (width / 4) * 4 + 4; //round up
         tempToDraw.setColorTable(clut);
         //set up pointers to base of array - enables very fast access to data
-        uchar *data1 = (uchar *) ToDraw.bits(); //image is the source (XRGB) image
+        uchar *data1 = (uchar *) imageToDraw.bits(); //image is the source (XRGB) image
         uchar *data2 = (uchar *) tempToDraw.bits();
 
         for (int x = 0; x < width; x++)
@@ -2465,13 +2467,13 @@ void MainWindowImpl::rotate (qreal rotateAngle)
                 data2[y * w4 + x] = BLUE(data1, 4 * (y * width + x));
 
 
-        ToDraw = tempToDraw;
+        imageToDraw = tempToDraw;
     }
 
     QString savename = imageList[currentImage]->fileName + ".xxx";
-    if (imageList[currentImage]->format == 0)ToDraw.save(savename, "BMP", 100);
-    if (imageList[currentImage]->format == 1)ToDraw.save(savename, "JPG", 100);
-    if (imageList[currentImage]->format == 2)ToDraw.save(savename, "PNG", 50);
+    if (imageList[currentImage]->format == 0)imageToDraw.save(savename, "BMP", 100);
+    if (imageList[currentImage]->format == 1)imageToDraw.save(savename, "JPG", 100);
+    if (imageList[currentImage]->format == 2)imageToDraw.save(savename, "PNG", 50);
 
     redrawImage();
 }
@@ -2517,9 +2519,9 @@ void MainWindowImpl::resize(qreal sizeChange)
     QImage Enlarge(imageList[currentImage]->fileName);
 
     //Apply transformation here to allow them to occur around centre point
-    QImage ToDraw(width, height, QImage::Format_RGB32);
+    QImage imageToDraw(width, height, QImage::Format_RGB32);
     QPainter paint;
-    paint.begin(&ToDraw);
+    paint.begin(&imageToDraw);
     paint.setWorldTransform(imageList[currentImage]->m);
     paint.setRenderHint(QPainter::SmoothPixmapTransform);
     paint.translate((width / 2), (height / 2));
@@ -2554,7 +2556,7 @@ void MainWindowImpl::resize(qreal sizeChange)
         else w4 = (width / 4) * 4 + 4; //round up
         tempToDraw.setColorTable(clut);
         //set up pointers to base of array - enables very fast access to data
-        uchar *data1 = (uchar *) ToDraw.bits(); //image is the source (XRGB) image
+        uchar *data1 = (uchar *) imageToDraw.bits(); //image is the source (XRGB) image
         uchar *data2 = (uchar *) tempToDraw.bits();
 
         for (int x = 0; x < width; x++)
@@ -2562,15 +2564,15 @@ void MainWindowImpl::resize(qreal sizeChange)
                 data2[y * w4 + x] = BLUE(data1, 4 * (y * width + x));
 
 
-        ToDraw = tempToDraw;
+        imageToDraw = tempToDraw;
     }
 
 
     QString savename = imageList[currentImage]->fileName + ".xxx";
 
-    if (imageList[currentImage]->format == 0)ToDraw.save(savename, "BMP", 100);
-    if (imageList[currentImage]->format == 1)ToDraw.save(savename, "JPG", 100);
-    if (imageList[currentImage]->format == 2)ToDraw.save(savename, "PNG", 50);
+    if (imageList[currentImage]->format == 0)imageToDraw.save(savename, "BMP", 100);
+    if (imageList[currentImage]->format == 1)imageToDraw.save(savename, "JPG", 100);
+    if (imageList[currentImage]->format == 2)imageToDraw.save(savename, "PNG", 50);
     redrawImage();
 }
 ////
@@ -2887,9 +2889,9 @@ void MainWindowImpl::on_actionApply_Propogation_triggered()
 
             //Start painter
             QImage ApplyProp(imageList[i]->fileName);
-            QImage ToDraw(width, height, QImage::Format_RGB32);
+            QImage imageToDraw(width, height, QImage::Format_RGB32);
             QPainter paint;
-            paint.begin(&ToDraw);
+            paint.begin(&imageToDraw);
             paint.setRenderHint(QPainter::SmoothPixmapTransform);
             //For each images loop through the transformation list
             for (int j = 0; j < propogation.count(); j++) {
@@ -2953,7 +2955,7 @@ void MainWindowImpl::on_actionApply_Propogation_triggered()
                 else w4 = (width / 4) * 4 + 4; //round up
                 tempToDraw.setColorTable(clut);
                 //set up pointers to base of array - enables very fast access to data
-                uchar *data1 = (uchar *) ToDraw.bits(); //image is the source (XRGB) image
+                uchar *data1 = (uchar *) imageToDraw.bits(); //image is the source (XRGB) image
                 uchar *data2 = (uchar *) tempToDraw.bits();
 
                 for (int x = 0; x < width; x++)
@@ -2961,13 +2963,13 @@ void MainWindowImpl::on_actionApply_Propogation_triggered()
                         data2[y * w4 + x] = BLUE(data1, 4 * (y * width + x));
 
 
-                ToDraw = tempToDraw;
+                imageToDraw = tempToDraw;
             }
 
             QString savename = imageList[i]->fileName + ".xxx";
-            if (imageList[i]->format == 0)ToDraw.save(savename, "BMP", 100);
-            if (imageList[i]->format == 1)ToDraw.save(savename, "JPG", 100);
-            if (imageList[i]->format == 2)ToDraw.save(savename, "PNG", 50);
+            if (imageList[i]->format == 0)imageToDraw.save(savename, "BMP", 100);
+            if (imageList[i]->format == 1)imageToDraw.save(savename, "JPG", 100);
+            if (imageList[i]->format == 2)imageToDraw.save(savename, "PNG", 50);
         }
     } else if (actionLock_Back->isChecked()) {
         int k = (propogateImage + 1);
@@ -2987,9 +2989,9 @@ void MainWindowImpl::on_actionApply_Propogation_triggered()
 
             //Start painter
             QImage ApplyProp(imageList[i]->fileName);
-            QImage ToDraw(width, height, QImage::Format_RGB32);
+            QImage imageToDraw(width, height, QImage::Format_RGB32);
             QPainter paint;
-            paint.begin(&ToDraw);
+            paint.begin(&imageToDraw);
             paint.setRenderHint(QPainter::SmoothPixmapTransform);
             //For each images loop through the transformation list
             for (int j = 0; j < propogation.count(); j++) {
@@ -3053,7 +3055,7 @@ void MainWindowImpl::on_actionApply_Propogation_triggered()
                 else w4 = (width / 4) * 4 + 4; //round up
                 tempToDraw.setColorTable(clut);
                 //set up pointers to base of array - enables very fast access to data
-                uchar *data1 = (uchar *) ToDraw.bits(); //image is the source (XRGB) image
+                uchar *data1 = (uchar *) imageToDraw.bits(); //image is the source (XRGB) image
                 uchar *data2 = (uchar *) tempToDraw.bits();
 
                 for (int x = 0; x < width; x++)
@@ -3061,13 +3063,13 @@ void MainWindowImpl::on_actionApply_Propogation_triggered()
                         data2[y * w4 + x] = BLUE(data1, 4 * (y * width + x));
 
 
-                ToDraw = tempToDraw;
+                imageToDraw = tempToDraw;
             }
 
             QString savename = imageList[i]->fileName + ".xxx";
-            if (imageList[i]->format == 0)ToDraw.save(savename, "BMP", 100);
-            if (imageList[i]->format == 1)ToDraw.save(savename, "JPG", 100);
-            if (imageList[i]->format == 2)ToDraw.save(savename, "PNG", 50);
+            if (imageList[i]->format == 0)imageToDraw.save(savename, "BMP", 100);
+            if (imageList[i]->format == 1)imageToDraw.save(savename, "JPG", 100);
+            if (imageList[i]->format == 2)imageToDraw.save(savename, "PNG", 50);
         }
     } else QMessageBox::warning(0, "Error", "You should never see this - propagation failed, email me.", QMessageBox::Ok);
 
@@ -3781,21 +3783,21 @@ void MainWindowImpl::on_actionLoad_Settings_File_triggered()
         if (!imageList[i]->m.isIdentity()) {
 
             //Start painter
-            QImage ApplySet(imageList[i]->fileName);
-            QImage ToDraw(width, height, QImage::Format_RGB32);
-            if (ApplySet.format() == QImage::Format_Indexed8)ToDraw.convertToFormat(QImage::Format_Indexed8);
+            QImage applySettings(imageList[i]->fileName);
+            QImage imageToDraw(width, height, QImage::Format_RGB32);
+            if (applySettings.format() == QImage::Format_Indexed8)imageToDraw = imageToDraw.convertToFormat(QImage::Format_Indexed8);
             QPainter paint;
-            paint.begin(&ToDraw);
+            paint.begin(&imageToDraw);
             paint.setRenderHint(QPainter::SmoothPixmapTransform);
 
             //Draw and save new file
             paint.setWorldTransform(imageList[i]->m);
             QPointF leftCorner(0.0, 0.0);
-            paint.drawImage(leftCorner, ApplySet);
+            paint.drawImage(leftCorner, applySettings);
             paint.end();
 
 
-            if (ApplySet.format() == QImage::Format_Indexed8) {
+            if (applySettings.format() == QImage::Format_Indexed8) {
 
                 QImage tempToDraw(width, height, QImage::Format_Indexed8);
 
@@ -3808,7 +3810,7 @@ void MainWindowImpl::on_actionLoad_Settings_File_triggered()
                 else w4 = (width / 4) * 4 + 4; //round up
                 tempToDraw.setColorTable(clut);
                 //set up pointers to base of array - enables very fast access to data
-                uchar *data1 = (uchar *) ToDraw.bits(); //image is the source (XRGB) image
+                uchar *data1 = (uchar *) imageToDraw.bits(); //image is the source (XRGB) image
                 uchar *data2 = (uchar *) tempToDraw.bits();
 
                 for (int x = 0; x < width; x++)
@@ -3816,13 +3818,13 @@ void MainWindowImpl::on_actionLoad_Settings_File_triggered()
                         data2[y * w4 + x] = BLUE(data1, 4 * (y * width + x));
 
 
-                ToDraw = tempToDraw;
+                imageToDraw = tempToDraw;
             }
 
             QString savename = imageList[i]->fileName + ".xxx";
-            if (imageList[i]->format == 0)ToDraw.save(savename, "BMP", 100);
-            if (imageList[i]->format == 1)ToDraw.save(savename, "JPG", 100);
-            if (imageList[i]->format == 2)ToDraw.save(savename, "PNG", 50);
+            if (imageList[i]->format == 0)imageToDraw.save(savename, "BMP", 100);
+            if (imageList[i]->format == 1)imageToDraw.save(savename, "JPG", 100);
+            if (imageList[i]->format == 2)imageToDraw.save(savename, "PNG", 50);
 
             redrawImage();
         } else {
