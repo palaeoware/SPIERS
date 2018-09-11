@@ -21,7 +21,7 @@
 //Software Versions
 #define MAJORVERSION 2
 #define MINORVERSION 2
-#define PATCHVERSION 0
+#define PATCHVERSION 1
 
 //Legal Stuff
 #define COPYRIGHT "Copyright © 2018 Mark D. Sutton, Russell J. Garwood, Alan R.T.Spencer"
