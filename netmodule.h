@@ -19,7 +19,7 @@
 
 #include <stdio.h>
 
-#define UPDATEVERSION 2.20
+#define UPDATEVERSION 2.21
 
 extern bool MacBodgeClickedNoForUpdateDownload;
 
