@@ -1,7 +1,7 @@
 #include "copyingimpl.h"
 #include "globals.h"
 #include "fileio.h"
-#include "Display.h"
+#include "display.h"
 #include "output.h"
 #include "curves.h"
 #include "brush.h"

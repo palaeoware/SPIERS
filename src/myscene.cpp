@@ -12,7 +12,7 @@ Also the timer for updating the main scene
 #include "myscene.h"
 #include "globals.h"
 #include "brush.h"
-#include "Display.h"
+#include "display.h"
 #include "curves.h"
 #include "copyingimpl.h"
 #include "info.h"

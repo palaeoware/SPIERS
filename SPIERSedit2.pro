@@ -19,7 +19,7 @@ FORMS += ui/import.ui \
     ui/distribute.ui \
     ui/resample.ui \
     ui/about.ui
-HEADERS += src/Display.h \
+HEADERS += src/display.h \
     src/brush.h \
     src/curves.h \
     src/fileio.h \
@@ -49,14 +49,16 @@ HEADERS += src/Display.h \
     src/dialogaboutimpl.h \
     ../SPIERScommon/netmodule.h \
     src/keysafespinbox.h \
-    src/mainview.h
+    src/mainview.h \
+    src/darkstyletheme.h \
+    src/version.h
 MOC_DIR += build
 OBJECTS_DIR += build
 QT += core \
     gui \
     network \
     widgets
-SOURCES += src/Display.cpp \
+SOURCES += src/display.cpp \
     src/brush.cpp \
     src/curves.cpp \
     src/fileio.cpp \
@@ -90,11 +92,15 @@ SOURCES += src/Display.cpp \
     ../SPIERScommon/netmodule.cpp \
     src/copyingimpl2_ouput.cpp \
     src/keysafespinbox.cpp \
-    src/mainview.cpp
+    src/mainview.cpp \
+    src/darkstyletheme.cpp
 UI_DIR += ui
 TEMPLATE = app
 RESOURCES = src/SPIERSedit.qrc
 ICON = src/edit.icns
 RC_FILE = src/icon.rc
+DISTFILES += \
+    LICENSE.md \
+    .astylerc
 #LIBS += -L"C:\\Qt\\Qt5.1\\ported64\\lib" \
 #    -llibz

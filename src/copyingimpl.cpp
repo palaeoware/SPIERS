@@ -10,7 +10,7 @@ Now used in several other circumstances too
 #include "globals.h"
 #include "copyingimpl.h"
 #include "fileio.h"
-#include "Display.h"
+#include "display.h"
 #include "output.h"
 #include "curves.h"
 #include "brush.h"

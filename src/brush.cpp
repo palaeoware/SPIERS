@@ -11,7 +11,7 @@ Class brush - handles brush pixel arrays, and all brush-related drawing
 
 #include "brush.h"
 #include "globals.h"
-#include "Display.h"
+#include "display.h"
 #include <math.h>
 #include "myscene.h"  //for the scene
 #include <QPen>
