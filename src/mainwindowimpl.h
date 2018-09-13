@@ -92,6 +92,8 @@ private slots:
     void on_actionAdd_Markers_triggered(bool checked);
     void on_actionAuto_Align_triggered (bool checked);
     void on_horizontalSlider_valueChanged(int value);
+    void on_actionCode_on_GitHub_triggered();
+    void on_actionBugIssueFeatureRequest_triggered();
 
     void selectMarker();
     void changeRed(int value);

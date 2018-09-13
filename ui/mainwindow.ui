@@ -138,8 +138,11 @@
     <property name="title">
      <string>Help</string>
     </property>
-    <addaction name="actionAbout"/>
     <addaction name="actionManual"/>
+    <addaction name="actionReport_Bug_Issue_Feature_Request"/>
+    <addaction name="actionCode_on_GitHub"/>
+    <addaction name="separator"/>
+    <addaction name="actionAbout"/>
    </widget>
    <widget class="QMenu" name="menuNavigate">
     <property name="enabled">
@@ -934,6 +937,16 @@
   <action name="actionManual">
    <property name="text">
     <string>Manual</string>
+   </property>
+  </action>
+  <action name="actionReport_Bug_Issue_Feature_Request">
+   <property name="text">
+    <string>Report Bug/Issue/Feature Request</string>
+   </property>
+  </action>
+  <action name="actionCode_on_GitHub">
+   <property name="text">
+    <string>Code on GitHub</string>
    </property>
   </action>
  </widget>

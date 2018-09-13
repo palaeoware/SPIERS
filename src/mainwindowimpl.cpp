@@ -3888,11 +3888,19 @@ void MainWindowImpl::on_actionCompress_Dataset_triggered()
             imageList[i]->fileName = savename;
         }
     }
-
-
 }
 
 void MainWindowImpl::on_actionManual_triggered()
 {
     QDesktopServices::openUrl(QUrl("file:" + qApp->applicationDirPath() + "/SPIERSalign_Manual.pdf"));
+}
+
+void MainWindowImpl::on_actionBugIssueFeatureRequest_triggered()
+{
+    QDesktopServices::openUrl(QUrl(QString(GITURL) + QString(GITREPOSITORY) + QString(GITISSUE)));
+}
+
+void MainWindow::on_actionCode_on_GitHub_triggered()
+{
+    QDesktopServices::openUrl(QUrl(QString(GITURL) + QString(GITREPOSITORY)));
 }
