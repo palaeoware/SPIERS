@@ -3900,7 +3900,7 @@ void MainWindowImpl::on_actionBugIssueFeatureRequest_triggered()
     QDesktopServices::openUrl(QUrl(QString(GITURL) + QString(GITREPOSITORY) + QString(GITISSUE)));
 }
 
-void MainWindow::on_actionCode_on_GitHub_triggered()
+void MainWindowImpl::on_actionCode_on_GitHub_triggered()
 {
     QDesktopServices::openUrl(QUrl(QString(GITURL) + QString(GITREPOSITORY)));
 }

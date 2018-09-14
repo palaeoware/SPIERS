@@ -139,7 +139,7 @@
      <string>Help</string>
     </property>
     <addaction name="actionManual"/>
-    <addaction name="actionReport_Bug_Issue_Feature_Request"/>
+    <addaction name="actionBugIssueFeatureRequest"/>
     <addaction name="actionCode_on_GitHub"/>
     <addaction name="separator"/>
     <addaction name="actionAbout"/>
@@ -939,7 +939,7 @@
     <string>Manual</string>
    </property>
   </action>
-  <action name="actionReport_Bug_Issue_Feature_Request">
+  <action name="actionBugIssueFeatureRequest">
    <property name="text">
     <string>Report Bug/Issue/Feature Request</string>
    </property>
