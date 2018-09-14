@@ -1,4 +1,3 @@
-// place your code here
 #include "dialogaboutimpl.h"
 #include "importdialogimpl.h"
 #include "curves.h"
@@ -18,6 +17,8 @@
 #include "settingsimpl.h"
 #include "backthread.h"
 #include "histogram.h"
+#include "version.h"
+
 #include <QColorDialog>
 #include <QFileDialog>
 #include <QShortcut>
@@ -359,4 +360,14 @@ void MainWindowImpl::on_actionOutput_visible_image_set_triggered()
     }
     SliderPos->setValue(SaveCurrentFile);
     statusBar()->showMessage("Done.");
+}
+
+void MainWindowImpl::on_actionBugIssueFeatureRequest_triggered()
+{
+    QDesktopServices::openUrl(QUrl(QString(GITURL) + QString(GITREPOSITORY) + QString(GITISSUE)));
+}
+
+void MainWindowImpl::on_actionCode_on_GitHub_triggered()
+{
+    QDesktopServices::openUrl(QUrl(QString(GITURL) + QString(GITREPOSITORY)));
 }
