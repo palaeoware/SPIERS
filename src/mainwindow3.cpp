@@ -330,7 +330,7 @@ void MainWindowImpl::on_actionOutput_visible_image_set_triggered()
     }
 
     if (FullFiles.length() == 0) return;
-    //get current dir
+    //Get current dir
     int lastsep = qMax(FullFiles.at(0).lastIndexOf("\\"), FullFiles.at(0).lastIndexOf("/")); //this is last separator in path
     QString workingdir = FullFiles.at(0).left(lastsep);
 
@@ -352,7 +352,6 @@ void MainWindowImpl::on_actionOutput_visible_image_set_triggered()
         QString formattedi;
         formattedi.sprintf("%05i", i);
         out << targetdir << "/" << formattedi << ".png";
-        //qDebug()<<outstring;
         SaveMainImage(outstring);
 
         if (ExportingImages == false) break;
