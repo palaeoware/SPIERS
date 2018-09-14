@@ -139,8 +139,8 @@
      <string>Help</string>
     </property>
     <addaction name="actionManual"/>
-    <addaction name="actionBugIssueFeatureRequest"/>
     <addaction name="actionCode_on_GitHub"/>
+    <addaction name="actionBugIssueFeatureRequest"/>
     <addaction name="separator"/>
     <addaction name="actionAbout"/>
    </widget>
