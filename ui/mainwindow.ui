@@ -501,13 +501,13 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>170</width>
+     <width>180</width>
      <height>422</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
-     <width>170</width>
+     <width>175</width>
      <height>100000</height>
     </size>
    </property>

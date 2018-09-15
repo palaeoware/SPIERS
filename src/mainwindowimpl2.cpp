@@ -104,10 +104,12 @@ void MainWindowImpl::RefreshMasks()
     //MasksTreeWidget->setSortingEnabled(false);
     MasksTreeWidget->setUpdatesEnabled(false);
     //first record selected
-    for (int i = 0; i <= MaxUsedMask; i++) {
+    for (int i = 0; i <= MaxUsedMask; i++)
+    {
         bool sf;
         sf = false;
-        if (MasksSettings[i]->widgetitem) {
+        if (MasksSettings[i]->widgetitem)
+        {
             if ((MasksSettings[i]->widgetitem)->isSelected()) sf = true;
         }
         selflags.append(sf);
@@ -121,12 +123,15 @@ void MainWindowImpl::RefreshMasks()
 
     QList <bool> usedflags;
     for (int i = 0; i <= MaxUsedMask; i++) usedflags.append(false);
-    for (int kloop = 0; kloop <= MaxUsedMask; kloop++) {
+    for (int kloop = 0; kloop <= MaxUsedMask; kloop++)
+    {
         //find lowest
         int lowestval = 999999;
         int lowestindex = -1;
-        for (int j = 0; j <= MaxUsedMask; j++) {
-            if (MasksSettings[j]->ListOrder < lowestval && usedflags[j] == false) {
+        for (int j = 0; j <= MaxUsedMask; j++)
+        {
+            if (MasksSettings[j]->ListOrder < lowestval && usedflags[j] == false)
+            {
                 lowestval = MasksSettings[j]->ListOrder;
                 lowestindex = j;
             }
@@ -210,10 +215,12 @@ void MainWindowImpl::RefreshSegments()
     //MasksTreeWidget->setSortingEnabled(false);
     SegmentsTreeWidget->setUpdatesEnabled(false);
     //first record selected
-    for (int i = 0; i < SegmentCount; i++) {
+    for (int i = 0; i < SegmentCount; i++)
+    {
         bool sf;
         sf = false;
-        if (Segments[i]->widgetitem) {
+        if (Segments[i]->widgetitem)
+        {
             if ((Segments[i]->widgetitem)->isSelected()) sf = true;
         }
         selflags.append(sf);
@@ -227,12 +234,15 @@ void MainWindowImpl::RefreshSegments()
 
     QList <bool> usedflags;
     for (int i = 0; i < SegmentCount; i++) usedflags.append(false);
-    for (int kloop = 0; kloop < SegmentCount; kloop++) {
+    for (int kloop = 0; kloop < SegmentCount; kloop++)
+    {
         //find lowest
         int lowestval = 999999;
         int lowestindex = -1;
-        for (int j = 0; j < SegmentCount; j++) {
-            if (Segments[j]->ListOrder < lowestval && usedflags[j] == false) {
+        for (int j = 0; j < SegmentCount; j++)
+        {
+            if (Segments[j]->ListOrder < lowestval && usedflags[j] == false)
+            {
                 lowestval = Segments[j]->ListOrder;
                 lowestindex = j;
             }
@@ -260,7 +270,8 @@ void MainWindowImpl::RefreshSegments()
 
 
         Segments[i]->widgetitem = item; //store pointer
-        if (selflags[i]) {
+        if (selflags[i])
+        {
             item->setSelected(true);
         }
 
@@ -328,7 +339,8 @@ void MainWindowImpl::RefreshOneOOItem(QTreeWidgetItem *item, int i) //i is index
     QString text = OutputObjects[i]->Name + " components:";
     for (int j = 0; j < OutputObjects[i]->ComponentMasks.count(); j++)
         text += "\nMask: " + MasksSettings[OutputObjects[i]->ComponentMasks[j]]->Name;
-    for (int j = 0; j < OutputObjects[i]->ComponentSegments.count(); j++) {
+    for (int j = 0; j < OutputObjects[i]->ComponentSegments.count(); j++)
+    {
         text += "\nSegment: " + Segments[OutputObjects[i]->ComponentSegments[j]]->Name;
     }
     for (int j = 0; j < OutputObjects[i]->CurveComponents.count(); j++)
@@ -348,19 +360,23 @@ void MainWindowImpl::OODrawChildren( QList <bool> selflags, int parent)
     //first find lowest listorder...
     QList <bool> usedflags;
     for (int i = 0; i < OutputObjectsCount; i++) usedflags.append(false);
-    for (int kloop = 0; kloop < OutputObjectsCount; kloop++) {
+    for (int kloop = 0; kloop < OutputObjectsCount; kloop++)
+    {
         //find lowest
         int lowestval = 999999;
         int lowestindex = -1;
-        for (int j = 0; j < OutputObjectsCount; j++) {
-            if (OutputObjects[j]->ListOrder < lowestval && usedflags[j] == false && OutputObjects[j]->Parent == parent) {
+        for (int j = 0; j < OutputObjectsCount; j++)
+        {
+            if (OutputObjects[j]->ListOrder < lowestval && usedflags[j] == false && OutputObjects[j]->Parent == parent)
+            {
                 lowestval = OutputObjects[j]->ListOrder;
                 lowestindex = j;
             }
         }
         int i = lowestindex;
 
-        if (lowestindex >= 0) {
+        if (lowestindex >= 0)
+        {
             //qDebug()<<"Adding for index"<<i<<" Name "<<OutputObjects[i]->Name;
             usedflags[i] = true;
 
@@ -388,7 +404,8 @@ void MainWindowImpl::OODrawChildren( QList <bool> selflags, int parent)
 void MainWindowImpl::RefreshOO()
 {
 
-    if (OutputObjectsCount == 0) {
+    if (OutputObjectsCount == 0)
+    {
         OOTreeWidget->clear();
         return;
     }
@@ -396,21 +413,27 @@ void MainWindowImpl::RefreshOO()
     //Look for objects whose parent is not a group. They are spurious - delete them
     bool flag;
 
-    do {
+    do
+    {
         flag = false;
-        for (int i = 0; i < OutputObjectsCount; i++) {
-            if (OutputObjects[i]->Parent != -1) {
+        for (int i = 0; i < OutputObjectsCount; i++)
+        {
+            if (OutputObjects[i]->Parent != -1)
+            {
                 if (OutputObjects[i]->Parent < 0 || OutputObjects[i]->Parent >= OutputObjectsCount ) flag = true;
-                else {
+                else
+                {
                     if (OutputObjects[OutputObjects[i]->Parent]->IsGroup == false) flag = true;
                 }
             }
             //flag is true - delete object
-            if (flag) {
+            if (flag)
+            {
                 qDebug() << "Output Object " << i << " (" << OutputObjects[i]->Name << ") is incorrectly parented, and will be deleted";
 
                 //will be deleting this one, so reduce all parents indices that will be affected by 1
-                for (int j = 0; j < OutputObjectsCount; j++) {
+                for (int j = 0; j < OutputObjectsCount; j++)
+                {
 
                     if (OutputObjects[j]->Parent == i) OutputObjects[j]->Parent = -1; //if anything has THIS as parent, put in root
                     if (OutputObjects[j]->Parent > i) OutputObjects[j]->Parent--; //reduce parent ID by 1
@@ -421,7 +444,8 @@ void MainWindowImpl::RefreshOO()
                 break;
             }
         }
-    } while (flag == true); //Restart loop if we found one!
+    }
+    while (flag == true);   //Restart loop if we found one!
 
 
     bodgeflag = true;
@@ -429,11 +453,13 @@ void MainWindowImpl::RefreshOO()
 
     OOTreeWidget->setUpdatesEnabled(false);
     //first record selected
-    for (int i = 0; i < OutputObjectsCount; i++) {
+    for (int i = 0; i < OutputObjectsCount; i++)
+    {
 
         bool sf;
         sf = false;
-        if (OutputObjects[i]->widgetitem) {
+        if (OutputObjects[i]->widgetitem)
+        {
 
             if ((OutputObjects[i]->widgetitem)->isSelected()) sf = true;
             if ((OutputObjects[i]->widgetitem)->isExpanded()) OutputObjects[i]->Expanded = true;
@@ -444,8 +470,10 @@ void MainWindowImpl::RefreshOO()
     OOTreeWidget->clear();
     OODrawChildren(selflags, -1); //start by drawing root children
 
-    for (int i = 0; i < OutputObjectsCount; i++) {
-        if (OutputObjects[i]->widgetitem) {
+    for (int i = 0; i < OutputObjectsCount; i++)
+    {
+        if (OutputObjects[i]->widgetitem)
+        {
             if (OutputObjects[i]->Expanded) OutputObjects[i]->widgetitem->setExpanded(true);
             else OutputObjects[i]->widgetitem->setExpanded(false);
         }
@@ -522,15 +550,19 @@ void MainWindowImpl::RefreshOneCurveItem(QTreeWidgetItem *item, int i) //i is in
     QString str;
     QTextStream s(&str);
     int temp = -1;
-    for (int j = 0; j < FileCount; j++) {
-        if (Curves[i]->SplinePoints[j]->Count > 0) {
+    for (int j = 0; j < FileCount; j++)
+    {
+        if (Curves[i]->SplinePoints[j]->Count > 0)
+        {
             s << j + 1;
             temp = j;
             break;
         }
     }
-    for (int j = FileCount - 1; j > 0; j--) {
-        if (Curves[i]->SplinePoints[j]->Count > 0) {
+    for (int j = FileCount - 1; j > 0; j--)
+    {
+        if (Curves[i]->SplinePoints[j]->Count > 0)
+        {
             if (temp != j) //if only one slice, just one number will do
                 s << "-" << j + 1;
             item->setText(4, str); //should only get here if already found one the other way!
@@ -552,9 +584,11 @@ void MainWindowImpl::RefreshCurves()
 
     //qDebug()<<"RC2";
     //first record selected
-    for (int i = 0; i < CurveCount; i++) {
+    for (int i = 0; i < CurveCount; i++)
+    {
         bool sf = false;
-        if (Curves[i]->widgetitem) {
+        if (Curves[i]->widgetitem)
+        {
             if ((Curves[i]->widgetitem)->isSelected()) sf = true;
         }
         selflags.append(sf);
@@ -569,12 +603,15 @@ void MainWindowImpl::RefreshCurves()
     //qDebug()<<"RC4";
     QList <bool> usedflags;
     for (int i = 0; i < CurveCount; i++) usedflags.append(false);
-    for (int kloop = 0; kloop < CurveCount; kloop++) {
+    for (int kloop = 0; kloop < CurveCount; kloop++)
+    {
         //find lowest
         int lowestval = 999999;
         int lowestindex = -1;
-        for (int j = 0; j < CurveCount; j++) {
-            if (Curves[j]->ListOrder < lowestval && usedflags[j] == false) {
+        for (int j = 0; j < CurveCount; j++)
+        {
+            if (Curves[j]->ListOrder < lowestval && usedflags[j] == false)
+            {
                 lowestval = Curves[j]->ListOrder;
                 lowestindex = j;
             }
@@ -624,12 +661,15 @@ void MainWindowImpl::RefreshSegmentsBoxes()
 
     QList <bool> usedflags;
     for (int i = 0; i < SegmentCount; i++) usedflags.append(false);
-    for (int kloop = 0; kloop < SegmentCount; kloop++) {
+    for (int kloop = 0; kloop < SegmentCount; kloop++)
+    {
         //find lowest
         int lowestval = 999999;
         int lowestindex = -1;
-        for (int j = 0; j < SegmentCount; j++) {
-            if (Segments[j]->ListOrder < lowestval && usedflags[j] == false) {
+        for (int j = 0; j < SegmentCount; j++)
+        {
+            if (Segments[j]->ListOrder < lowestval && usedflags[j] == false)
+            {
                 lowestval = Segments[j]->ListOrder;
                 lowestindex = j;
             }
@@ -660,12 +700,15 @@ void MainWindowImpl::RefreshMasksBoxes()
     MaskBoxRight->clear();
     QList <bool> usedflags;
     for (int i = 0; i <= MaxUsedMask; i++) usedflags.append(false);
-    for (int kloop = 0; kloop <= MaxUsedMask; kloop++) {
+    for (int kloop = 0; kloop <= MaxUsedMask; kloop++)
+    {
         //find lowest
         int lowestval = 999999;
         int lowestindex = -1;
-        for (int j = 0; j <= MaxUsedMask; j++) {
-            if (MasksSettings[j]->ListOrder < lowestval && usedflags[j] == false) {
+        for (int j = 0; j <= MaxUsedMask; j++)
+        {
+            if (MasksSettings[j]->ListOrder < lowestval && usedflags[j] == false)
+            {
                 lowestval = MasksSettings[j]->ListOrder;
                 lowestindex = j;
             }
@@ -735,19 +778,23 @@ void MainWindowImpl::SetUpGUIFromSettings()
 
     plainTextEdit->setPlainText(Notes);
     //set up stretches
-    if (FullStretches.count() != FullFiles.count()) {
+    if (FullStretches.count() != FullFiles.count())
+    {
         FullStretches.clear();
         for (int i = 0; i < FullFiles.count(); i++)
             FullStretches.append(i + 1);
     }
 
     //do similar for stretches
-    if (zsparsity > 1) {
+    if (zsparsity > 1)
+    {
         Stretches.clear();
-        for (int i = 0; i < FullStretches.count(); i += zsparsity) {
+        for (int i = 0; i < FullStretches.count(); i += zsparsity)
+        {
             Stretches.append(FullStretches[i]);
         }
-    } else Stretches = FullStretches;
+    }
+    else Stretches = FullStretches;
 
     SliderPos->setMaximum(FileCount);
     PosSpinBox->setMaximum(FileCount);
@@ -914,7 +961,8 @@ void MainWindowImpl::SetUpGUIFromSettings()
     SliceSelectorList->clear();
     //Now populate the slice list
     //qDebug()<<"MG5"<<Files.count();
-    for (int i = 0; i < Files.count(); i++) {
+    for (int i = 0; i < Files.count(); i++)
+    {
 
         QString Fname = TextForSliceSelectorBox(i);
 
@@ -925,10 +973,12 @@ void MainWindowImpl::SetUpGUIFromSettings()
 
         f.setBold(true);
         if ((i + 1) % 10 == 0) item->setFont(f); // font.setBold(true);
-        if ((i + 1) % 50 == 0) {
+        if ((i + 1) % 50 == 0)
+        {
             item->setTextColor(QColor("dark blue"));
         }
-        if ((i + 1) % 100 == 0) {
+        if ((i + 1) % 100 == 0)
+        {
             item->setTextColor(QColor("dark red"));
         }
 
@@ -943,7 +993,8 @@ void MainWindowImpl::SetUpGUIFromSettings()
 
     //set the selected curve (if there is one)
     //qDebug()<<"MG5";
-    if (SelectedCurve >= 0) {
+    if (SelectedCurve >= 0)
+    {
         Curves[SelectedCurve]->widgetitem->setSelected(true);
     }
 
@@ -962,7 +1013,8 @@ void MainWindowImpl::SetUpGUIFromSettings()
     //qDebug()<<"MG7";
 
     cwidth4 = cwidth;
-    if (GreyImage) {
+    if (GreyImage)
+    {
         if ((cwidth % 4) != 0) cwidth4 = (cwidth / 4) * 4 + 4;
     }
 
@@ -1035,21 +1087,26 @@ void MainWindowImpl::on_SegmentDelete_pressed()
 {
     WriteAllData(CurrentFile);
     QList <int> list;
-    for (int i = 0;  i < SegmentCount; i++) {
+    for (int i = 0;  i < SegmentCount; i++)
+    {
         if ((Segments[i]->widgetitem) > 0)
-            if ((Segments[i]->widgetitem)->isSelected()) {
+            if ((Segments[i]->widgetitem)->isSelected())
+            {
                 list.append(i);
             }
     }
-    if (list.count() == SegmentCount) {
+    if (list.count() == SegmentCount)
+    {
         Message("Can't delete the last segment");
         return;
     }
-    if (list.count() > 0) {
+    if (list.count() > 0)
+    {
         QString mess = "";
         if (zsparsity > 1) mess = ", even where excluded from the current dataset by your Z sparsity setting";
         if (QMessageBox::question(this, "Delete Segments", "This will remove these segments and delete all their associated files" + mess + " - are you sure?", QMessageBox::Ok | QMessageBox::Cancel)
-                == QMessageBox::Ok) {
+                == QMessageBox::Ok)
+        {
             ClearCache();
             CopyingImpl dialog;
             dialog.DeleteSegments(list);
@@ -1091,6 +1148,7 @@ void MainWindowImpl::on_GenInvert_toggled(bool checked)
 
 void MainWindowImpl::on_GenerateAuto_toggled(bool checked)
 {
+    Q_UNUSED(checked);
     //don't actually need to do anything here!
 }
 
@@ -1122,7 +1180,9 @@ void MainWindowImpl::on_LinearGreenSpinBox_valueChanged(int value)
     if (GenerateAuto->checkState()) on_GenerateButton_clicked();
 }
 
-void MainWindowImpl::on_LinearGreenSpinBox_editingFinished() {};
+void MainWindowImpl::on_LinearGreenSpinBox_editingFinished()
+{
+}
 
 void MainWindowImpl::on_LinearBlueSpinBox_valueChanged(int value)
 {
@@ -1176,21 +1236,29 @@ void MainWindowImpl::on_CurvesTreeWidget_itemDoubleClicked(QTreeWidgetItem *item
 {
     if (DoubleClickTimer.elapsed() < 100) return; //avoid double calls
     for (int i = 0; i < CurveCount; i++)
-        if (item == Curves[i]->widgetitem) { //found it
-            if (column == 2) { //widget
-                if (Curves[i]->Closed == false) {
+        if (item == Curves[i]->widgetitem)   //found it
+        {
+            if (column == 2)   //widget
+            {
+                if (Curves[i]->Closed == false)
+                {
                     Curves[i]->Closed = true;
                     Curves[i]->Filled = false;
-                } else if (Curves[i]->Filled == false) {
+                }
+                else if (Curves[i]->Filled == false)
+                {
                     Curves[i]->Filled = true;
-                } else {
+                }
+                else
+                {
                     Curves[i]->Closed = false;
                     Curves[i]->Filled = false;
                 }
                 if (Curves[i]->Segment != 0) for (int j = 0; j < Files.count(); j++) if (Curves[i]->SplinePoints[j * zsparsity]->Count > 0) FilesDirty[j] = true;
             }
 
-            if (column == 0) {
+            if (column == 0)
+            {
                 QString temp =
                     QInputDialog::getText (this, "", "", QLineEdit::Normal, Curves[i]->Name);
 
@@ -1198,21 +1266,25 @@ void MainWindowImpl::on_CurvesTreeWidget_itemDoubleClicked(QTreeWidgetItem *item
                 RefreshOO();
             }
 
-            if (column == 1) { //colour
+            if (column == 1)   //colour
+            {
                 QColor newcol;
 
                 newcol = QColorDialog::getColor(QColor(Curves[i]->Colour[0], Curves[i]->Colour[1], Curves[i]->Colour[2]));
-                if (newcol.isValid()) {
+                if (newcol.isValid())
+                {
                     Curves[i]->Colour[0] = newcol.red();
                     Curves[i]->Colour[1] = newcol.green();
                     Curves[i]->Colour[2] = newcol.blue();
                 }
             }
 
-            if (column == 3) { //segment
+            if (column == 3)   //segment
+            {
                 SelectSegmentImpl dialog(Curves[i]->Segment);
                 dialog.exec();
-                if (dialog.Cancelled == false) {
+                if (dialog.Cancelled == false)
+                {
                     Curves[i]->Segment = dialog.RetValue;
                     for (int j = 0; j < Files.count(); j++) if (Curves[i]->SplinePoints[j * zsparsity]->Count > 0) FilesDirty[j] = true;
 
@@ -1229,6 +1301,8 @@ void MainWindowImpl::on_CurvesTreeWidget_itemDoubleClicked(QTreeWidgetItem *item
 
 void MainWindowImpl::on_CurvesTreeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 {
+    Q_UNUSED(current);
+    Q_UNUSED(previous);
     return; //now longer used
 }
 
@@ -1237,7 +1311,8 @@ void MainWindowImpl::on_SliceSelectorList_itemSelectionChanged()
 {
     //do the underlining trick
     if (SliceSelectorList->count() == FileCount) //if not it's just been cleared - avoids crash on reload!
-        for (int i = 0; i < FileCount; i++) {
+        for (int i = 0; i < FileCount; i++)
+        {
             QListWidgetItem *t =    SliceSelectorList->item(i);
             QFont f = t->font();
             if (t->isSelected())    f.setUnderline(true);
@@ -1254,9 +1329,11 @@ void MainWindowImpl::on_CurvesTreeWidget_itemSelectionChanged()
     QList <QTreeWidgetItem *> selitems = CurvesTreeWidget->selectedItems ();
     //qDebug()<<"ISC3";
     if (selitems.count() != 1) SelectedCurve = -1;
-    else {
+    else
+    {
         for (int i = 0; i < CurveCount; i++)
-            if (selitems[0] == Curves[i]->widgetitem) { //found it
+            if (selitems[0] == Curves[i]->widgetitem)   //found it
+            {
                 SelectedCurve = i;
             }
     }
@@ -1264,7 +1341,8 @@ void MainWindowImpl::on_CurvesTreeWidget_itemSelectionChanged()
     //qDebug()<<"ISC4";
 
     //do the underlining trick
-    for (int i = 0; i < CurvesTreeWidget->topLevelItemCount(); i++) {
+    for (int i = 0; i < CurvesTreeWidget->topLevelItemCount(); i++)
+    {
         QTreeWidgetItem *t =    CurvesTreeWidget->topLevelItem(i);
         QFont f = t->font(0);
         if (t->isSelected())    f.setUnderline(true);
@@ -1330,20 +1408,24 @@ void MainWindowImpl::on_Curve_Add_pressed()
 void MainWindowImpl::on_CurveDelete_pressed()
 {
     QList <int> list;
-    for (int i = 0;  i < CurveCount; i++) {
+    for (int i = 0;  i < CurveCount; i++)
+    {
         if ((Curves[i]->widgetitem) > 0)
-            if ((Curves[i]->widgetitem)->isSelected()) {
+            if ((Curves[i]->widgetitem)->isSelected())
+            {
                 list.append(i);
             }
     }
 //        qDebug()<<"ist.count"<<list.count()<<"CurveCouunt"<<CurveCount;
     if (list.count() == CurveCount) SelectedCurve = -1;
-    if (list.count() > 0) {
+    if (list.count() > 0)
+    {
         QString mstring;
         if (list.count() == 1) mstring = "this curve";
         else mstring = "these curves";
         if (QMessageBox::question(this, "Delete Curves", "This will remove " + mstring + " and delete all associated points - are you sure?", QMessageBox::Ok | QMessageBox::Cancel)
-                == QMessageBox::Ok) {
+                == QMessageBox::Ok)
+        {
             //now do actual removal. Complex as need to keep indices working properly
 
             //First - work out a  conversion table.
@@ -1351,7 +1433,8 @@ void MainWindowImpl::on_CurveDelete_pressed()
             int ToCurvePos = 0;
 
             //get conversion table
-            for (int i = 0; i < CurveCount; i++) {
+            for (int i = 0; i < CurveCount; i++)
+            {
                 if (list.indexOf(i) < 0) //this is NOT one of the deleting ones
                     ToCurves.append(ToCurvePos++);
                 else
@@ -1369,29 +1452,35 @@ void MainWindowImpl::on_CurveDelete_pressed()
             for (int i = 0; i < list.count(); i++) delete Curves[list[i]];
 
             //shuffle list back
-            for (int i = 0; i < CurveCount; i++) {
+            for (int i = 0; i < CurveCount; i++)
+            {
                 if (list.indexOf(i) < 0) //this is NOT one of the deleting ones
                     Curves[ToCurves[i]] = Curves[i];
             }
 
             CurveCount -= list.count();
-            for (int i = 0; i < list.count(); i++) {
+            for (int i = 0; i < list.count(); i++)
+            {
                 Curves.removeLast();
             }
 
             //handle Undo's
             for (int i = 0; i < UndoEvents.count(); i++)
-                for (int j = 0; j < UndoEvents[i]->DataObjects.count(); j++) {
+                for (int j = 0; j < UndoEvents[i]->DataObjects.count(); j++)
+                {
                     //for every data object
-                    if  (UndoEvents[i]->DataObjects[j]->Type == -1) {
+                    if  (UndoEvents[i]->DataObjects[j]->Type == -1)
+                    {
                         UndoEvents[i]->DataObjects[j]->CurveNumber = ToCurves[UndoEvents[i]->DataObjects[j]->CurveNumber];
                     }
                 }
 
             for (int i = 0; i < RedoEvents.count(); i++)
-                for (int j = 0; j < RedoEvents[i]->DataObjects.count(); j++) {
+                for (int j = 0; j < RedoEvents[i]->DataObjects.count(); j++)
+                {
                     //for every data object
-                    if  (RedoEvents[i]->DataObjects[j]->Type == -1) {
+                    if  (RedoEvents[i]->DataObjects[j]->Type == -1)
+                    {
                         RedoEvents[i]->DataObjects[j]->CurveNumber = ToCurves[RedoEvents[i]->DataObjects[j]->CurveNumber];
                     }
                 }
@@ -1414,16 +1503,20 @@ void MainWindowImpl::on_CurveMoveUp_pressed()
     CurvesTreeWidget->setUpdatesEnabled(false);
     if ((CurvesTreeWidget->selectedItems()).count() != 1)
         Message("Select a SINGLE curve");
-    else {
-        for (int i = 0;  i < CurveCount; i++) {
+    else
+    {
+        for (int i = 0;  i < CurveCount; i++)
+        {
             if ((Curves[i]->widgetitem) > 0)
-                if ((Curves[i]->widgetitem)->isSelected()) {
+                if ((Curves[i]->widgetitem)->isSelected())
+                {
                     //found selected
                     //swap with one above in list
                     QTreeWidgetItem *search = CurvesTreeWidget->itemAbove(Curves[i]->widgetitem);
                     if (search)
                         for (int j = 0;  j < CurveCount; j++)
-                            if ((Curves[j]->widgetitem) == search) {
+                            if ((Curves[j]->widgetitem) == search)
+                            {
                                 //found it
                                 int temp = Curves[i]->ListOrder;
                                 QTreeWidgetItem *temp2 = Curves[i]->widgetitem;
@@ -1456,16 +1549,20 @@ void MainWindowImpl::on_CurveMoveDown_pressed()
 
     if ((CurvesTreeWidget->selectedItems()).count() != 1)
         Message("Select a SINGLE curve");
-    else {
-        for (int i = 0;  i < CurveCount; i++) {
+    else
+    {
+        for (int i = 0;  i < CurveCount; i++)
+        {
             if ((Curves[i]->widgetitem) > 0)
-                if ((Curves[i]->widgetitem)->isSelected()) {
+                if ((Curves[i]->widgetitem)->isSelected())
+                {
                     //found selected
                     //swap with one above in list
                     QTreeWidgetItem *search = CurvesTreeWidget->itemBelow(Curves[i]->widgetitem);
                     if (search)
                         for (int j = 0;  j < CurveCount; j++)
-                            if ((Curves[j]->widgetitem) == search) {
+                            if ((Curves[j]->widgetitem) == search)
+                            {
                                 //found it
                                 int temp = Curves[i]->ListOrder;
                                 QTreeWidgetItem *temp2 = Curves[i]->widgetitem;
@@ -1496,17 +1593,23 @@ void MainWindowImpl::CurveCopy(int fromfile)
 {
     QList <QTreeWidgetItem *> selitems = CurvesTreeWidget->selectedItems();
     if (selitems.count() == 0) Message("No curves selected to copy");
-    else {
+    else
+    {
         MakeUndo("copy curves");
-        for (int i = 0; i < selitems.count(); i++) {
-            for (int j = 0;  j < CurveCount; j++) {
-                if ((Curves[j]->widgetitem) == selitems[i]) { //found a selected curve
+        for (int i = 0; i < selitems.count(); i++)
+        {
+            for (int j = 0;  j < CurveCount; j++)
+            {
+                if ((Curves[j]->widgetitem) == selitems[i])   //found a selected curve
+                {
                     for (int k = 0; k < Files.count(); k++)
-                        if (SliceSelectorList->item(k)->isSelected() && k != fromfile) {
+                        if (SliceSelectorList->item(k)->isSelected() && k != fromfile)
+                        {
                             //k is slice, c is curve
                             Curves[j]->SplinePoints[k * zsparsity]->X.clear();
                             Curves[j]->SplinePoints[k * zsparsity]->Y.clear();
-                            for (int l = 0; l < Curves[j]->SplinePoints[fromfile * zsparsity]->Count; l++) {
+                            for (int l = 0; l < Curves[j]->SplinePoints[fromfile * zsparsity]->Count; l++)
+                            {
                                 Curves[j]->SplinePoints[k * zsparsity]->X.append(Curves[j]->SplinePoints[fromfile * zsparsity]->X[l]);
                                 Curves[j]->SplinePoints[k * zsparsity]->Y.append(Curves[j]->SplinePoints[fromfile * zsparsity]->Y[l]);
                             }
@@ -1545,17 +1648,23 @@ void MainWindowImpl::on_actionCopyCurvesToCurrent_triggered()
     QList <QTreeWidgetItem *> selitems = CurvesTreeWidget->selectedItems();
     QList <QListWidgetItem *> selslices = SliceSelectorList->selectedItems();
     if (selslices.count() != 1) Message("Select a single slice to copy curves from");
-    else {
+    else
+    {
         //MakeUndo("copy curves");
-        for (int i = 0; i < selitems.count(); i++) {
-            for (int j = 0;  j < CurveCount; j++) {
-                if ((Curves[j]->widgetitem) == selitems[i]) { //found a selected curve
+        for (int i = 0; i < selitems.count(); i++)
+        {
+            for (int j = 0;  j < CurveCount; j++)
+            {
+                if ((Curves[j]->widgetitem) == selitems[i])   //found a selected curve
+                {
                     for (int k = 0; k < Files.count(); k++)
-                        if (SliceSelectorList->item(k)->isSelected() && k != CurrentFile) {
+                        if (SliceSelectorList->item(k)->isSelected() && k != CurrentFile)
+                        {
                             //k is slice, c is curve
                             Curves[j]->SplinePoints[CurrentFile * zsparsity]->X.clear();
                             Curves[j]->SplinePoints[CurrentFile * zsparsity]->Y.clear();
-                            for (int l = 0; l < Curves[j]->SplinePoints[k * zsparsity]->Count; l++) {
+                            for (int l = 0; l < Curves[j]->SplinePoints[k * zsparsity]->Count; l++)
+                            {
                                 Curves[j]->SplinePoints[CurrentFile * zsparsity]->X.append(Curves[j]->SplinePoints[k * zsparsity]->X[l]);
                                 Curves[j]->SplinePoints[CurrentFile * zsparsity]->Y.append(Curves[j]->SplinePoints[k * zsparsity]->Y[l]);
                             }
@@ -1585,11 +1694,15 @@ void MainWindowImpl::on_actionRemove_selected_curves_from_selected_slices_trigge
     QList <QTreeWidgetItem *> selitems = CurvesTreeWidget->selectedItems();
     QList <QListWidgetItem *> selslices = SliceSelectorList->selectedItems();
     MakeUndo("delete curves");
-    for (int i = 0; i < selitems.count(); i++) {
-        for (int j = 0;  j < CurveCount; j++) {
-            if ((Curves[j]->widgetitem) == selitems[i]) { //found a selected curve
+    for (int i = 0; i < selitems.count(); i++)
+    {
+        for (int j = 0;  j < CurveCount; j++)
+        {
+            if ((Curves[j]->widgetitem) == selitems[i])   //found a selected curve
+            {
                 for (int k = 0; k < Files.count(); k++)
-                    if (SliceSelectorList->item(k)->isSelected()) { //and a selected slice
+                    if (SliceSelectorList->item(k)->isSelected())   //and a selected slice
+                    {
                         //k is slice, j is curve
                         Curves[j]->SplinePoints[k * zsparsity]->X.clear();
                         Curves[j]->SplinePoints[k * zsparsity]->Y.clear();
@@ -1609,22 +1722,29 @@ void MainWindowImpl::on_actionResize_keeping_curve_shape_triggered()
     //this works on all selected slices
     QList <QTreeWidgetItem *> selitems = CurvesTreeWidget->selectedItems();
     if (selitems.count() == 0) Message ("No curves selected");
-    else {
+    else
+    {
         ResizeDialogImpl dialog;
         dialog.exec();
-        if (dialog.Cancelled == false) {
+        if (dialog.Cancelled == false)
+        {
             double percentsize = dialog.doubleSpinBox->value();
             MakeUndo("resize curves");
-            for (int i = 0; i < selitems.count(); i++) {
-                for (int j = 0;  j < CurveCount; j++) {
-                    if ((Curves[j]->widgetitem) == selitems[i]) { //found a selected curve
+            for (int i = 0; i < selitems.count(); i++)
+            {
+                for (int j = 0;  j < CurveCount; j++)
+                {
+                    if ((Curves[j]->widgetitem) == selitems[i])   //found a selected curve
+                    {
                         for (int k = 0; k < Files.count(); k++)
-                            if (SliceSelectorList->item(k)->isSelected()) { //and a selected slice
+                            if (SliceSelectorList->item(k)->isSelected())   //and a selected slice
+                            {
                                 //k is slice, j is curve
                                 //find centroid
                                 double xpos = 0;
                                 double ypos = 0;
-                                for (int n = 0; n < Curves[j]->SplinePoints[k * zsparsity]->Count; n++) {
+                                for (int n = 0; n < Curves[j]->SplinePoints[k * zsparsity]->Count; n++)
+                                {
                                     xpos += Curves[j]->SplinePoints[k * zsparsity]->X[n];
                                     ypos += Curves[j]->SplinePoints[k * zsparsity]->Y[n];
                                 }
@@ -1632,7 +1752,8 @@ void MainWindowImpl::on_actionResize_keeping_curve_shape_triggered()
                                 ypos /= Curves[j]->SplinePoints[k * zsparsity]->Count;
 
                                 //now redo all positions in terms of percent to here!
-                                for (int n = 0; n < Curves[j]->SplinePoints[k * zsparsity]->Count; n++) {
+                                for (int n = 0; n < Curves[j]->SplinePoints[k * zsparsity]->Count; n++)
+                                {
                                     Curves[j]->SplinePoints[k * zsparsity]->X[n] = xpos + (Curves[j]->SplinePoints[k * zsparsity]->X[n] - xpos) * percentsize / 100;
                                     Curves[j]->SplinePoints[k * zsparsity]->Y[n] = ypos + (Curves[j]->SplinePoints[k * zsparsity]->Y[n] - ypos) * percentsize / 100;
                                 }
@@ -1673,8 +1794,10 @@ void MainWindowImpl::ResetUndo()
 void MainWindowImpl::on_OOTreeWidget_itemPressed(QTreeWidgetItem *item, int column)
 {
     QTime now = QTime::currentTime();
-    if (LastColumnClicked == column && LastItemClicked == item) {
-        if (LastTimeClicked.msecsTo(now) < 500) { //double click
+    if (LastColumnClicked == column && LastItemClicked == item)
+    {
+        if (LastTimeClicked.msecsTo(now) < 500)   //double click
+        {
             on_OOTreeWidget_itemDoubleClicked(item, column);
             return;
         }
@@ -1689,8 +1812,10 @@ void MainWindowImpl::on_OOTreeWidget_itemPressed(QTreeWidgetItem *item, int colu
 void MainWindowImpl::on_CurvesTreeWidget_itemPressed(QTreeWidgetItem *item, int column)
 {
     QTime now = QTime::currentTime();
-    if (LastColumnClicked == column && LastItemClicked == item) {
-        if (LastTimeClicked.msecsTo(now) < 500) { //double click
+    if (LastColumnClicked == column && LastItemClicked == item)
+    {
+        if (LastTimeClicked.msecsTo(now) < 500)   //double click
+        {
             on_CurvesTreeWidget_itemDoubleClicked(item, column);
             return;
         }
@@ -1706,8 +1831,10 @@ void MainWindowImpl::on_MasksTreeWidget_itemPressed(QTreeWidgetItem *item, int c
 {
     //Double click bodge - not always being picked up for some reason, so manually look for close clicks
     QTime now = QTime::currentTime();
-    if (LastColumnClicked == column && LastItemClicked == item) {
-        if (LastTimeClicked.msecsTo(now) < 500) { //double click
+    if (LastColumnClicked == column && LastItemClicked == item)
+    {
+        if (LastTimeClicked.msecsTo(now) < 500)   //double click
+        {
             on_MasksTreeWidget_itemDoubleClicked(item, column);
             return;
         }
@@ -1719,9 +1846,12 @@ void MainWindowImpl::on_MasksTreeWidget_itemPressed(QTreeWidgetItem *item, int c
 
     if (column > 0) return;
     {
-        if ((QApplication::mouseButtons().testFlag(Qt::RightButton))) {
-            for (int i = 0;  i <= MaxUsedMask; i++) {
-                if ((MasksSettings[i]->widgetitem) == item) {
+        if ((QApplication::mouseButtons().testFlag(Qt::RightButton)))
+        {
+            for (int i = 0;  i <= MaxUsedMask; i++)
+            {
+                if ((MasksSettings[i]->widgetitem) == item)
+                {
 
                     int o = SelectedRMask;
                     SelectedRMask = i;
@@ -1731,9 +1861,12 @@ void MainWindowImpl::on_MasksTreeWidget_itemPressed(QTreeWidgetItem *item, int c
                 }
             }
         }
-        if ((QApplication::mouseButtons().testFlag(Qt::LeftButton))) {
-            for (int i = 0;  i <= MaxUsedMask; i++) {
-                if ((MasksSettings[i]->widgetitem) == item) {
+        if ((QApplication::mouseButtons().testFlag(Qt::LeftButton)))
+        {
+            for (int i = 0;  i <= MaxUsedMask; i++)
+            {
+                if ((MasksSettings[i]->widgetitem) == item)
+                {
                     int o = SelectedMask;
                     SelectedMask = i;
                     RefreshOneMaskItem(item, i);
@@ -1750,8 +1883,10 @@ void MainWindowImpl::on_SegmentsTreeWidget_itemPressed(QTreeWidgetItem *item, in
 
     //Double click bodge - not always being picked up for some reason, so manually look for close clicks
     QTime now = QTime::currentTime();
-    if (LastColumnClicked == column && LastItemClicked == item) {
-        if (LastTimeClicked.msecsTo(now) < 500) { //double click
+    if (LastColumnClicked == column && LastItemClicked == item)
+    {
+        if (LastTimeClicked.msecsTo(now) < 500)   //double click
+        {
             on_SegmentsTreeWidget_itemDoubleClicked(item, column);
             return;
         }
@@ -1763,9 +1898,12 @@ void MainWindowImpl::on_SegmentsTreeWidget_itemPressed(QTreeWidgetItem *item, in
 
     if (column != 0) return;
     {
-        if ((QApplication::mouseButtons().testFlag(Qt::RightButton))) {
-            for (int i = 0;  i < SegmentCount; i++) {
-                if ((Segments[i]->widgetitem) == item) {
+        if ((QApplication::mouseButtons().testFlag(Qt::RightButton)))
+        {
+            for (int i = 0;  i < SegmentCount; i++)
+            {
+                if ((Segments[i]->widgetitem) == item)
+                {
                     int o = CurrentRSegment;
                     CurrentRSegment = i;
                     if (o >= 0) RefreshOneSegmentItem(Segments[o]->widgetitem, o); //not if delete all!
@@ -1774,9 +1912,12 @@ void MainWindowImpl::on_SegmentsTreeWidget_itemPressed(QTreeWidgetItem *item, in
                 }
             }
         }
-        if ((QApplication::mouseButtons().testFlag(Qt::LeftButton))) {
-            for (int i = 0;  i < SegmentCount; i++) {
-                if ((Segments[i]->widgetitem) == item) {
+        if ((QApplication::mouseButtons().testFlag(Qt::LeftButton)))
+        {
+            for (int i = 0;  i < SegmentCount; i++)
+            {
+                if ((Segments[i]->widgetitem) == item)
+                {
                     int o = CurrentSegment;
                     CurrentSegment = i;
                     RefreshOneSegmentItem(item, i);
@@ -1795,15 +1936,18 @@ void MainWindowImpl::on_SegmentsTreeWidget_itemDoubleClicked(QTreeWidgetItem *it
     if (DoubleClickTimer.elapsed() < 100) return; //avoid double calls
     //invert a yes/no etc - code largely from masks version
     for (int i = 0; i < SegmentCount; i++)
-        if (item == Segments[i]->widgetitem) { //found it
+        if (item == Segments[i]->widgetitem)   //found it
+        {
             if (column == 4)  Segments[i]->Locked = !(Segments[i]->Locked);
-            if (column == 3)  {
+            if (column == 3)
+            {
                 Segments[i]->Activated = !(Segments[i]->Activated);
                 ResetFilesDirty();
                 rangescene->Refresh();
             }
 
-            if (column == 1) {
+            if (column == 1)
+            {
                 QString temp =
                     QInputDialog::getText (this, "", "", QLineEdit::Normal, Segments[i]->Name);
 
@@ -1812,9 +1956,11 @@ void MainWindowImpl::on_SegmentsTreeWidget_itemDoubleClicked(QTreeWidgetItem *it
                 RefreshCurves();
             }
 
-            if (column == 2) { //colour
+            if (column == 2)   //colour
+            {
                 QColor newcol = QColorDialog::getColor(QColor(Segments[i]->Colour[0], Segments[i]->Colour[1], Segments[i]->Colour[2]));
-                if (newcol.isValid()) {
+                if (newcol.isValid())
+                {
                     Segments[i]->Colour[0] = newcol.red();
                     Segments[i]->Colour[1] = newcol.green();
                     Segments[i]->Colour[2] = newcol.blue();
@@ -1835,8 +1981,10 @@ void MainWindowImpl::on_OOTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, in
 {
     if (DoubleClickTimer.elapsed() < 100) return; //avoid double calls
     for (int i = 0; i < OutputObjectsCount; i++)
-        if (item == OutputObjects[i]->widgetitem) { //found it
-            if (column == 0) { //Name
+        if (item == OutputObjects[i]->widgetitem)   //found it
+        {
+            if (column == 0)   //Name
+            {
                 QString temp =
                     QInputDialog::getText (this, "", "", QLineEdit::Normal, OutputObjects[i]->Name);
 
@@ -1845,10 +1993,12 @@ void MainWindowImpl::on_OOTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, in
                 OOTreeWidget->resizeColumnToContents(0);
             }
 
-            if (column == 1) { //Colour
+            if (column == 1)   //Colour
+            {
                 QColor newcol;
                 newcol = QColorDialog::getColor(QColor(OutputObjects[i]->Colour[0], OutputObjects[i]->Colour[1], OutputObjects[i]->Colour[2]));
-                if (newcol.isValid()) {
+                if (newcol.isValid())
+                {
                     OutputObjects[i]->Colour[0] = newcol.red();
                     OutputObjects[i]->Colour[1] = newcol.green();
                     OutputObjects[i]->Colour[2] = newcol.blue();
@@ -1856,7 +2006,8 @@ void MainWindowImpl::on_OOTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, in
                 RefreshOneOOItem(OutputObjects[i]->widgetitem, i);
             }
 
-            if (column == 3) { //resample
+            if (column == 3)   //resample
+            {
                 bool ok;
                 int newresample = QInputDialog::getInt(this, tr("Resample value"),
                                                        "", OutputObjects[i]->Resample, 0, 100, 1, &ok);
@@ -1864,7 +2015,8 @@ void MainWindowImpl::on_OOTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, in
                 RefreshOneOOItem(OutputObjects[i]->widgetitem, i);
             }
 
-            if (column == 2) { //Key
+            if (column == 2)   //Key
+            {
                 QStringList items;
                 items << "[None]" << "A" << "B" << "C" << "D" << "E" << "F" << "G" << "H" << "I" << "J" << "K" << "L" << "M" << "N" << "O" << "P" << "Q" << "R" << "S" << "T" << "U" << "V" << "W" << "X" << "Y" << "Z";
                 items << "0" << "1" << "2" << "3" << "4" << "5" << "6" << "7" << "8" << "9";
@@ -1877,7 +2029,8 @@ void MainWindowImpl::on_OOTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, in
 
                 QString item = QInputDialog::getItem(this, tr("Shortcut Key"),
                                                      "", items, asc, false, &ok);
-                if (ok && !item.isEmpty()) {
+                if (ok && !item.isEmpty())
+                {
                     if (item == "[None]") OutputObjects[i]->Key = 0;
                     else OutputObjects[i]->Key = (int) (item.toLatin1()[0]);
                 }
@@ -1885,7 +2038,8 @@ void MainWindowImpl::on_OOTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, in
 
             }
 
-            if (column == 4) { //show
+            if (column == 4)   //show
+            {
                 OutputObjects[i]->Show = !OutputObjects[i]->Show;
 
                 //Complex filedirty issue
@@ -1896,20 +2050,27 @@ void MainWindowImpl::on_OOTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, in
                 RefreshOneOOItem(OutputObjects[i]->widgetitem, i);
             }
 
-            if (column == 5) { //merge
-                if (OutputObjects[i]->IsGroup) {
+            if (column == 5)   //merge
+            {
+                if (OutputObjects[i]->IsGroup)
+                {
                     OutputObjects[i]->Merge = !OutputObjects[i]->Merge;
                     ResetFilesDirty();
-                } else {
-                    if (OutputObjects[i]->Parent != -1) {
+                }
+                else
+                {
+                    if (OutputObjects[i]->Parent != -1)
+                    {
                         QString message = "Merge this group together?";
                         if (OutputObjects[OutputObjects[i]->Parent]->Merge) message = "Un-merge this group?";
                         if (QMessageBox::question(this, "Merge Output Objects", message, QMessageBox::Yes | QMessageBox::No)
-                                == QMessageBox::Yes) {
+                                == QMessageBox::Yes)
+                        {
                             OutputObjects[OutputObjects[i]->Parent]->Merge = !OutputObjects[OutputObjects[i]->Parent]->Merge;
                             ResetFilesDirty();
                         }
-                    } else Message("You can only merge a group");
+                    }
+                    else Message("You can only merge a group");
                 }
                 RefreshOO(); //refresh the whole thing
             }
@@ -1941,9 +2102,12 @@ void MainWindowImpl::on_OONew_clicked()
     QString name;
     int cflag = false;
     // do the curves
-    if (DirectCurves->isChecked()) {
-        for (int i = 0; i < CurveCount; i++) {
-            if (Curves[i]->widgetitem->isSelected()) {
+    if (DirectCurves->isChecked())
+    {
+        for (int i = 0; i < CurveCount; i++)
+        {
+            if (Curves[i]->widgetitem->isSelected())
+            {
                 o->CurveComponents.append(i);
                 qname = Curves[i]->Name + " ";
                 count++;
@@ -1954,14 +2118,16 @@ void MainWindowImpl::on_OONew_clicked()
 
     QString sname = "";
     for (int i = 0; i < SegmentCount; i++)
-        if (Segments[i]->widgetitem->isSelected() || (SegmentCount == 1 && cflag == false)) {
+        if (Segments[i]->widgetitem->isSelected() || (SegmentCount == 1 && cflag == false))
+        {
             o->ComponentSegments.append(i);
             count++;
             if (sname == "") sname = " (" + Segments[i]->Name + ")";
             else sname = " (Multiple Segs)";
         }
 
-    if (count == 0) {
+    if (count == 0)
+    {
         Message("Select one or more segments");
         delete o;
         return;
@@ -1969,8 +2135,10 @@ void MainWindowImpl::on_OONew_clicked()
 
 
     count = 0;
-    for (int j = 0; j <= MaxUsedMask; j++) {
-        if (MasksSettings[j]->widgetitem->isSelected()) {
+    for (int j = 0; j <= MaxUsedMask; j++)
+    {
+        if (MasksSettings[j]->widgetitem->isSelected())
+        {
             //this combo is in
             o->ComponentMasks.append(j);
             if (SegmentCount == 1) name = MasksSettings[j]->Name;
@@ -1979,13 +2147,15 @@ void MainWindowImpl::on_OONew_clicked()
         }
     }
 
-    if (count == 0 && cflag == false) {
+    if (count == 0 && cflag == false)
+    {
         Message("Select one or more masks");
         delete o;
         return;
     }
 
-    if (count > 1) {
+    if (count > 1)
+    {
         name = "Object ";
         QTextStream t(&name);
         t << OutputObjects.count();
@@ -2000,21 +2170,25 @@ void MainWindowImpl::on_OONew_clicked()
     int r = 0, g = 0, b = 0, countc = 0;
 
     //average of all curves and masks
-    for (int i = 0; i < o->ComponentMasks.count(); i++) {
+    for (int i = 0; i < o->ComponentMasks.count(); i++)
+    {
         r += MasksSettings[o->ComponentMasks[i]]->ForeColour[0];
         g += MasksSettings[o->ComponentMasks[i]]->ForeColour[1];
         b += MasksSettings[o->ComponentMasks[i]]->ForeColour[2];
         countc++;
     }
-    for (int i = 0; i < o->CurveComponents.count(); i++) {
+    for (int i = 0; i < o->CurveComponents.count(); i++)
+    {
         r += Curves[o->CurveComponents[i]]->Colour[0];
         g += Curves[o->CurveComponents[i]]->Colour[1];
         b += Curves[o->CurveComponents[i]]->Colour[2];
         countc++;
     }
 
-    if (o->ComponentSegments.count() > 1) { //also include segs if more than one
-        for (int i = 0; i < o->ComponentSegments.count(); i++) {
+    if (o->ComponentSegments.count() > 1)   //also include segs if more than one
+    {
+        for (int i = 0; i < o->ComponentSegments.count(); i++)
+        {
             r += Segments[o->ComponentSegments[i]]->Colour[0];
             g += Segments[o->ComponentSegments[i]]->Colour[1];
             b += Segments[o->ComponentSegments[i]]->Colour[2];
@@ -2050,11 +2224,13 @@ void MainWindowImpl::on_OOGroup_clicked()
     int oldparent = -2;
     bool flag = false;
     if (selected.count() == 0) Message("Select objects to group");
-    else {
+    else
+    {
         //OK, do grouping
         for (int i = 0; i < selected.count(); i++)
             for (int j = 0; j < OutputObjectsCount; j++)
-                if (OutputObjects[j]->widgetitem == selected[i]) {
+                if (OutputObjects[j]->widgetitem == selected[i])
+                {
                     if (oldparent == -2) oldparent = OutputObjects[j]->Parent;
                     if (oldparent != OutputObjects[j]->Parent) flag = true; //this will have to be root level
                     OutputObjects[j]->Parent = OutputObjectsCount; //reparents if necessary of course
@@ -2085,21 +2261,26 @@ void MainWindowImpl::on_OODelete_clicked()
 {
     QList <int> list;
 restart:
-    for (int i = 0; i < OutputObjectsCount; i++) {
+    for (int i = 0; i < OutputObjectsCount; i++)
+    {
         if (OutputObjects[i]->widgetitem)
-            if (OutputObjects[i]->widgetitem->isSelected()) {
+            if (OutputObjects[i]->widgetitem->isSelected())
+            {
                 bool flag = false;
-                if (OutputObjects[i]->IsGroup == true && OutputObjects[i]->widgetitem->isExpanded() == false) {
+                if (OutputObjects[i]->IsGroup == true && OutputObjects[i]->widgetitem->isExpanded() == false)
+                {
                     //unexpanded group - if there are any unselected in here we want to ask if they should be deleted too
                     for (int j = 0; j < OutputObjectsCount; j++)
-                        if (OutputObjects[j]->Parent == i) {
+                        if (OutputObjects[j]->Parent == i)
+                        {
                             if (OutputObjects[j]->widgetitem)
                                 if (OutputObjects[j]->widgetitem->isSelected() == false)
                                     flag = true;
                         }
                 }
 
-                if (flag) {
+                if (flag)
+                {
                     if (QMessageBox::question(this, "Delete Output Objects", "Delete objects within group " + OutputObjects[i]->Name + "?", QMessageBox::Yes | QMessageBox::No)
                             == QMessageBox::Yes)
                         //Yes, delete them - simply select them
@@ -2109,7 +2290,8 @@ restart:
                 }
 
                 //will be deleting this one, so reduce all parents indices that will be affected by 1
-                for (int j = 0; j < OutputObjectsCount; j++) {
+                for (int j = 0; j < OutputObjectsCount; j++)
+                {
 
                     if (OutputObjects[j]->Parent == i) OutputObjects[j]->Parent = OutputObjects[i]->Parent;
                     if (OutputObjects[j]->Parent > i) OutputObjects[j]->Parent--;
@@ -2129,21 +2311,27 @@ void MainWindowImpl::on_OOUp_clicked()
 {
     QList <QTreeWidgetItem *> selected = OOTreeWidget->selectedItems();
     if (selected.count() != 1) Message("Select a single item to move up");
-    else {
-        for (int i = 0; i < OutputObjectsCount; i++) {
-            if (OutputObjects[i]->widgetitem == selected[0]) {
+    else
+    {
+        for (int i = 0; i < OutputObjectsCount; i++)
+        {
+            if (OutputObjects[i]->widgetitem == selected[0])
+            {
                 //i is now the correct index
                 //find  one to swap with
                 int highestval = -1;
                 int highindex = -1;
-                for (int j = 0; j < OutputObjectsCount; j++) {
-                    if ((OutputObjects[j]->ListOrder) > highestval && (OutputObjects[j]->ListOrder) < OutputObjects[i]->ListOrder && (OutputObjects[j]->Parent) == (OutputObjects[i]->Parent)) {
+                for (int j = 0; j < OutputObjectsCount; j++)
+                {
+                    if ((OutputObjects[j]->ListOrder) > highestval && (OutputObjects[j]->ListOrder) < OutputObjects[i]->ListOrder && (OutputObjects[j]->Parent) == (OutputObjects[i]->Parent))
+                    {
                         highestval = OutputObjects[j]->ListOrder;
                         highindex = j;
                     }
                 }
 
-                if (highindex >= 0) {
+                if (highindex >= 0)
+                {
                     //do the swap
                     int temp = OutputObjects[highindex]->ListOrder;
                     OutputObjects[highindex]->ListOrder = OutputObjects[i]->ListOrder;
@@ -2159,21 +2347,27 @@ void MainWindowImpl::on_OODown_clicked()
 {
     QList <QTreeWidgetItem *> selected = OOTreeWidget->selectedItems();
     if (selected.count() != 1) Message("Select a single item to move down");
-    else {
-        for (int i = 0; i < OutputObjectsCount; i++) {
-            if (OutputObjects[i]->widgetitem == selected[0]) {
+    else
+    {
+        for (int i = 0; i < OutputObjectsCount; i++)
+        {
+            if (OutputObjects[i]->widgetitem == selected[0])
+            {
                 //i is now the correct index
                 //find  one to swap with
                 int lowestval = 9999999;
                 int lowestindex = -1;
-                for (int j = 0; j < OutputObjectsCount; j++) {
-                    if ((OutputObjects[j]->ListOrder) < lowestval && (OutputObjects[j]->ListOrder) > OutputObjects[i]->ListOrder && (OutputObjects[j]->Parent) == (OutputObjects[i]->Parent)) {
+                for (int j = 0; j < OutputObjectsCount; j++)
+                {
+                    if ((OutputObjects[j]->ListOrder) < lowestval && (OutputObjects[j]->ListOrder) > OutputObjects[i]->ListOrder && (OutputObjects[j]->Parent) == (OutputObjects[i]->Parent))
+                    {
                         lowestval = OutputObjects[j]->ListOrder;
                         lowestindex = j;
                     }
                 }
 
-                if (lowestindex >= 0) {
+                if (lowestindex >= 0)
+                {
                     //do the swap
                     int temp = OutputObjects[lowestindex]->ListOrder;
                     OutputObjects[lowestindex]->ListOrder = OutputObjects[i]->ListOrder;
@@ -2191,7 +2385,8 @@ void MainWindowImpl::on_MasksTreeWidget_itemSelectionChanged()
 
 
     //do the underlining trick
-    for (int i = 0; i < MasksTreeWidget->topLevelItemCount(); i++) {
+    for (int i = 0; i < MasksTreeWidget->topLevelItemCount(); i++)
+    {
         QTreeWidgetItem *t =    MasksTreeWidget->topLevelItem(i);
         QFont f = t->font(1);
         if (t->isSelected())    f.setUnderline(true);
@@ -2199,9 +2394,12 @@ void MainWindowImpl::on_MasksTreeWidget_itemSelectionChanged()
         t->setFont(1, f);
     }
 
-    if (MasksTreeWidget->selectedItems().count() == 1 && NoUpdateSelectionFlag == false && (QApplication::mouseButtons().testFlag(Qt::RightButton)) == false) {
-        for (int i = 0;  i <= MaxUsedMask; i++) {
-            if (MasksSettings[i]->widgetitem->isSelected()) {
+    if (MasksTreeWidget->selectedItems().count() == 1 && NoUpdateSelectionFlag == false && (QApplication::mouseButtons().testFlag(Qt::RightButton)) == false)
+    {
+        for (int i = 0;  i <= MaxUsedMask; i++)
+        {
+            if (MasksSettings[i]->widgetitem->isSelected())
+            {
                 int o = SelectedMask;
                 SelectedMask = i;
                 RefreshOneMaskItem(MasksSettings[i]->widgetitem, i);
@@ -2217,7 +2415,8 @@ void MainWindowImpl::on_MasksTreeWidget_itemSelectionChanged()
 void MainWindowImpl::on_SegmentsTreeWidget_itemSelectionChanged()
 {
     if (bodgeflag) return; //do the underlining trick
-    for (int i = 0; i < SegmentsTreeWidget->topLevelItemCount(); i++) {
+    for (int i = 0; i < SegmentsTreeWidget->topLevelItemCount(); i++)
+    {
         QTreeWidgetItem *t = SegmentsTreeWidget->topLevelItem(i);
         QFont f = t->font(1);
         if (t->isSelected()) f.setUnderline(true);
@@ -2227,9 +2426,12 @@ void MainWindowImpl::on_SegmentsTreeWidget_itemSelectionChanged()
 
     //if only one item selected, change the primary selection!
 
-    if (SegmentsTreeWidget->selectedItems().count() == 1 && NoUpdateSelectionFlag == false && (QApplication::mouseButtons().testFlag(Qt::RightButton)) == false) {
-        for (int i = 0;  i < SegmentCount; i++) {
-            if (Segments[i]->widgetitem->isSelected()) {
+    if (SegmentsTreeWidget->selectedItems().count() == 1 && NoUpdateSelectionFlag == false && (QApplication::mouseButtons().testFlag(Qt::RightButton)) == false)
+    {
+        for (int i = 0;  i < SegmentCount; i++)
+        {
+            if (Segments[i]->widgetitem->isSelected())
+            {
                 int o = CurrentSegment;
                 CurrentSegment = i;
                 RefreshOneSegmentItem(Segments[i]->widgetitem, i);
@@ -2246,7 +2448,8 @@ void MainWindowImpl::on_SegmentsTreeWidget_itemSelectionChanged()
 void MainWindowImpl::OOunderlineChildren(QTreeWidgetItem *par)
 {
     //do the underlining trick
-    for (int i = 0; i < par->childCount(); i++) {
+    for (int i = 0; i < par->childCount(); i++)
+    {
         QTreeWidgetItem *t =    par->child(i);
         QFont f = t->font(0);
         if (t->isSelected())    f.setUnderline(true);
@@ -2260,13 +2463,18 @@ void MainWindowImpl::on_OOTreeWidget_itemSelectionChanged()
 {
     if (bodgeflag) return;
     //are we in the odd select mode?
-    if (OutputRegroupMode) {
+    if (OutputRegroupMode)
+    {
         int count = 0;
-        for (int i = 0; i < OutputObjectsCount; i++) {
-            if (OutputObjects[i]->widgetitem->isSelected() && OutputObjects[i]->IsGroup && !OutputObjects[i]->TempSelected) {
+        for (int i = 0; i < OutputObjectsCount; i++)
+        {
+            if (OutputObjects[i]->widgetitem->isSelected() && OutputObjects[i]->IsGroup && !OutputObjects[i]->TempSelected)
+            {
                 //move all to this group
-                for (int j = 0; j < OutputObjectsCount; j++) {
-                    if  (OutputObjects[j]->TempSelected) {
+                for (int j = 0; j < OutputObjectsCount; j++)
+                {
+                    if  (OutputObjects[j]->TempSelected)
+                    {
                         OutputObjects[j]->Parent = i;
                         count++;
                     }
@@ -2274,13 +2482,17 @@ void MainWindowImpl::on_OOTreeWidget_itemSelectionChanged()
 
             }
         }
-        if (count > 0) {
+        if (count > 0)
+        {
             OutputRegroupMode = false;
             OOTreeWidget->setCursor(Qt::ArrowCursor);
             RefreshOO();
-        } else {
+        }
+        else
+        {
             if (QMessageBox::question(this, "Move Object to Group", "Select a group to move selected objects to, or click Cancel to abort", QMessageBox::Ok | QMessageBox::Cancel)
-                    == QMessageBox::Cancel) {
+                    == QMessageBox::Cancel)
+            {
                 OutputRegroupMode = false;
                 OOTreeWidget->setCursor(Qt::ArrowCursor);
             }
@@ -2288,7 +2500,8 @@ void MainWindowImpl::on_OOTreeWidget_itemSelectionChanged()
     }
 
     //do the underlining trick
-    for (int i = 0; i < OOTreeWidget->topLevelItemCount(); i++) {
+    for (int i = 0; i < OOTreeWidget->topLevelItemCount(); i++)
+    {
         QTreeWidgetItem *t =    OOTreeWidget->topLevelItem(i);
         QFont f = t->font(0);
         if (t->isSelected())    f.setUnderline(true);
@@ -2299,9 +2512,11 @@ void MainWindowImpl::on_OOTreeWidget_itemSelectionChanged()
 
     //and the selection stuff
     QList <QTreeWidgetItem *> t = OOTreeWidget->selectedItems();
-    if (t.count() == 1) {
+    if (t.count() == 1)
+    {
         for (int i = 0; i < OutputObjectsCount; i++)
-            if (OutputObjects[i]->widgetitem == t[0]) {
+            if (OutputObjects[i]->widgetitem == t[0])
+            {
                 //single selection - alter selections of other stuff
                 NoUpdateSelectionFlag = true; //stops selections changing the working mask
 
@@ -2314,7 +2529,8 @@ void MainWindowImpl::on_OOTreeWidget_itemSelectionChanged()
                     Segments[OutputObjects[i]->ComponentSegments[j]]->widgetitem->setSelected(true);
 
 
-                for (int j = 0; j < CurveCount; j++) {
+                for (int j = 0; j < CurveCount; j++)
+                {
                     if (Curves[j]->widgetitem) Curves[j]->widgetitem->setSelected(false);
                 }
                 for (int j = 0; j < OutputObjects[i]->CurveComponents.count(); j++)
@@ -2332,9 +2548,12 @@ void MainWindowImpl::on_actionUngroup_triggered()
     //For all selected objects:
     //QMessageBox::information(this,"","About to try ungrouping");
     bool flag = true;
-    for (int i = 0; i < OutputObjectsCount; i++) {
-        if (OutputObjects[i]->widgetitem->isSelected()) {
-            if (OutputObjects[i]->Parent != -1) {
+    for (int i = 0; i < OutputObjectsCount; i++)
+    {
+        if (OutputObjects[i]->widgetitem->isSelected())
+        {
+            if (OutputObjects[i]->Parent != -1)
+            {
                 //QMessageBox::information(this,"","About to reparent");
 
                 OutputObjects[i]->Parent = OutputObjects[OutputObjects[i]->Parent]->Parent;
@@ -2346,7 +2565,8 @@ void MainWindowImpl::on_actionUngroup_triggered()
     //if (flag) QMessageBox::information(this,"","Flag is true"); else   QMessageBox::information(this,"","Flag is false");
 
     if (flag) Message ("No objects selected that can be removed from groups!");
-    else {
+    else
+    {
         RefreshOO();
         ResetFilesDirty();
     }
@@ -2358,12 +2578,16 @@ void MainWindowImpl::on_actionUngroup_triggered()
 void MainWindowImpl::on_actionMove_item_to_Group_triggered()
 {
     int count = 0;
-    for (int i = 0; i < OutputObjectsCount; i++) {
-        if (OutputObjects[i]->widgetitem->isSelected()) {
+    for (int i = 0; i < OutputObjectsCount; i++)
+    {
+        if (OutputObjects[i]->widgetitem->isSelected())
+        {
             OutputObjects[i]->TempSelected = true;
             count++;
-        } else  OutputObjects[i]->TempSelected = false;
-        if (count != 0) {
+        }
+        else  OutputObjects[i]->TempSelected = false;
+        if (count != 0)
+        {
             OutputRegroupMode = true;
             OOTreeWidget->setCursor(Qt::PointingHandCursor);
         }
@@ -2374,44 +2598,56 @@ void MainWindowImpl::CleanseOO()
 {
     //need to go through all the lists and remove anything that's -1
 
-    for (int i = 0; i < OutputObjectsCount; i++) {
-        if (!(OutputObjects[i]->IsGroup)) {
+    for (int i = 0; i < OutputObjectsCount; i++)
+    {
+        if (!(OutputObjects[i]->IsGroup))
+        {
             QList <int> NewList;
 
             NewList.clear();
-            foreach (int v, OutputObjects[i]->ComponentMasks) {
+            foreach (int v, OutputObjects[i]->ComponentMasks)
+            {
                 if (v != -1) if (NewList.indexOf(v) == -1) //if not already there
                         NewList.append(v);
             }
             OutputObjects[i]->ComponentMasks = NewList;
 
             NewList.clear();
-            foreach (int v, OutputObjects[i]->ComponentSegments) {
+            foreach (int v, OutputObjects[i]->ComponentSegments)
+            {
                 if (v != -1) if (NewList.indexOf(v) == -1) //if not already there
                         NewList.append(v);
             }
             OutputObjects[i]->ComponentSegments = NewList;
 
             NewList.clear();
-            foreach (int v, OutputObjects[i]->CurveComponents) {
+            foreach (int v, OutputObjects[i]->CurveComponents)
+            {
                 if (v != -1) if (NewList.indexOf(v) == -1) //if not already there
                         NewList.append(v);
             }
             OutputObjects[i]->CurveComponents = NewList;
 
-            if ((OutputObjects[i]->CurveComponents.count() +  OutputObjects[i]->ComponentSegments.count() +  OutputObjects[i]->ComponentMasks.count()) == 0) {
+            if ((OutputObjects[i]->CurveComponents.count() +  OutputObjects[i]->ComponentSegments.count() +  OutputObjects[i]->ComponentMasks.count()) == 0)
+            {
                 //item now empty
                 delete OutputObjects.takeAt(i);
                 i--;
                 OutputObjectsCount--;
-            } else {
-                if (OutputObjects[i]->ComponentMasks.count() == 0 || OutputObjects[i]->ComponentSegments.count() == 0) {
-                    if (OutputObjects[i]->CurveComponents.count() == 0) {
+            }
+            else
+            {
+                if (OutputObjects[i]->ComponentMasks.count() == 0 || OutputObjects[i]->ComponentSegments.count() == 0)
+                {
+                    if (OutputObjects[i]->CurveComponents.count() == 0)
+                    {
                         // if only one mask OR segment and no curves - can delete the whole object
                         delete OutputObjects.takeAt(i);
                         i--;
                         OutputObjectsCount--;
-                    } else { //there are curves - so delete the remaining seg/mask - just clear both lists - but leave object
+                    }
+                    else     //there are curves - so delete the remaining seg/mask - just clear both lists - but leave object
+                    {
                         OutputObjects[i]->ComponentMasks.clear();
                         OutputObjects[i]->ComponentSegments.clear();
                     }
@@ -2451,7 +2687,8 @@ void MainWindowImpl::on_actionMaskCopy_selected_from_Previous_triggered()
 {
     CopyingImpl cop;
     if (CurrentFile == 0) Message("This is the first slice image in the dataset");
-    else {
+    else
+    {
         cop.MaskCopy(CurrentFile - 1, this);
         ResetUndo();
         //do advance/back
@@ -2482,7 +2719,8 @@ void MainWindowImpl::on_actionMaskCopy_selected_from_next_triggered() //from nex
 {
     CopyingImpl cop;
     if (CurrentFile == FileCount - 1) Message("This is the last slice image in the dataset");
-    else {
+    else
+    {
         cop.MaskCopy(CurrentFile + 1, this);
 
         //do advance/back
@@ -2505,7 +2743,8 @@ void MainWindowImpl::on_actionMaskCopy_all_from_next_triggered() //actually copy
         Message("Select ONE other slice to copy from");
     else
         for (int i = 0; i < FileCount; i++)
-            if (SliceSelectorList->item(i)->isSelected()) {
+            if (SliceSelectorList->item(i)->isSelected())
+            {
                 cop.MaskCopy2(i, this);
 
                 //do advance/back
@@ -2522,20 +2761,24 @@ void MainWindowImpl::on_actionMaskCopy_all_from_next_triggered() //actually copy
 
 void MainWindowImpl::on_actionMask_Advance_slice_after_copy_operation_toggled(bool )
 {
-    if (actionMask_Advance_slice_after_copy_operation->isChecked() ) {
+    if (actionMask_Advance_slice_after_copy_operation->isChecked() )
+    {
         MasksMoveBack = false;
         MasksMoveForward = true;
         actionMaskGo_back_one_slice_after_copy->setChecked(false);
-    } else  MasksMoveForward = false;
+    }
+    else  MasksMoveForward = false;
 }
 
 void MainWindowImpl::on_actionMaskGo_back_one_slice_after_copy_toggled(bool )
 {
-    if (actionMaskGo_back_one_slice_after_copy->isChecked() ) {
+    if (actionMaskGo_back_one_slice_after_copy->isChecked() )
+    {
         MasksMoveForward = false;
         MasksMoveBack = true;
         actionMask_Advance_slice_after_copy_operation->setChecked(false);
-    } else  MasksMoveBack = false;
+    }
+    else  MasksMoveBack = false;
 }
 
 
@@ -2581,7 +2824,8 @@ void MainWindowImpl::Moveimage(int imageno)
     LoadAllData(-10000 + CurrentFile);
 
     //set my 'blank' starting point for undo
-    if (HorribleBodgeFlagDontStoreUndo == false) {
+    if (HorribleBodgeFlagDontStoreUndo == false)
+    {
         MasksUndoDirty = true;
         LocksUndoDirty = true;
         CurvesUndoDirty = true;
@@ -2626,6 +2870,7 @@ bool MainWindowImpl::event ( QEvent *event )
 
 void MainWindowImpl::on_actionShow_position_slice_selector_toggled(bool tog)
 {
+    Q_UNUSED(tog);
     ShowSlicePosition = actionShow_position_slice_selector->isChecked();
     for (int i = 0; i < FileCount; i++)
         SliceSelectorList->item(i)->setText(TextForSliceSelectorBox(i));
@@ -2636,36 +2881,44 @@ void MainWindowImpl::FixUpStretches()
 {
     //check there IS an increasing sequence!
     int affectedslice = -1;
-    for (int i = 1; i < FullFiles.count(); i++) {
-        if (FullStretches[i] <= FullStretches[i - 1]) {
+    for (int i = 1; i < FullFiles.count(); i++)
+    {
+        if (FullStretches[i] <= FullStretches[i - 1])
+        {
             if (affectedslice == -1) affectedslice = i;
             do FullStretches[i]++;
             while (FullStretches[i] <= FullStretches[i - 1]);
         }
     }
 
-    if (affectedslice != -1) {
+    if (affectedslice != -1)
+    {
         QString mess;
         QTextStream st(&mess);
         st << "This change will violate slice order (i.e. later slices will have a position value LOWER than earlier ones). To proceed SPIERS will have to modify position values for affected slices - is this OK?";
         if (QMessageBox::warning(this, "Change Slice Spacing", mess, QMessageBox::Ok | QMessageBox::Cancel)
-                != QMessageBox::Ok) {
+                != QMessageBox::Ok)
+        {
             FullStretches = OldStretches;
             return;
         }
     }
 
     //Redo Stretches from FullStretches
-    if (zsparsity > 1) {
+    if (zsparsity > 1)
+    {
         Stretches.clear();
-        for (int i = 0; i < FullStretches.count(); i += zsparsity) {
+        for (int i = 0; i < FullStretches.count(); i += zsparsity)
+        {
             Stretches.append(FullStretches[i]);
         }
-    } else Stretches = FullStretches;
+    }
+    else Stretches = FullStretches;
 
 
     //It's OK - modify the box
-    for (int i = 0; i < FileCount; i++) {
+    for (int i = 0; i < FileCount; i++)
+    {
         SliceSelectorList->item(i)->setText(TextForSliceSelectorBox(i));
     }
 
@@ -2675,7 +2928,8 @@ void MainWindowImpl::FixUpStretches()
 void MainWindowImpl::on_actionChange_slice_spacing_triggered()
 {
     // This is relative slice spacing
-    if (SliceSelectorList->selectedItems().count() == 0) {
+    if (SliceSelectorList->selectedItems().count() == 0)
+    {
         Message("No slices selected!");
         return;
     }
@@ -2688,7 +2942,8 @@ void MainWindowImpl::on_actionChange_slice_spacing_triggered()
 
     //OK, we have something to do!
     if (SliceSelectorList->item(0)->isSelected()) FullStretches[0] = dialog.relative;
-    for (int i = 1; i < FileCount; i++) {
+    for (int i = 1; i < FileCount; i++)
+    {
         if (SliceSelectorList->item(i)->isSelected()) FullStretches[i * zsparsity] = FullStretches[(i - 1) * zsparsity] + dialog.relative;
     }
 
@@ -2698,7 +2953,8 @@ void MainWindowImpl::on_actionChange_slice_spacing_triggered()
 void MainWindowImpl::on_actionSet_slice_position_triggered()
 {
     double lowvalue, currentvalue;
-    if (SliceSelectorList->selectedItems().count() == 0) {
+    if (SliceSelectorList->selectedItems().count() == 0)
+    {
         Message("No slices selected!");
         return;
     }
@@ -2707,7 +2963,8 @@ void MainWindowImpl::on_actionSet_slice_position_triggered()
 
     int firstsel = -1;
     for (int i = 0; i < FileCount; i++)
-        if (SliceSelectorList->item(i)->isSelected()) {
+        if (SliceSelectorList->item(i)->isSelected())
+        {
             firstsel = i;
             break;
         }
@@ -2722,7 +2979,8 @@ void MainWindowImpl::on_actionSet_slice_position_triggered()
     double NewPos = QInputDialog::getDouble(this, tr("New position"),
                                             tr("New position for first selected slice (others selected will be moved relative to the first slice):"),
                                             currentvalue, lowvalue + .001, 1000000, 3, &ok);
-    if (ok) {
+    if (ok)
+    {
         double offset = (NewPos - currentvalue) * SlicePerMM;
         for (int i = 0; i < FileCount; i++)
             if (SliceSelectorList->item(i)->isSelected()) FullStretches[i * zsparsity] += offset;
@@ -2740,7 +2998,8 @@ void MainWindowImpl::on_FindPolynomial_pressed()
 
 void MainWindowImpl::on_SpinBoxRangeBase_valueChanged(int v )
 {
-    if (Active) {
+    if (Active)
+    {
         //if (v>=Segments[CurrentSegment]->RangeTop) v==Segments[CurrentSegment]->RangeTop-1;
         Segments[CurrentSegment]->RangeBase = v;
         if (v >= Segments[CurrentSegment]->RangeTop)
@@ -2753,7 +3012,8 @@ void MainWindowImpl::on_SpinBoxRangeBase_valueChanged(int v )
 
 void MainWindowImpl::on_SpinBoxRangeTop_valueChanged(int v)
 {
-    if (Active) {
+    if (Active)
+    {
         Segments[CurrentSegment]->RangeTop = v;
         //SpinBoxRangeBase->setMaximum(v-1);
         //SpinBoxRangeBase->setMaximum(Segments[CurrentSegment]->RangeTop-1);
@@ -2769,12 +3029,14 @@ void MainWindowImpl::on_SpinBoxRangeTop_valueChanged(int v)
 void MainWindowImpl::on_actionDistribute_over_range_triggered()
 {
     int count = 0;
-    for (int i = 0; i < SegmentCount; i++) {
+    for (int i = 0; i < SegmentCount; i++)
+    {
         if (Segments[i]->Activated && Segments[i]->widgetitem != 0)
             if (Segments[i]->widgetitem->isSelected()) count++;
     }
     if (count < 2) Message("Select as least two segments to distribute");
-    else {
+    else
+    {
         DistributeDialogImpl dialog;
         dialog.exec();
         rangescene->Refresh();
@@ -2794,7 +3056,8 @@ void MainWindowImpl::on_actionInterpolate_over_selected_slices_triggered()
     QList <QTreeWidgetItem *> selitems = CurvesTreeWidget->selectedItems();
 
     if (selitems.count() != 1) Message ("Select a single curve");
-    else {
+    else
+    {
         int c = -1;
         for (int i = 0; i < CurveCount; i++)
             if (Curves[i]->widgetitem == selitems[0]) c = i;
@@ -2802,35 +3065,42 @@ void MainWindowImpl::on_actionInterpolate_over_selected_slices_triggered()
         if (c == -1) Error("Oops, didn't find the selected curve!");
         QList <QListWidgetItem *> selitems2 = SliceSelectorList->selectedItems();
         if (selitems2.count() < 2) Message ("Select at least two slices to interpolate between");
-        else {
+        else
+        {
             //work out first and last slices
 
             int FirstFile = -1, LastFile = -1;
-            for (int i = 0; i < Files.count(); i++) {
-                if (SliceSelectorList->item(i)->isSelected()) {
+            for (int i = 0; i < Files.count(); i++)
+            {
+                if (SliceSelectorList->item(i)->isSelected())
+                {
                     if (FirstFile == -1) FirstFile = i;
                     LastFile = i;
                 }
             }
             FirstFile *= zsparsity;
             LastFile *= zsparsity;
-            if (FirstFile + 1 >= LastFile) {
+            if (FirstFile + 1 >= LastFile)
+            {
                 Message("Nothing to interpolate!");
                 return;
             }
             //loop through selected curves, check all
             if (Curves[c]->SplinePoints[FirstFile]->Count != Curves[c]->SplinePoints[LastFile]->Count) Message("Curve must have same number of points on first and last slices");
-            else {
+            else
+            {
                 if (QMessageBox::question(this, "Interpolate Curves",
                                           "This will interpolate selected curves between first and last selected slices - any data in intervening slices will be overwritten. Are you sure?", QMessageBox::Yes | QMessageBox::Cancel)
-                        == QMessageBox::Yes) {
+                        == QMessageBox::Yes)
+                {
                     //OK, do the interpolation
 
                     //First set up undo point
                     MakeUndo("Interpolate");
 
                     //remove all intervening curves
-                    for (int i = FirstFile + 1; i < LastFile; i++) {
+                    for (int i = FirstFile + 1; i < LastFile; i++)
+                    {
                         Curves[c]->SplinePoints[i]->Count = Curves[c]->SplinePoints[FirstFile]->Count;
                         Curves[c]->SplinePoints[i]->X.clear();
                         Curves[c]->SplinePoints[i]->Y.clear();
@@ -2838,12 +3108,14 @@ void MainWindowImpl::on_actionInterpolate_over_selected_slices_triggered()
                         if (Curves[c]->Segment != 0) FilesDirty[i / zsparsity] = true;
                     }
 
-                    for (int j = 0; j < Curves[c]->SplinePoints[FirstFile]->Count; j++) {
+                    for (int j = 0; j < Curves[c]->SplinePoints[FirstFile]->Count; j++)
+                    {
                         double x = Curves[c]->SplinePoints[FirstFile]->X[j];
                         double y = Curves[c]->SplinePoints[FirstFile]->Y[j];
                         double xinc = (Curves[c]->SplinePoints[LastFile]->X[j] - x) / (double)(LastFile - FirstFile);
                         double yinc = (Curves[c]->SplinePoints[LastFile]->Y[j] - y) / (double)(LastFile - FirstFile);
-                        for (int i = FirstFile + 1; i < LastFile; i++) {
+                        for (int i = FirstFile + 1; i < LastFile; i++)
+                        {
                             x += xinc;
                             y += yinc;
                             Curves[c]->SplinePoints[i]->X.append(x);

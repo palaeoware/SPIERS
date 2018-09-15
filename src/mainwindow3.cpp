@@ -206,11 +206,14 @@ void MainWindowImpl::on_action3D_Brush_toggled(bool mode)
 {
     ThreeDmode = mode;
     SetUpBrushEnabling();
-    if (ThreeDmode) {
+    if (ThreeDmode)
+    {
         if (SquareBrush) Brush.resize(Brush_Size, 2, 0);
         else Brush.resize(Brush_Size, 3, 0);
         if (LastMouseX > 0) Brush.draw(LastMouseX, LastMouseY);
-    } else {
+    }
+    else
+    {
         if (SquareBrush) Brush.resize(Brush_Size, 0, 0);
         else Brush.resize(Brush_Size, 1, 0);
         if (LastMouseX > 0) Brush.draw(LastMouseX, LastMouseY);
@@ -219,13 +222,16 @@ void MainWindowImpl::on_action3D_Brush_toggled(bool mode)
 
 void MainWindowImpl::SetUpBrushEnabling()
 {
-    if (ThreeDmode) {
+    if (ThreeDmode)
+    {
         //BrushSizeY->setEnabled(true);
         //BrushSizeZ->setEnabled(true);
         //Yaw->setEnabled(true);
         //etPitch->setEnabled(true);
         //Roll->setEnabled(true);
-    } else {
+    }
+    else
+    {
 //      BrushSizeY->setEnabled(false);
 //      BrushSizeZ->setEnabled(false);
 //      Yaw->setEnabled(false);
@@ -260,7 +266,8 @@ void MainWindowImpl::on_actionExport_Curves_as_CSV_triggered()
     if (filen.isNull()) return; //if nothing there, cancel
 
     QFile file(filen);
-    if (!file.open(QIODevice::WriteOnly)) {
+    if (!file.open(QIODevice::WriteOnly))
+    {
         Message("Warning - can't open");
         return;
     }
@@ -269,10 +276,13 @@ void MainWindowImpl::on_actionExport_Curves_as_CSV_triggered()
     //First header - standard text, v number, then SettingsFileName (might not be same as current filename - so store!)
     //do export of curves
 
-    for (int i = 0; i < Curves.count(); i++) {
-        for (int j = 0; j < Curves[i]->SplinePoints.count(); j++) {
+    for (int i = 0; i < Curves.count(); i++)
+    {
+        for (int j = 0; j < Curves[i]->SplinePoints.count(); j++)
+        {
             out << Curves[i]->SplinePoints[j]->Count;
-            for (int k = 0; k < Curves[i]->SplinePoints[j]->X.count(); k++) {
+            for (int k = 0; k < Curves[i]->SplinePoints[j]->X.count(); k++)
+            {
                 out << "," << Curves[i]->SplinePoints[j]->X[k];
                 out << "," << Curves[i]->SplinePoints[j]->Y[k];
             }
@@ -294,7 +304,8 @@ void MainWindowImpl::on_actionImport_Curves_as_CSV_triggered()
     if (filen.isNull()) return; //if nothing there, cancel
 
     QFile file(filen);
-    if (!file.open(QIODevice::ReadOnly)) {
+    if (!file.open(QIODevice::ReadOnly))
+    {
         Message("Warning - can't open");
         return;
     }
@@ -302,8 +313,10 @@ void MainWindowImpl::on_actionImport_Curves_as_CSV_triggered()
     //First header - standard text, v number, then SettingsFileName (might not be same as current filename - so store!)
     //do export of curves
 
-    for (int i = 0; i < Curves.count(); i++) {
-        for (int j = 0; j < Curves[i]->SplinePoints.count(); j++) {
+    for (int i = 0; i < Curves.count(); i++)
+    {
+        for (int j = 0; j < Curves[i]->SplinePoints.count(); j++)
+        {
             QString temp;
             temp = file.readLine();
             QStringList items = temp.split(",");
@@ -312,7 +325,8 @@ void MainWindowImpl::on_actionImport_Curves_as_CSV_triggered()
             Curves[i]->SplinePoints[j]->Y.clear();
             int pos = 1;
 
-            for (int k = 0; k < Curves[i]->SplinePoints[j]->Count; k++) {
+            for (int k = 0; k < Curves[i]->SplinePoints[j]->Count; k++)
+            {
                 Curves[i]->SplinePoints[j]->X.append((items[pos++]).toFloat());
                 Curves[i]->SplinePoints[j]->Y.append((items[pos++]).toFloat());
             }
@@ -324,7 +338,8 @@ void MainWindowImpl::on_actionImport_Curves_as_CSV_triggered()
 void MainWindowImpl::on_actionOutput_visible_image_set_triggered()
 {
     int SaveCurrentFile = CurrentFile = SliderPos->value();
-    if (ExportingImages == true) {
+    if (ExportingImages == true)
+    {
         ExportingImages = false;
         return;
     }
@@ -339,7 +354,8 @@ void MainWindowImpl::on_actionOutput_visible_image_set_triggered()
     //loop through all files
 
     ExportingImages = true;
-    for (int i = 0; i < FileCount; i++) {
+    for (int i = 0; i < FileCount; i++)
+    {
         Moveimage(i + 1);
         int percentcomplete = (i * 100) / FileCount;
 

@@ -17,12 +17,13 @@ off faff for this if you ask me!
 
 mygraphicsview::mygraphicsview() : QGraphicsView()
 {
-	return;
+    return;
 }
 
 void mygraphicsview::resizeEvent(QResizeEvent *event)
 {
-	fitInView(0,0,255,255);
+    Q_UNUSED(event);
+    fitInView(0, 0, 255, 255);
 }
 
 void mygraphicsview::wheelEvent(QWheelEvent *event)

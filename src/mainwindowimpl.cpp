@@ -17,8 +17,6 @@ Main Window class - lots of functions to
 **********************************************/
 
 #include <math.h>
-#include <QMutexLocker>
-#include <QTextStream>
 #include "dialogaboutimpl.h"
 #include "importdialogimpl.h"
 #include "curves.h"
@@ -49,6 +47,8 @@ Main Window class - lots of functions to
 #include <QPainter>
 #include <QHeaderView>
 #include <QFileInfo>
+#include <QMutexLocker>
+#include <QTextStream>
 
 bool temptestflag = false;
 
@@ -154,7 +154,6 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     addAction(shortcutright2);
     addAction(shortcutspace);
 
-
     QObject::connect(action1_x_1, SIGNAL(triggered()), this, SLOT(Preset1()));
     QObject::connect(action2_x_2, SIGNAL(triggered()), this, SLOT(Preset2()));
     QObject::connect(action3_x_3, SIGNAL(triggered()), this, SLOT(Preset3()));
@@ -255,8 +254,6 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     CurvesTreeWidget->headerItem()->setText(4, "Slices");
 
     //now set up the range graphics scene
-
-
     //RangeGraphicsView=(QGraphicsView *) new mygraphicsview;
     mygraphicsview *n = new mygraphicsview;
     RangeGraphicsView = (QGraphicsView *) n;
@@ -295,7 +292,8 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
 void MainWindowImpl::autosave()
 {
     if (pausetimers) return;
-    if (Active) {
+    if (Active)
+    {
         WriteSettings();
     }
 }
@@ -306,21 +304,25 @@ void MainWindowImpl::MakeUndo(QString type)
     bool allcurves = false;
     if (type.length() != 0) allcurves = true; //
     bool OK = false;
-    if (Active) {
+    if (Active)
+    {
         if (allcurves) CurvesUndoDirty = true;
         //anything dirty?
         if (MasksUndoDirty || LocksUndoDirty || CurvesUndoDirty) OK = true;
         else for (int i = 0; i < SegmentCount; i++) if (Segments[i]->UndoDirty) OK = true;
 
         //if so, add a new undo event, and kill all the redo events
-        if (OK) {
+        if (OK)
+        {
             qDeleteAll(RedoEvents.begin(), RedoEvents.end());
             RedoEvents.clear();
-            if (allcurves) {
+            if (allcurves)
+            {
                 UndoEvent *u = new UndoEvent(-1, -2);
                 u->Type = type;
                 UndoEvents.prepend(u);
-            } else
+            }
+            else
                 UndoEvents.prepend(new UndoEvent(-1, -1));
         }
 
@@ -345,7 +347,8 @@ void MainWindowImpl::UndoTimer()
 void MainWindowImpl::Undo()
 {
     bool OK = false;
-    if (Active) {
+    if (Active)
+    {
         if (UndoEvents.count() < 2) Error("Not enough undo objects");
 
         //Back to last or one before? Depends if any changes since last...
@@ -360,7 +363,8 @@ void MainWindowImpl::Undo()
         if (proceed == false) if (QMessageBox::question(this, "Undo", "Undo curve command operation (" + UndoEvents[1]->Type + ")? There is no Redo!",
                                                             QMessageBox::Yes | QMessageBox::No)
                                       == QMessageBox::Yes) proceed = true;
-        if (proceed == true) {
+        if (proceed == true)
+        {
             UndoEvents[1]->Undo(this);
 
             bool flag = false;
@@ -368,7 +372,8 @@ void MainWindowImpl::Undo()
             RedoEvents.prepend(UndoEvents.takeFirst()); //remove first from list and delete - put it on redo list
             if (UndoEvents[0]->FileNumber >= 0) RedoEvents.prepend(UndoEvents.takeFirst()); //remove first from list and delete - put it on redo list
 
-            if (flag) {
+            if (flag)
+            {
                 if (RedoEvents.count()) qDeleteAll(RedoEvents.begin(), RedoEvents.end());
                 RedoEvents.clear();
             }
@@ -384,7 +389,8 @@ void MainWindowImpl::Undo()
 
 void MainWindowImpl::Redo()
 {
-    if (Active) {
+    if (Active)
+    {
         if (RedoEvents.count() < 1) Error("Not enough redo objects");
 
         //Ignore dirtyness
@@ -415,7 +421,8 @@ void MainWindowImpl::SaveSettings()
 }
 void MainWindowImpl::LeftMaskChanged(int index)
 {
-    if (clearing == false) {
+    if (clearing == false)
+    {
         int old = SelectedMask;
         SelectedMask = (MaskBoxLeft->itemData(index)).toInt();
 
@@ -427,7 +434,8 @@ void MainWindowImpl::LeftMaskChanged(int index)
 
 void MainWindowImpl::RightMaskChanged(int index)
 {
-    if (clearing == false) {
+    if (clearing == false)
+    {
         int old = SelectedRMask;
         SelectedRMask = (MaskBoxRight->itemData(index)).toInt();
         RefreshOneMaskItem(MasksSettings[old]->widgetitem,  old);
@@ -439,7 +447,8 @@ void MainWindowImpl::RightMaskChanged(int index)
 
 void MainWindowImpl::LeftSegChanged(int index)
 {
-    if (clearing == false) {
+    if (clearing == false)
+    {
         int old = CurrentSegment;
         CurrentSegment = (SegBoxLeft->itemData(index)).toInt();
         if (old >= 0) RefreshOneSegmentItem(Segments[old]->widgetitem,  old);
@@ -452,7 +461,8 @@ void MainWindowImpl::LeftSegChanged(int index)
 void MainWindowImpl::RightSegChanged(int index)
 {
 
-    if (clearing == false) {
+    if (clearing == false)
+    {
         int old = CurrentRSegment;
         CurrentRSegment = (SegBoxRight->itemData(index)).toInt();
         if (old >= 0)RefreshOneSegmentItem(Segments[old]->widgetitem,  old);
@@ -464,19 +474,24 @@ void MainWindowImpl::RightSegChanged(int index)
 void MainWindowImpl::ScreenUpdate()
 {
     if (pausetimers) return;
-    if (Active) {
+    if (Active)
+    {
         if (MoveFlag) Brush.draw(LastMouseX, LastMouseY);
         if (ChangeFlag) ShowImage(graphicsView);
         MoveFlag = false;
         ChangeFlag = false; //reset flags
-    } else {
+    }
+    else
+    {
         //this is the initial startup check - was a command line parameter passed?
-        if (openfile.length() >= 2) {
+        if (openfile.length() >= 2)
+        {
             //qDebug()<<"Here"<<openfile;
             QMutexLocker locker(&mutex);
 
             QFile f(openfile);
-            if (f.exists() == false) {
+            if (f.exists() == false)
+            {
                 Message("File " + openfile + " does not exist");
                 return;
             }
@@ -498,14 +513,17 @@ void MainWindowImpl::q_pressed()
 {
     ZoomSlider->setValue(ZoomSlider->value() + 20);
 }
+
 void MainWindowImpl::a_pressed()
 {
     ZoomSlider->setValue(ZoomSlider->value() - 20);
 }
+
 void MainWindowImpl::right_pressed()
 {
     SliderPos->setValue(CurrentFile + 2);
 }
+
 void MainWindowImpl::left_pressed()
 {
     SliderPos->setValue(CurrentFile);
@@ -550,11 +568,14 @@ void MainWindowImpl::BrushChanged(int trans)
 //Transparency setting changed - set global, redraw
 {
     Brush_Size = trans;
-    if (ThreeDmode) {
+    if (ThreeDmode)
+    {
         if (SquareBrush) Brush.resize(Brush_Size, 2, 0);
         else Brush.resize(Brush_Size, 3, 0);
         if (LastMouseX > 0) Brush.draw(LastMouseX, LastMouseY);
-    } else {
+    }
+    else
+    {
         if (SquareBrush) Brush.resize(Brush_Size, 0, 0);
         else Brush.resize(Brush_Size, 1, 0);
         if (LastMouseX > 0) Brush.draw(LastMouseX, LastMouseY);
@@ -563,6 +584,7 @@ void MainWindowImpl::BrushChanged(int trans)
 
 void MainWindowImpl::Mode_Changed(QAction *temp2)
 {
+    Q_UNUSED(temp2);
     if (actionBright->isChecked()) CurrentMode = 0;
     if (actionMask->isChecked()) CurrentMode = 1;
     if (actionCurve->isChecked()) CurrentMode = 2;
@@ -698,7 +720,8 @@ void MainWindowImpl::Min_Changed(int val)
 //Min/max slider handlers
 {
     CMin = val;
-    if (MaxSlider->value() < (val)) {
+    if (MaxSlider->value() < (val))
+    {
         MaxSlider->setValue(val);
         MaxSlider->update();
     }
@@ -709,7 +732,8 @@ void MainWindowImpl::Max_Changed(int val)
 //Min/max slider handlers
 {
     CMax = val;
-    if (MinSlider->value() > val) {
+    if (MinSlider->value() > val)
+    {
         MinSlider->setValue(val);
         MinSlider->update();
     }
@@ -733,11 +757,14 @@ void MainWindowImpl::SquareToggled()
     else
         SquareBrush = false;
 
-    if (ThreeDmode) {
+    if (ThreeDmode)
+    {
         if (SquareBrush) Brush.resize(Brush_Size, 2, 0);
         else Brush.resize(Brush_Size, 3, 0);
         if (LastMouseX > 0) Brush.draw(LastMouseX, LastMouseY);
-    } else {
+    }
+    else
+    {
         if (SquareBrush) Brush.resize(Brush_Size, 0, 0);
         else Brush.resize(Brush_Size, 1, 0);
         if (LastMouseX > 0) Brush.draw(LastMouseX, LastMouseY);
@@ -748,10 +775,12 @@ void MainWindowImpl::SquareToggled()
 void MainWindowImpl::TransToggled()
 {
     // if it's not full - make it full, save last value. OTHERWISE - revert to last value
-    if (Trans < 15) {
+    if (Trans < 15)
+    {
         LastTrans = Trans;
         Trans = 15;
-    } else Trans = LastTrans;
+    }
+    else Trans = LastTrans;
     TransSlider->setValue(Trans);
 }
 
@@ -865,7 +894,8 @@ void MainWindowImpl::FileOpen()
 
     ReadSettings();
     //Now do set up - same as for
-    if (Active) {
+    if (Active)
+    {
         Active = false;
         Brush.Brush_Flag_Restart();
         ClearImages();
@@ -888,10 +918,12 @@ void MainWindowImpl::openRecentFile()
     //Got filename - go as per file open (code copied!)
 
     QFileInfo fi (FullSettingsFileName);
-    if (fi.exists()) {
+    if (fi.exists())
+    {
         ReadSettings();
 
-        if (Active) {
+        if (Active)
+        {
             Active = false;
             Brush.Brush_Flag_Restart();
             ClearImages();
@@ -901,10 +933,14 @@ void MainWindowImpl::openRecentFile()
         RecentFile(fname);
 
         Start();
-    } else {
+    }
+    else
+    {
         Message("File " + FullSettingsFileName + " not found");
-        for (int i = 0; i < RecentFileList.count(); i++) {
-            if (RecentFileList[i].File == fname) {
+        for (int i = 0; i < RecentFileList.count(); i++)
+        {
+            if (RecentFileList[i].File == fname)
+            {
                 RecentFileList.removeAt(i);
                 BuildRecentFiles();
                 break;
@@ -926,7 +962,8 @@ void MainWindowImpl::openMore()
     //Got filename - go as per file open (code copied!)
 
     ReadSettings();
-    if (Active) {
+    if (Active)
+    {
         Active = false;
         Brush.Brush_Flag_Restart();
         ClearImages();
@@ -965,7 +1002,8 @@ void MainWindowImpl::Start()
 
 
     cwidth4 = cwidth;
-    if (GreyImage) {
+    if (GreyImage)
+    {
         if ((cwidth % 4) != 0) cwidth4 = (cwidth / 4) * 4 + 4;
     }
 
@@ -1000,10 +1038,12 @@ void MainWindowImpl::BuildRecentFiles()
 
     menuOpen_Recent->actions();
 
-    foreach (QAction *thisact, currentactions) {
+    foreach (QAction *thisact, currentactions)
+    {
         //remove from menu
         menuOpen_Recent->removeAction(thisact);
-        if (thisact->text() != "More...") {
+        if (thisact->text() != "More...")
+        {
             //disconnect
             thisact->disconnect();
             //delete object
@@ -1013,9 +1053,11 @@ void MainWindowImpl::BuildRecentFiles()
 
 
     //now add all
-    foreach (RecentFiles rf, RecentFileList) {
+    foreach (RecentFiles rf, RecentFileList)
+    {
         count++;
-        if (count > 9) {
+        if (count > 9)
+        {
             menuOpen_Recent->addAction(actionMore);
             break;
         }
@@ -1057,21 +1099,24 @@ void MainWindowImpl::SaveAs()
     QString rootdirname = FullSettingsFileName.left(lastsep);
 
     //watch for sneaky stuff
-    if (file.contains(".") || file.contains("/") || file.contains("\\")) {
+    if (file.contains(".") || file.contains("/") || file.contains("\\"))
+    {
         Message("Illegal Filename - try again");
         return;
     }
 
     //now see if it exists -  just test the file, not the directory
     QFile testfile(newfilename);
-    if (testfile.exists()) {
+    if (testfile.exists())
+    {
         //no overwrite facility
         Message("SPIERSedit file " + file + ".spe already exists. SPIERSedit will not overwrite existing files - delete the old one manually before proceeding if you really want to do this.");
         return;
     }
 
     //now check we can create it OK
-    if (!testfile.open(QIODevice::WriteOnly)) {
+    if (!testfile.open(QIODevice::WriteOnly))
+    {
         Message("ERROR - can't create SPIERSedit settings file " + file + ".spe - filename probably invalid");
         return;
     }
@@ -1086,7 +1131,8 @@ void MainWindowImpl::SaveAs()
     QDir rootdir(rootdirname);
 
     QDir newdir(rootdirname);
-    if (newdir.mkdir(file) == false) {
+    if (newdir.mkdir(file) == false)
+    {
         QString outstring = "ERROR - can't create SPIERSedit subdirectory ";
         outstring.append(todir.canonicalPath());
         outstring.append(" - please check directory permiossions");
@@ -1148,7 +1194,8 @@ void MainWindowImpl::Menu_File_Import()
     QString setname = Fname.left(lastsep);
     setname.append("/imed/settings.dat");
     QFile settings(setname);
-    if (!(settings.exists())) {
+    if (!(settings.exists()))
+    {
         Message("ERROR - couldn't find a SPIERS 1.1 dataset here (imed/settings.dat missing)");
         return;
     }
@@ -1159,7 +1206,8 @@ void MainWindowImpl::Menu_File_Import()
     setname.append(".spe");
 
     QFile settings2(setname);
-    if (settings2.exists()) {
+    if (settings2.exists())
+    {
         QString outstring = "";
         outstring.append("ERROR - SPIERS edit file ");
         outstring.append(setname);
@@ -1171,7 +1219,8 @@ void MainWindowImpl::Menu_File_Import()
     //Finally check the filename is legal
     //How? Just check
 
-    if (!settings2.open(QIODevice::WriteOnly)) {
+    if (!settings2.open(QIODevice::WriteOnly))
+    {
         QString outstring = "ERROR - can't create SPIERS edit settings file ";
         outstring.append(setname);
         outstring.append(" - filename probably invalid");
@@ -1191,7 +1240,8 @@ void MainWindowImpl::Menu_File_Import()
     setname = Fname.left(lastsep) + "/" + impdialog.fname;
     QDir todir(setname);
     QDir newdir(Fname.left(lastsep));
-    if (newdir.mkdir(impdialog.fname) == false) {
+    if (newdir.mkdir(impdialog.fname) == false)
+    {
         QString outstring = "ERROR - can't create SPIERS edit subdirectory ";
         outstring.append(todir.canonicalPath());
         outstring.append(" - please check directory permiossions");
@@ -1200,7 +1250,8 @@ void MainWindowImpl::Menu_File_Import()
     }
 
     //Now do set up
-    if (Active) {
+    if (Active)
+    {
         Active = false;
         Brush.Brush_Flag_Restart();
         ClearImages();
@@ -1276,7 +1327,8 @@ void MainWindowImpl::Menu_File_New()  //create from scratch
     setname.append(".spe");
 
     QFile settings2(setname);
-    if (settings2.exists()) {
+    if (settings2.exists())
+    {
         QString outstring = "";
         outstring.append("ERROR - SPIERS edit file ");
         outstring.append(setname);
@@ -1288,7 +1340,8 @@ void MainWindowImpl::Menu_File_New()  //create from scratch
     //Finally check the filename is legal
     //How? Just try creating
 
-    if (!settings2.open(QIODevice::WriteOnly)) {
+    if (!settings2.open(QIODevice::WriteOnly))
+    {
         QString outstring = "ERROR - can't create SPIERS edit settings file ";
         outstring.append(setname);
         outstring.append(" - filename probably invalid");
@@ -1306,7 +1359,8 @@ void MainWindowImpl::Menu_File_New()  //create from scratch
     FileNotes = impdialog.notes; //get globals in
 
     QDir temp(Fname.left(lastsep)); //root directory
-    if (temp.mkdir(SettingsFileName) == false) { //make my new subdirectory, check worked OK
+    if (temp.mkdir(SettingsFileName) == false)   //make my new subdirectory, check worked OK
+    {
         QString outstring = "ERROR - can't create SPIERS edit data subdirectory ";
         outstring.append(Fname.left(lastsep) + "/" + SettingsFileName);
         outstring.append(" - filename probably invalid");
@@ -1316,7 +1370,8 @@ void MainWindowImpl::Menu_File_New()  //create from scratch
     };
 
     //Now do set up
-    if (Active) {
+    if (Active)
+    {
         Active = false;
         Brush.Brush_Flag_Restart();
         ClearImages();
@@ -1331,9 +1386,11 @@ void MainWindowImpl::Menu_File_New()  //create from scratch
     ColMonoScale = impdialog.spinBox->value();
     zsparsity = impdialog.spinBoxZ->value();
     OutputMirroring = impdialog.CheckMirrored->isChecked();
-    if (zsparsity > 1) {
+    if (zsparsity > 1)
+    {
         Files.clear();
-        for (int i = 0; i < FullFiles.count(); i += zsparsity) {
+        for (int i = 0; i < FullFiles.count(); i += zsparsity)
+        {
             Files.append(FullFiles[i]);
         }
         FileCount = Files.count();
@@ -1430,11 +1487,13 @@ void MainWindowImpl::on_MasksTreeWidget_itemDoubleClicked(QTreeWidgetItem *item,
     if (DoubleClickTimer.elapsed() < 100) return; //avoid double calls
     //invert a yes/no
     for (int i = 0; i <= MaxUsedMask; i++)
-        if (item == MasksSettings[i]->widgetitem) { //found it
+        if (item == MasksSettings[i]->widgetitem)   //found it
+        {
             //if (column==4)    MasksSettings[i]->Write=!(MasksSettings[i]->Write);
             if (column == 4)  MasksSettings[i]->Show = !(MasksSettings[i]->Show);
             if (column == 5)  MasksSettings[i]->Lock = !(MasksSettings[i]->Lock);
-            if (column == 1) {
+            if (column == 1)
+            {
                 QString temp =
                     QInputDialog::getText (this, "", "", QLineEdit::Normal, MasksSettings[i]->Name);
 
@@ -1442,11 +1501,13 @@ void MainWindowImpl::on_MasksTreeWidget_itemDoubleClicked(QTreeWidgetItem *item,
                 RefreshOO();
             }
 
-            if (column == 3) { //foreground
+            if (column == 3)   //foreground
+            {
                 QColor newcol;
 
                 newcol = QColorDialog::getColor(QColor(MasksSettings[i]->ForeColour[0], MasksSettings[i]->ForeColour[1], MasksSettings[i]->ForeColour[2]));
-                if (newcol.isValid()) {
+                if (newcol.isValid())
+                {
                     MasksSettings[i]->ForeColour[0] = newcol.red();
                     MasksSettings[i]->ForeColour[1] = newcol.green();
                     MasksSettings[i]->ForeColour[2] = newcol.blue();
@@ -1460,7 +1521,8 @@ void MainWindowImpl::on_MasksTreeWidget_itemDoubleClicked(QTreeWidgetItem *item,
             }
 
 
-            if (column == 2) { //background - custom dialog
+            if (column == 2)   //background - custom dialog
+            {
                 ContrastImpl cdialog(i);
                 cdialog.exec();
             }
@@ -1473,15 +1535,19 @@ void MainWindowImpl::on_MasksTreeWidget_itemDoubleClicked(QTreeWidgetItem *item,
 
 void MainWindowImpl::on_MasksTreeWidget_itemChanged(QTreeWidgetItem *item, int column)
 {
+    Q_UNUSED(item);
+    Q_UNUSED(column);
     return;
 }
 
 
 void MainWindowImpl::on_actionLock_Selected_Masks_triggered()
 {
-    for (int i = 0;  i <= MaxUsedMask; i++) {
+    for (int i = 0;  i <= MaxUsedMask; i++)
+    {
         if ((MasksSettings[i]->widgetitem) > 0)
-            if ((MasksSettings[i]->widgetitem)->isSelected()) {
+            if ((MasksSettings[i]->widgetitem)->isSelected())
+            {
                 MasksSettings[i]->Lock = true;
                 RefreshOneMaskItem(MasksSettings[i]->widgetitem, i);
             }
@@ -1490,9 +1556,11 @@ void MainWindowImpl::on_actionLock_Selected_Masks_triggered()
 
 void MainWindowImpl::on_actionUnlock_Selected_Masks_triggered()
 {
-    for (int i = 0;  i <= MaxUsedMask; i++) {
+    for (int i = 0;  i <= MaxUsedMask; i++)
+    {
         if ((MasksSettings[i]->widgetitem) > 0)
-            if ((MasksSettings[i]->widgetitem)->isSelected()) {
+            if ((MasksSettings[i]->widgetitem)->isSelected())
+            {
                 MasksSettings[i]->Lock = false;
                 RefreshOneMaskItem(MasksSettings[i]->widgetitem, i);
             }
@@ -1501,9 +1569,11 @@ void MainWindowImpl::on_actionUnlock_Selected_Masks_triggered()
 
 void MainWindowImpl::on_actionShow_Selected_Masks_triggered()
 {
-    for (int i = 0;  i <= MaxUsedMask; i++) {
+    for (int i = 0;  i <= MaxUsedMask; i++)
+    {
         if ((MasksSettings[i]->widgetitem) > 0)
-            if ((MasksSettings[i]->widgetitem)->isSelected()) {
+            if ((MasksSettings[i]->widgetitem)->isSelected())
+            {
                 MasksSettings[i]->Show = true;
                 RefreshOneMaskItem(MasksSettings[i]->widgetitem, i);
             }
@@ -1513,9 +1583,11 @@ void MainWindowImpl::on_actionShow_Selected_Masks_triggered()
 
 void MainWindowImpl::on_actionUnShow_Selected_Masks_triggered()
 {
-    for (int i = 0;  i <= MaxUsedMask; i++) {
+    for (int i = 0;  i <= MaxUsedMask; i++)
+    {
         if ((MasksSettings[i]->widgetitem) > 0)
-            if ((MasksSettings[i]->widgetitem)->isSelected()) {
+            if ((MasksSettings[i]->widgetitem)->isSelected())
+            {
                 MasksSettings[i]->Show = false;
                 RefreshOneMaskItem(MasksSettings[i]->widgetitem, i);
             }
@@ -1525,9 +1597,11 @@ void MainWindowImpl::on_actionUnShow_Selected_Masks_triggered()
 
 void MainWindowImpl::on_actionWrite_Selected_Masks_triggered()
 {
-    for (int i = 0;  i <= MaxUsedMask; i++) {
+    for (int i = 0;  i <= MaxUsedMask; i++)
+    {
         if ((MasksSettings[i]->widgetitem) > 0)
-            if ((MasksSettings[i]->widgetitem)->isSelected()) {
+            if ((MasksSettings[i]->widgetitem)->isSelected())
+            {
                 MasksSettings[i]->Write = true;
                 RefreshOneMaskItem(MasksSettings[i]->widgetitem, i);
             }
@@ -1536,9 +1610,11 @@ void MainWindowImpl::on_actionWrite_Selected_Masks_triggered()
 
 void MainWindowImpl::on_actionUnWrite_Selected_Masks_triggered()
 {
-    for (int i = 0;  i <= MaxUsedMask; i++) {
+    for (int i = 0;  i <= MaxUsedMask; i++)
+    {
         if ((MasksSettings[i]->widgetitem) > 0)
-            if ((MasksSettings[i]->widgetitem)->isSelected()) {
+            if ((MasksSettings[i]->widgetitem)->isSelected())
+            {
                 MasksSettings[i]->Write = false;
                 RefreshOneMaskItem(MasksSettings[i]->widgetitem, i);
             }
@@ -1551,16 +1627,20 @@ void MainWindowImpl::on_MaskMoveUp_pressed()
     MasksTreeWidget->setUpdatesEnabled(false);
     if ((MasksTreeWidget->selectedItems()).count() != 1)
         Message("Select a SINGLE mask");
-    else {
-        for (int i = 0;  i <= MaxUsedMask; i++) {
+    else
+    {
+        for (int i = 0;  i <= MaxUsedMask; i++)
+        {
             if ((MasksSettings[i]->widgetitem) > 0)
-                if ((MasksSettings[i]->widgetitem)->isSelected()) {
+                if ((MasksSettings[i]->widgetitem)->isSelected())
+                {
                     //found selected
                     //swap with one above in list
                     QTreeWidgetItem *search = MasksTreeWidget->itemAbove(MasksSettings[i]->widgetitem);
                     if (search)
                         for (int j = 0;  j <= MaxUsedMask; j++)
-                            if ((MasksSettings[j]->widgetitem) == search) {
+                            if ((MasksSettings[j]->widgetitem) == search)
+                            {
                                 //found it
                                 int temp = MasksSettings[i]->ListOrder;
                                 QTreeWidgetItem *temp2 = MasksSettings[i]->widgetitem;
@@ -1601,16 +1681,20 @@ void MainWindowImpl::on_MaskMoveDown_pressed()
 
     if ((MasksTreeWidget->selectedItems()).count() != 1)
         Message("Select a SINGLE mask");
-    else {
-        for (int i = 0;  i <= MaxUsedMask; i++) {
+    else
+    {
+        for (int i = 0;  i <= MaxUsedMask; i++)
+        {
             if ((MasksSettings[i]->widgetitem) > 0)
-                if ((MasksSettings[i]->widgetitem)->isSelected()) {
+                if ((MasksSettings[i]->widgetitem)->isSelected())
+                {
                     //found selected
                     //swap with one above in list
                     QTreeWidgetItem *search = MasksTreeWidget->itemBelow(MasksSettings[i]->widgetitem);
                     if (search)
                         for (int j = 0;  j <= MaxUsedMask; j++)
-                            if ((MasksSettings[j]->widgetitem) == search) {
+                            if ((MasksSettings[j]->widgetitem) == search)
+                            {
                                 //found it
                                 int temp = MasksSettings[i]->ListOrder;
                                 QTreeWidgetItem *temp2 = MasksSettings[i]->widgetitem;
@@ -1672,18 +1756,22 @@ void MainWindowImpl::on_MaskAdd_pressed()
 
 void MainWindowImpl::on_MaskDelete_pressed()
 {
-    if (MaxUsedMask == 0) {
+    if (MaxUsedMask == 0)
+    {
         Message("Can't delete the last mask!");
         return;
     }
     QList <int> list;
-    for (int i = 0;  i <= MaxUsedMask; i++) {
+    for (int i = 0;  i <= MaxUsedMask; i++)
+    {
         if ((MasksSettings[i]->widgetitem) > 0)
-            if ((MasksSettings[i]->widgetitem)->isSelected()) {
+            if ((MasksSettings[i]->widgetitem)->isSelected())
+            {
                 list.append(i);
             }
     }
-    if (list.count() > 0) {
+    if (list.count() > 0)
+    {
         DeleteMaskDialogImpl dialog(list);
         dialog.exec();
 
@@ -1697,19 +1785,23 @@ void MainWindowImpl::on_MaskDelete_pressed()
 
 void MainWindowImpl::on_SegmentsTreeWidget_pressed(QModelIndex index)
 {
+    Q_UNUSED(index);
     return; //not used
 }
 
 void MainWindowImpl::on_SegmentsTreeWidget_doubleClicked(QModelIndex index)
 {
+    Q_UNUSED(index);
     return; //not used
 }
 
 
 void MainWindowImpl::on_actionLock_selected_segments_triggered()
 {
-    for (int i = 0;  i < SegmentCount; i++) {
-        if ((Segments[i]->widgetitem) > 0) if ((Segments[i]->widgetitem)->isSelected()) {
+    for (int i = 0;  i < SegmentCount; i++)
+    {
+        if ((Segments[i]->widgetitem) > 0) if ((Segments[i]->widgetitem)->isSelected())
+            {
                 Segments[i]->Locked = true;
                 RefreshOneSegmentItem(Segments[i]->widgetitem, i);
             }
@@ -1718,8 +1810,10 @@ void MainWindowImpl::on_actionLock_selected_segments_triggered()
 
 void MainWindowImpl::on_actionUnlock_selected_segments_triggered()
 {
-    for (int i = 0;  i < SegmentCount; i++) {
-        if ((Segments[i]->widgetitem) > 0) if ((Segments[i]->widgetitem)->isSelected()) {
+    for (int i = 0;  i < SegmentCount; i++)
+    {
+        if ((Segments[i]->widgetitem) > 0) if ((Segments[i]->widgetitem)->isSelected())
+            {
                 Segments[i]->Locked = false;
                 RefreshOneSegmentItem(Segments[i]->widgetitem, i);
             }
@@ -1728,8 +1822,10 @@ void MainWindowImpl::on_actionUnlock_selected_segments_triggered()
 
 void MainWindowImpl::on_actionActivate_selected_segments_triggered()
 {
-    for (int i = 0;  i < SegmentCount; i++) {
-        if ((Segments[i]->widgetitem) > 0) if ((Segments[i]->widgetitem)->isSelected()) {
+    for (int i = 0;  i < SegmentCount; i++)
+    {
+        if ((Segments[i]->widgetitem) > 0) if ((Segments[i]->widgetitem)->isSelected())
+            {
                 Segments[i]->Activated = true;
                 RefreshOneSegmentItem(Segments[i]->widgetitem, i);
             }
@@ -1740,8 +1836,10 @@ void MainWindowImpl::on_actionActivate_selected_segments_triggered()
 
 void MainWindowImpl::on_actionDeactivate_selected_segments_triggered()
 {
-    for (int i = 0;  i < SegmentCount; i++) {
-        if ((Segments[i]->widgetitem) > 0) if ((Segments[i]->widgetitem)->isSelected()) {
+    for (int i = 0;  i < SegmentCount; i++)
+    {
+        if ((Segments[i]->widgetitem) > 0) if ((Segments[i]->widgetitem)->isSelected())
+            {
                 Segments[i]->Activated = false;
                 RefreshOneSegmentItem(Segments[i]->widgetitem, i);
             }
@@ -1758,16 +1856,20 @@ void MainWindowImpl::on_SegmentMoveUp_pressed()
 
     if ((SegmentsTreeWidget->selectedItems()).count() != 1)
         Message("Select a SINGLE segment");
-    else {
-        for (int i = 0;  i < SegmentCount; i++) {
+    else
+    {
+        for (int i = 0;  i < SegmentCount; i++)
+        {
             if ((Segments[i]->widgetitem) > 0)
-                if ((Segments[i]->widgetitem)->isSelected()) {
+                if ((Segments[i]->widgetitem)->isSelected())
+                {
                     //found selected
                     //swap with one above in list
                     QTreeWidgetItem *search = SegmentsTreeWidget->itemAbove(Segments[i]->widgetitem);
                     if (search)
                         for (int j = 0;  j < SegmentCount; j++)
-                            if ((Segments[j]->widgetitem) == search) {
+                            if ((Segments[j]->widgetitem) == search)
+                            {
                                 //found it
                                 int temp = Segments[i]->ListOrder;
                                 QTreeWidgetItem *temp2 = Segments[i]->widgetitem;
@@ -1801,16 +1903,20 @@ void MainWindowImpl::on_SegmentMoveDown_pressed()
 
     if ((SegmentsTreeWidget->selectedItems()).count() != 1)
         Message("Select a SINGLE segment");
-    else {
-        for (int i = 0;  i < SegmentCount; i++) {
+    else
+    {
+        for (int i = 0;  i < SegmentCount; i++)
+        {
             if ((Segments[i]->widgetitem) > 0)
-                if ((Segments[i]->widgetitem)->isSelected()) {
+                if ((Segments[i]->widgetitem)->isSelected())
+                {
                     //found selected
                     //swap with one above in list
                     QTreeWidgetItem *search = SegmentsTreeWidget->itemBelow(Segments[i]->widgetitem);
                     if (search)
                         for (int j = 0;  j < SegmentCount; j++)
-                            if ((Segments[j]->widgetitem) == search) {
+                            if ((Segments[j]->widgetitem) == search)
+                            {
                                 //found it
                                 int temp = Segments[i]->ListOrder;
                                 QTreeWidgetItem *temp2 = Segments[i]->widgetitem;
@@ -1855,10 +1961,6 @@ void MainWindowImpl::on_actionDelete_selected_segments_triggered()
 {
     on_SegmentDelete_pressed();
 }
-
-
-
-
 
 void MainWindowImpl::on_actionSettings_triggered()
 {
@@ -1979,7 +2081,8 @@ void MainWindowImpl::on_actionAb_out_triggered()
 void MainWindowImpl::on_actionTEST_triggered()
 {
 
-    foreach (OutputObject *o, OutputObjects) {
+    foreach (OutputObject *o, OutputObjects)
+    {
         o->ComponentSegments.append(1);
     }
     RefreshOO();
