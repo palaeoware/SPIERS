@@ -36,3 +36,7 @@ RESOURCES += align.qrc
 RC_FILE += src/exeicon.rc
 
 TEMPLATE += app
+
+DISTFILES += \
+    LICENSE.md \
+    .astylerc
