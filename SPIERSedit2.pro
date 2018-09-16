@@ -1,9 +1,15 @@
+#------------------------------------------------------------------------------------------------
+# SPIERS Edit
+#------------------------------------------------------------------------------------------------
+
 CONFIG += warn_on \
     qt \
     thread \
-    DESTDIR \
+
+DESTDIR \
     += \
     bin
+
 FORMS += ui/import.ui \
     ui/mainwindow.ui \
     ui/Copying.ui \
@@ -19,6 +25,7 @@ FORMS += ui/import.ui \
     ui/distribute.ui \
     ui/resample.ui \
     ui/about.ui
+
 HEADERS += src/display.h \
     src/brush.h \
     src/curves.h \
@@ -52,12 +59,16 @@ HEADERS += src/display.h \
     src/mainview.h \
     src/darkstyletheme.h \
     src/version.h
+
 MOC_DIR += build
+
 OBJECTS_DIR += build
+
 QT += core \
     gui \
     network \
     widgets
+
 SOURCES += src/display.cpp \
     src/brush.cpp \
     src/curves.cpp \
@@ -94,11 +105,17 @@ SOURCES += src/display.cpp \
     src/keysafespinbox.cpp \
     src/mainview.cpp \
     src/darkstyletheme.cpp
+
 UI_DIR += ui
+
 TEMPLATE = app
+
 RESOURCES = src/SPIERSedit.qrc
+
 ICON = src/edit.icns
+
 RC_FILE = src/icon.rc
+
 DISTFILES += \
     LICENSE.md \
     .astylerc
