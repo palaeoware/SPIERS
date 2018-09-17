@@ -295,8 +295,12 @@ past:  //so can get here with a valid cache entry but no colour file
 
 
         int d = Data.format();
+        //Crash here RJG
         if (d != QImage::Format_RGB32 && d != QImage::Format_ARGB32 && d != QImage::Format_Indexed8)
-            Error("File is not in a valid format");
+        {
+            qDebug() << "Format code is " << d;
+            Error("File is not in a valid format - [0]");
+        }
         else ColArray = Data;
 
         if (!RenderCache)
@@ -2270,6 +2274,8 @@ void ReadSettings()
         in >> dummy;
 
         dummy = path + dummy.mid(qMax(dummy.lastIndexOf("\\"), dummy.lastIndexOf("/")));
+        //RJG - Linux doesn't like backslashes - leads to accoasional, odd errors with cache when moving windows -->linux
+        dummy.replace("\\", "/");
 
         Files.append(dummy);
     }
