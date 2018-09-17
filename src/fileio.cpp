@@ -244,12 +244,18 @@ bool SimpleLoadColourData(QString fname)
     }
 
     int d = Data.format();
-    if (d != QImage::Format_RGB32 && d != QImage::Format_ARGB32 && d != QImage::Format_Indexed8)
-        Error("File in a valid format");
-    else ColArray = Data;
+    if (d != QImage::Format_RGB32 && d != QImage::Format_ARGB32 && d != QImage::Format_Indexed8 && d != QImage::Format_Grayscale8)
+        Error("File is not in a valid format");
+    else
+    {
+        //bodge - everything is expected to be in indexed 8 if greyscale, so fix anything that isn't!
+        if (d == QImage::Format_Grayscale8)
+            ColArray = Data.convertToFormat(QImage::Format_Indexed8);
+        else
+            ColArray = Data;
+    }
     return true;
 }
-
 void LoadColourData(int fnum)
 //Get info from colour file
 {
@@ -295,13 +301,16 @@ past:  //so can get here with a valid cache entry but no colour file
 
 
         int d = Data.format();
-        //Crash here RJG
-        if (d != QImage::Format_RGB32 && d != QImage::Format_ARGB32 && d != QImage::Format_Indexed8)
+        if (d != QImage::Format_RGB32 && d != QImage::Format_ARGB32 && d != QImage::Format_Indexed8 && d != QImage::Format_Grayscale8)
         {
-            qDebug() << "Format code is " << d << Files.at(fnum);
-            Error("File is not in a valid format - [0]");
+            Error("File is not in a valid format");
         }
-        else ColArray = Data;
+        else
+        {
+            //bodge - everything is expected to be in indexed 8 if greyscale, so fix anything that isn't!
+            if (d == QImage::Format_Grayscale8) ColArray = Data.convertToFormat(QImage::Format_Indexed8);
+            else ColArray = Data;
+        }
 
         if (!RenderCache)
         {
@@ -331,7 +340,7 @@ past:  //so can get here with a valid cache entry but no colour file
         }
     }
 
-    if (ColArray.format() == QImage::Format_Indexed8) GreyImage = true;
+    if (ColArray.format() == QImage::Format_Indexed8 || ColArray.format() == QImage::Format_Grayscale8) GreyImage = true;
     else GreyImage = false;
     cwidth4 = cwidth;
     if (GreyImage) if ((cwidth % 4) != 0) cwidth4 = (cwidth / 4) * 4 + 4;

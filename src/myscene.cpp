@@ -27,7 +27,7 @@ myscene::myscene() : QGraphicsScene()
 {
     button = 0;
     mousetimer.start();
-    setBackgroundBrush(Qt::gray);
+    setBackgroundBrush(QColor(35, 35, 35));
     CurrentClosestNode = -1;
 }
 

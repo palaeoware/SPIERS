@@ -93,13 +93,16 @@ void DarkStyleTheme::polish(QApplication *app)
 
 
     //ARTS - Increase font size for better reading,
+    /*
     QFont defaultFont = QApplication::font();
     defaultFont.setPointSize(defaultFont.pointSize() + 1);
     QApplication::setFont(defaultFont);
+    */
 
     // Load CSS Stylesheet from resources
     QFile darkstyleQSS(QStringLiteral(":/darkstyle/stylesheet_dark.qss"));
-    if (darkstyleQSS.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    if (darkstyleQSS.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
         // Set stylesheet
         QString stylesheet_qss = QString::fromLatin1(darkstyleQSS.readAll());
         app->setStyleSheet(stylesheet_qss);
