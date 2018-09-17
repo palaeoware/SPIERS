@@ -245,7 +245,7 @@ bool SimpleLoadColourData(QString fname)
 
     int d = Data.format();
     if (d != QImage::Format_RGB32 && d != QImage::Format_ARGB32 && d != QImage::Format_Indexed8)
-        Error("File is not in a valid format");
+        Error("File in a valid format");
     else ColArray = Data;
     return true;
 }
@@ -298,7 +298,7 @@ past:  //so can get here with a valid cache entry but no colour file
         //Crash here RJG
         if (d != QImage::Format_RGB32 && d != QImage::Format_ARGB32 && d != QImage::Format_Indexed8)
         {
-            qDebug() << "Format code is " << d;
+            qDebug() << "Format code is " << d << Files.at(fnum);
             Error("File is not in a valid format - [0]");
         }
         else ColArray = Data;
