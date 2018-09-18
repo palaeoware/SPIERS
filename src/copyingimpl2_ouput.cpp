@@ -925,8 +925,6 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
     this->setWindowTitle("Creating SPIERSview file...");
     copying = true;
 
-
-
     //set up blank translation tables
     //trans table is a conversion between my numbers and the index numbers for SPV output - i.e. translationtable[SPVnumber] gives my index number
     //trans table2 is a conversion between SPV index of objects and SPV phyiscal objects (not the same - some of the above may be groups)
@@ -1428,6 +1426,16 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
 #ifndef __APPLE__
 #ifdef _WIN64
         QString program = "\"" + qApp->applicationDirPath() + "/SPIERSview64.exe" + "\"" + " \"" + outputfile + "\"";
+#elif __linux__
+        //RJG - sorting luanch spiersview on linux export.
+        //QString program = qApp->applicationDirPath() + "/SPIERSview64/" + outputfile;
+        QString program = qApp->applicationFilePath();
+        program.replace("edit2", "view2");
+        QStringList arguments;
+        arguments << outputfile;
+        QProcess::startDetached (program, arguments, qApp->applicationDirPath());
+        qDebug() << program;
+
 #else
         QString program = "\"" + qApp->applicationDirPath() + "/SPIERSview32.exe" + "\"" + " \"" + outputfile + "\"";
 #endif
