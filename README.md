@@ -2,7 +2,9 @@
 
 Coded by:
  - Mark Sutton (m.sutton@imperial.ac.uk)
+
 Some additions and maintenance by:
+
  - Alan R.T. Spencer (alan.spencer@imperial.ac.uk)
  - Russell J. Garwood (russell.garwood@manchester.ac.uk)
 
