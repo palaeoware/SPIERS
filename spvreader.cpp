@@ -67,12 +67,12 @@ void SPVreader::FixUpData()
 //Bodge to fix up any problems with key codes
 {
     //Fix any odd characters in keys
-    for (int i=0; i<SVObjects.count(); i++)
+    for (int i=0; i<svobjects.count(); i++)
     {
-        int key=(int)(SVObjects[i]->Key.toLatin1());
-        if (key>=97 && key<=122) SVObjects[i]->Key=(QChar(key-64)); //to Upper
-        if (key<48 || key>90) SVObjects[i]->Key=0;
-        if (key>=58 && key<=64) SVObjects[i]->Key=0;
+        int key=(int)(svobjects[i]->Key.toLatin1());
+        if (key>=97 && key<=122) svobjects[i]->Key=(QChar(key-64)); //to Upper
+        if (key<48 || key>90) svobjects[i]->Key=0;
+        if (key>=58 && key<=64) svobjects[i]->Key=0;
     }
 }
 
@@ -148,7 +148,7 @@ void SPVreader::WriteSPV(bool withpd)
         //Now the component object details
         for (int i=0; i<s->ComponentObjects.count(); i++)
         {
-            SVObject *o = s->ComponentObjects[i];
+            svobject *o = s->ComponentObjects[i];
             out<<o->Name;
             out<<o->Key;
             out<<o->Colour[0];
@@ -182,7 +182,7 @@ void SPVreader::WriteSPV(bool withpd)
         //Now the data
         for (int i=0; i<s->ComponentObjects.count(); i++)
         {
-            SVObject *o = s->ComponentObjects[i];
+            svobject *o = s->ComponentObjects[i];
             if (!(o->IsGroup))
             {
                 if (o->AllSlicesCompressed) //Not done by slice
@@ -231,8 +231,8 @@ void SPVreader::WriteSPV(bool withpd)
     }
 
     //Now the orphan objects - which can only be groups
-    QList <SVObject *> AllObs;
-    AllObs=SVObjects;
+    QList <svobject *> AllObs;
+    AllObs=svobjects;
     for (int i=0; i<SPVs.count(); i++)
     for (int j=0; j<SPVs[i]->ComponentObjects.count(); j++)
     {
@@ -245,7 +245,7 @@ void SPVreader::WriteSPV(bool withpd)
     out<<AllObs.count();
     for (int i=0; i<AllObs.count(); i++)
     {
-            SVObject *o = AllObs[i];
+            svobject *o = AllObs[i];
             out<<o->Name;
             out<<o->Key;
             out<<o->IsGroup;
@@ -284,7 +284,7 @@ void SPVreader::WriteSPV(bool withpd)
         SPV *s=SPVs[i];
         for (int i=0; i<s->ComponentObjects.count(); i++)
         {
-            SVObject *o = s->ComponentObjects[i];
+            svobject *o = s->ComponentObjects[i];
             out<<o->Shininess;
             out<<o->Transparency; //these might now be <0
             out<<o->IslandRemoval; //these might now be <0
@@ -309,8 +309,8 @@ void SPVreader::ReadSPV6(QString Filename)
 
 
     BaseIndex=-1;
-    for (int i=0; i<SVObjects.count(); i++) //non 0 for imports
-        if (SVObjects[i]->Index>BaseIndex) BaseIndex=SVObjects[i]->Index;
+    for (int i=0; i<svobjects.count(); i++) //non 0 for imports
+        if (svobjects[i]->Index>BaseIndex) BaseIndex=svobjects[i]->Index;
 
     BaseIndex++; //will now be first free index number
 
@@ -375,14 +375,14 @@ void SPVreader::ReadSPV6(QString Filename)
         thisspv->SkewLeft=-SkewLeft*PixPerMM;
         mm_per_unit = ((float)(SPVs[0]->iDim)/(float)SCALE)/SPVs[0]->PixPerMM;
 
-        //create and append all the SVObjects
+        //create and append all the svobjects
         for (int i=0; i<objectcount; i++)
         {
-          SVObject *newobj=new SVObject(SVObjects.count());
+          svobject *newobj=new svobject(svobjects.count());
           newobj->spv = thisspv; //pointer in object to SPV
           thisspv->ComponentObjects.append(newobj); //pointer in SPV to object
-          SVObjects.append(newobj); //put it in my general list
-          newobj->Index=SVObjects.count()-1;
+          svobjects.append(newobj); //put it in my general list
+          newobj->Index=svobjects.count()-1;
         }
 
         in>>thisspv->MirrorFlag;
@@ -411,7 +411,7 @@ void SPVreader::ReadSPV6(QString Filename)
         //Now the component object details
         for (int i=0; i<objectcount; i++)
         {
-            SVObject *o = thisspv->ComponentObjects[i];
+            svobject *o = thisspv->ComponentObjects[i];
             in>>o->Name;
             in>>o->Key;
             in>>o->Colour[0];
@@ -447,7 +447,7 @@ void SPVreader::ReadSPV6(QString Filename)
         {
             for (int i=0; i<objectcount; i++)
             {
-                SVObject *o = thisspv->ComponentObjects[i];
+                svobject *o = thisspv->ComponentObjects[i];
                 //Find matching part in old SPV
                 int match=-1;
                 for (int j=0; j<SPVs[ReplaceIndex]->ComponentObjects.count(); j++)
@@ -479,7 +479,7 @@ void SPVreader::ReadSPV6(QString Filename)
         t.start();
         for (int i=0; i<objectcount; i++)
         {
-            SVObject *o = thisspv->ComponentObjects[i];
+            svobject *o = thisspv->ComponentObjects[i];
 
             MainWin->setSpecificLabel("Preprocessing Data");
             qApp->processEvents();
@@ -591,7 +591,7 @@ void SPVreader::ReadSPV6(QString Filename)
         for (int i=0; i<newobs; i++)
         {
 
-            SVObject *o = new SVObject(0);
+            svobject *o = new svobject(0);
             in>>o->Name;
             in>>o->Key;
             in>>o->IsGroup;
@@ -599,7 +599,7 @@ void SPVreader::ReadSPV6(QString Filename)
             in>>o->Position;
             in>>o->Visible;
             in>>o->Index;
-            SVObjects.append(o);
+            svobjects.append(o);
         }
     }
 
@@ -653,7 +653,7 @@ void SPVreader::ReadSPV6(QString Filename)
         SPV *s=SPVs[i];
         for (int i=0; i<s->ComponentObjects.count(); i++)
         {
-            SVObject *o = s->ComponentObjects[i];
+            svobject *o = s->ComponentObjects[i];
             in>>o->Shininess;
             in>>o->Transparency; //these might now be <0
             in>>o->IslandRemoval; //these might now be <0
@@ -667,32 +667,32 @@ void SPVreader::ReadSPV6(QString Filename)
 
 
     int items=0;
-    for (int z=BaseIndex; z<SVObjects.count(); z++) if (!(SVObjects[z]->IsGroup)) items++;
+    for (int z=BaseIndex; z<svobjects.count(); z++) if (!(svobjects[z]->IsGroup)) items++;
 
     int icount=1;
     //Now do all the processing
 
 
 
-    for (int i=BaseIndex; i<SVObjects.count(); i++)
+    for (int i=BaseIndex; i<svobjects.count(); i++)
     {
-       if (!(SVObjects[i]->IsGroup))
+       if (!(svobjects[i]->IsGroup))
        {
             QString status;
             QTextStream ts(&status);
-            ts<<"Processing '"<<SVObjects[i]->Name<<"', "<<icount<<" of "<<items;
+            ts<<"Processing '"<<svobjects[i]->Name<<"', "<<icount<<" of "<<items;
             MainWin->ui->OutputLabelOverall->setText(status);
             MainWin->ui->ProgBarOverall->setValue((icount++*100)/items);
-           if (SVObjects[i]->SurfaceMe)
+           if (svobjects[i]->SurfaceMe)
            {
-               mc surfacer(SVObjects[i]); //create surfacer object
+               mc surfacer(svobjects[i]); //create surfacer object
 
                unsigned char *fullarray=0;
-               if (SVObjects[i]->AllSlicesCompressed)
+               if (svobjects[i]->AllSlicesCompressed)
                {
 
-                    int size=SVObjects[i]->spv->size;
-                    if ((fullarray=(unsigned char *)malloc(size * SVObjects[i]->spv->kDim))==NULL)
+                    int size=svobjects[i]->spv->size;
+                    if ((fullarray=(unsigned char *)malloc(size * svobjects[i]->spv->kDim))==NULL)
                       {
                             QMessageBox::warning((QWidget *)MainWin,"Memory Error", "Fatal Error - could not obtain enough memory to reconstruct volume.\nTry exporting from a newer version of SPIERSview");
                             exit(0);
@@ -702,31 +702,31 @@ void SPVreader::ReadSPV6(QString Filename)
                       for (int z=0; z<size; z++)
                         fullarray[z]=0;
 
-                      unsigned char *endfullarray = fullarray + (SVObjects[i]->spv->size) * (SVObjects[i]->spv->kDim-1);
+                      unsigned char *endfullarray = fullarray + (svobjects[i]->spv->size) * (svobjects[i]->spv->kDim-1);
 
                       for (int z=0; z<size; z++)
                         endfullarray[z]=0;
 
-                    SVObjects[i]->spv->fullarray=fullarray;
-                    uLongf s=size*SVObjects[i]->spv->kDim;
-                    uncompress(fullarray, &s, SVObjects[i]->AllSlicesCompressed, SVObjects[i]->AllSlicesSize);
+                    svobjects[i]->spv->fullarray=fullarray;
+                    uLongf s=size*svobjects[i]->spv->kDim;
+                    uncompress(fullarray, &s, svobjects[i]->AllSlicesCompressed, svobjects[i]->AllSlicesSize);
 
                     int count=0;
-                    for (int iii=0; iii<size * SVObjects[i]->spv->kDim; iii++)
+                    for (int iii=0; iii<size * svobjects[i]->spv->kDim; iii++)
                         if (fullarray[iii]) count++;
 
                 }
                surfacer.SurfaceObject();
-               if (fullarray) {free(fullarray);SVObjects[i]->spv->fullarray=0;}
-               SVObjects[i]->MakePolyData();
+               if (fullarray) {free(fullarray);svobjects[i]->spv->fullarray=0;}
+               svobjects[i]->MakePolyData();
            }
             //Next job - do isosurface stretching and convert into VTK format
-            SVObjects[i]->ForceUpdates(-1,-1);
+            svobjects[i]->ForceUpdates(-1,-1);
             MainWin->UpdateGL();
        }
     }
   int ttrig=0;
-  for (int i=0; i<SVObjects.count(); i++) ttrig+=SVObjects[i]->Triangles;
+  for (int i=0; i<svobjects.count(); i++) ttrig+=svobjects[i]->Triangles;
   QString status;
   status.sprintf("Completed",ttrig/1000);
   MainWin->ui->OutputLabelOverall->setText(status);
@@ -919,14 +919,14 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
 
       mm_per_unit = ((float)(fwidth)/(float)SCALE)/thisspv->PixPerMM;
 
-      //create and append all the SVObjects
+      //create and append all the svobjects
       for (int i=0; i<items; i++)
       {
-          SVObject *newobj=new SVObject(SVObjects.count());
+          svobject *newobj=new svobject(svobjects.count());
           newobj->spv = thisspv; //pointer in object to SPV
           thisspv->ComponentObjects.append(newobj); //pointer in SPV to object
-          SVObjects.append(newobj); //put it in my general list
-          newobj->Index=SVObjects.count()-1;
+          svobjects.append(newobj); //put it in my general list
+          newobj->Index=svobjects.count()-1;
       }
 
       //Keys array - currently there are 201
@@ -1013,7 +1013,7 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
           MainWin->setSpecificLabel("Preprocessing Data");
           qApp->processEvents();
 
-          SVObject *thisobj=thisspv->ComponentObjects[m];
+          svobject *thisobj=thisspv->ComponentObjects[m];
 
           if (version<4) thisobj->BuggedData=true;
           if (version>4)
@@ -1152,7 +1152,7 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
           int TableStart=ftell(file);
 
           int ttrig=0;
-          for (int i=0; i<SVObjects.count(); i++) ttrig+=SVObjects[i]->Triangles;
+          for (int i=0; i<svobjects.count(); i++) ttrig+=svobjects[i]->Triangles;
           QString status;
           status.sprintf("Completed");
           MainWin->ui->OutputLabelOverall->setText(status);
@@ -1184,9 +1184,9 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
               //Extra objects (must be groups)
               for (int i=thisspv->ComponentObjects.count(); i<ListCount; i++)
               {
-                  SVObject *group = new SVObject(SVObjects.count());
+                  svobject *group = new svobject(svobjects.count());
                   group->IsGroup=true;
-                  SVObjects.append(group);
+                  svobjects.append(group);
                   thisspv->ComponentObjects.append(group);
               }
 

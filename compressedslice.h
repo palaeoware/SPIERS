@@ -1,11 +1,11 @@
 #ifndef COMPRESSEDSLICE_H
 #define COMPRESSEDSLICE_H
 #include <QString>
-class SVObject;
+class svobject;
 class CompressedSlice
 {
 public:
-    CompressedSlice(SVObject *parent, bool IsEmpty);
+    CompressedSlice(svobject *parent, bool IsEmpty);
     ~CompressedSlice();
     void Merge(CompressedSlice *s, QString fn);
     void Dump(QString Filename);
@@ -16,7 +16,7 @@ public:
     int datasize;
     unsigned char *grid;
     bool empty;
-    SVObject *Object;
+    svobject *Object;
 };
 
 #endif // COMPRESSEDSLICE_H

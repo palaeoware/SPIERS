@@ -4,9 +4,9 @@
 
 bool MoveToGroup::IsGroupOrParentsSelected(int i)
 {
-    if (SVObjects[i]->widgetitem->isSelected()) return true;
-    if (SVObjects[i]->InGroup == -1) return false;
-    return IsGroupOrParentsSelected(SVObjects[i]->Parent());
+    if (svobjects[i]->widgetitem->isSelected()) return true;
+    if (svobjects[i]->InGroup == -1) return false;
+    return IsGroupOrParentsSelected(svobjects[i]->Parent());
 }
 
 MoveToGroup::MoveToGroup(QWidget * parent, Qt::WindowFlags f) : QDialog(parent, f)
@@ -15,14 +15,14 @@ MoveToGroup::MoveToGroup(QWidget * parent, Qt::WindowFlags f) : QDialog(parent, 
         valid=false;
         comboBox->addItem("[No Group]");
         items.append(-1);
-        for (int i=0; i<SVObjects.count(); i++)
-            if (SVObjects[i]->IsGroup)
+        for (int i=0; i<svobjects.count(); i++)
+            if (svobjects[i]->IsGroup)
             {
                 if (!(IsGroupOrParentsSelected(i)))
                 //first - is this group selected?
                 {
                     //second  - are any of it's parents selected?
-                    comboBox->addItem(SVObjects[i]->Name);
+                    comboBox->addItem(svobjects[i]->Name);
                     items.append(i);
                     valid=true;
                 }

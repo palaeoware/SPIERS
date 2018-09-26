@@ -393,11 +393,11 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
     for (int trans=0; trans<2; trans++) //two runs - opaques first
     {
         if (trans==1)  {glfunctions->glDepthMask(false); glfunctions->glEnable(GL_BLEND);} else { glfunctions->glDepthMask(true); glfunctions->glDisable(GL_BLEND);} //set up transparency run
-        for (int i=0; i<SVObjects.count(); i++)
-        if (!(SVObjects[i]->IsGroup))
+        for (int i=0; i<svobjects.count(); i++)
+        if (!(svobjects[i]->IsGroup))
         if (CanISee(i))
         {
-            QMatrix4x4 mMatrix(SVObjects[i]->matrix); //model view matrix - transform the objects
+            QMatrix4x4 mMatrix(svobjects[i]->matrix); //model view matrix - transform the objects
 
             QMatrix4x4 mvMatrix;
             mvMatrix = vMatrix;
@@ -411,9 +411,9 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
             normalMatrix = mvMatrix.normalMatrix();
 
 
-           if ((SVObjects[i]->Transparency==0 && trans==0) || (SVObjects[i]->Transparency!=0 && trans==1)) //do trans on second run
+           if ((svobjects[i]->Transparency==0 && trans==0) || (svobjects[i]->Transparency!=0 && trans==1)) //do trans on second run
            {
-             if (SVObjects[i]->colour)
+             if (svobjects[i]->colour)
                 useshader=&lightingShaderProgramForColour;
             else
                 useshader=&lightingShaderProgram;
@@ -428,20 +428,20 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
             float mcolor[3];
             if (MainWin->ui->actionMute_Colours->isChecked())
             {
-                mcolor[0]= ((GLfloat)(SVObjects[i]->Colour[0]/3+170));
-                mcolor[1]= ((GLfloat)(SVObjects[i]->Colour[1]/3+170));
-                mcolor[2]= ((GLfloat)(SVObjects[i]->Colour[2]/3+170));
+                mcolor[0]= ((GLfloat)(svobjects[i]->Colour[0]/3+170));
+                mcolor[1]= ((GLfloat)(svobjects[i]->Colour[1]/3+170));
+                mcolor[2]= ((GLfloat)(svobjects[i]->Colour[2]/3+170));
             }
            else
             {
-                mcolor[0]= ((GLfloat)(SVObjects[i]->Colour[0]));
-                mcolor[1]= ((GLfloat)(SVObjects[i]->Colour[1]));
-                mcolor[2]= ((GLfloat)(SVObjects[i]->Colour[2]));
+                mcolor[0]= ((GLfloat)(svobjects[i]->Colour[0]));
+                mcolor[1]= ((GLfloat)(svobjects[i]->Colour[1]));
+                mcolor[2]= ((GLfloat)(svobjects[i]->Colour[2]));
             }
 
             if (MainWin->ui->actionBounding_Box->isChecked())
             {
-                if (SVObjects[i]->BoundingBoxBuffer.isCreated())
+                if (svobjects[i]->BoundingBoxBuffer.isCreated())
                 {
                     //qDebug()<<"Exists, drawing";
                     useshader->setUniformValue("ambientColor", QColor(mcolor[0],mcolor[1],mcolor[2]));
@@ -452,13 +452,13 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
                     useshader->setUniformValue("diffuseReflection", (GLfloat)1.0);
                     useshader->setUniformValue("specularReflection", (GLfloat)0.0);
                     useshader->setUniformValue("shininess", (GLfloat) 100.0);
-                    SVObjects[i]->BoundingBoxBuffer.bind();
+                    svobjects[i]->BoundingBoxBuffer.bind();
                     useshader->setAttributeBuffer("vertex", GL_FLOAT, 0, 3, 0);
                     useshader->enableAttributeArray("vertex");
                     useshader->setAttributeBuffer("normal", GL_FLOAT, 12*6*sizeof(GLfloat), 3, 0);
                     useshader->enableAttributeArray("normal");
 
-                    SVObjects[i]->BoundingBoxBuffer.release();
+                    svobjects[i]->BoundingBoxBuffer.release();
                     glfunctions->glDrawArrays(GL_LINES, 0, 24);
                 }
                 //else qDebug()<<"Not created";
@@ -467,11 +467,11 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
             {
 
                 GLfloat shininess;
-                if (SVObjects[i]->Shininess==3) shininess=1.0;
-                if (SVObjects[i]->Shininess==2) shininess=.7;
-                if (SVObjects[i]->Shininess==1) shininess=.3;
-                if (SVObjects[i]->Shininess==0) shininess=0.0;
-                if (SVObjects[i]->Shininess<0) shininess=((GLfloat)(0-SVObjects[i]->Shininess))/100.0;
+                if (svobjects[i]->Shininess==3) shininess=1.0;
+                if (svobjects[i]->Shininess==2) shininess=.7;
+                if (svobjects[i]->Shininess==1) shininess=.3;
+                if (svobjects[i]->Shininess==0) shininess=0.0;
+                if (svobjects[i]->Shininess<0) shininess=((GLfloat)(0-svobjects[i]->Shininess))/100.0;
 
                 useshader->setUniformValue("ambientReflection", (GLfloat)1.0);
                 useshader->setUniformValue("diffuseReflection", (GLfloat)1.0);
@@ -480,37 +480,37 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
 
                //calculate alpha
                float t=1.0;
-               if (SVObjects[i]->Transparency==4) t=.25;
-               if (SVObjects[i]->Transparency==3) t=.45;
-               if (SVObjects[i]->Transparency==2) t=.6;
-               if (SVObjects[i]->Transparency==1) t=.8;
-               if (SVObjects[i]->Transparency<0) t=((float)(100+SVObjects[i]->Transparency))/100.0;
+               if (svobjects[i]->Transparency==4) t=.25;
+               if (svobjects[i]->Transparency==3) t=.45;
+               if (svobjects[i]->Transparency==2) t=.6;
+               if (svobjects[i]->Transparency==1) t=.8;
+               if (svobjects[i]->Transparency<0) t=((float)(100+svobjects[i]->Transparency))/100.0;
                 useshader->setUniformValue("alpha",t);
 
-                if (!(SVObjects[i]->colour))
+                if (!(svobjects[i]->colour))
                 {
                     useshader->setUniformValue("ambientColor", QColor(mcolor[0]/5,mcolor[1]/5, mcolor[2]/5));
                     useshader->setUniformValue("diffuseColor", QColor(mcolor[0]/1.5, mcolor[1]/1.5, mcolor[2]/1.5));
                     useshader->setUniformValue("specularColor", QColor(mcolor[0], mcolor[1],mcolor[2]));
                 }
-                for (int j=0; j<SVObjects[i]->VertexBuffers.count(); j++)
+                for (int j=0; j<svobjects[i]->VertexBuffers.count(); j++)
                  {
 
-                     SVObjects[i]->VertexBuffers[j]->bind();
+                     svobjects[i]->VertexBuffers[j]->bind();
                      useshader->setAttributeBuffer("vertex", GL_FLOAT, 0, 3, 0);
                      useshader->enableAttributeArray("vertex");
-                     useshader->setAttributeBuffer("normal", GL_FLOAT, 3*SVObjects[i]->VBOVertexCounts[j]*sizeof(GLfloat), 3, 0);
+                     useshader->setAttributeBuffer("normal", GL_FLOAT, 3*svobjects[i]->VBOVertexCounts[j]*sizeof(GLfloat), 3, 0);
                      useshader->enableAttributeArray("normal");
-                     SVObjects[i]->VertexBuffers[j]->release();
+                     svobjects[i]->VertexBuffers[j]->release();
 
-                     if (SVObjects[i]->colour)
+                     if (svobjects[i]->colour)
                      {
-                         SVObjects[i]->ColourBuffers[j]->bind();
+                         svobjects[i]->ColourBuffers[j]->bind();
                          useshader->setAttributeBuffer("colour", GL_FLOAT, 0, 3, 0);
                          useshader->enableAttributeArray("colour");
-                         SVObjects[i]->ColourBuffers[j]->release();
+                         svobjects[i]->ColourBuffers[j]->release();
                      }
-                     glfunctions->glDrawArrays(GL_TRIANGLES, 0, SVObjects[i]->VBOVertexCounts[j]);
+                     glfunctions->glDrawArrays(GL_TRIANGLES, 0, svobjects[i]->VBOVertexCounts[j]);
 
                  }
             }
@@ -566,11 +566,11 @@ void GlWidget::paintGL()
 bool GlWidget::CanISee(int index)
 {
     //if not in a group - just return my visibility
-    if (SVObjects[index]->Visible==false) return false;
-    if (SVObjects[index]->InGroup==-1) return true; //not in a group,visble, fine
+    if (svobjects[index]->Visible==false) return false;
+    if (svobjects[index]->InGroup==-1) return true; //not in a group,visble, fine
 
     //in a group and visible - return visibility of parents
-    return CanISee(SVObjects[index]->Parent()); //run again on my parents
+    return CanISee(svobjects[index]->Parent()); //run again on my parents
 }
 
 void GlWidget::SetStereoSeparation(float s)
@@ -603,10 +603,10 @@ void GlWidget::SetStereoSeparation(float s)
       return;
    }
 */
-   for (int i=0; i<SVObjects.count(); i++)
+   for (int i=0; i<svobjects.count(); i++)
    {
        bool f=false;
-       if (MainWin->ui->actionReposition_Selected->isChecked() && (SVObjects[i]->widgetitem->isSelected())) f=true;
+       if (MainWin->ui->actionReposition_Selected->isChecked() && (svobjects[i]->widgetitem->isSelected())) f=true;
        if (!MainWin->ui->actionReposition_Selected->isChecked()) f=true;
        if (f)
         {
@@ -615,11 +615,11 @@ void GlWidget::SetStereoSeparation(float s)
              rotmatrix.rotate(angle,0.0f, 0.0f, 1.0f);
              if (i==0) Zrot+=angle;
 
-             QMatrix4x4 svmatrix(SVObjects[i]->matrix);
+             QMatrix4x4 svmatrix(svobjects[i]->matrix);
              if (!SP2_lock)
              {
                 rotmatrix*=svmatrix;
-                rotmatrix.copyDataTo(SVObjects[i]->matrix);
+                rotmatrix.copyDataTo(svobjects[i]->matrix);
                 FileDirty=true;
              }
          }
@@ -672,10 +672,10 @@ void GlWidget::SetStereoSeparation(float s)
           }
           else
  */
-           for (int i=0; i<SVObjects.count(); i++)
+           for (int i=0; i<svobjects.count(); i++)
            {
                bool f=false;
-               if (MainWin->ui->actionReposition_Selected->isChecked() && (SVObjects[i]->widgetitem->isSelected())) f=true;
+               if (MainWin->ui->actionReposition_Selected->isChecked() && (svobjects[i]->widgetitem->isSelected())) f=true;
                if (!MainWin->ui->actionReposition_Selected->isChecked()) f=true;
                if (f)
                 {
@@ -686,11 +686,11 @@ void GlWidget::SetStereoSeparation(float s)
                      rotmatrix.rotate(yangle,0.0f, 1.0f, 0.0f);
 
                      if (i==0) { Xrot+=xangle; Yrot+=yangle; } //WTF does this do?
-                     QMatrix4x4 svmatrix(SVObjects[i]->matrix);
+                     QMatrix4x4 svmatrix(svobjects[i]->matrix);
                      if (!SP2_lock)
                      {
                         rotmatrix*=svmatrix;
-                        rotmatrix.copyDataTo(SVObjects[i]->matrix);
+                        rotmatrix.copyDataTo(svobjects[i]->matrix);
                         donesomething=true;
                         FileDirty=true;
                      }
@@ -719,10 +719,10 @@ void GlWidget::SetStereoSeparation(float s)
       }
        else
  */
-       for (int i=0; i<SVObjects.count(); i++)
+       for (int i=0; i<svobjects.count(); i++)
        {
            bool f=false;
-           if (MainWin->ui->actionReposition_Selected->isChecked() && (SVObjects[i]->widgetitem->isSelected())) f=true;
+           if (MainWin->ui->actionReposition_Selected->isChecked() && (svobjects[i]->widgetitem->isSelected())) f=true;
            if (!MainWin->ui->actionReposition_Selected->isChecked()) f=true;
            if (f)
             {
@@ -731,11 +731,11 @@ void GlWidget::SetStereoSeparation(float s)
                      rotmatrix.setToIdentity();
                      rotmatrix.translate(ObjXpos,ObjYpos,0.0f);
                      if (i==0) { Xtrans+=ObjXpos; Ytrans+=ObjYpos;} //WTF does this do?
-                     QMatrix4x4 svmatrix(SVObjects[i]->matrix);
+                     QMatrix4x4 svmatrix(svobjects[i]->matrix);
                      if (!SP2_lock)
                      {
                         rotmatrix*=svmatrix;
-                        rotmatrix.copyDataTo(SVObjects[i]->matrix);
+                        rotmatrix.copyDataTo(svobjects[i]->matrix);
                         donesomething=true;
                         FileDirty=true;
                      }
@@ -773,10 +773,10 @@ void GlWidget::ZRotate(float angle)
       return;
    }
 */
-   for (int i=0; i<SVObjects.count(); i++)
+   for (int i=0; i<svobjects.count(); i++)
    {
        bool f=false;
-       if (MainWin->ui->actionReposition_Selected->isChecked() && (SVObjects[i]->widgetitem->isSelected())) f=true;
+       if (MainWin->ui->actionReposition_Selected->isChecked() && (svobjects[i]->widgetitem->isSelected())) f=true;
        if (!MainWin->ui->actionReposition_Selected->isChecked()) f=true;
        if (f)
         {
@@ -785,11 +785,11 @@ void GlWidget::ZRotate(float angle)
              rotmatrix.rotate(angle,0.0f, 0.0f, 1.0f);
              if (i==0) Zrot+=angle;
 
-             QMatrix4x4 svmatrix(SVObjects[i]->matrix);
+             QMatrix4x4 svmatrix(svobjects[i]->matrix);
              if (!SP2_lock)
              {
                 rotmatrix*=svmatrix;
-                rotmatrix.copyDataTo(SVObjects[i]->matrix);
+                rotmatrix.copyDataTo(svobjects[i]->matrix);
                 FileDirty=true;
              }
          }
@@ -813,10 +813,10 @@ void GlWidget::YRotate(float angle)
       return;
    }
 */
-   for (int i=0; i<SVObjects.count(); i++)
+   for (int i=0; i<svobjects.count(); i++)
    {
        bool f=false;
-       if (MainWin->ui->actionReposition_Selected->isChecked() && (SVObjects[i]->widgetitem->isSelected())) f=true;
+       if (MainWin->ui->actionReposition_Selected->isChecked() && (svobjects[i]->widgetitem->isSelected())) f=true;
        if (!MainWin->ui->actionReposition_Selected->isChecked()) f=true;
        if (f)
         {
@@ -825,11 +825,11 @@ void GlWidget::YRotate(float angle)
              rotmatrix.rotate(angle,0.0f, 1.0f, 0.0f);
              if (i==0) Yrot+=angle;
 
-             QMatrix4x4 svmatrix(SVObjects[i]->matrix);
+             QMatrix4x4 svmatrix(svobjects[i]->matrix);
              if (!SP2_lock)
              {
                 rotmatrix*=svmatrix;
-                rotmatrix.copyDataTo(SVObjects[i]->matrix);
+                rotmatrix.copyDataTo(svobjects[i]->matrix);
                 FileDirty=true;
              }
          }
@@ -852,10 +852,10 @@ void GlWidget::XRotate(float angle)
       return;
    }
 */
-   for (int i=0; i<SVObjects.count(); i++)
+   for (int i=0; i<svobjects.count(); i++)
    {
        bool f=false;
-       if (MainWin->ui->actionReposition_Selected->isChecked() && (SVObjects[i]->widgetitem->isSelected())) f=true;
+       if (MainWin->ui->actionReposition_Selected->isChecked() && (svobjects[i]->widgetitem->isSelected())) f=true;
        if (!MainWin->ui->actionReposition_Selected->isChecked()) f=true;
        if (f)
         {
@@ -864,11 +864,11 @@ void GlWidget::XRotate(float angle)
              rotmatrix.rotate(angle,1.0f, 0.0f, 0.0f);
              if (i==0) Xrot+=angle;
 
-             QMatrix4x4 svmatrix(SVObjects[i]->matrix);
+             QMatrix4x4 svmatrix(svobjects[i]->matrix);
              if (!SP2_lock)
              {
                 rotmatrix*=svmatrix;
-                rotmatrix.copyDataTo(SVObjects[i]->matrix);
+                rotmatrix.copyDataTo(svobjects[i]->matrix);
                 FileDirty=true;
              }
          }
@@ -891,10 +891,10 @@ void GlWidget::Translate(float x, float y, float z)
       return;
    }
 */
-   for (int i=0; i<SVObjects.count(); i++)
+   for (int i=0; i<svobjects.count(); i++)
    {
        bool f=false;
-       if (MainWin->ui->actionReposition_Selected->isChecked() && (SVObjects[i]->widgetitem->isSelected())) f=true;
+       if (MainWin->ui->actionReposition_Selected->isChecked() && (svobjects[i]->widgetitem->isSelected())) f=true;
        if (!MainWin->ui->actionReposition_Selected->isChecked()) f=true;
        if (f)
         {
@@ -903,11 +903,11 @@ void GlWidget::Translate(float x, float y, float z)
              rotmatrix.translate(x/10.0,y/10.0,z/10.0);
            if (i==0) { Xtrans += x; Ytrans += y; Ztrans += z;}
 
-             QMatrix4x4 svmatrix(SVObjects[i]->matrix);
+             QMatrix4x4 svmatrix(svobjects[i]->matrix);
              if (!SP2_lock)
              {
                 rotmatrix*=svmatrix;
-                rotmatrix.copyDataTo(SVObjects[i]->matrix);
+                rotmatrix.copyDataTo(svobjects[i]->matrix);
                 FileDirty=true;
              }
          }
@@ -934,23 +934,23 @@ void GlWidget::Resize(float value)
       return;
    }
 */
-   for (int i=0; i<SVObjects.count(); i++)
+   for (int i=0; i<svobjects.count(); i++)
    {
        bool f=false;
-       if (MainWin->ui->actionReposition_Selected->isChecked() && (SVObjects[i]->widgetitem->isSelected())) f=true;
+       if (MainWin->ui->actionReposition_Selected->isChecked() && (svobjects[i]->widgetitem->isSelected())) f=true;
        if (!MainWin->ui->actionReposition_Selected->isChecked()) f=true;
        if (f)
         {
              QMatrix4x4 rotmatrix;
              rotmatrix.setToIdentity();
              rotmatrix.scale(value,value,value);
-             SVObjects[i]->scale*=value;
+             svobjects[i]->scale*=value;
 
-             QMatrix4x4 svmatrix(SVObjects[i]->matrix);
+             QMatrix4x4 svmatrix(svobjects[i]->matrix);
              if (!SP2_lock)
              {
                 rotmatrix*=svmatrix;
-                rotmatrix.copyDataTo(SVObjects[i]->matrix);
+                rotmatrix.copyDataTo(svobjects[i]->matrix);
                 FileDirty=true;
              }
          }
@@ -974,25 +974,25 @@ void GlWidget::ResetSize()
       return;
     }
 */
-   for (int i=0; i<SVObjects.count(); i++)
+   for (int i=0; i<svobjects.count(); i++)
    {
        bool f=false;
-       if (MainWin->ui->actionReposition_Selected->isChecked() && (SVObjects[i]->widgetitem->isSelected())) f=true;
+       if (MainWin->ui->actionReposition_Selected->isChecked() && (svobjects[i]->widgetitem->isSelected())) f=true;
        if (!MainWin->ui->actionReposition_Selected->isChecked()) f=true;
        if (f)
         {
              {
              QMatrix4x4 rotmatrix;
              rotmatrix.setToIdentity();
-             rotmatrix.scale(1.0/SVObjects[i]->scale,1.0/SVObjects[i]->scale,1.0/SVObjects[i]->scale);
+             rotmatrix.scale(1.0/svobjects[i]->scale,1.0/svobjects[i]->scale,1.0/svobjects[i]->scale);
 
-             QMatrix4x4 svmatrix(SVObjects[i]->matrix);
+             QMatrix4x4 svmatrix(svobjects[i]->matrix);
              if (!SP2_lock)
              {
                 rotmatrix*=svmatrix;
-                rotmatrix.copyDataTo(SVObjects[i]->matrix);
+                rotmatrix.copyDataTo(svobjects[i]->matrix);
              }
-             SVObjects[i]->scale=1.0;
+             svobjects[i]->scale=1.0;
              FileDirty=true;
              }
          }
@@ -1002,10 +1002,10 @@ void GlWidget::ResetSize()
 void GlWidget::ResetToDefault()
 {
     //qDebug()<<"In rtd ";
-    for (int j=0; j<SVObjects.count(); j++)
+    for (int j=0; j<svobjects.count(); j++)
     {
-        if (SVObjects[j]->gotdefaultmatrix)
-            for (int i=0; i<16; i++) SVObjects[j]->matrix[i] = SVObjects[j]->defaultmatrix[i];
+        if (svobjects[j]->gotdefaultmatrix)
+            for (int i=0; i<16; i++) svobjects[j]->matrix[i] = svobjects[j]->defaultmatrix[i];
     }
 
     ClipAngle=DefaultClipAngle;
@@ -1017,11 +1017,11 @@ void GlWidget::ResetToDefault()
 void GlWidget::NewDefault()
 {
     //qDebug()<<"In ND ";
-    if (SVObjects.count()>0) //if need to record default and not some spurious early call with no data
+    if (svobjects.count()>0) //if need to record default and not some spurious early call with no data
     {
-        for (int j=0; j<SVObjects.count(); j++)
+        for (int j=0; j<svobjects.count(); j++)
         {
-            for (int i=0; i<16; i++) {SVObjects[j]->defaultmatrix[i] = SVObjects[j]->matrix[i];SVObjects[j]->gotdefaultmatrix=true;}
+            for (int i=0; i<16; i++) {svobjects[j]->defaultmatrix[i] = svobjects[j]->matrix[i];svobjects[j]->gotdefaultmatrix=true;}
         }
         DefaultClipAngle=ClipAngle; //yes, doing for each one, for convenience
         Xrot=0; Yrot=0; Zrot=0;

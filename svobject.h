@@ -34,12 +34,12 @@ class SPV;
 class CompressedSlice;
 class QTreeWidgetItem;
 
-class SVObject
+class svobject
 {
 
 public:
-    SVObject(int index);
-    ~SVObject();
+    svobject(int index);
+    ~svobject();
     void MakePolyData();
     void WritePD(QFile *outfile);
     void ReadPD(QFile *infile);
@@ -133,6 +133,6 @@ private:
     QVector <float> normalz;
  };
 
-extern QList <SVObject *> SVObjects;
+extern QList <svobject *> svobjects;
 
 #endif // SVOBJECT_H

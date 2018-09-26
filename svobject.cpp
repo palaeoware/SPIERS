@@ -36,7 +36,7 @@
 #include "ui_mainwindow.h"
 
 
-SVObject::SVObject(int index)
+svobject::svobject(int index)
 {
     colour=false;
     Index=index;
@@ -75,7 +75,7 @@ SVObject::SVObject(int index)
     spv=0;
 }
 
-SVObject::~SVObject()
+svobject::~svobject()
 {
     MainWin->gl3widget->makeCurrent();
     PolyData->Delete();
@@ -92,18 +92,18 @@ SVObject::~SVObject()
     qDeleteAll(ColourBuffers);
 }
 
-QList <SVObject *> SVObjects;
+QList <svobject *> svobjects;
 
-int SVObject::Parent()
+int svobject::Parent()
 {
     //return pointer to parent
-    for (int i=0; i<SVObjects.count(); i++)
-        if (SVObjects[i]->Index==InGroup) return i;
+    for (int i=0; i<svobjects.count(); i++)
+        if (svobjects[i]->Index==InGroup) return i;
 
     return -1; //no group found
 }
 
-void SVObject::ResetMatrix()
+void svobject::ResetMatrix()
 {
      //intial identity matrix
      matrix[0]=1;      matrix[1]=0;      matrix[2]=0;      matrix[3]=0;
@@ -112,7 +112,7 @@ void SVObject::ResetMatrix()
      matrix[12]=0;      matrix[13]=0;      matrix[14]=0;      matrix[15]=1;
 }
 
-void SVObject::DoUpdates()
+void svobject::DoUpdates()
 {
     if (MainWin->ui->actionAuto_Resurface->isChecked())
         MakeDlists();
@@ -120,7 +120,7 @@ void SVObject::DoUpdates()
         Dirty=true;
 }
 
-void SVObject::ForceUpdates(int thisobj, int totalobj)
+void svobject::ForceUpdates(int thisobj, int totalobj)
 {
     if (thisobj>=0)
     {
@@ -152,7 +152,7 @@ static void ErrorHandler(vtkObject *, unsigned long, void*, void* progress)
     QMessageBox::critical(MainWin,"Error","Fatal VTK error: This is likely an 'out of memory' issue - if however you see this message when working with small objects please ttact the software author");
 }
 
-void SVObject::DeleteVTKObjects()
+void svobject::DeleteVTKObjects()
 {
     int cells=pd->GetNumberOfCells();
 
@@ -169,7 +169,7 @@ void SVObject::DeleteVTKObjects()
      }
 }
 /*
-void SVObject::GetFinalPolyData()
+void svobject::GetFinalPolyData()
 {
     if (IsGroup) return;
 
@@ -324,7 +324,7 @@ void SVObject::GetFinalPolyData()
      return;
 }
 */
-void SVObject::GetFinalPolyData()
+void svobject::GetFinalPolyData()
 {
     if (IsGroup) return;
 
@@ -589,7 +589,7 @@ void SVObject::GetFinalPolyData()
      return;
 }
 
-void SVObject::MakeVBOs()
+void svobject::MakeVBOs()
 {
     //return;
     //Copy of old MakeDlists, updated to work with VBOs for OpenGL 2+
@@ -824,13 +824,13 @@ void SVObject::MakeVBOs()
 
 }
 
-void SVObject::MakeDlists()
+void svobject::MakeDlists()
 {
     return MakeVBOs();
 }
 
 
-void SVObject::CompressPolyData(bool flag)
+void svobject::CompressPolyData(bool flag)
 {
     //MainWin->ui->actionSave_Memory->setChecked(true);
     if (IsGroup) return;
@@ -920,7 +920,7 @@ void SVObject::CompressPolyData(bool flag)
     qApp->processEvents();
 }
 
-void SVObject::UnCompressPolyData()
+void svobject::UnCompressPolyData()
 {
     if (PolyDataCompressed==false) return;
     if (voxml_mode) return;
@@ -981,7 +981,7 @@ void SVObject::UnCompressPolyData()
 
 }
 
-void SVObject::WritePD(QFile *outfile)
+void svobject::WritePD(QFile *outfile)
 {
     if (PolyDataCompressed==false) CompressPolyData(true);
 
@@ -991,7 +991,7 @@ void SVObject::WritePD(QFile *outfile)
     outfile->write(CompressedPolyData);   //Convert the polydata to an output format, compress, and write
 }
 
-void SVObject::ReadPD(QFile *infile)
+void svobject::ReadPD(QFile *infile)
 {
     
     QDataStream in(infile);
@@ -1007,7 +1007,7 @@ void SVObject::ReadPD(QFile *infile)
     }
 }
 
-QString SVObject::DoMatrixDXFoutput(int v,float x,float y, float z)
+QString svobject::DoMatrixDXFoutput(int v,float x,float y, float z)
 {
 
     float *M=matrix;
@@ -1028,7 +1028,7 @@ QString SVObject::DoMatrixDXFoutput(int v,float x,float y, float z)
     return S;
 }
 
-int SVObject::WriteDXFfaces(QFile *outfile)
+int svobject::WriteDXFfaces(QFile *outfile)
 {
     QTextStream dxf(outfile);
 
@@ -1037,7 +1037,7 @@ int SVObject::WriteDXFfaces(QFile *outfile)
 
     //work out object number
     int ocount=1;
-    for (int i=0; i<SVObjects.count(); i++) if (!(SVObjects[i]->IsGroup) && i < Index) ocount++;
+    for (int i=0; i<svobjects.count(); i++) if (!(svobjects[i]->IsGroup) && i < Index) ocount++;
     QTextStream ts(&header);
    if (Name.isEmpty()) name.sprintf("%d",ocount); else name=Name;
 
@@ -1086,7 +1086,7 @@ int SVObject::WriteDXFfaces(QFile *outfile)
      return tcount;
 }
 
-int SVObject::AppendCompressedFaces(QString mainfile, QString internalfile, QDataStream *main)
+int svobject::AppendCompressedFaces(QString mainfile, QString internalfile, QDataStream *main)
 {
     QByteArray b;
     QDataStream stl(&b, QIODevice::WriteOnly);
@@ -1146,7 +1146,7 @@ int SVObject::AppendCompressedFaces(QString mainfile, QString internalfile, QDat
 	return tcount;
 }
 
-int SVObject::WriteSTLfaces(QDir stldir, QString fname)
+int svobject::WriteSTLfaces(QDir stldir, QString fname)
 {
 
     QFile stlfile(fname);
@@ -1226,7 +1226,7 @@ int SVObject::WriteSTLfaces(QDir stldir, QString fname)
 
 }
 
-void SVObject::MakePolyData()
+void svobject::MakePolyData()
 {
   int VertexCount=0;
   int TrigCount=0;
@@ -1278,7 +1278,7 @@ void SVObject::MakePolyData()
   return;
 }
 
-void SVObject::MakePolyVerts(int slice, int VertexBase)
+void svobject::MakePolyVerts(int slice, int VertexBase)
 //make a polydata object for this slice
 //Modified from old MakeDlist. Takes and applies my distortions to mesh, writes into PolyData structure for VTK normalisation and filtering
 {

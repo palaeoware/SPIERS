@@ -85,7 +85,7 @@ MainWindow::MainWindow(QWidget *parent)
    f.setSampleBuffers(true);
    f.setSamples(1);
 
-   //qDebug()<<"Here";
+   qDebug()<<"Here";
   gl3widget=new GlWidget(ui->frameVTK); //,f);
   gllayout = new QHBoxLayout;
   gllayout->addWidget(gl3widget);
@@ -189,15 +189,16 @@ MainWindow::MainWindow(QWidget *parent)
   ContainsPresurfaced=false;
   ContainsNonPresurfaced=false;
 
-  //qDebug()<<"Here2";
+  qDebug()<<"Here2";
   AnimOutputDir=QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+  qDebug()<<"Here3";
 }
 
 
 void MainWindow::ActionKey(QChar C)
 {
-    for (int i=0; i<SVObjects.count(); i++)
-         if (SVObjects[i]->Key.toLatin1()==C.toLatin1()) SVObjects[i]->Visible = !SVObjects[i]->Visible;
+    for (int i=0; i<svobjects.count(); i++)
+         if (svobjects[i]->Key.toLatin1()==C.toLatin1()) svobjects[i]->Visible = !svobjects[i]->Visible;
     UpdateGL();
     RefreshObjects();
 }
@@ -221,6 +222,7 @@ void MainWindow::UpdateGL()
 void MainWindow::StartTimer_fired()
 //start up timer should fire this only once - starts SPV load process
 {
+    qDebug()<<"Here5";
     //Some General initialisation
     NextActualDlist=1;
 
@@ -243,7 +245,9 @@ void MainWindow::StartTimer_fired()
 		
 		QString ifname=files[0];
 		*/
-agin:
+
+        qDebug()<<"Here4";
+        agin:
         FilterKeys=false;
         fname = QFileDialog::getOpenFileName(
                          this,
@@ -480,20 +484,20 @@ void MainWindow::SpinTimer_fired()
   double Volume=0.0; //in mm cubed
   int ObjCount=0;
 
-  for (int j=0; j<SVObjects.count(); j++)
-      if (SVObjects[j]->widgetitem && SVObjects[j]->spv )
-      if (SVObjects[j]->widgetitem->isSelected())
+  for (int j=0; j<svobjects.count(); j++)
+      if (svobjects[j]->widgetitem && svobjects[j]->spv )
+      if (svobjects[j]->widgetitem->isSelected())
       {
-          //qDebug()<<"j,SVJ"<<j<<SVObjects[j];
-          //qDebug()<<"SVJ"<<SVObjects[j]->spv;
-          //qDebug()<<"SVJ"<<SVObjects[j]->spv->PixPerMM;
+          //qDebug()<<"j,SVJ"<<j<<svobjects[j];
+          //qDebug()<<"SVJ"<<svobjects[j]->spv;
+          //qDebug()<<"SVJ"<<svobjects[j]->spv->PixPerMM;
           if (!voxml_mode)
           {
-              double spvscale=(1.0/SVObjects[j]->spv->PixPerMM)*SVObjects[j]->scale;
-              spvscale = spvscale*spvscale*(1.0/SVObjects[j]->spv->SlicePerMM)*SVObjects[j]->scale; //square it, multiply by slice spacing
-              Volume+=((double)SVObjects[j]->Voxels)*spvscale;
+              double spvscale=(1.0/svobjects[j]->spv->PixPerMM)*svobjects[j]->scale;
+              spvscale = spvscale*spvscale*(1.0/svobjects[j]->spv->SlicePerMM)*svobjects[j]->scale; //square it, multiply by slice spacing
+              Volume+=((double)svobjects[j]->Voxels)*spvscale;
           }
-          TotalTriangles+=SVObjects[j]->Triangles;
+          TotalTriangles+=svobjects[j]->Triangles;
           ObjCount++;
       }
 
@@ -583,9 +587,9 @@ void MainWindow::on_actionQuadBuffer_Stereo_triggered()
 {
     setSamples(gl3widget->context()->format().samples());
 
-    for (int i=0; i<SVObjects.count(); i++)
-        if (!SVObjects[i]->IsGroup)
-            SVObjects[i]->Dirty=true;
+    for (int i=0; i<svobjects.count(); i++)
+        if (!svobjects[i]->IsGroup)
+            svobjects[i]->Dirty=true;
     on_actionResurface_Now_triggered();
     UpdateGL();
 }
@@ -705,14 +709,14 @@ void MainWindow::RefreshOneItem(QTreeWidgetItem *item,int i)
     QPainter painter;
     painter.begin(&picture);           // paint in picture
     painter.setPen(QPen(Qt::NoPen));
-    painter.setBrush(QBrush(QColor(SVObjects[i]->Colour[0],SVObjects[i]->Colour[1],SVObjects[i]->Colour[2])));
+    painter.setBrush(QBrush(QColor(svobjects[i]->Colour[0],svobjects[i]->Colour[1],svobjects[i]->Colour[2])));
 
     painter.drawRect(0,0,28,20); 		// draw a rect
     painter.end();                     // painting done
     test->setPicture(picture);
     test->setAutoFillBackground(true);
 
-    if (SVObjects[i]->IsGroup)
+    if (svobjects[i]->IsGroup)
     {
         QLabel *l = new QLabel("");
         ui->treeWidget->setItemWidget (item, 3, l);
@@ -720,22 +724,22 @@ void MainWindow::RefreshOneItem(QTreeWidgetItem *item,int i)
     else
     ui->treeWidget->setItemWidget (item, 3, test);
 
-    QString KeySt(SVObjects[i]->Key);
-    if (SVObjects[i]->Key==0) KeySt="[-]";
+    QString KeySt(svobjects[i]->Key);
+    if (svobjects[i]->Key==0) KeySt="[-]";
 
     QString ResampleSt;
     QTextStream rs(&ResampleSt);
-    rs<<SVObjects[i]->Resample<<"%";
+    rs<<svobjects[i]->Resample<<"%";
 
-    item->setText(0,SVObjects[i]->Name);
+    item->setText(0,svobjects[i]->Name);
     item->setText(2,KeySt);
 
     QLabel *show=new QLabel();
-    if (SVObjects[i]->Visible) show->setPixmap(QPixmap(":/eye.bmp"));
+    if (svobjects[i]->Visible) show->setPixmap(QPixmap(":/eye.bmp"));
     else show->setPixmap(QPixmap(":/eye_off.bmp"));
     ui->treeWidget->setItemWidget (item, 1, show);
 
-    if (SVObjects[i]->IsGroup)
+    if (svobjects[i]->IsGroup)
     {
         item->setText(4,"");
         item->setText(5,"");
@@ -750,38 +754,38 @@ void MainWindow::RefreshOneItem(QTreeWidgetItem *item,int i)
 
         //Transparency
         QString t;
-        if (SVObjects[i]->Transparency==0) t="Off";
-        if (SVObjects[i]->Transparency==1) t="Low";
-        if (SVObjects[i]->Transparency==2) t="Lowish";
-        if (SVObjects[i]->Transparency==3) t="Med";
-        if (SVObjects[i]->Transparency==4) t="High";
-        if (SVObjects[i]->Transparency<0) t.sprintf("Custom (%d%%)",0-SVObjects[i]->Transparency);
+        if (svobjects[i]->Transparency==0) t="Off";
+        if (svobjects[i]->Transparency==1) t="Low";
+        if (svobjects[i]->Transparency==2) t="Lowish";
+        if (svobjects[i]->Transparency==3) t="Med";
+        if (svobjects[i]->Transparency==4) t="High";
+        if (svobjects[i]->Transparency<0) t.sprintf("Custom (%d%%)",0-svobjects[i]->Transparency);
         item->setText(5,t);
 
-        if (SVObjects[i]->IslandRemoval==0) t="Off";
-        if (SVObjects[i]->IslandRemoval==1) t="Remove Tiny";
-        if (SVObjects[i]->IslandRemoval==2) t="Remove Small";
-        if (SVObjects[i]->IslandRemoval==3) t="Remove Medium";
-        if (SVObjects[i]->IslandRemoval==4) t="Remove Large";
-        if (SVObjects[i]->IslandRemoval==5) t="Remove All";
-        if (SVObjects[i]->IslandRemoval<0) t.sprintf("Custom (%d)",0-SVObjects[i]->IslandRemoval);
+        if (svobjects[i]->IslandRemoval==0) t="Off";
+        if (svobjects[i]->IslandRemoval==1) t="Remove Tiny";
+        if (svobjects[i]->IslandRemoval==2) t="Remove Small";
+        if (svobjects[i]->IslandRemoval==3) t="Remove Medium";
+        if (svobjects[i]->IslandRemoval==4) t="Remove Large";
+        if (svobjects[i]->IslandRemoval==5) t="Remove All";
+        if (svobjects[i]->IslandRemoval<0) t.sprintf("Custom (%d)",0-svobjects[i]->IslandRemoval);
         item->setText(6,t);
 
-        if (SVObjects[i]->Smoothing==0) t="Off";
-        if (SVObjects[i]->Smoothing==1) t="Very weak";
-        if (SVObjects[i]->Smoothing==2) t="Weak";
-        if (SVObjects[i]->Smoothing==3) t="Medium";
-        if (SVObjects[i]->Smoothing==4) t="Strongish";
-        if (SVObjects[i]->Smoothing==5) t="Strong";
-        if (SVObjects[i]->Smoothing==6) t="Strongest";
-        if (SVObjects[i]->Smoothing<0) t.sprintf("Custom (%d)",0-SVObjects[i]->Smoothing);
+        if (svobjects[i]->Smoothing==0) t="Off";
+        if (svobjects[i]->Smoothing==1) t="Very weak";
+        if (svobjects[i]->Smoothing==2) t="Weak";
+        if (svobjects[i]->Smoothing==3) t="Medium";
+        if (svobjects[i]->Smoothing==4) t="Strongish";
+        if (svobjects[i]->Smoothing==5) t="Strong";
+        if (svobjects[i]->Smoothing==6) t="Strongest";
+        if (svobjects[i]->Smoothing<0) t.sprintf("Custom (%d)",0-svobjects[i]->Smoothing);
         item->setText(7,t);
 
-        if (SVObjects[i]->Shininess==0) t="Off";
-        if (SVObjects[i]->Shininess==1) t="Less";
-        if (SVObjects[i]->Shininess==2) t="Default";
-        if (SVObjects[i]->Shininess==3) t="Full";
-        if (SVObjects[i]->Shininess<0) t.sprintf("Custom (%d%%)",0-SVObjects[i]->Shininess);
+        if (svobjects[i]->Shininess==0) t="Off";
+        if (svobjects[i]->Shininess==1) t="Less";
+        if (svobjects[i]->Shininess==2) t="Default";
+        if (svobjects[i]->Shininess==3) t="Full";
+        if (svobjects[i]->Shininess<0) t.sprintf("Custom (%d%%)",0-svobjects[i]->Shininess);
         item->setText(8,t);
     }
 }
@@ -792,16 +796,16 @@ void MainWindow::DrawChildObjects(QList <bool> selflags, int parent)
     QTreeWidgetItem *item;
 
     //first find lowest Position in list...
-    QList <bool> usedflags; for (int i=0; i<SVObjects.count(); i++) usedflags.append(false);
-    for (int kloop=0; kloop<SVObjects.count(); kloop++)
+    QList <bool> usedflags; for (int i=0; i<svobjects.count(); i++) usedflags.append(false);
+    for (int kloop=0; kloop<svobjects.count(); kloop++)
     {
     //find lowest
             int lowestval=999999;
             int lowestindex=-1;
-            for (int j=0; j<SVObjects.count(); j++)
+            for (int j=0; j<svobjects.count(); j++)
             {
-                    if (SVObjects[j]->Position<lowestval && usedflags[j]==false && SVObjects[j]->Parent()==parent)
-                            {lowestval=SVObjects[j]->Position; lowestindex=j;}
+                    if (svobjects[j]->Position<lowestval && usedflags[j]==false && svobjects[j]->Parent()==parent)
+                            {lowestval=svobjects[j]->Position; lowestindex=j;}
             }
             int i=lowestindex;
 
@@ -814,12 +818,12 @@ void MainWindow::DrawChildObjects(QList <bool> selflags, int parent)
                     item=new QTreeWidgetItem(strings);
                     item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
                     if (parent==-1) ui->treeWidget->addTopLevelItem(item);
-                    else SVObjects[parent]->widgetitem->addChild(item);
+                    else svobjects[parent]->widgetitem->addChild(item);
 
                     RefreshOneItem(item,i);
                     if (selflags[i]) item->setSelected(true);
-                    SVObjects[i]->widgetitem=item; //store pointer
-                    if (SVObjects[i]->IsGroup) DrawChildObjects(selflags, i);
+                    svobjects[i]->widgetitem=item; //store pointer
+                    if (svobjects[i]->IsGroup) DrawChildObjects(selflags, i);
             }
     }    return;
 }
@@ -827,7 +831,7 @@ void MainWindow::DrawChildObjects(QList <bool> selflags, int parent)
 
 void MainWindow::RefreshObjects()
 {
-     if (SVObjects.count()==0) {ui->treeWidget->clear(); return;}
+     if (svobjects.count()==0) {ui->treeWidget->clear(); return;}
 
      //set columwidths
 
@@ -844,14 +848,14 @@ void MainWindow::RefreshObjects()
 
       ui->treeWidget->setUpdatesEnabled(false);
 
-      for (int i=0; i<SVObjects.count(); i++)
+      for (int i=0; i<svobjects.count(); i++)
        {
                 bool sf;
                 sf=false;
-                if (SVObjects[i]->widgetitem)
+                if (svobjects[i]->widgetitem)
                 {
-                    if ((SVObjects[i]->widgetitem)->isSelected()) sf=true;
-                    if ((SVObjects[i]->widgetitem)->isExpanded()) SVObjects[i]->Expanded=true; else SVObjects[i]->Expanded=false;
+                    if ((svobjects[i]->widgetitem)->isSelected()) sf=true;
+                    if ((svobjects[i]->widgetitem)->isExpanded()) svobjects[i]->Expanded=true; else svobjects[i]->Expanded=false;
                 }
                 selflags.append(sf);
         }
@@ -859,12 +863,12 @@ void MainWindow::RefreshObjects()
         ui->treeWidget->clear();
         DrawChildObjects(selflags, -1); //start by drawing root children
 
-        for (int i=0; i<SVObjects.count(); i++)
+        for (int i=0; i<svobjects.count(); i++)
         {
-                if (SVObjects[i]->widgetitem && SVObjects[i]->IsGroup)
+                if (svobjects[i]->widgetitem && svobjects[i]->IsGroup)
                 {
-                        if (SVObjects[i]->Expanded) SVObjects[i]->widgetitem->setExpanded(true);
-                                else SVObjects[i]->widgetitem->setExpanded(false);
+                        if (svobjects[i]->Expanded) svobjects[i]->widgetitem->setExpanded(true);
+                                else svobjects[i]->widgetitem->setExpanded(false);
                 }
         }
 
@@ -1194,24 +1198,24 @@ void MainWindow::on_treeWidget_itemDoubleClicked(QTreeWidgetItem* item, int colu
     //Currently not handled for everything else
 
     //First find index of item
-    for (int i=0; i<SVObjects.count(); i++)
-    if (item==SVObjects[i]->widgetitem) //found it
+    for (int i=0; i<svobjects.count(); i++)
+    if (item==svobjects[i]->widgetitem) //found it
     {
         if (column==0)
         {
             FilterKeys=false;
                 QString temp=
-                QInputDialog::getText (this,"", "", QLineEdit::Normal, SVObjects[i]->Name);
+                QInputDialog::getText (this,"", "", QLineEdit::Normal, svobjects[i]->Name);
                 FilterKeys=true;
 
-                if (temp!="") {SVObjects[i]->Name=temp;    FileDirty=true;}
+                if (temp!="") {svobjects[i]->Name=temp;    FileDirty=true;}
 
                 RefreshObjects();
         }
 
         if (column==1)
         {
-            SVObjects[i]->Visible=!(SVObjects[i]->Visible);
+            svobjects[i]->Visible=!(svobjects[i]->Visible);
             FileDirty=true;
             RefreshOneItem(item,i);
             UpdateGL();
@@ -1225,7 +1229,7 @@ void MainWindow::on_treeWidget_itemDoubleClicked(QTreeWidgetItem* item, int colu
 
              bool ok;
 
-             int asc=(char) (SVObjects[i]->Key).toLatin1(); if (asc>=65 && asc<=90) asc-=64; else if (asc>=48 && asc<=57) asc-=21;
+             int asc=(char) (svobjects[i]->Key).toLatin1(); if (asc>=65 && asc<=90) asc-=64; else if (asc>=48 && asc<=57) asc-=21;
              FilterKeys=false;
 
              QString qitem = QInputDialog::getItem(this, tr("Shortcut Key"),
@@ -1235,27 +1239,27 @@ void MainWindow::on_treeWidget_itemDoubleClicked(QTreeWidgetItem* item, int colu
              if (ok && !qitem.isEmpty())
              {
                      FileDirty=true;
-                     if (qitem=="[None]") SVObjects[i]->Key=0; else SVObjects[i]->Key=(int) (qitem.toLatin1()[0]);
+                     if (qitem=="[None]") svobjects[i]->Key=0; else svobjects[i]->Key=(int) (qitem.toLatin1()[0]);
              }
              RefreshOneItem(item,i);
         }
 
         //Is this a group?
-        if (SVObjects[i]->IsGroup) return; //don't check colour or resample
+        if (svobjects[i]->IsGroup) return; //don't check colour or resample
         if (column==3) //colour
         {
             QColor newcol;
             FilterKeys=false;
 
-            newcol=QColorDialog::getColor(QColor(SVObjects[i]->Colour[0],SVObjects[i]->Colour[1],SVObjects[i]->Colour[2]));
+            newcol=QColorDialog::getColor(QColor(svobjects[i]->Colour[0],svobjects[i]->Colour[1],svobjects[i]->Colour[2]));
             FilterKeys=true;
 
             if (newcol.isValid())
             {
                 FileDirty=true;
-                SVObjects[i]->Colour[0]=newcol.red();
-                SVObjects[i]->Colour[1]=newcol.green();
-                SVObjects[i]->Colour[2]=newcol.blue();
+                svobjects[i]->Colour[0]=newcol.red();
+                svobjects[i]->Colour[1]=newcol.green();
+                svobjects[i]->Colour[2]=newcol.blue();
                 RefreshOneItem(item,i);
                 UpdateGL();
             }
@@ -1279,12 +1283,12 @@ void MainWindow::SetResample()
     FilterKeys=true;
     if (flag)
     {
-        for (int i=0; i<SVObjects.count(); i++)
+        for (int i=0; i<svobjects.count(); i++)
         {
-            if (SVObjects[i]->widgetitem->isSelected())
+            if (svobjects[i]->widgetitem->isSelected())
             {
-                SVObjects[i]->Resample=temp;
-                SVObjects[i]->Dirty=true;
+                svobjects[i]->Resample=temp;
+                svobjects[i]->Dirty=true;
                 FileDirty=true;
             }
         }
@@ -1332,13 +1336,13 @@ void MainWindow::on_actionIsland_Removal_Custom_triggered()
 
 void MainWindow::SetSmoothing(int v)
 {
-    for (int i=0; i<SVObjects.count(); i++)
+    for (int i=0; i<svobjects.count(); i++)
     {
-        if (SVObjects[i]->widgetitem->isSelected())
+        if (svobjects[i]->widgetitem->isSelected())
         {
-            SVObjects[i]->Smoothing=v;
+            svobjects[i]->Smoothing=v;
             FileDirty=true;
-            SVObjects[i]->Dirty=true;
+            svobjects[i]->Dirty=true;
         }
     }
     RefreshObjects();
@@ -1347,13 +1351,13 @@ void MainWindow::SetSmoothing(int v)
 
 void MainWindow::SetIslands(int v)
 {
-    for (int i=0; i<SVObjects.count(); i++)
+    for (int i=0; i<svobjects.count(); i++)
     {
-        if (SVObjects[i]->widgetitem->isSelected())
+        if (svobjects[i]->widgetitem->isSelected())
         {
-            SVObjects[i]->IslandRemoval=v;
+            svobjects[i]->IslandRemoval=v;
             FileDirty=true;
-            SVObjects[i]->Dirty=true;
+            svobjects[i]->Dirty=true;
         }
     }
     RefreshObjects();
@@ -1362,12 +1366,12 @@ void MainWindow::SetIslands(int v)
 
 void MainWindow::SetTrans(int v)
 {
-    for (int i=0; i<SVObjects.count(); i++)
+    for (int i=0; i<svobjects.count(); i++)
     {
-        if (SVObjects[i]->widgetitem->isSelected())
+        if (svobjects[i]->widgetitem->isSelected())
         {
             FileDirty=true;
-            SVObjects[i]->Transparency=v;
+            svobjects[i]->Transparency=v;
         }
     }
     RefreshObjects();
@@ -1377,12 +1381,12 @@ void MainWindow::SetTrans(int v)
 
 void MainWindow::SetShininess(int s)
 {
-    for (int i=0; i<SVObjects.count(); i++)
+    for (int i=0; i<svobjects.count(); i++)
     {
-        if (SVObjects[i]->widgetitem->isSelected())
+        if (svobjects[i]->widgetitem->isSelected())
         {
             FileDirty=true;
-            SVObjects[i]->Shininess=s;
+            svobjects[i]->Shininess=s;
         }
     }
     RefreshObjects();
@@ -1396,25 +1400,25 @@ void MainWindow::on_actionResurface_Now_triggered()
     if (voxml_mode==false) MainWin->DisableRenderCommands();
     //How many to change?
     int ObjectsRedoing=0;
-    for (int i=0; i<SVObjects.count(); i++) if (SVObjects[i]->Dirty && SVObjects[i]->IsGroup==false) ObjectsRedoing++;
+    for (int i=0; i<svobjects.count(); i++) if (svobjects[i]->Dirty && svobjects[i]->IsGroup==false) ObjectsRedoing++;
 
     int ThisObject=0;
 
-    for (int i=0; i<SVObjects.count(); i++) //have to clear VBOs first or there are problems
-    if (SVObjects[i]->Dirty)
+    for (int i=0; i<svobjects.count(); i++) //have to clear VBOs first or there are problems
+    if (svobjects[i]->Dirty)
     {
-        qDeleteAll(SVObjects[i]->VertexBuffers);
-        qDeleteAll(SVObjects[i]->ColourBuffers);
-        SVObjects[i]->BoundingBoxBuffer.destroy();
-        SVObjects[i]->VertexBuffers.clear();
-        SVObjects[i]->ColourBuffers.clear();
+        qDeleteAll(svobjects[i]->VertexBuffers);
+        qDeleteAll(svobjects[i]->ColourBuffers);
+        svobjects[i]->BoundingBoxBuffer.destroy();
+        svobjects[i]->VertexBuffers.clear();
+        svobjects[i]->ColourBuffers.clear();
 
     }
 
-    for (int i=0; i<SVObjects.count(); i++)
-    if (SVObjects[i]->Dirty)
+    for (int i=0; i<svobjects.count(); i++)
+    if (svobjects[i]->Dirty)
     {
-        SVObjects[i]->ForceUpdates(ThisObject++, ObjectsRedoing);
+        svobjects[i]->ForceUpdates(ThisObject++, ObjectsRedoing);
         UpdateGL();
     }
 
@@ -1765,12 +1769,12 @@ void MainWindow::on_actionDXF_triggered()
         //layer header
         dxf<<"TABLE\n2\nLAYER\n70\n6\n0\n";
         int counto=1;
-            for (int i=0; i<SVObjects.count(); i++)
-            if (!(SVObjects[i]->IsGroup))
+            for (int i=0; i<svobjects.count(); i++)
+            if (!(svobjects[i]->IsGroup))
             {
                 counto++;
                 QString name;
-                if (SVObjects[i]->Name.isEmpty()) name.sprintf("%d",counto); else name=SVObjects[i]->Name;
+                if (svobjects[i]->Name.isEmpty()) name.sprintf("%d",counto); else name=svobjects[i]->Name;
                 dxf<<"LAYER\n2\n"<<name.toLatin1()<<"\n70\n64\n62\n7\n6\nCONTINUOUS\n0\n";
             }
 
@@ -1786,15 +1790,15 @@ void MainWindow::on_actionDXF_triggered()
         dxf.flush();
         //now do all the objects
         long count=0;
-        for (int i=0; i<SVObjects.count(); i++)
-        if (!(SVObjects[i]->IsGroup) && (SVObjects[i]->Visible || ui->actionExport_Hidden_Objects->isChecked()))
+        for (int i=0; i<svobjects.count(); i++)
+        if (!(svobjects[i]->IsGroup) && (svobjects[i]->Visible || ui->actionExport_Hidden_Objects->isChecked()))
         {
             QString status;
-            status.sprintf("Exporting object %d of %d", i+1, SVObjects.count());
+            status.sprintf("Exporting object %d of %d", i+1, svobjects.count());
             ui->OutputLabelOverall->setText(status);
-            ui->ProgBarOverall->setValue((i*100)/SVObjects.count());
+            ui->ProgBarOverall->setValue((i*100)/svobjects.count());
             //find name
-            count+=(long)SVObjects[i]->WriteDXFfaces(&dxffile);
+            count+=(long)svobjects[i]->WriteDXFfaces(&dxffile);
         }
 
         ui->OutputLabelOverall->setText("DXF export complete");
@@ -1824,16 +1828,16 @@ void MainWindow::on_actionSave_Finalised_As_triggered()
     DisableRenderCommands();
 
     int objcount=0;
-    for (int i=0; i<SVObjects.count(); i++)
-    if (!(SVObjects[i]->IsGroup && (SVObjects[i]->Visible || ui->actionExport_Hidden_Objects->isChecked()))) objcount++;
+    for (int i=0; i<svobjects.count(); i++)
+    if (!(svobjects[i]->IsGroup && (svobjects[i]->Visible || ui->actionExport_Hidden_Objects->isChecked()))) objcount++;
 
     voxml v;
     if (v.write_voxml(fname,true)==false)
     {  EnableRenderCommands(); return;}
 
     long count=0;
-    for (int i=0; i<SVObjects.count(); i++)
-    if (!(SVObjects[i]->IsGroup && (SVObjects[i]->Visible || ui->actionExport_Hidden_Objects->isChecked())))
+    for (int i=0; i<svobjects.count(); i++)
+    if (!(svobjects[i]->IsGroup && (svobjects[i]->Visible || ui->actionExport_Hidden_Objects->isChecked())))
     {
         QString status;
         status.sprintf("Saving object %d of %d", i+1, objcount);
@@ -1842,11 +1846,11 @@ void MainWindow::on_actionSave_Finalised_As_triggered()
 
         //find name
         QString fname2;
-        fname2.sprintf("%d",SVObjects[i]->Index+1);
-        if (!(SVObjects[i]->Name.isEmpty())) {fname2.append("-"); fname2.append(SVObjects[i]->Name);}
+        fname2.sprintf("%d",svobjects[i]->Index+1);
+        if (!(svobjects[i]->Name.isEmpty())) {fname2.append("-"); fname2.append(svobjects[i]->Name);}
         fname2.append(".stl");
 
-        count+=(long)SVObjects[i]->AppendCompressedFaces(fname, fname2, &(v.dataout));
+        count+=(long)svobjects[i]->AppendCompressedFaces(fname, fname2, &(v.dataout));
     }
 
     ui->OutputLabelOverall->setText("SPVF finalised export complete");
@@ -1877,8 +1881,8 @@ void MainWindow::on_actionSTL_triggered()
 
 
     int objcount=0;
-    for (int i=0; i<SVObjects.count(); i++)
-    if (!(SVObjects[i]->IsGroup)) objcount++;
+    for (int i=0; i<svobjects.count(); i++)
+    if (!(svobjects[i]->IsGroup)) objcount++;
 
 //    qDebug()<<fname;
     //Now write the voxml file - use current file name - do first to avoid finding problems after long STL export!
@@ -1889,8 +1893,8 @@ void MainWindow::on_actionSTL_triggered()
             ui->OutputLabelOverall->setText("VAXML export complete, exporting STL component objects");
 
     long count=0;
-    for (int i=0; i<SVObjects.count(); i++)
-    if (!(SVObjects[i]->IsGroup))
+    for (int i=0; i<svobjects.count(); i++)
+    if (!(svobjects[i]->IsGroup))
     {
         QString status;
         status.sprintf("Exporting object %d of %d", i+1, objcount);
@@ -1899,15 +1903,15 @@ void MainWindow::on_actionSTL_triggered()
         //find name
 
         QString fname2;
-        fname2.sprintf("%d",SVObjects[i]->Index+1);
-        if (!(SVObjects[i]->Name.isEmpty())) {fname2.append("-"); fname2.append(SVObjects[i]->Name);}
+        fname2.sprintf("%d",svobjects[i]->Index+1);
+        if (!(svobjects[i]->Name.isEmpty())) {fname2.append("-"); fname2.append(svobjects[i]->Name);}
         fname2.append(".stl");
 
         QFileInfo fi(fname);
 
         fname2=fi.dir().absolutePath() + "/" + fi.baseName() + "_stl/" + fname2;
 //        qDebug()<<"Outputting"<<fname2<<fi.dir().absolutePath() + "/" + fi.baseName() + "_stl";
-        count+=(long)SVObjects[i]->WriteSTLfaces(fi.dir().absolutePath() + "/" + fi.baseName() + "_stl", fname2);
+        count+=(long)svobjects[i]->WriteSTLfaces(fi.dir().absolutePath() + "/" + fi.baseName() + "_stl", fname2);
     }
 
     ui->OutputLabelOverall->setText("VAXML / STL export complete");
@@ -1924,7 +1928,7 @@ void MainWindow::on_actionAuto_Resurface_triggered()
 
 void MainWindow::on_actionShow_All_triggered()
 {
-    for (int i=0; i<SVObjects.count(); i++)   SVObjects[i]->Visible=true;
+    for (int i=0; i<svobjects.count(); i++)   svobjects[i]->Visible=true;
     FileDirty=true;
     RefreshObjects();
     UpdateGL();
@@ -1933,7 +1937,7 @@ void MainWindow::on_actionShow_All_triggered()
 void MainWindow::on_actionHide_All_triggered()
 {
     //hide everything except groups
-    for (int i=0; i<SVObjects.count(); i++)  if (SVObjects[i]->IsGroup==false) SVObjects[i]->Visible=false;
+    for (int i=0; i<svobjects.count(); i++)  if (svobjects[i]->IsGroup==false) svobjects[i]->Visible=false;
     FileDirty=true;
     RefreshObjects();
     UpdateGL();
@@ -1943,13 +1947,13 @@ void MainWindow::on_actionInvert_Show_triggered()
 {
     //First - note what is visible
     QList <bool> visible;
-    for (int i=0; i<SVObjects.count(); i++) if (SVObjects[i]->IsGroup) visible.append(false); else visible.append(gl3widget->CanISee(i));
+    for (int i=0; i<svobjects.count(); i++) if (svobjects[i]->IsGroup) visible.append(false); else visible.append(gl3widget->CanISee(i));
 
     //then go through - turn ON all groups, everything else as in visible list
-    for (int i=0; i<SVObjects.count(); i++)
+    for (int i=0; i<svobjects.count(); i++)
     {
-        if (SVObjects[i]->IsGroup) SVObjects[i]->Visible=true;
-        else SVObjects[i]->Visible=!visible[i];
+        if (svobjects[i]->IsGroup) svobjects[i]->Visible=true;
+        else svobjects[i]->Visible=!visible[i];
     }
     FileDirty=true;
     RefreshObjects();
@@ -1960,7 +1964,7 @@ void MainWindow::on_actionSave_Memory_triggered()
 {
      FileDirty=true;
      if (ui->actionSave_Memory->isChecked())
-         for (int i=0; i<SVObjects.count(); i++) SVObjects[i]->CompressPolyData(false);
+         for (int i=0; i<svobjects.count(); i++) svobjects[i]->CompressPolyData(false);
 }
 
 void MainWindow::on_actionRemove_Piece_triggered()
@@ -2035,10 +2039,10 @@ void MainWindow::KillSPV(int retcode)
 
     //Second, go through the main object list and remove anything flagged(use mutable iterator), deleting it too.
     //Don't have to bother removing stuff from SPVs list, as entire SPV is going to be deleted
-    QMutableListIterator<SVObject *> it(SVObjects);
+    QMutableListIterator<svobject *> it(svobjects);
     while (it.hasNext())
     {
-        SVObject *o = it.next();
+        svobject *o = it.next();
         if (o->killme) {delete o; it.remove();}
     };
 
@@ -2046,16 +2050,16 @@ void MainWindow::KillSPV(int retcode)
     delete SPVs.takeAt(retcode);
 
     //remove any empty groups (for each group do a trawl for children. Mark any with none.
-    for (int i=0; i<SVObjects.count(); i++)
+    for (int i=0; i<svobjects.count(); i++)
     {
-        if (SVObjects[i]->IsGroup)
+        if (svobjects[i]->IsGroup)
         {
             int children=0; //now count children
-            for (int j=0; j<SVObjects.count(); j++)
+            for (int j=0; j<svobjects.count(); j++)
             {
-                if (SVObjects[j]->InGroup == SVObjects[i]->Index) children++;
+                if (svobjects[j]->InGroup == svobjects[i]->Index) children++;
             }
-            if (children==0) SVObjects[i]->killme=true;
+            if (children==0) svobjects[i]->killme=true;
         }
     }
 
@@ -2063,19 +2067,19 @@ void MainWindow::KillSPV(int retcode)
     //first from SPV lists
     for (int i=0; i<SPVs.count(); i++)
     {
-        QMutableListIterator<SVObject *> it2(SPVs[i]->ComponentObjects);
+        QMutableListIterator<svobject *> it2(SPVs[i]->ComponentObjects);
         while (it2.hasNext())
         {
-            SVObject *o = it2.next();
+            svobject *o = it2.next();
             if (o->killme) {it2.remove();}
         };
     }
 
     //Now from overall item list, this time deleting object
-    QMutableListIterator<SVObject *> it2(SVObjects);
+    QMutableListIterator<svobject *> it2(svobjects);
     while (it2.hasNext())
     {
-        SVObject *o = it2.next();
+        svobject *o = it2.next();
         if (o->killme) {delete o; it2.remove();}
     };
 
@@ -2090,23 +2094,23 @@ void MainWindow::KillSPV(int retcode)
     QList <int> indices;
 
     //work out my lookuptable
-    for (int i=0; i<SVObjects.count(); i++)
+    for (int i=0; i<svobjects.count(); i++)
     {
-        int ind=SVObjects[i]->Index;
+        int ind=svobjects[i]->Index;
         //does it exist?
         if (indices.indexOf(ind)==-1) //didn't find item
         indices.append(ind);
     }
 
     //go through and correct
-    for (int i=0; i<SVObjects.count(); i++)
-        SVObjects[i]->Index=indices.indexOf(SVObjects[i]->Index);
+    for (int i=0; i<svobjects.count(); i++)
+        svobjects[i]->Index=indices.indexOf(svobjects[i]->Index);
 
     //now go through and correct the InGroups
-    for (int i=0; i<SVObjects.count(); i++)
+    for (int i=0; i<svobjects.count(); i++)
     {
-        if (SVObjects[i]->InGroup!=-1)
-            SVObjects[i]->InGroup=indices.indexOf(SVObjects[i]->InGroup);
+        if (svobjects[i]->InGroup!=-1)
+            svobjects[i]->InGroup=indices.indexOf(svobjects[i]->InGroup);
     }
 
     FileDirty=true;
@@ -2179,8 +2183,8 @@ void MainWindow::on_PiecesList_itemSelectionChanged()
     {
         if (ui->PiecesList->item(i)->isSelected())
         {
-            for (int j=0; j<SVObjects.count(); j++)
-               SVObjects[j]->widgetitem->setSelected(false);
+            for (int j=0; j<svobjects.count(); j++)
+               svobjects[j]->widgetitem->setSelected(false);
 
             for (int j=0; j<SPVs[i]->ComponentObjects.count(); j++)
             {
@@ -2193,14 +2197,14 @@ void MainWindow::on_PiecesList_itemSelectionChanged()
 
 void MainWindow::on_actionSelect_All_triggered()
 {
-        for (int j=0; j<SVObjects.count(); j++)
-           SVObjects[j]->widgetitem->setSelected(true);
+        for (int j=0; j<svobjects.count(); j++)
+           svobjects[j]->widgetitem->setSelected(true);
 }
 
 void MainWindow::on_actionSelect_None_triggered()
 {
-        for (int j=0; j<SVObjects.count(); j++)
-           SVObjects[j]->widgetitem->setSelected(false);
+        for (int j=0; j<svobjects.count(); j++)
+           svobjects[j]->widgetitem->setSelected(false);
 }
 
 void MainWindow::on_PiecesList_itemDoubleClicked(QListWidgetItem *item)
@@ -2279,19 +2283,19 @@ void MainWindow::on_action_Move_Up_triggered()
         if (selected.count()!=1) QMessageBox::information(this,"","Select a single item to move up");
         else
         {
-                for (int i=0; i<SVObjects.count(); i++)
+                for (int i=0; i<svobjects.count(); i++)
                 {
-                        if (SVObjects[i]->widgetitem==selected[0])
+                        if (svobjects[i]->widgetitem==selected[0])
                         {
                                 //i is now the correct index
                                 //find 	one to swap with
                                 int highestval=-1;
                                 int highindex=-1;
-                                for (int j=0; j<SVObjects.count(); j++)
+                                for (int j=0; j<svobjects.count(); j++)
                                 {
-                                        if ((SVObjects[j]->Position)>highestval && (SVObjects[j]->Position)< SVObjects[i]->Position && (SVObjects[j]->InGroup)==(SVObjects[i]->InGroup))
+                                        if ((svobjects[j]->Position)>highestval && (svobjects[j]->Position)< svobjects[i]->Position && (svobjects[j]->InGroup)==(svobjects[i]->InGroup))
                                                 {
-                                                        highestval=SVObjects[j]->Position;
+                                                        highestval=svobjects[j]->Position;
                                                         highindex=j;
                                                 }
                                 }
@@ -2299,9 +2303,9 @@ void MainWindow::on_action_Move_Up_triggered()
                                 if (highindex>=0)
                                 {
                                         //do the swap
-                                        int temp=SVObjects[highindex]->Position;
-                                        SVObjects[highindex]->Position=SVObjects[i]->Position;
-                                        SVObjects[i]->Position=temp;
+                                        int temp=svobjects[highindex]->Position;
+                                        svobjects[highindex]->Position=svobjects[i]->Position;
+                                        svobjects[i]->Position=temp;
                                         FileDirty=true;
                                 }
                         }
@@ -2316,19 +2320,19 @@ void MainWindow::on_actionMove_Down_triggered()
         if (selected.count()!=1) QMessageBox::information(this,"","Select a single item to move down");
         else
         {
-                for (int i=0; i<SVObjects.count(); i++)
+                for (int i=0; i<svobjects.count(); i++)
                 {
-                        if (SVObjects[i]->widgetitem==selected[0])
+                        if (svobjects[i]->widgetitem==selected[0])
                         {
                                 //i is now the correct index
                                 //find 	one to swap with
                                 int lowestval=9999999;
                                 int lowestindex=-1;
-                                for (int j=0; j<SVObjects.count(); j++)
+                                for (int j=0; j<svobjects.count(); j++)
                                 {
-                                        if ((SVObjects[j]->Position)<lowestval && (SVObjects[j]->Position)> SVObjects[i]->Position && (SVObjects[j]->InGroup)==(SVObjects[i]->InGroup))
+                                        if ((svobjects[j]->Position)<lowestval && (svobjects[j]->Position)> svobjects[i]->Position && (svobjects[j]->InGroup)==(svobjects[i]->InGroup))
                                                 {
-                                                        lowestval=SVObjects[j]->Position;
+                                                        lowestval=svobjects[j]->Position;
                                                         lowestindex=j;
                                                 }
                                 }
@@ -2336,9 +2340,9 @@ void MainWindow::on_actionMove_Down_triggered()
                                 if (lowestindex>=0)
                                 {
                                         //do the swap
-                                        int temp=SVObjects[lowestindex]->Position;
-                                        SVObjects[lowestindex]->Position=SVObjects[i]->Position;
-                                        SVObjects[i]->Position=temp;
+                                        int temp=svobjects[lowestindex]->Position;
+                                        svobjects[lowestindex]->Position=svobjects[i]->Position;
+                                        svobjects[i]->Position=temp;
                                         FileDirty=true;
                                 }
                         }
@@ -2353,34 +2357,34 @@ void MainWindow::on_actionGroup_triggered()
     int oldparent=-2;
     bool flag=false;
     int nextindex=-1;
-    for (int i=0; i<SVObjects.count(); i++)
-        if (SVObjects[i]->Index>nextindex) nextindex=SVObjects[i]->Index;
+    for (int i=0; i<svobjects.count(); i++)
+        if (svobjects[i]->Index>nextindex) nextindex=svobjects[i]->Index;
     nextindex++;
     if (selected.count()==0) QMessageBox::warning(this,"","Select objects to group");
     else
     {
             //OK, do grouping
             for (int i=0; i<selected.count(); i++)
-                    for (int j=0; j<SVObjects.count(); j++)
-                            if (SVObjects[j]->widgetitem==selected[i])
+                    for (int j=0; j<svobjects.count(); j++)
+                            if (svobjects[j]->widgetitem==selected[i])
                             {
-                                    if (oldparent==-2) oldparent=SVObjects[j]->InGroup;
-                                    if (oldparent!=SVObjects[j]->InGroup) flag=true; //this will have to be root level
-                                    SVObjects[j]->InGroup=nextindex; //reparents if necessary of course
+                                    if (oldparent==-2) oldparent=svobjects[j]->InGroup;
+                                    if (oldparent!=svobjects[j]->InGroup) flag=true; //this will have to be root level
+                                    svobjects[j]->InGroup=nextindex; //reparents if necessary of course
                             }
 
-            SVObject *o=new SVObject(nextindex);
+            svobject *o=new svobject(nextindex);
             o->Key=0; //no key
             o->Visible=true;
             o->Name="Group";
             o->IsGroup=true;
             if (flag) o->InGroup=-1; else o->InGroup=oldparent;
             int max=-1;
-            for (int i=0; i<SVObjects.count(); i++)
-                    if (SVObjects[i]->Position>max) max=SVObjects[i]->Position;
+            for (int i=0; i<svobjects.count(); i++)
+                    if (svobjects[i]->Position>max) max=svobjects[i]->Position;
 
             o->Position=max+1;
-            SVObjects.append(o);
+            svobjects.append(o);
             FileDirty=true;
             RefreshObjects();
     }
@@ -2391,26 +2395,26 @@ void MainWindow::on_actionUngroup_triggered()
     //Ungroup command
     //For all selected objects:
     bool flag=true;
-    for (int i=0; i<SVObjects.count(); i++)
+    for (int i=0; i<svobjects.count(); i++)
     {
-            if (SVObjects[i]->widgetitem->isSelected())
+            if (svobjects[i]->widgetitem->isSelected())
             {
-                    if (SVObjects[i]->InGroup!=-1)
+                    if (svobjects[i]->InGroup!=-1)
                     {
-                            SVObjects[i]->InGroup = SVObjects[SVObjects[i]->Parent()]->InGroup;
+                            svobjects[i]->InGroup = svobjects[svobjects[i]->Parent()]->InGroup;
                             flag=false;
                     }
             }
     }
 
     //Also - any groups selected should simply reparent all their offspring (might already be done)
-     for (int i=0; i<SVObjects.count(); i++)
+     for (int i=0; i<svobjects.count(); i++)
     {
-            if (SVObjects[i]->widgetitem->isSelected() && SVObjects[i]->IsGroup)
+            if (svobjects[i]->widgetitem->isSelected() && svobjects[i]->IsGroup)
             {
-                for (int j=0; j<SVObjects.count(); j++)
+                for (int j=0; j<svobjects.count(); j++)
                 {
-                    if (SVObjects[j]->InGroup == SVObjects[i]->Index) SVObjects[j]->InGroup=SVObjects[i]->InGroup;
+                    if (svobjects[j]->InGroup == svobjects[i]->Index) svobjects[j]->InGroup=svobjects[i]->InGroup;
                 }
             }
     }
@@ -2419,16 +2423,16 @@ void MainWindow::on_actionUngroup_triggered()
 
 
     //remove any empty groups (for each group do a trawl for children. Mark any with none.
-    for (int i=0; i<SVObjects.count(); i++)
+    for (int i=0; i<svobjects.count(); i++)
     {
-        if (SVObjects[i]->IsGroup)
+        if (svobjects[i]->IsGroup)
         {
             int children=0; //now count children
-            for (int j=0; j<SVObjects.count(); j++)
+            for (int j=0; j<svobjects.count(); j++)
             {
-                if (SVObjects[j]->InGroup == SVObjects[i]->Index) children++;
+                if (svobjects[j]->InGroup == svobjects[i]->Index) children++;
             }
-            if (children==0 && SVObjects[i]->widgetitem->isSelected()) SVObjects[i]->killme=true;
+            if (children==0 && svobjects[i]->widgetitem->isSelected()) svobjects[i]->killme=true;
         }
     }
 
@@ -2437,19 +2441,19 @@ void MainWindow::on_actionUngroup_triggered()
         //first from SPV lists
     for (int i=0; i<SPVs.count(); i++)
     {
-        QMutableListIterator<SVObject *> it2(SPVs[i]->ComponentObjects);
+        QMutableListIterator<svobject *> it2(SPVs[i]->ComponentObjects);
         while (it2.hasNext())
         {
-            SVObject *o = it2.next();
+            svobject *o = it2.next();
             if (o->killme) {it2.remove();}
         };
     }
 
     //Now from overall item list, this time deleting object
-    QMutableListIterator<SVObject *> it2(SVObjects);
+    QMutableListIterator<svobject *> it2(svobjects);
     while (it2.hasNext())
     {
-        SVObject *o = it2.next();
+        svobject *o = it2.next();
         if (o->killme) {delete o; it2.remove();}
     };
 
@@ -2468,18 +2472,18 @@ void MainWindow::on_actionMove_to_group_triggered()
     if (mov.valid)
     {
         flag=false;
-        for (int i=0; i<SVObjects.count(); i++)
-            if (SVObjects[i]->widgetitem->isSelected()) flag=true;
+        for (int i=0; i<svobjects.count(); i++)
+            if (svobjects[i]->widgetitem->isSelected()) flag=true;
         if (flag)
         {
             int parent=-2;
             flag=true;
-            for (int i=0; i<SVObjects.count(); i++)
-            if (SVObjects[i]->widgetitem->isSelected())
+            for (int i=0; i<svobjects.count(); i++)
+            if (svobjects[i]->widgetitem->isSelected())
             {
                 if (parent==-2)
-                    parent=SVObjects[i]->InGroup;
-                else if (parent!=SVObjects[i]->InGroup) flag=false;
+                    parent=svobjects[i]->InGroup;
+                else if (parent!=svobjects[i]->InGroup) flag=false;
             }
 
             if (flag)
@@ -2489,11 +2493,11 @@ void MainWindow::on_actionMove_to_group_triggered()
                     int Group;
                     if (mov.Group==-2) return;
                     if (mov.Group==-1) Group=-1;
-                    else Group=SVObjects[mov.Group]->Index;
+                    else Group=svobjects[mov.Group]->Index;
 
-                    for (int i=0; i<SVObjects.count(); i++)
-                    if (SVObjects[i]->widgetitem->isSelected())
-                        SVObjects[i]->InGroup=Group;
+                    for (int i=0; i<svobjects.count(); i++)
+                    if (svobjects[i]->widgetitem->isSelected())
+                        svobjects[i]->InGroup=Group;
 
                     RefreshObjects();
                     FileDirty=true;
@@ -2532,13 +2536,13 @@ void MainWindow::setSamples(int i)
     //have to delete widget and recreate
 
     //first clear all VBOs or they try to redraw during widget creation
-    for (int i=0; i<SVObjects.count(); i++) //have to clear VBOs first or there are problems
+    for (int i=0; i<svobjects.count(); i++) //have to clear VBOs first or there are problems
     {
-        qDeleteAll(SVObjects[i]->VertexBuffers);
-        qDeleteAll(SVObjects[i]->ColourBuffers);
-        SVObjects[i]->VertexBuffers.clear();
-        SVObjects[i]->ColourBuffers.clear();
-        SVObjects[i]->BoundingBoxBuffer.destroy();
+        qDeleteAll(svobjects[i]->VertexBuffers);
+        qDeleteAll(svobjects[i]->ColourBuffers);
+        svobjects[i]->VertexBuffers.clear();
+        svobjects[i]->ColourBuffers.clear();
+        svobjects[i]->BoundingBoxBuffer.destroy();
     }
 
     QGLFormat fmt;
@@ -2568,9 +2572,9 @@ void MainWindow::setSamples(int i)
 void MainWindow::on_actionAANone_triggered()
 {
     setSamples(1);
-    for (int i=0; i<SVObjects.count(); i++)
-        if (!SVObjects[i]->IsGroup)
-            SVObjects[i]->Dirty=true;
+    for (int i=0; i<svobjects.count(); i++)
+        if (!svobjects[i]->IsGroup)
+            svobjects[i]->Dirty=true;
 
     UnsetAllAA();
     ui->actionAANone->setChecked(true);
@@ -2580,9 +2584,9 @@ void MainWindow::on_actionAANone_triggered()
 void MainWindow::on_action2x_triggered()
 {
     setSamples(2);
-    for (int i=0; i<SVObjects.count(); i++)
-        if (!SVObjects[i]->IsGroup)
-            SVObjects[i]->Dirty=true;
+    for (int i=0; i<svobjects.count(); i++)
+        if (!svobjects[i]->IsGroup)
+            svobjects[i]->Dirty=true;
     UnsetAllAA();
     ui->action2x->setChecked(true);
     on_actionResurface_Now_triggered();
@@ -2591,9 +2595,9 @@ void MainWindow::on_action2x_triggered()
 void MainWindow::on_action4x_triggered()
 {
     setSamples(4);
-    for (int i=0; i<SVObjects.count(); i++)
-        if (!SVObjects[i]->IsGroup)
-            SVObjects[i]->Dirty=true;
+    for (int i=0; i<svobjects.count(); i++)
+        if (!svobjects[i]->IsGroup)
+            svobjects[i]->Dirty=true;
 
     UnsetAllAA();
     ui->action4x->setChecked(true);
@@ -2603,9 +2607,9 @@ void MainWindow::on_action4x_triggered()
 void MainWindow::on_action8x_triggered()
 {
     setSamples(8);
-    for (int i=0; i<SVObjects.count(); i++)
-        if (!SVObjects[i]->IsGroup)
-            SVObjects[i]->Dirty=true;
+    for (int i=0; i<svobjects.count(); i++)
+        if (!svobjects[i]->IsGroup)
+            svobjects[i]->Dirty=true;
     UnsetAllAA();
     ui->action8x->setChecked(true);
     on_actionResurface_Now_triggered();
@@ -2614,9 +2618,9 @@ void MainWindow::on_action8x_triggered()
 void MainWindow::on_action16x_triggered()
 {
     setSamples(16);
-    for (int i=0; i<SVObjects.count(); i++)
-        if (!SVObjects[i]->IsGroup)
-            SVObjects[i]->Dirty=true;
+    for (int i=0; i<svobjects.count(); i++)
+        if (!svobjects[i]->IsGroup)
+            svobjects[i]->Dirty=true;
     UnsetAllAA();
     ui->action16x->setChecked(true);
     on_actionResurface_Now_triggered();

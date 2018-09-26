@@ -539,9 +539,9 @@ bool voxml::read_spvf(QString fname)
 
     for (int i=0; i<groups.count(); i++)
     {
-        SVObject *svo = new SVObject(i);
+        svobject *svo = new svobject(i);
         spv->ComponentObjects.append(svo);
-        SVObjects.append(svo);
+        svobjects.append(svo);
         svo->IsGroup=true;
         svo->Visible=groups[i]->visible;
         svo->Name=groups[i]->name;
@@ -550,7 +550,7 @@ bool voxml::read_spvf(QString fname)
     }
     //second pass to set up ingroups
     for (int i=0; i<groups.count(); i++)
-    {   SVObject *svo=spv->ComponentObjects[i];
+    {   svobject *svo=spv->ComponentObjects[i];
         svo->InGroup=find_group_from_name(spv,groups[i]->ingroup); //works for empty ingroup - will miss all and return -1
     }
 
@@ -561,9 +561,9 @@ bool voxml::read_spvf(QString fname)
     //set em up
     for (int i=0; i<objects.count(); i++)
     {
-        SVObject *svo = new SVObject(i+firstrealobj);
+        svobject *svo = new svobject(i+firstrealobj);
         spv->ComponentObjects.append(svo);
-        SVObjects.append(svo);
+        svobjects.append(svo);
          svo->IsGroup=false;
         svo->Visible=objects[i]->visible;
         svo->Name=objects[i]->name;
@@ -582,7 +582,7 @@ bool voxml::read_spvf(QString fname)
     //surface them. Two loops needed as matrices must be in place before I start buggering with this!
     for (int i=0; i<objects.count(); i++)
     {
-        SVObject *svo = SVObjects[(i+firstrealobj)];
+        svobject *svo = svobjects[(i+firstrealobj)];
         svo->MakeDlists();
         MainWin->UpdateGL();
         f+=(100.0/objects.count());
@@ -1119,9 +1119,9 @@ bool voxml::read_voxml(QString fname)
 
     for (int i=0; i<groups.count(); i++)
     {
-        SVObject *svo = new SVObject(i);
+        svobject *svo = new svobject(i);
         spv->ComponentObjects.append(svo);
-        SVObjects.append(svo);
+        svobjects.append(svo);
         svo->IsGroup=true;
         svo->Visible=groups[i]->visible;
         svo->Name=groups[i]->name;
@@ -1130,7 +1130,7 @@ bool voxml::read_voxml(QString fname)
     }
     //second pass to set up ingroups
     for (int i=0; i<groups.count(); i++)
-    {   SVObject *svo=spv->ComponentObjects[i];
+    {   svobject *svo=spv->ComponentObjects[i];
         svo->InGroup=find_group_from_name(spv,groups[i]->ingroup); //works for empty ingroup - will miss all and return -1
     }
 
@@ -1141,9 +1141,9 @@ bool voxml::read_voxml(QString fname)
     //set em up
     for (int i=0; i<objects.count(); i++)
     {
-        SVObject *svo = new SVObject(i+firstrealobj);
+        svobject *svo = new svobject(i+firstrealobj);
         spv->ComponentObjects.append(svo);
-        SVObjects.append(svo);
+        svobjects.append(svo);
          svo->IsGroup=false;
         svo->Visible=objects[i]->visible;
         svo->Name=objects[i]->name;
@@ -1163,7 +1163,7 @@ bool voxml::read_voxml(QString fname)
     for (int i=0; i<objects.count(); i++)
     {
         if (i==0) firstobject=true; else firstobject=false;
-        SVObject *svo = SVObjects[(i+firstrealobj)];
+        svobject *svo = svobjects[(i+firstrealobj)];
         svo->MakeDlists();
         MainWin->UpdateGL();
         f+=(100.0/objects.count());
@@ -1275,12 +1275,12 @@ bool voxml::write_voxml(QString fname, bool mode) //mode true means this is part
 
     //check no repeated group names
     bool groups=false;
-    foreach(SVObject *o, SVObjects)
+    foreach(svobject *o, svobjects)
     {
         if (o->IsGroup )
         {
             groups=true;
-            foreach(SVObject *o2, SVObjects)
+            foreach(svobject *o2, svobjects)
             {
                 if (o->Name==o2->Name && o2!=o && o2->IsGroup)
                 {
@@ -1299,7 +1299,7 @@ bool voxml::write_voxml(QString fname, bool mode) //mode true means this is part
         }
     }
 
-    foreach(SVObject *o, SVObjects)
+    foreach(svobject *o, svobjects)
     {
         if (o->Name.length()<1)
         {
@@ -1344,7 +1344,7 @@ bool voxml::write_voxml(QString fname, bool mode) //mode true means this is part
 
     //do groups
     if (groups) out<<"<groups>\n";
-    foreach(SVObject *o, SVObjects)
+    foreach(svobject *o, svobjects)
     {
         if (o->IsGroup)
         {
@@ -1352,7 +1352,7 @@ bool voxml::write_voxml(QString fname, bool mode) //mode true means this is part
             out<<"<name>"<<encode(o->Name)<<"</name>\n";
             if (o->Key!=0) out<<"<key>"<<o->Key<<"</key>\n";
             if (o->Visible) out<<"<visible>1</visible>\n"; else out<<"<visible>0</visible>\n";
-            if (o->InGroup!=-1) out<<"<ingroup>" + encode(SVObjects[o->Parent()]->Name) + "</ingroup>\n";
+            if (o->InGroup!=-1) out<<"<ingroup>" + encode(svobjects[o->Parent()]->Name) + "</ingroup>\n";
             out<<"<position>"<<o->Position<<"</position>\n";
             out <<"</group>\n";
         }
@@ -1361,7 +1361,7 @@ bool voxml::write_voxml(QString fname, bool mode) //mode true means this is part
 
     //now objects
     out<<"<objects>\n";
-    foreach(SVObject *o, SVObjects)
+    foreach(svobject *o, svobjects)
     {
         if (!(o->IsGroup) && (o->Visible || MainWin->ui->actionExport_Hidden_Objects->isChecked()))
         {
@@ -1370,7 +1370,7 @@ bool voxml::write_voxml(QString fname, bool mode) //mode true means this is part
             if (o->Key!=0) out<<"<key>"<<o->Key<<"</key>\n";
             if (o->Visible) out<<"<visible>1</visible>\n"; else out<<"<visible>0</visible>\n";
 
-            if (o->InGroup!=-1) out<<"<ingroup>" + encode(SVObjects[o->Parent()]->Name) + "</ingroup>\n";
+            if (o->InGroup!=-1) out<<"<ingroup>" + encode(svobjects[o->Parent()]->Name) + "</ingroup>\n";
             out<<"<position>"<<o->Position<<"</position>\n";
 
 

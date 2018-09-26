@@ -2,7 +2,7 @@
 #define MC_H
 #include <QVarLengthArray>
 
-class SVObject;
+class svobject;
 
 typedef unsigned char datum;
 
@@ -28,12 +28,12 @@ class isosurface {
 class mc
 {
 public:
-    mc(SVObject *);
+    mc(svobject *);
     void SurfaceObject();
 
 private:
     int iDim, jDim, kDim;
-    SVObject *object;
+    svobject *object;
     static int edgeTable[];
     static int triTable[][16];
     unsigned char* slicebuffers[6]; //hold uncompressed data for slices

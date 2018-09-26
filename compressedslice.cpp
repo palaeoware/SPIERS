@@ -10,7 +10,7 @@
 #include <QTextStream>
 #include <QDebug>
 
-CompressedSlice::CompressedSlice(SVObject *parent, bool IsEmpty)
+CompressedSlice::CompressedSlice(svobject *parent, bool IsEmpty)
 {
     empty=IsEmpty; //for now
     Object=parent;

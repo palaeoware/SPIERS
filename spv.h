@@ -4,14 +4,14 @@
 #include <QList>
 #include <QStringList>
 
-class SVObject;
+class svobject;
 
 class SPV
 {
 public:
     SPV(int index, int FileVersion, int iDim, int jDim, int kDim);
     ~SPV();
-    QList <SVObject*> ComponentObjects;
+    QList <svobject*> ComponentObjects;
     float bright;
     QString filename, filenamenopath;
     int FileVersion;

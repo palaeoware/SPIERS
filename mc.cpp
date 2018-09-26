@@ -335,7 +335,7 @@ int mc::triTable[256][16] =
  {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}};
 
 
-mc::mc(SVObject *o)
+mc::mc(svobject *o)
 {
    object=o;
    iDim=object->spv->iDim;
