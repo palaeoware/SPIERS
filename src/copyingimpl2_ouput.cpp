@@ -454,7 +454,7 @@ void CopyingImpl::ExportSPV(int flag)  //0 for export, 1 for export and launch, 
     Q_UNUSED(flen);
     int awidth, aheight;
 
-    label->setFixedWidth(50);
+    label->setFixedWidth(60);
 
     QList <int> translationtable1; //tt1[myobjectindex] = index of object in output list.
 
@@ -786,7 +786,7 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
 
     //qDebug()<<"FileDirty"<<FilesDirty;
 
-    label->setFixedWidth(50);
+    label->setFixedWidth(60);
 
     QList <int> translationtable1; //tt1[myobjectindex] = index of object in output list.
 
@@ -1410,35 +1410,24 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
 
     if (flag > 0) //launch viewer
     {
+//RJG conditional defines to launch SPIERSview on different operating systems
 #ifdef __APPLE__
         //qDebug()<<"file:" + outputfile;
         //QMessageBox::information(0,"","file:" + outputfile);
         QDesktopServices::openUrl(QUrl("file:" + outputfile, QUrl::TolerantMode));
-        /*          QString program = qApp->applicationFilePath();
-                     program.replace("edit2","view2");
-                     QStringList arguments;
-                     arguments << outputfile;
-                     //QMessageBox::warning(this,"",program);
-                     QProcess::startDetached (program, arguments, qApp->applicationDirPath());
-        */
 #endif
 
-#ifndef __APPLE__
-#ifdef _WIN64
-        QString program = "\"" + qApp->applicationDirPath() + "/SPIERSview64.exe" + "\"" + " \"" + outputfile + "\"";
-#elif __linux__
+#ifdef __linux__
         //RJG - sorting luanch spiersview on linux export.
-        //QString program = qApp->applicationDirPath() + "/SPIERSview64/" + outputfile;
         QString program = qApp->applicationFilePath();
         program.replace("/SPIERSedit2", "/SPIERSview2");
         QStringList arguments;
         arguments << outputfile;
         QProcess::startDetached (program, arguments, qApp->applicationDirPath());
-        qDebug() << program;
-
-#else
-        QString program = "\"" + qApp->applicationDirPath() + "/SPIERSview32.exe" + "\"" + " \"" + outputfile + "\"";
 #endif
+//RJG - Windows launch SPIERSview
+#ifdef _WIN64
+        QString program = "\"" + qApp->applicationDirPath() + "/SPIERSview32.exe" + "\"" + " \"" + outputfile + "\"";
         QProcess::startDetached(program);
 #endif
     }
