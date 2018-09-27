@@ -1430,7 +1430,7 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
         //RJG - sorting luanch spiersview on linux export.
         //QString program = qApp->applicationDirPath() + "/SPIERSview64/" + outputfile;
         QString program = qApp->applicationFilePath();
-        program.replace("edit2", "view2");
+        program.replace("/SPIERSedit2", "/SPIERSview2");
         QStringList arguments;
         arguments << outputfile;
         QProcess::startDetached (program, arguments, qApp->applicationDirPath());

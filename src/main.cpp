@@ -56,9 +56,11 @@ int main(int argc, char **argv)
 
     QStringList args = app.arguments();
 
-    if (args.count() > 1) {
+    if (args.count() > 1)
+    {
         openfile = args[1];
-    } else openfile = "";
+    }
+    else openfile = "";
 
     MainWindowImpl win;
     win.show();
@@ -84,12 +86,14 @@ bool myapp::event(QEvent *event)
     //we don't do anything if we were passed and argv1 - i.e. if we are a child process of first one
     if (donthandlefileevent == true) return QApplication::event(event);
 
-    switch (event->type()) {
+    switch (event->type())
+    {
     case QEvent::FileOpen:
 
         fn = static_cast<QFileOpenEvent *>(
                  event)->file();
-        if (fname != "") {
+        if (fname != "")
+        {
             QString program = qApp->applicationFilePath();
             QStringList arguments;
             arguments << fn;
@@ -121,12 +125,18 @@ int main(int argc, char *argv[])
 
     if (argc == 2) if (QString(argv[1]).length() == 0) argc = 1; //this to cure weird mac crash
 
-    if (argc != 2) {
+    if (argc != 2)
+    {
         fname = "";
-    } else {
-        if ((*(argv[1]) == '-') && (*(argv[1] + 1) == 'x')) {
+    }
+    else
+    {
+        if ((*(argv[1]) == '-') && (*(argv[1] + 1) == 'x'))
+        {
             exit(0);
-        } else {
+        }
+        else
+        {
             fname = argv[1];
             //Make sure we don't handle file event at all
             a.donthandlefileevent = true;
