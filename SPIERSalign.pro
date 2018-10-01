@@ -22,7 +22,7 @@ FORMS += ui/mainwindow.ui \
 HEADERS += src/mainwindowimpl.h \
     src/globals.h \
     src/scene.h \
-    SPIERScommon/netmodule.h \
+    ../SPIERScommon/netmodule.h \
     src/darkstyletheme.h \
     src/version.h \
     src/about.h
@@ -31,13 +31,13 @@ SOURCES += src/mainwindowimpl.cpp \
     src/main.cpp \
     src/globals.cpp \
     src/scene.cpp \
-    SPIERScommon/netmodule.cpp \
+    ../SPIERScommon/netmodule.cpp \
     src/darkstyletheme.cpp \
     src/about.cpp
 
 RESOURCES += align.qrc
 
-RC_FILE += src/exeicon.rc
+RC_FILE += resources/icon.rc
 
 TEMPLATE += app
 

@@ -7,7 +7,7 @@
 #include "darkstyletheme.h"
 #include "mainwindowimpl.h"
 #include "version.h"
-#include "SPIERScommon/netmodule.h"
+#include "../SPIERScommon/netmodule.h"
 
 
 int main(int argc, char **argv)
