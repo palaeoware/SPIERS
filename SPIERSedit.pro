@@ -110,11 +110,7 @@ UI_DIR += ui
 
 TEMPLATE = app
 
-RESOURCES = src/SPIERSedit.qrc
-
-ICON = src/edit.icns
-
-RC_FILE = src/icon.rc
+RESOURCES = SPIERSedit.qrc
 
 DISTFILES += \
     LICENSE.md \
