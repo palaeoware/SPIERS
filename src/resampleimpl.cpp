@@ -1,7 +1,7 @@
 #include "resampleimpl.h"
 #include "globals.h"
 #include "fileio.h"
-#include "Display.h"
+#include "display.h"
 #include "mainwindowimpl.h"
 #include "brush.h"
 

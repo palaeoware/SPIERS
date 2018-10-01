@@ -6,6 +6,7 @@
 
 mainview::mainview(QObject *parent = 0) : QGraphicsView()
 {
+    Q_UNUSED(parent);
     return;
 }
 
@@ -22,7 +23,8 @@ bool mainview::eventFilter(QObject *obj, QEvent *event)
     {
         AppMainWindow->MouseZoom(((QWheelEvent *)event)->delta());
         return true; //stop further wheel processing
-    } else
+    }
+    else
     {
         // standard event processing
         return QObject::eventFilter(obj, event);
