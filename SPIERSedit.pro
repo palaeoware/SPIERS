@@ -112,7 +112,9 @@ TEMPLATE = app
 
 RESOURCES = SPIERSedit.qrc
 
-ICON = resources/edit.icns
+ICON = resources/icon.icns
+
+RC_FILE = resources/icon.rc
 
 DISTFILES += \
     LICENSE.md \
