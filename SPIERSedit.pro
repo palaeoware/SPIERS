@@ -112,6 +112,8 @@ TEMPLATE = app
 
 RESOURCES = SPIERSedit.qrc
 
+ICON = resources/edit.icns
+
 DISTFILES += \
     LICENSE.md \
     .astylerc
