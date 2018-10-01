@@ -1,6 +1,6 @@
 QT += network xml gui core opengl
 
-TARGET = SPIERSview2
+TARGET = SPIERSview64
 
 TEMPLATE = app
 
