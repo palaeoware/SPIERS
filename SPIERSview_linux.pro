@@ -4,7 +4,7 @@ QMAKE_CXXFLAGS += -Wno-deprecated
 
 TARGET = SPIERSview2
 TEMPLATE = app
-RESOURCES = sview.qrc
+RESOURCES = view.qrc
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 DISTFILES += \
@@ -17,47 +17,47 @@ DISTFILES += \
 # LIBS += -L/usr/include/vtk-7.1/ \
 #Older versions included libraries, and then RPATH in order that can load libraries on run, as long as they are in sub folder. Not clear if needed.
 
-SOURCES += main.cpp \
-    mainwindow.cpp \
-    SPIERSviewglobals.cpp \
-    spvreader.cpp \
-    svobject.cpp \
-    spv.cpp \
-    compressedslice.cpp \
-    mc.cpp \
-    myconnectivityfilter.cpp \
-    movetogroup.cpp \
-    voxml.cpp \
-    quickhelpbox.cpp \
+SOURCES += src/main.cpp \
+    src/mainwindow.cpp \
+    src/SPIERSviewglobals.cpp \
+    src/spvreader.cpp \
+    src/svobject.cpp \
+    src/spv.cpp \
+    src/compressedslice.cpp \
+    src/mc.cpp \
+    src/myconnectivityfilter.cpp \
+    src/movetogroup.cpp \
+    src/voxml.cpp \
+    src/quickhelpbox.cpp \
     ../SPIERScommon/netmodule.cpp \
-    aboutdialog.cpp \
-    gl3widget.cpp \
-    darkstyletheme.cpp
+    src/aboutdialog.cpp \
+    src/gl3widget.cpp \
+    src/darkstyletheme.cpp
 
-HEADERS += mainwindow.h \
-    SPIERSviewglobals.h \
-    spvreader.h \
-    svobject.h \
-    spv.h \
-    compressedslice.h \
-    mc.h \
-    myconnectivityfilter.h \
-    movetogroup.h \
-    voxml.h \
-    quickhelpbox.h \
+HEADERS += src/mainwindow.h \
+    src/SPIERSviewglobals.h \
+    src/spvreader.h \
+    src/svobject.h \
+    src/spv.h \
+    src/compressedslice.h \
+    src/mc.h \
+    src/myconnectivityfilter.h \
+    src/movetogroup.h \
+    src/voxml.h \
+    src/quickhelpbox.h \
     ../SPIERScommon/netmodule.h \
-    aboutdialog.h \
-    glvbo.h \
-    gl3widget.h \
-    rowmans.h \
-    main.h \
-    darkstyletheme.h \
-    version.h
+    src/aboutdialog.h \
+    src/glvbo.h \
+    src/gl3widget.h \
+    src/rowmans.h \
+    src/main.h \
+    src/darkstyletheme.h \
+    src/version.h
 
-FORMS += mainwindow.ui \
-    movetogroup.ui \
-    quickhelpbox.ui \
-    aboutdialog.ui
+FORMS += ui/mainwindow.ui \
+    ui/movetogroup.ui \
+    ui/quickhelpbox.ui \
+    ui/aboutdialog.ui
 
 #RJG for linux
 MOC_DIR += build
