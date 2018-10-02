@@ -71,7 +71,7 @@ void MainWindowImpl::SetUpDocks()
 
     addDockWidget (Qt::LeftDockWidgetArea, dockWidget_Main);
     addDockWidget (Qt::RightDockWidgetArea, dockWidget_Generate);
-    addDockWidget (Qt::RightDockWidgetArea, SliceSelector);
+    addDockWidget (Qt::LeftDockWidgetArea, SliceSelector);
     addDockWidget (Qt::RightDockWidgetArea, DockMasksSettings);
     addDockWidget (Qt::RightDockWidgetArea, DockCurvesSettings);
     addDockWidget (Qt::RightDockWidgetArea, DockSegmentsSettings);
