@@ -184,9 +184,9 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     BuildRecentFiles();  //do the menus
     InitStates();
 
-//    BackThread=new MyThread;
-//  BackThread->start();
-//  BackThread->setPriority(QThread::LowestPriority);
+    //  BackThread=new MyThread;
+    //  BackThread->start();
+    //  BackThread->setPriority(QThread::LowestPriority);
 
     //set up key combo for outputitems
     QStringList items;

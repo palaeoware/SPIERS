@@ -253,7 +253,7 @@
      <x>0</x>
      <y>0</y>
      <width>962</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -507,7 +507,7 @@
    </property>
    <property name="maximumSize">
     <size>
-     <width>175</width>
+     <width>180</width>
      <height>100000</height>
     </size>
    </property>
@@ -1760,7 +1760,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="tabSettings">
         <attribute name="title">
