@@ -1,6 +1,10 @@
 #------------------------------------------------------------------------------------------------
-# SPIERS Align
+# SPIERSalign
 #------------------------------------------------------------------------------------------------
+
+TARGET = SPIERSalign64
+
+TEMPLATE += app
 
 QT = gui core network widgets
 
@@ -38,8 +42,6 @@ SOURCES += src/mainwindowimpl.cpp \
 RESOURCES += align.qrc
 
 RC_FILE += resources/icon.rc
-
-TEMPLATE += app
 
 DISTFILES += \
     LICENSE.md \
