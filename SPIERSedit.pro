@@ -2,7 +2,7 @@
 # SPIERSedit
 #------------------------------------------------------------------------------------------------
 
-TARGET = SPIERSview64
+TARGET = SPIERSedit64
 
 CONFIG += warn_on \
     qt \
