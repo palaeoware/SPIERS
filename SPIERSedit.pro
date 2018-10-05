@@ -1,6 +1,8 @@
 #------------------------------------------------------------------------------------------------
-# SPIERS Edit
+# SPIERSedit
 #------------------------------------------------------------------------------------------------
+
+TARGET = SPIERSview64
 
 CONFIG += warn_on \
     qt \
@@ -119,5 +121,3 @@ RC_FILE = resources/icon.rc
 DISTFILES += \
     LICENSE.md \
     .astylerc
-#LIBS += -L"C:\\Qt\\Qt5.1\\ported64\\lib" \
-#    -llibz
