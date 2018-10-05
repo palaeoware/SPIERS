@@ -21,12 +21,12 @@ import sphinx_rtd_theme
 
 # -- Project information -----------------------------------------------------
 
-project = 'REvoSim'
-copyright = '2018, Mark Sutton, Russell Garwood, Alan R.T. Spencer'
-author = 'Mark Sutton, Russell Garwood, Alan R.T. Spencer'
+project = 'SPIERSalign'
+copyright = '2018, Russell Garwood, Mark Sutton, Alan R.T. Spencer'
+author = 'Russell Garwood, Mark Sutton, Alan R.T. Spencer'
 
 # The short X.Y version
-version = '3.0'
+version = '3.0.0'
 # The full version, including alpha/beta/rc tags
 release = '3.0.0-alpha'
 

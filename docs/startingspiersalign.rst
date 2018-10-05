@@ -1,0 +1,4 @@
+.. _startingspiersalign:
+
+Starting SPIERSalign
+====================

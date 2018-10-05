@@ -1,0 +1,4 @@
+.. _automatedalignment:
+
+Automated Alignment
+===================

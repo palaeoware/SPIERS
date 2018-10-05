@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Welcome to SPIERSalign's User Manual
-================================
+====================================
 
 [S]erial [P]alaeontological [I]mage [E]diting and [R]endering [S]ystem: Alignment and data-preparation utility
 
