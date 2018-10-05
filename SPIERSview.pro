@@ -1,3 +1,7 @@
+#------------------------------------------------------------------------------------------------
+# SPIERSview
+#------------------------------------------------------------------------------------------------
+
 QT += network xml gui core opengl
 
 TARGET = SPIERSview64
@@ -8,7 +12,7 @@ RESOURCES = view.qrc
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-INCLUDEPATH += "C:\msys64\mingw64\include\vtk-8.1"
+INCLUDEPATH += "$$PWD/../../../../msys64/mingw64/include/vtk-8.1"
 
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
@@ -47,111 +51,112 @@ HEADERS += src/mainwindow.h \
     src/main.h \
     src/version.h
 
+LIBS += -L$$PWD/../../../../msys64/mingw64/lib \
+# VTK - Libary
+# libvtk* name to match static lib created
+# Removed to get it to compile with VTK 8.1
+#-llibvtkexpat-8.1 \
+#-llibvtkInfovisCore-8.1 \
+#-llibvtkalglib-8.1 \
+#-llibvtkfreetype-8.1 \
+#-llibvtkhdf5-8.1 \
+#-llibvtkhdf5_hl-8.1 \
+#-llibvtkjpeg-8.1 \
+#-llibvtkjsoncpp-8.1 \
+#-llibvtklibxml2-8.1 \
+#-llibvtkNetCDF_cxx-8.1 \
+#-llibvtkoggtheora-8.1 \
+#-llibvtkpng-8.1 \
+#-llibvtktiff-8.1 \
+#-llibvtkzlib-8.1 \
+-llibvtkCommonExecutionModel-8.1 \
+-llibvtkCommonDataModel-8.1 \
+-llibvtkCommonColor-8.1 \
+-llibvtkCommonComputationalGeometry-8.1 \
+-llibvtkCommonMisc-8.1 \
+-llibvtkCommonSystem-8.1 \
+-llibvtkCommonTransforms-8.1 \
+-llibvtkCommonMath-8.1 \
+-llibvtkDICOMParser-8.1 \
+-llibvtkDomainsChemistry-8.1 \
+-llibvtkDomainsChemistryOpenGL2-8.1 \
+-llibvtkexoIIc-8.1 \
+-llibvtkFiltersAMR-8.1 \
+-llibvtkFiltersExtraction-8.1 \
+-llibvtkFiltersFlowPaths-8.1 \
+-llibvtkFiltersGeneral-8.1 \
+-llibvtkFiltersGeneric-8.1 \
+-llibvtkFiltersGeometry-8.1 \
+-llibvtkFiltersHybrid-8.1 \
+-llibvtkFiltersHyperTree-8.1 \
+-llibvtkFiltersImaging-8.1 \
+-llibvtkFiltersModeling-8.1 \
+-llibvtkFiltersParallel-8.1 \
+-llibvtkFiltersParallelImaging-8.1 \
+-llibvtkFiltersProgrammable-8.1 \
+-llibvtkFiltersSelection-8.1 \
+-llibvtkFiltersSMP-8.1 \
+-llibvtkFiltersSources-8.1 \
+-llibvtkFiltersStatistics-8.1 \
+-llibvtkFiltersTexture-8.1 \
+-llibvtkFiltersVerdict-8.1 \
+-llibvtkglew-8.1 \
+-llibvtkImagingColor-8.1 \
+-llibvtkImagingFourier-8.1 \
+-llibvtkImagingGeneral-8.1 \
+-llibvtkImagingHybrid-8.1 \
+-llibvtkImagingMath-8.1 \
+-llibvtkImagingMorphological-8.1 \
+-llibvtkImagingSources-8.1 \
+-llibvtkImagingStatistics-8.1 \
+-llibvtkImagingStencil-8.1 \
+-llibvtkInfovisLayout-8.1 \
+-llibvtkIOAMR-8.1 \
+-llibvtkIOEnSight-8.1 \
+-llibvtkIOExodus-8.1 \
+-llibvtkIOGeometry-8.1 \
+-llibvtkIOImage-8.1 \
+-llibvtkIOImport-8.1 \
+-llibvtkIOInfovis-8.1 \
+-llibvtkIOLegacy-8.1 \
+-llibvtkIOLSDyna-8.1 \
+-llibvtkIOMINC-8.1 \
+-llibvtkIOMovie-8.1 \
+-llibvtkIONetCDF-8.1 \
+-llibvtkIOParallel-8.1 \
+-llibvtkIOParallelXML-8.1 \
+-llibvtkIOPLY-8.1 \
+-llibvtkIOSQL-8.1 \
+-llibvtkIOVideo-8.1 \
+-llibvtkIOXML-8.1 \
+-llibvtkIOXMLParser-8.1 \
+-llibvtkmetaio-8.1 \
+-llibvtkNetCDF-8.1 \
+-llibvtkRenderingContext2D-8.1 \
+-llibvtkRenderingContextOpenGL2-8.1 \
+-llibvtkRenderingFreeType-8.1 \
+-llibvtkRenderingOpenGL2-8.1 \
+-llibvtksqlite-8.1 \
+-llibvtkverdict-8.1 \
+-llibvtkCommonCore-8.1 \
+-llibvtkChartsCore-8.1 \
+-llibvtkImagingCore-8.1 \
+-llibvtkIOCore-8.1 \
+-llibvtkParallelCore-8.1 \
+-llibvtkRenderingCore-8.1 \
+-llibvtkFiltersCore-8.1 \
+-llibvtksys-8.1 \
+# Other - Libary
+-lstdc++ \
+-lz \
+-lgdi32
+
 FORMS += ui/mainwindow.ui \
     ui/movetogroup.ui \
     ui/quickhelpbox.ui \
     ui/aboutdialog.ui
 
 UI_DIR += ui
-
-LIBS += -L"C:\msys64\mingw64\bin" \
-# Removed to get it to compile with VTK 8.1
-#-lvtkexpat-8.1 \
-#-lvtkInfovisCore-8.1 \
-#-lvtkalglib-8.1 \
-#-lvtkfreetype-8.1 \
-#-lvtkhdf5-8.1 \
-#-lvtkhdf5_hl-8.1 \
-#-lvtkjpeg-8.1 \
-#-lvtkjsoncpp-8.1 \
-#-lvtklibxml2-8.1 \
-#-lvtkNetCDF_cxx-8.1 \
-#-lvtkoggtheora-8.1 \
-#-lvtkpng-8.1 \
-#-lvtktiff-8.1 \
-#-lvtkzlib-8.1 \
--lvtkCommonExecutionModel-8.1 \
--lvtkCommonDataModel-8.1 \
--lvtkCommonColor-8.1 \
--lvtkCommonComputationalGeometry-8.1 \
--lvtkCommonMisc-8.1 \
--lvtkCommonSystem-8.1 \
--lvtkCommonTransforms-8.1 \
--lvtkCommonMath-8.1 \
--lvtkDICOMParser-8.1 \
--lvtkDomainsChemistry-8.1 \
--lvtkDomainsChemistryOpenGL2-8.1 \
--lvtkexoIIc-8.1 \
--lvtkFiltersAMR-8.1 \
--lvtkFiltersExtraction-8.1 \
--lvtkFiltersFlowPaths-8.1 \
--lvtkFiltersGeneral-8.1 \
--lvtkFiltersGeneric-8.1 \
--lvtkFiltersGeometry-8.1 \
--lvtkFiltersHybrid-8.1 \
--lvtkFiltersHyperTree-8.1 \
--lvtkFiltersImaging-8.1 \
--lvtkFiltersModeling-8.1 \
--lvtkFiltersParallel-8.1 \
--lvtkFiltersParallelImaging-8.1 \
--lvtkFiltersProgrammable-8.1 \
--lvtkFiltersSelection-8.1 \
--lvtkFiltersSMP-8.1 \
--lvtkFiltersSources-8.1 \
--lvtkFiltersStatistics-8.1 \
--lvtkFiltersTexture-8.1 \
--lvtkFiltersVerdict-8.1 \
--lvtkglew-8.1 \
--lvtkImagingColor-8.1 \
--lvtkImagingFourier-8.1 \
--lvtkImagingGeneral-8.1 \
--lvtkImagingHybrid-8.1 \
--lvtkImagingMath-8.1 \
--lvtkImagingMorphological-8.1 \
--lvtkImagingSources-8.1 \
--lvtkImagingStatistics-8.1 \
--lvtkImagingStencil-8.1 \
--lvtkInfovisLayout-8.1 \
--lvtkIOAMR-8.1 \
--lvtkIOEnSight-8.1 \
--lvtkIOExodus-8.1 \
--lvtkIOGeometry-8.1 \
--lvtkIOImage-8.1 \
--lvtkIOImport-8.1 \
--lvtkIOInfovis-8.1 \
--lvtkIOLegacy-8.1 \
--lvtkIOLSDyna-8.1 \
--lvtkIOMINC-8.1 \
--lvtkIOMovie-8.1 \
--lvtkIONetCDF-8.1 \
--lvtkIOParallel-8.1 \
--lvtkIOParallelXML-8.1 \
--lvtkIOPLY-8.1 \
--lvtkIOSQL-8.1 \
--lvtkIOVideo-8.1 \
--lvtkIOXML-8.1 \
--lvtkIOXMLParser-8.1 \
--lvtkmetaio-8.1 \
--lvtkNetCDF-8.1 \
--lvtkRenderingContext2D-8.1 \
--lvtkRenderingContextOpenGL2-8.1 \
--lvtkRenderingFreeType-8.1 \
--lvtkRenderingOpenGL2-8.1 \
--lvtksqlite-8.1 \
--lvtkverdict-8.1 \
--lvtkCommonCore-8.1 \
--lvtkChartsCore-8.1 \
--lvtkImagingCore-8.1 \
--lvtkIOCore-8.1 \
--lvtkParallelCore-8.1 \
--lvtkRenderingCore-8.1 \
--lvtkFiltersCore-8.1 \
--lvtksys-8.1 \
-    -lstdc++ \
-    -lz \
-    -lgdi32
-
-DEPENDPATH += "C:\msys64\mingw64\include\vtk-8.1"
 
 MOC_DIR += build
 
