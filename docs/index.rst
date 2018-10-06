@@ -12,7 +12,9 @@ Main Coding: Mark Sutton
 Additional Coding: Russell Garwood, Alan R.T. Spencer
 Documentation: Mark Sutton, Russell Garwood, Alan R.T. Spencer
 
-SPIERSalign is a stand-alone program which enables the user to align (or register) and crop a sequence of images (a tomographic dataset) prior to editing and/or reconstruction with SPIERSedit.
+SPIERSview is a stand-alone program for viewing and manipulating of
+three-dimensional models. It understands five different file formats,
+the first four of which it can also output.
 
 .. figure:: _static/palaeoware_logo_square.png
     :align: center
@@ -24,7 +26,9 @@ w:https://github.com/palaeoware.
 Relevant references
 -------------------
 
-Sutton, M.D., Garwood, R.J., Siveter, D.J. & Siveter, D.J. 2012. Spiers and VAXML; A software toolkit for tomographic visualisation, and a format for virtual specimen interchange. Palaeontologia Electronica 15(2): 15.2.5T
+Sutton, M.D., Garwood, R.J., Siveter, D.J. & Siveter, D.J. 2012. Spiers and VAXML; 
+A software toolkit for tomographic visualisation, and a format for virtual specimen 
+interchange. Palaeontologia Electronica 15(2): 15.2.5T
 
 Table of Contents
 =================
