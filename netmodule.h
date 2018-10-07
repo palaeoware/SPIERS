@@ -16,10 +16,9 @@
 #include <QByteArray>
 #include <QStringList>
 
-
 #include <stdio.h>
 
-#define UPDATEVERSION 2.21
+#define UPDATEVERSION "3.0.0-alpha"
 
 extern bool MacBodgeClickedNoForUpdateDownload;
 
@@ -44,7 +43,7 @@ public:
     QString ErrorText;
     QString DownloadURL;
     void doDownload(QString url, QString FileName, QProgressBar *pb);
-    void getUpdate(QString url,QString SaveFile);
+    void getUpdate(QString url, QString SaveFile);
 
 private:
     QNetworkAccessManager *manager;
