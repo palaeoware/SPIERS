@@ -56,11 +56,13 @@ HEADERS += src/display.h \
     src/distributedialogimpl.h \
     src/resampleimpl.h \
     src/dialogaboutimpl.h \
-    ../SPIERScommon/netmodule.h \
     src/keysafespinbox.h \
     src/mainview.h \
     src/darkstyletheme.h \
-    src/version.h
+    src/version.h \
+    ../SPIERScommon/netmodule.h \
+    ../SPIERScommon/semanticversion.h \
+    ../SPIERScommon/prereleasecomponent.cpp
 
 MOC_DIR += build
 
@@ -102,11 +104,13 @@ SOURCES += src/display.cpp \
     src/resampleimpl.cpp \
     src/dialogaboutimpl.cpp \
     src/mainwindow3.cpp \
-    ../SPIERScommon/netmodule.cpp \
     src/copyingimpl2_ouput.cpp \
     src/keysafespinbox.cpp \
     src/mainview.cpp \
-    src/darkstyletheme.cpp
+    src/darkstyletheme.cpp \
+    ../SPIERScommon/netmodule.cpp \
+    ../SPIERScommon/semanticversion.cpp \
+    ../SPIERScommon/prereleasecomponent.cpp
 
 UI_DIR += ui
 

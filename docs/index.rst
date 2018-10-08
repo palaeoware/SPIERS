@@ -8,11 +8,11 @@ Welcome to SPIERSedit's User Manual
 
 [S]erial [P]alaeontological [I]mage [E]diting and [R]endering [S]ystem: Specimen Interpretation and Editing Tool
 
-**Main Coding:** Mark Sutton
+**Main Coding:** Mark D. Sutton
 
-**Additional Coding:** Russell Garwood, Alan R.T. Spencer
+**Additional Coding:** Russell J. Garwood, Alan R.T. Spencer
 
-**Documentation:** Mark Sutton, Russell Garwood, Alan R.T. Spencer
+**Documentation:** Mark D. Sutton, Russell J. Garwood, Alan R.T. Spencer
 
 SPIERSedit is a package for editing (i.e. preparing) tomographic
 (slice-based) datasets from any source, for example serial grinding,
@@ -29,8 +29,8 @@ w:https://github.com/palaeoware.
 Relevant references
 -------------------
 
-Sutton, M.D., Garwood, R.J., Siveter, D.J. & Siveter, D.J. 2012. Spiers and VAXML; 
-A software toolkit for tomographic visualisation, and a format for virtual specimen 
+Sutton, M.D., Garwood, R.J., Siveter, D.J. & Siveter, D.J. 2012. Spiers and VAXML;
+A software toolkit for tomographic visualisation, and a format for virtual specimen
 interchange. Palaeontologia Electronica 15(2): 15.2.5T
 
 Table of Contents
