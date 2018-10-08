@@ -62,7 +62,7 @@ HEADERS += src/display.h \
     src/version.h \
     ../SPIERScommon/netmodule.h \
     ../SPIERScommon/semanticversion.h \
-    ../SPIERScommon/prereleasecomponent.cpp
+    ../SPIERScommon/prereleasecomponent.h
 
 MOC_DIR += build
 
