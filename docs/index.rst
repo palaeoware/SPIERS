@@ -8,9 +8,9 @@ Welcome to SPIERSalign's User Manual
 
 [S]erial [P]alaeontological [I]mage [E]diting and [R]endering [S]ystem: Alignment and data-preparation utility
 
-Main Coding: Russell Garwood
-Additional Coding: Mark Sutton, Alan R.T. Spencer
-Documentation: Russell Garwood, Mark Sutton, Alan R.T. Spencer
+Main Coding: Russell J. Garwood
+Additional Coding: Mark D. Sutton, Alan R.T. Spencer
+Documentation: Russell J. Garwood, Mark Sutton, Alan R.T. Spencer
 
 SPIERSalign is a stand-alone program which enables the user to align (or register) and crop a sequence of images (a tomographic dataset) prior to editing and/or reconstruction with SPIERSedit.
 
@@ -30,7 +30,7 @@ Table of Contents
 .. toctree::
    :maxdepth: 3
    :numbered:
-   
+
    introduction
    requirements
    whatspiersalignproduces

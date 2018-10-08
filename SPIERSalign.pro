@@ -26,18 +26,22 @@ FORMS += ui/mainwindow.ui \
 HEADERS += src/mainwindowimpl.h \
     src/globals.h \
     src/scene.h \
-    ../SPIERScommon/netmodule.h \
     src/darkstyletheme.h \
     src/version.h \
-    src/about.h
+    src/about.h \
+    ../SPIERScommon/netmodule.h \
+    ../SPIERScommon/semanticversion.h \
+    ../SPIERScommon/prereleasecomponent.h
 
 SOURCES += src/mainwindowimpl.cpp \
     src/main.cpp \
     src/globals.cpp \
     src/scene.cpp \
-    ../SPIERScommon/netmodule.cpp \
     src/darkstyletheme.cpp \
-    src/about.cpp
+    src/about.cpp \
+   ../SPIERScommon/netmodule.cpp \
+    ../SPIERScommon/semanticversion.cpp \
+    ../SPIERScommon/prereleasecomponent.cpp
 
 RESOURCES += align.qrc
 
