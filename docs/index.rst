@@ -8,11 +8,11 @@ Welcome to SPIERSview's User Manual
 
 [S]erial [P]alaeontological [I]mage [E]diting and [R]endering [S]ystem: Three-dimensional interactive viewer
 
-**Main Coding:** Mark Sutton
+**Main Coding:** Mark D. Sutton
 
-**Additional Coding:** Russell Garwood, Alan R.T. Spencer
+**Additional Coding:** Russell J. Garwood, Alan R.T. Spencer
 
-**Documentation:** Mark Sutton, Russell Garwood, Alan R.T. Spencer
+**Documentation:** Mark D. Sutton, Russell J. Garwood, Alan R.T. Spencer
 
 SPIERSview is a stand-alone program for viewing and manipulating of
 three-dimensional models. It understands five different file formats,
@@ -28,8 +28,8 @@ w:https://github.com/palaeoware.
 Relevant references
 -------------------
 
-Sutton, M.D., Garwood, R.J., Siveter, D.J. & Siveter, D.J. 2012. Spiers and VAXML; 
-A software toolkit for tomographic visualisation, and a format for virtual specimen 
+Sutton, M.D., Garwood, R.J., Siveter, D.J. & Siveter, D.J. 2012. Spiers and VAXML;
+A software toolkit for tomographic visualisation, and a format for virtual specimen
 interchange. Palaeontologia Electronica 15(2): 15.2.5T
 
 Table of Contents

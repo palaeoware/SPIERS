@@ -29,10 +29,13 @@ SOURCES += src/main.cpp \
     src/movetogroup.cpp \
     src/voxml.cpp \
     src/quickhelpbox.cpp \
-    ../SPIERScommon/netmodule.cpp \
     src/aboutdialog.cpp \
     src/gl3widget.cpp \
-    src/darkstyletheme.cpp
+    src/darkstyletheme.cpp \
+    ../SPIERScommon/netmodule.cpp \
+    ../SPIERScommon/semanticversion.cpp \
+    ../SPIERScommon/prereleasecomponent.cpp
+
 
 HEADERS += src/mainwindow.h \
     src/SPIERSviewglobals.h \
@@ -52,7 +55,10 @@ HEADERS += src/mainwindow.h \
     src/rowmans.h \
     src/main.h \
     src/darkstyletheme.h \
-    src/version.h
+    src/version.h \
+   ../SPIERScommon/netmodule.h \
+    ../SPIERScommon/semanticversion.h \
+    ../SPIERScommon/prereleasecomponent.h
 
 FORMS += ui/mainwindow.ui \
     ui/movetogroup.ui \

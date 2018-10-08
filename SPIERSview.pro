@@ -27,9 +27,12 @@ SOURCES += src/main.cpp \
     src/movetogroup.cpp \
     src/voxml.cpp \
     src/quickhelpbox.cpp \
-    ../SPIERScommon/netmodule.cpp \
     src/aboutdialog.cpp \
-    src/gl3widget.cpp
+    src/gl3widget.cpp \
+    ../SPIERScommon/netmodule.cpp \
+    ../SPIERScommon/semanticversion.cpp \
+    ../SPIERScommon/prereleasecomponent.cpp
+
 
 HEADERS += src/mainwindow.h \
     src/darkstyletheme.h \
@@ -43,13 +46,15 @@ HEADERS += src/mainwindow.h \
     src/movetogroup.h \
     src/voxml.h \
     src/quickhelpbox.h \
-    ../SPIERScommon/netmodule.h \
     src/aboutdialog.h \
     src/glvbo.h \
     src/gl3widget.h \
     src/rowmans.h \
     src/main.h \
-    src/version.h
+    src/version.h \
+    ../SPIERScommon/netmodule.h \
+    ../SPIERScommon/semanticversion.h \
+    ../SPIERScommon/prereleasecomponent.h
 
 LIBS += -L$$PWD/../../../../msys64/mingw64/lib \
 # VTK - Libary
