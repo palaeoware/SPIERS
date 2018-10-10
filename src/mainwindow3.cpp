@@ -79,6 +79,8 @@ void MainWindowImpl::SetUpDocks()
     addDockWidget (Qt::RightDockWidgetArea, DockHist);
     addDockWidget (Qt::RightDockWidgetArea, DockInfo);
 
+    tabifyDockWidget(dockWidget_Main,SliceSelector);
+
     dockWidget_Main->setVisible(true);
     SliceSelector->setVisible(false);
     DockMasksSettings->setVisible(true);
