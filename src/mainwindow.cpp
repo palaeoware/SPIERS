@@ -1,4 +1,3 @@
-
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QActionGroup>
 #include <QFileDialog>
@@ -23,7 +22,6 @@
 #include <QGLFormat>
 #include <QtWidgets/QShortcut>
 
-
 #include "mainwindow.h"
 #include "spv.h"
 #include "ui_mainwindow.h"
@@ -38,9 +36,14 @@
 #include <vtkProperty2D.h>
 #include "movetogroup.h"
 
+/**
+ * @brief MainWindow::MainWindow
+ * Constructor sets up VTK widget and one-shot timer to do load. Nothing else.
+ *
+ * @param parent
+ */
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
-//Constructor sets up VTK widget and one-shot timer to do load. Nothing else.
 {
     specificprogress = 0;
     ui->setupUi(this);
@@ -74,7 +77,6 @@ MainWindow::MainWindow(QWidget *parent)
     StereoGroup->addAction(ui->actionOrthographic_View);
     ui->actionNo_Stereo->setChecked(true);
 
-
     QGLFormat f;
     f.setVersion(GL_MAJOR, GL_MINOR);
     f.setSampleBuffers(true);
@@ -107,8 +109,6 @@ MainWindow::MainWindow(QWidget *parent)
     PBtimer->setInterval(100);//10 times per second at most
     QObject::connect(PBtimer, SIGNAL(timeout()), this, SLOT(showSpecificProgress()));
     PBtimer->start();
-
-
 
     time = new QTime(); //used by spin timer
     time->start();
@@ -176,7 +176,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->treeWidget->setColumnWidth(6, 90);
     ui->treeWidget->setColumnWidth(7, 90);
 
-
     back_red = 0;
     back_green = 0;
     back_blue = 0;
@@ -194,7 +193,10 @@ MainWindow::MainWindow(QWidget *parent)
     AnimOutputDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
 }
 
-
+/**
+ * @brief MainWindow::ActionKey
+ * @param C
+ */
 void MainWindow::ActionKey(QChar C)
 {
     for (int i = 0; i < SVObjects.count(); i++)
@@ -203,24 +205,31 @@ void MainWindow::ActionKey(QChar C)
     RefreshObjects();
 }
 
+/**
+ * @brief MainWindow::~MainWindow
+ */
 MainWindow::~MainWindow()
 {
     delete ui;
 }
 
+/**
+ * @brief MainWindow::UpdateGL
+ */
 void MainWindow::UpdateGL()
 {
     //qDebug()<<"In udgl ";
 
     gl3widget->update();
     //do the info at bottom too
-
-
 }
 
-//Timer handlers
+// Timer handlers
+/**
+ * @brief MainWindow::StartTimer_fired
+ * start up timer should fire this only once - starts SPV load process
+ */
 void MainWindow::StartTimer_fired()
-//start up timer should fire this only once - starts SPV load process
 {
     //Some General initialisation
     NextActualDlist = 1;
@@ -231,19 +240,6 @@ void MainWindow::StartTimer_fired()
 
     if (fname == "") //no filename provided
     {
-        /*
-        QFileDialog dialog(this);
-        dialog.setFileMode(QFileDialog::ExistingFile);
-        dialog.setNameFilter("SPIERSview files (*.spv *.sp2)");
-        dialog.setViewMode(QFileDialog::Detail);
-
-        QStringList files;
-        if (dialog.exec())
-             files = dialog.selectedFiles();
-        else return;
-
-        QString ifname=files[0];
-        */
 agin:
         FilterKeys = false;
 
@@ -300,12 +296,12 @@ agin:
         r.ProcessFile(fname);
         //widget->ResizeScaleBall(1.0);
         RefreshInfo();
-
-
     }
-
 }
 
+/**
+ * @brief MainWindow::StripDownForVoxml
+ */
 void MainWindow::StripDownForVoxml()
 {
     ui->actionSave_Changes->setVisible(false);
@@ -401,48 +397,54 @@ void MainWindow::StripDownForVoxml()
     on_actionProgress_Bars_triggered();
 }
 
+/**
+ * @brief MainWindow::DegConvert
+ * @param angle
+ * @return
+ */
 QString MainWindow::DegConvert(float angle)
 {
     if (angle > 360)
-        angle = fmod(angle, 360.0);
+        angle = fmod(angle, static_cast<float>(360.0));
     while (angle < 0)
         angle += 360;
 
     QString retval;
-    retval.sprintf("%05.1f", angle);
+    retval.sprintf("%05.1f", static_cast<double>(angle));
     return retval;
 }
 
+/**
+ * @brief MainWindow::TransConvert
+ * @param trans
+ * @return
+ */
 QString MainWindow::TransConvert(float trans)
 {
     QString retval;
-    retval.sprintf("%04.1f", trans);
+    retval.sprintf("%04.1f", static_cast<double>(trans));
     return retval;
 }
 
+/**
+ * @brief MainWindow::SpinTimer_fired
+ */
 void MainWindow::SpinTimer_fired()
 {
-    /*    if (QApplication::focusWidget()==0)
-        {   qDebug()<<"Refocussing";
-            ui->treeWidget->setFocus();
-        }
-        qDebug()<<"Focus with "<<QApplication::focusWidget();
-    */
     int millisecs = time->elapsed();
     time->restart();
 
     Framenumbs.append(millisecs);
     if (Framenumbs.count() > 10)
     {
-
         double tot = 0;
         for (int i = 0; i < 10; i++)
         {
-            tot += (double)Framenumbs[i];
+            tot += static_cast<double>(Framenumbs[i]);
         }
         tot /= 10; //tot is average ms
         tot += 1;
-        int framerate = (int)(1000.0 / tot);
+        int framerate = static_cast<int>(1000.0 / tot);
         QString m;
         QTextStream s(&m);
 
@@ -461,18 +463,17 @@ void MainWindow::SpinTimer_fired()
     }
 
     //also a good place to recalc the width of output
-
     int wheight = gl3widget->height();
     int wwidth = gl3widget->width();
 
-    int aheight = int((double)wheight / (((double) wwidth) / ((double) ui->AnimRescaleX->value())));
+    int aheight = static_cast<int>(static_cast<double>(wheight) / (static_cast<double>(wwidth) / static_cast<double>(ui->AnimRescaleX->value())));
     QString s;
     s.sprintf("%d px", aheight);
     ui->LabelAnimHeight->setText(s);
 
     if (ui->actionAuto_Spin->isChecked())
     {
-        gl3widget->YRotate((float)millisecs * SPINRATE);
+        gl3widget->YRotate(static_cast<float>(millisecs) * static_cast<float>(SPINRATE));
         UpdateGL();
     }
 
@@ -486,7 +487,9 @@ void MainWindow::SpinTimer_fired()
     int ObjCount = 0;
 
     for (int j = 0; j < SVObjects.count(); j++)
-        if (SVObjects[j]->widgetitem && SVObjects[j]->spv )
+    {
+        if (SVObjects[j]->widgetitem && SVObjects[j]->spv)
+        {
             if (SVObjects[j]->widgetitem->isSelected())
             {
                 //qDebug()<<"j,SVJ"<<j<<SVObjects[j];
@@ -496,11 +499,13 @@ void MainWindow::SpinTimer_fired()
                 {
                     double spvscale = (1.0 / SVObjects[j]->spv->PixPerMM) * SVObjects[j]->scale;
                     spvscale = spvscale * spvscale * (1.0 / SVObjects[j]->spv->SlicePerMM) * SVObjects[j]->scale; //square it, multiply by slice spacing
-                    Volume += ((double)SVObjects[j]->Voxels) * spvscale;
+                    Volume += static_cast<double>(SVObjects[j]->Voxels) * spvscale;
                 }
                 TotalTriangles += SVObjects[j]->Triangles;
                 ObjCount++;
             }
+        }
+    }
 
     if (ObjCount == 0)
         mess.sprintf("Whole Model: %d KTr  ", model_ktr / 1000);
@@ -529,41 +534,63 @@ void MainWindow::SpinTimer_fired()
 
 }
 
+/**
+ * @brief MainWindow::on_actionShow_Scale_Grid_triggered
+ */
 void MainWindow::on_actionShow_Scale_Grid_triggered()
 {
     UpdateGL();
 }
 
-
+/**
+ * @brief MainWindow::on_ClipStart_valueChanged
+ * @param clip
+ */
 void MainWindow::on_ClipStart_valueChanged(int clip)
 {
     gl3widget->SetClip(ui->ClipStart->value(), ui->ClipDepth->value(), ui->ClipAngle->value());
     UpdateGL();
 }
 
+/**
+ * @brief MainWindow::on_ClipDepth_valueChanged
+ * @param clip
+ */
 void MainWindow::on_ClipDepth_valueChanged(int clip)
 {
     //call the above
     on_ClipStart_valueChanged(clip);
 }
 
+/**
+ * @brief MainWindow::on_ClipAngle_valueChanged
+ * @param clip
+ */
 void MainWindow::on_ClipAngle_valueChanged(int clip)
 {
     //call the above
     on_ClipStart_valueChanged(clip);
 }
 
-
+/**
+ * @brief MainWindow::on_actionZoom_In_triggered
+ */
 void MainWindow::on_actionZoom_In_triggered()
 {
     ui->ClipAngle->setValue(ui->ClipAngle->value() - 10);
 }
+
+/**
+ * @brief MainWindow::on_actionZoom_Out_triggered
+ */
 void MainWindow::on_actionZoom_Out_triggered()
 {
     ui->ClipAngle->setValue(ui->ClipAngle->value() + 10);
 }
 
-
+/**
+ * @brief MainWindow::on_actionAnaglyph_Stereo_triggered
+ */
 void MainWindow::on_actionAnaglyph_Stereo_triggered()
 {
     if (gl3widget->context()->format().stereo()) on_actionQuadBuffer_Stereo_triggered();
@@ -571,6 +598,9 @@ void MainWindow::on_actionAnaglyph_Stereo_triggered()
         UpdateGL();
 }
 
+/**
+ * @brief MainWindow::on_actionSplit_Stereo_triggered
+ */
 void MainWindow::on_actionSplit_Stereo_triggered()
 {
     if (gl3widget->context()->format().stereo()) on_actionQuadBuffer_Stereo_triggered();
@@ -578,6 +608,9 @@ void MainWindow::on_actionSplit_Stereo_triggered()
         UpdateGL();
 }
 
+/**
+ * @brief MainWindow::on_actionNo_Stereo_triggered
+ */
 void MainWindow::on_actionNo_Stereo_triggered()
 {
     if (gl3widget->context()->format().stereo()) on_actionQuadBuffer_Stereo_triggered();
@@ -585,6 +618,9 @@ void MainWindow::on_actionNo_Stereo_triggered()
         UpdateGL();
 }
 
+/**
+ * @brief MainWindow::on_actionQuadBuffer_Stereo_triggered
+ */
 void MainWindow::on_actionQuadBuffer_Stereo_triggered()
 {
     setSamples(gl3widget->context()->format().samples());
@@ -596,13 +632,17 @@ void MainWindow::on_actionQuadBuffer_Stereo_triggered()
     UpdateGL();
 }
 
-
+/**
+ * @brief MainWindow::on_actionMute_Colours_triggered
+ */
 void MainWindow::on_actionMute_Colours_triggered()
 {
     UpdateGL();
 }
 
-
+/**
+ * @brief MainWindow::on_actionRotate_Clockwise_triggered
+ */
 void MainWindow::on_actionRotate_Clockwise_triggered()
 {
     gl3widget->Rotate(-1);
@@ -610,6 +650,9 @@ void MainWindow::on_actionRotate_Clockwise_triggered()
     FileDirty = true;
 }
 
+/**
+ * @brief MainWindow::on_actionRotate_Anticlockwise_triggered
+ */
 void MainWindow::on_actionRotate_Anticlockwise_triggered()
 {
     gl3widget->Rotate(1);
@@ -631,6 +674,9 @@ void MainWindow::on_actionLarge_Rotate_Anticlockwise_triggered()
     FileDirty = true;
 }
 
+/**
+ * @brief MainWindow::on_actionMove_away_from_viewer_triggered
+ */
 void MainWindow::on_actionMove_away_from_viewer_triggered()
 {
     gl3widget->MoveAway(.02);
@@ -638,6 +684,9 @@ void MainWindow::on_actionMove_away_from_viewer_triggered()
     FileDirty = true;
 }
 
+/**
+ * @brief MainWindow::on_actionMove_towards_viewer_triggered
+ */
 void MainWindow::on_actionMove_towards_viewer_triggered()
 {
     gl3widget->MoveAway(-.02);
@@ -645,6 +694,9 @@ void MainWindow::on_actionMove_towards_viewer_triggered()
     FileDirty = true;
 }
 
+/**
+ * @brief MainWindow::on_actionLarge_Move_Closer_triggered
+ */
 void MainWindow::on_actionLarge_Move_Closer_triggered()
 {
     gl3widget->MoveAway(-.5);
@@ -652,6 +704,9 @@ void MainWindow::on_actionLarge_Move_Closer_triggered()
     FileDirty = true;
 }
 
+/**
+ * @brief MainWindow::on_actionLarge_Move_Away_triggered
+ */
 void MainWindow::on_actionLarge_Move_Away_triggered()
 {
     gl3widget->MoveAway(0.5);
@@ -659,6 +714,9 @@ void MainWindow::on_actionLarge_Move_Away_triggered()
     FileDirty = true;
 }
 
+/**
+ * @brief MainWindow::on_actionScreen_Capture_triggered
+ */
 void MainWindow::on_actionScreen_Capture_triggered()
 {
     UpdateGL();
@@ -672,6 +730,9 @@ void MainWindow::on_actionScreen_Capture_triggered()
     ScreenCapture.save(fileName);
 }
 
+/**
+ * @brief MainWindow::UnsetAllStereo
+ */
 void MainWindow::UnsetAllStereo()
 {
     ui->actionVery_Low->setChecked(false);
@@ -681,45 +742,67 @@ void MainWindow::UnsetAllStereo()
     ui->actionVery_High->setChecked(false);
 }
 
-
+/**
+ * @brief MainWindow::on_actionVery_Low_triggered
+ */
 void MainWindow::on_actionVery_Low_triggered()
 {
-    gl3widget->SetStereoSeparation(.005);
+    gl3widget->SetStereoSeparation(static_cast<float>(.005));
     UnsetAllStereo();
     ui->actionVery_Low->setChecked(true);
     UpdateGL();
 }
+
+/**
+ * @brief MainWindow::on_actionLow_triggered
+ */
 void MainWindow::on_actionLow_triggered()
 {
-    gl3widget->SetStereoSeparation(.015);
+    gl3widget->SetStereoSeparation(static_cast<float>(.015));
     UnsetAllStereo();
     ui->actionLow->setChecked(true);
     UpdateGL();
 }
+
+/**
+ * @brief MainWindow::on_actionMedium_triggered
+ */
 void MainWindow::on_actionMedium_triggered()
 {
-    gl3widget->SetStereoSeparation(.04);
+    gl3widget->SetStereoSeparation(static_cast<float>(.04));
     UnsetAllStereo();
     ui->actionMedium->setChecked(true);
     UpdateGL();
 }
+
+/**
+ * @brief MainWindow::on_actionHigh_triggered
+ */
 void MainWindow::on_actionHigh_triggered()
 {
-    gl3widget->SetStereoSeparation(.07);
+    gl3widget->SetStereoSeparation(static_cast<float>(.07));
     UnsetAllStereo();
     ui->actionHigh->setChecked(true);
     UpdateGL();
 }
+
+/**
+ * @brief MainWindow::on_actionVery_High_triggered
+ */
 void MainWindow::on_actionVery_High_triggered()
 {
-    gl3widget->SetStereoSeparation(.10);
+    gl3widget->SetStereoSeparation(static_cast<float>(.10));
     UnsetAllStereo();
     ui->actionVery_High->setChecked(true);
     UpdateGL();
 }
 
-
 //Functions for drawing object tree
+/**
+ * @brief MainWindow::RefreshOneItem
+ * @param item
+ * @param i
+ */
 void MainWindow::RefreshOneItem(QTreeWidgetItem *item, int i)
 {
     if (i < 0) return;
@@ -757,7 +840,10 @@ void MainWindow::RefreshOneItem(QTreeWidgetItem *item, int i)
         ui->treeWidget->setItemWidget (item, 3, test);
 
     QString KeySt(SVObjects[i]->Key);
-    if (SVObjects[i]->Key == 0) KeySt = "[-]";
+    if (SVObjects[i]->Key == nullptr)
+    {
+        KeySt = "[-]";
+    }
 
     QString ResampleSt;
     QTextStream rs(&ResampleSt);
@@ -767,8 +853,10 @@ void MainWindow::RefreshOneItem(QTreeWidgetItem *item, int i)
     item->setText(2, KeySt);
 
     QLabel *show = new QLabel();
-    if (SVObjects[i]->Visible) show->setPixmap(QPixmap(":/eye.bmp"));
-    else show->setPixmap(QPixmap(":/eye_off.bmp"));
+    if (SVObjects[i]->Visible)
+        show->setPixmap(QPixmap(":/eye.bmp"));
+    else
+        show->setPixmap(QPixmap(":/eye_off.bmp"));
     ui->treeWidget->setItemWidget (item, 1, show);
 
     if (SVObjects[i]->IsGroup)
@@ -822,7 +910,11 @@ void MainWindow::RefreshOneItem(QTreeWidgetItem *item, int i)
     }
 }
 
-
+/**
+ * @brief MainWindow::DrawChildObjects
+ * @param selflags
+ * @param parent
+ */
 void MainWindow::DrawChildObjects(QList <bool> selflags, int parent)
 {
     QTreeWidgetItem *item;
@@ -865,7 +957,9 @@ void MainWindow::DrawChildObjects(QList <bool> selflags, int parent)
     return;
 }
 
-
+/**
+ * @brief MainWindow::RefreshObjects
+ */
 void MainWindow::RefreshObjects()
 {
     if (SVObjects.count() == 0)
@@ -875,7 +969,6 @@ void MainWindow::RefreshObjects()
     }
 
     //set columwidths
-
     ui->treeWidget->setUniformRowHeights(true);
 
     if (voxml_mode)
@@ -895,9 +988,12 @@ void MainWindow::RefreshObjects()
         sf = false;
         if (SVObjects[i]->widgetitem)
         {
-            if ((SVObjects[i]->widgetitem)->isSelected()) sf = true;
-            if ((SVObjects[i]->widgetitem)->isExpanded()) SVObjects[i]->Expanded = true;
-            else SVObjects[i]->Expanded = false;
+            if ((SVObjects[i]->widgetitem)->isSelected())
+                sf = true;
+            if ((SVObjects[i]->widgetitem)->isExpanded())
+                SVObjects[i]->Expanded = true;
+            else
+                SVObjects[i]->Expanded = false;
         }
         selflags.append(sf);
     }
@@ -923,15 +1019,17 @@ void MainWindow::RefreshObjects()
     return;
 }
 
+/**
+ * @brief MainWindow::RefreshInfo
+ */
 void MainWindow::RefreshInfo()
 {
     //redo the info window
     if (SPVs.count() == 0) return;
 
-
     //First - if there is a title use it for window title
-
-    if (i_title.count() == 1) setWindowTitle("SPIERSview: " + i_title[0]);
+    if (i_title.count() == 1)
+        setWindowTitle("SPIERSview: " + i_title[0]);
     else
     {
         QString shortfname = "SPIERSview - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
@@ -995,7 +1093,6 @@ void MainWindow::RefreshInfo()
     reference->setData(0, Qt::UserRole, rootdata);
     ui->infoTreeWidget->addTopLevelItem(reference);
 
-
     rootdata = "";
     QTreeWidgetItem *specimen = new QTreeWidgetItem(QTreeWidgetItem::UserType);
     specimen->setText(0, "Specimen");
@@ -1041,6 +1138,9 @@ void MainWindow::RefreshInfo()
     RedoInfoText();
 }
 
+/**
+ * @brief MainWindow::RedoInfoText
+ */
 void MainWindow::RedoInfoText()
 {
     ui->infoText->setPlainText("");
@@ -1050,15 +1150,24 @@ void MainWindow::RedoInfoText()
     ui->infoText->setPlainText(text);
 }
 
+/**
+ * @brief MainWindow::on_infoTreeWidget_itemSelectionChanged
+ */
 void MainWindow::on_infoTreeWidget_itemSelectionChanged()
 {
     RedoInfoText();
 }
 
+/**
+ * @brief MainWindow::on_infoTreeWidget_itemDoubleClicked
+ * @param item
+ * @param column
+ */
 void MainWindow::on_infoTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
 {
     if (voxml_mode) return; //disabled in VAXML mode
     FileDirty = true;
+
     //work out if this is a root or child item
     if (item->type() == QTreeWidgetItem::UserType)
     {
@@ -1159,9 +1268,11 @@ void MainWindow::on_infoTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int 
         }
         //edit item
     }
-
 }
 
+/**
+ * @brief MainWindow::deleteinfo
+ */
 void MainWindow::deleteinfo()
 {
     if (ui->infoTreeWidget->isVisible() == false) return;
@@ -1261,11 +1372,16 @@ void MainWindow::deleteinfo()
             RefreshInfo();
         }
     }
-
 }
 
+/**
+ * @brief MainWindow::on_treeWidget_itemDoubleClicked
+ * Handler for double clicking in my list
+ *
+ * @param item
+ * @param column
+ */
 void MainWindow::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
-//Handler for double clicking in my list
 {
     //We need
     //0 - Name
@@ -1278,6 +1394,7 @@ void MainWindow::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int colu
 
     //First find index of item
     for (int i = 0; i < SVObjects.count(); i++)
+    {
         if (item == SVObjects[i]->widgetitem) //found it
         {
             if (column == 0)
@@ -1312,7 +1429,7 @@ void MainWindow::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int colu
 
                 bool ok;
 
-                int asc = (char) (SVObjects[i]->Key).toLatin1();
+                int asc = static_cast<char>((SVObjects[i]->Key).toLatin1());
                 if (asc >= 65 && asc <= 90) asc -= 64;
                 else if (asc >= 48 && asc <= 57) asc -= 21;
                 FilterKeys = false;
@@ -1325,7 +1442,7 @@ void MainWindow::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int colu
                 {
                     FileDirty = true;
                     if (qitem == "[None]") SVObjects[i]->Key = 0;
-                    else SVObjects[i]->Key = (int) (qitem.toLatin1()[0]);
+                    else SVObjects[i]->Key = static_cast<int>(qitem.toLatin1()[0]);
                 }
                 RefreshOneItem(item, i);
             }
@@ -1343,9 +1460,9 @@ void MainWindow::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int colu
                 if (newcol.isValid())
                 {
                     FileDirty = true;
-                    SVObjects[i]->Colour[0] = newcol.red();
-                    SVObjects[i]->Colour[1] = newcol.green();
-                    SVObjects[i]->Colour[2] = newcol.blue();
+                    SVObjects[i]->Colour[0] = static_cast<uchar>(newcol.red());
+                    SVObjects[i]->Colour[1] = static_cast<uchar>(newcol.green());
+                    SVObjects[i]->Colour[2] = static_cast<uchar>(newcol.blue());
                     RefreshOneItem(item, i);
                     UpdateGL();
                 }
@@ -1355,12 +1472,15 @@ void MainWindow::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int colu
             {
                 SetResample();
             }
-
         }
+    }
 }
 
+/**
+ * @brief MainWindow::SetResample
+ * For all selected objects set new resample %age
+ */
 void MainWindow::SetResample()
-//For all selected objects set new resample %age
 {
     bool flag;
     FilterKeys = false;
@@ -1383,40 +1503,73 @@ void MainWindow::SetResample()
     }
 }
 
+/**
+ * @brief MainWindow::on_actionSet_Resampling_triggered
+ */
 void MainWindow::on_actionSet_Resampling_triggered()
 {
     SetResample();
 }
 
-
+/**
+ * @brief MainWindow::on_actionOff_triggered
+ */
 void MainWindow::on_actionOff_triggered()
 {
     SetSmoothing(0);
 };
+
+/**
+ * @brief MainWindow::on_actionVery_Weak_triggered
+ */
 void MainWindow::on_actionVery_Weak_triggered()
 {
     SetSmoothing(1);
 };
+
+/**
+ * @brief MainWindow::on_actionWeak_triggered
+ */
 void MainWindow::on_actionWeak_triggered()
 {
     SetSmoothing(2);
 };
+
+/**
+ * @brief MainWindow::on_actionMedium_2_triggered
+ */
 void MainWindow::on_actionMedium_2_triggered()
 {
     SetSmoothing(3);
 }
+
+/**
+ * @brief MainWindow::on_actionStrongish_triggered
+ */
 void MainWindow::on_actionStrongish_triggered()
 {
     SetSmoothing(4);
 };
+
+/**
+ * @brief MainWindow::on_actionStrong_triggered
+ */
 void MainWindow::on_actionStrong_triggered()
 {
     SetSmoothing(5);
 };
+
+/**
+ * @brief MainWindow::on_actionStrongest_triggered
+ */
 void MainWindow::on_actionStrongest_triggered()
 {
     SetSmoothing(6);
 };
+
+/**
+ * @brief MainWindow::on_actionSmoothing_Custom_triggered
+ */
 void MainWindow::on_actionSmoothing_Custom_triggered()
 {
     bool flag;
@@ -1426,30 +1579,57 @@ void MainWindow::on_actionSmoothing_Custom_triggered()
     if (flag) SetSmoothing(0 - temp);
 }
 
+/**
+ * @brief MainWindow::on_actionOff_2_triggered
+ */
 void MainWindow::on_actionOff_2_triggered()
 {
     SetIslands(0);
 };
+
+/**
+ * @brief MainWindow::on_actionRemove_Tiny_triggered
+ */
 void MainWindow::on_actionRemove_Tiny_triggered()
 {
     SetIslands(1);
 };
+
+/**
+ * @brief MainWindow::on_actionRemove_Small_triggered
+ */
 void MainWindow::on_actionRemove_Small_triggered()
 {
     SetIslands(2);
 };
+
+/**
+ * @brief MainWindow::on_actionRemove_Medium_triggered
+ */
 void MainWindow::on_actionRemove_Medium_triggered()
 {
     SetIslands(3);
 };
+
+/**
+ * @brief MainWindow::on_actionRemove_Large_triggered
+ */
 void MainWindow::on_actionRemove_Large_triggered()
 {
     SetIslands(4);
 };
+
+/**
+ * @brief MainWindow::on_actionRemove_All_triggered
+ */
 void MainWindow::on_actionRemove_All_triggered()
 {
     SetIslands(5);
 };
+
+/**
+ * @brief MainWindow::on_actionIsland_Removal_Custom_triggered
+ */
 void MainWindow::on_actionIsland_Removal_Custom_triggered()
 {
     bool flag;
@@ -1460,6 +1640,10 @@ void MainWindow::on_actionIsland_Removal_Custom_triggered()
     if (flag) SetIslands(0 - temp);
 }
 
+/**
+ * @brief MainWindow::SetSmoothing
+ * @param v
+ */
 void MainWindow::SetSmoothing(int v)
 {
     for (int i = 0; i < SVObjects.count(); i++)
@@ -1475,6 +1659,10 @@ void MainWindow::SetSmoothing(int v)
     if (ui->actionAuto_Resurface->isChecked() && ui->actionResurface_Now->isEnabled()) on_actionResurface_Now_triggered();
 }
 
+/**
+ * @brief MainWindow::SetIslands
+ * @param v
+ */
 void MainWindow::SetIslands(int v)
 {
     for (int i = 0; i < SVObjects.count(); i++)
@@ -1490,6 +1678,10 @@ void MainWindow::SetIslands(int v)
     if (ui->actionAuto_Resurface->isChecked() && ui->actionResurface_Now->isEnabled()) on_actionResurface_Now_triggered();
 }
 
+/**
+ * @brief MainWindow::SetTrans
+ * @param v
+ */
 void MainWindow::SetTrans(int v)
 {
     for (int i = 0; i < SVObjects.count(); i++)
@@ -1504,7 +1696,10 @@ void MainWindow::SetTrans(int v)
     UpdateGL();
 }
 
-
+/**
+ * @brief MainWindow::SetShininess
+ * @param s
+ */
 void MainWindow::SetShininess(int s)
 {
     for (int i = 0; i < SVObjects.count(); i++)
@@ -1519,72 +1714,102 @@ void MainWindow::SetShininess(int s)
     UpdateGL();
 }
 
+/**
+ * @brief MainWindow::on_actionResurface_Now_triggered
+ */
 void MainWindow::on_actionResurface_Now_triggered()
 {
-    //show prog bars if needbe
-    if (ui->actionProgress_Bars->isChecked() == false && voxml_mode == true)
     {
-        ui->actionProgress_Bars->setEnabled(false);
-        ui->ProgressDock->setVisible(true);
-    }
-    if (voxml_mode == false) MainWin->DisableRenderCommands();
-    //How many to change?
-    int ObjectsRedoing = 0;
-    for (int i = 0; i < SVObjects.count(); i++) if (SVObjects[i]->Dirty && SVObjects[i]->IsGroup == false) ObjectsRedoing++;
-
-    int ThisObject = 0;
-
-    for (int i = 0; i < SVObjects.count(); i++) //have to clear VBOs first or there are problems
-        if (SVObjects[i]->Dirty)
+        //show prog bars if needbe
+        if (ui->actionProgress_Bars->isChecked() == false && voxml_mode == true)
         {
-            qDeleteAll(SVObjects[i]->VertexBuffers);
-            qDeleteAll(SVObjects[i]->ColourBuffers);
-            SVObjects[i]->BoundingBoxBuffer.destroy();
-            SVObjects[i]->VertexBuffers.clear();
-            SVObjects[i]->ColourBuffers.clear();
+            ui->actionProgress_Bars->setEnabled(false);
+            ui->ProgressDock->setVisible(true);
+        }
+        if (voxml_mode == false) MainWin->DisableRenderCommands();
+        //How many to change?
+        int ObjectsRedoing = 0;
+        for (int i = 0; i < SVObjects.count(); i++) if (SVObjects[i]->Dirty && SVObjects[i]->IsGroup == false) ObjectsRedoing++;
 
+        int ThisObject = 0;
+
+        //have to clear VBOs first or there are problems
+        for (int i = 0; i < SVObjects.count(); i++)
+        {
+            if (SVObjects[i]->Dirty)
+            {
+                qDeleteAll(SVObjects[i]->VertexBuffers);
+                qDeleteAll(SVObjects[i]->ColourBuffers);
+                SVObjects[i]->BoundingBoxBuffer.destroy();
+                SVObjects[i]->VertexBuffers.clear();
+                SVObjects[i]->ColourBuffers.clear();
+            }
         }
 
-    for (int i = 0; i < SVObjects.count(); i++)
-        if (SVObjects[i]->Dirty)
+        for (int i = 0; i < SVObjects.count(); i++)
         {
-            SVObjects[i]->ForceUpdates(ThisObject++, ObjectsRedoing);
-            UpdateGL();
+            if (SVObjects[i]->Dirty)
+            {
+                SVObjects[i]->ForceUpdates(ThisObject++, ObjectsRedoing);
+                UpdateGL();
+            }
         }
 
-    ui->OutputLabelOverall->setText("Complete");
-    ui->ProgBarOverall->setValue(100);
+        ui->OutputLabelOverall->setText("Complete");
+        ui->ProgBarOverall->setValue(100);
 
-    if (voxml_mode == false) MainWin->EnableRenderCommands();
-    if (ui->actionProgress_Bars->isChecked() == false && voxml_mode == true)
-    {
-        ui->actionProgress_Bars->setEnabled(true);
-        ui->ProgressDock->setVisible(false);
+        if (voxml_mode == false) MainWin->EnableRenderCommands();
+        if (ui->actionProgress_Bars->isChecked() == false && voxml_mode == true)
+        {
+            ui->actionProgress_Bars->setEnabled(true);
+            ui->ProgressDock->setVisible(false);
+        }
     }
 }
 
-
+/**
+ * @brief MainWindow::on_actionOpaque_2_triggered
+ */
 void  MainWindow::on_actionOpaque_2_triggered()
 {
     SetTrans(0);
 };
+
+/**
+ * @brief MainWindow::on_action75_Opaque_2_triggered
+ */
 void  MainWindow::on_action75_Opaque_2_triggered()
 {
     SetTrans(1);
 };
+
+/**
+ * @brief MainWindow::on_action62_Opaque_triggered
+ */
 void  MainWindow::on_action62_Opaque_triggered()
 {
     SetTrans(2);
 };
+
+/**
+ * @brief MainWindow::on_action50_Opaque_triggered
+ */
 void  MainWindow::on_action50_Opaque_triggered()
 {
     SetTrans(3);
 };
+
+/**
+ * @brief MainWindow::on_action25_Opaque_triggered
+ */
 void  MainWindow::on_action25_Opaque_triggered()
 {
     SetTrans(4);
 };
 
+/**
+ * @brief MainWindow::on_actionTransparency_Custom_triggered
+ */
 void  MainWindow::on_actionTransparency_Custom_triggered()
 {
     bool flag;
@@ -1594,22 +1819,41 @@ void  MainWindow::on_actionTransparency_Custom_triggered()
     if (flag) SetTrans(0 - temp);
 }
 
+/**
+ * @brief MainWindow::on_actionMatte_triggered
+ */
 void  MainWindow::on_actionMatte_triggered()
 {
     SetShininess(0);
 };
+
+/**
+ * @brief MainWindow::on_actionSlightly_Shiny_triggered
+ */
 void  MainWindow::on_actionSlightly_Shiny_triggered()
 {
     SetShininess(1);
 };
+
+/**
+ * @brief MainWindow::on_actionFairly_Shiny_triggered
+ */
 void  MainWindow::on_actionFairly_Shiny_triggered()
 {
     SetShininess(2);
 };
+
+/**
+ * @brief MainWindow::on_actionShiny_triggered
+ */
 void  MainWindow::on_actionShiny_triggered()
 {
     SetShininess(3);
 };
+
+/**
+ * @brief MainWindow::on_actionShininessCustom_triggered
+ */
 void  MainWindow::on_actionShininessCustom_triggered()
 {
     bool flag;
@@ -1619,9 +1863,9 @@ void  MainWindow::on_actionShininessCustom_triggered()
     if (flag) SetShininess(0 - temp);
 }
 
-
-
-
+/**
+ * @brief MainWindow::EnableRenderCommands
+ */
 void MainWindow::EnableRenderCommands()
 {
     //qDebug()<<"Here";
@@ -1668,6 +1912,9 @@ void MainWindow::EnableRenderCommands()
     //qDebug()<<"Out";
 }
 
+/**
+ * @brief MainWindow::DisableRenderCommands
+ */
 void MainWindow::DisableRenderCommands()
 {
     ui->actionAuto_Resurface->setEnabled(false);
@@ -1712,6 +1959,9 @@ void MainWindow::DisableRenderCommands()
     qApp->processEvents();
 }
 
+/**
+ * @brief MainWindow::on_actionObject_Panel_triggered
+ */
 void MainWindow::on_actionObject_Panel_triggered()
 {
     if (ui->actionObject_Panel->isChecked())
@@ -1724,13 +1974,20 @@ void MainWindow::on_actionObject_Panel_triggered()
     }
 }
 
+/**
+ * @brief MainWindow::on_actionOrthographic_View_triggered
+ */
 void MainWindow::on_actionOrthographic_View_triggered()
 {
-    if (gl3widget->context()->format().stereo()) on_actionQuadBuffer_Stereo_triggered();
+    if (gl3widget->context()->format().stereo())
+        on_actionQuadBuffer_Stereo_triggered();
     else
         UpdateGL();
 }
 
+/**
+ * @brief MainWindow::on_actionPieces_Panel_triggered
+ */
 void  MainWindow::on_actionPieces_Panel_triggered()
 {
     if (ui->actionPieces_Panel->isChecked())
@@ -1743,6 +2000,9 @@ void  MainWindow::on_actionPieces_Panel_triggered()
     }
 }
 
+/**
+ * @brief MainWindow::on_actionAbout_triggered
+ */
 void MainWindow::on_actionAbout_triggered()
 {
     aboutdialog d;
@@ -1752,12 +2012,18 @@ void MainWindow::on_actionAbout_triggered()
 
 }
 
+/**
+ * @brief MainWindow::on_actionQuick_Guide_triggered
+ */
 void MainWindow::on_actionQuick_Guide_triggered()
 {
     QuickHelpBox d;
     d.exec();
 }
 
+/**
+ * @brief MainWindow::on_actionInfo_triggered
+ */
 void MainWindow::on_actionInfo_triggered()
 {
     if (ui->actionInfo->isChecked())
@@ -1770,6 +2036,9 @@ void MainWindow::on_actionInfo_triggered()
     }
 }
 
+/**
+ * @brief MainWindow::on_actionProgress_Bars_triggered
+ */
 void MainWindow::on_actionProgress_Bars_triggered()
 {
     if (ui->actionProgress_Bars->isChecked())
@@ -1782,6 +2051,9 @@ void MainWindow::on_actionProgress_Bars_triggered()
     }
 }
 
+/**
+ * @brief MainWindow::on_actionAnimation_Panel_triggered
+ */
 void MainWindow::on_actionAnimation_Panel_triggered()
 {
     if (ui->actionAnimation_Panel->isChecked())
@@ -1794,6 +2066,9 @@ void MainWindow::on_actionAnimation_Panel_triggered()
     }
 }
 
+/**
+ * @brief MainWindow::on_actionClip_Controls_triggered
+ */
 void MainWindow::on_actionClip_Controls_triggered()
 {
     if (ui->actionClip_Controls->isChecked())
@@ -1806,6 +2081,9 @@ void MainWindow::on_actionClip_Controls_triggered()
     }
 }
 
+/**
+ * @brief MainWindow::on_actionSave_Changes_triggered
+ */
 void MainWindow::on_actionSave_Changes_triggered()
 {
     bool flag = false;
@@ -1822,6 +2100,9 @@ void MainWindow::on_actionSave_Changes_triggered()
     FileDirty = false;
 }
 
+/**
+ * @brief MainWindow::on_actionSave_As_triggered
+ */
 void MainWindow::on_actionSave_As_triggered()
 {
     //First - check no pre v5 files in here
@@ -1830,20 +2111,6 @@ void MainWindow::on_actionSave_As_triggered()
     cpath = fname;
     cpath = fname.left(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")));
 
-    /*QFileDialog dialog(this);
-    dialog.setFileMode(QFileDialog::AnyFile);
-    dialog.setNameFilter("SPV files (*.spv)");
-    dialog.setViewMode(QFileDialog::Detail);
-    dialog.setDirectory(cpath);
-
-    QStringList files;
-    if (dialog.exec())
-         files = dialog.selectedFiles();
-    else return;
-
-    QString f=files[0];
-
-    */
     FilterKeys = false;
 
     QString f = QFileDialog::getSaveFileName(this, tr("Save File (Compact Mode)"),
@@ -1858,10 +2125,11 @@ void MainWindow::on_actionSave_As_triggered()
     SPVreader r;
     r.WriteFile(false);
     FileDirty = false;
-
 }
 
-
+/**
+ * @brief MainWindow::on_actionSave_Presurfaced_triggered
+ */
 void MainWindow::on_actionSave_Presurfaced_triggered()
 {
     QString cpath;
@@ -1886,22 +2154,11 @@ void MainWindow::on_actionSave_Presurfaced_triggered()
     FileDirty = false;
 }
 
+/**
+ * @brief MainWindow::on_actionDXF_triggered
+ */
 void MainWindow::on_actionDXF_triggered()
 {
-
-    /*  QFileDialog dialog(this);
-        dialog.setFileMode(QFileDialog::AnyFile);
-        dialog.setNameFilter("DXF files (*.dxf)");
-        dialog.setViewMode(QFileDialog::Detail);
-
-        QStringList files;
-        if (dialog.exec())
-             files = dialog.selectedFiles();
-        else return;
-
-        QString filename=files[0];
-
-    */
     FilterKeys = false;
 
     QString filename = QFileDialog::getSaveFileName(
@@ -1923,7 +2180,7 @@ void MainWindow::on_actionDXF_triggered()
     {
         QTextStream dxf(&dxffile);
         //basic header
-        dxf << "999\nCreated by SPIERSview 2\n0\n";
+        dxf << "999\nCreated by SPIERSview\n0\n";
         dxf << "SECTION\n2\nHEADER\n9\n$ACADVER\n1\nAC1006\n9\n$INSBASE\n10\n0.0\n20\n0.0\n30\n0.0\n9\n$EXTMIN\n10\n0.0\n20\n0.0\n9\n$EXTMAX\n10\n1000.0\n20\n1000.0\n0\nENDSEC\n";
         dxf << "0\nSECTION\n2\nTABLES\n0\nTABLE\n2\nLTYPE\n70\n1\n0\nLTYPE\n2\nCONTINUOUS\n70\n64\n3\nSolid line\n72\n65\n73\n0\n40\n0.000000\n0\nENDTAB\n0\n";
 
@@ -1962,7 +2219,7 @@ void MainWindow::on_actionDXF_triggered()
                 ui->OutputLabelOverall->setText(status);
                 ui->ProgBarOverall->setValue((i * 100) / SVObjects.count());
                 //find name
-                count += (long)SVObjects[i]->WriteDXFfaces(&dxffile);
+                count += static_cast<long>(SVObjects[i]->WriteDXFfaces(&dxffile));
             }
 
         ui->OutputLabelOverall->setText("DXF export complete");
@@ -1972,6 +2229,9 @@ void MainWindow::on_actionDXF_triggered()
     EnableRenderCommands();
 }
 
+/**
+ * @brief MainWindow::on_actionSave_Finalised_As_triggered
+ */
 void MainWindow::on_actionSave_Finalised_As_triggered()
 {
 
@@ -2021,7 +2281,7 @@ void MainWindow::on_actionSave_Finalised_As_triggered()
             }
             fname2.append(".stl");
 
-            count += (long)SVObjects[i]->AppendCompressedFaces(fname, fname2, &(v.dataout));
+            count += static_cast<long>(SVObjects[i]->AppendCompressedFaces(fname, fname2, &(v.dataout)));
         }
 
     ui->OutputLabelOverall->setText("SPVF finalised export complete");
@@ -2033,6 +2293,9 @@ void MainWindow::on_actionSave_Finalised_As_triggered()
     fname = oldfname; //restore fname for use in save as
 }
 
+/**
+ * @brief MainWindow::on_actionSTL_triggered
+ */
 void MainWindow::on_actionSTL_triggered()
 {
     QString cpath, oldfname;
@@ -2049,8 +2312,6 @@ void MainWindow::on_actionSTL_triggered()
 
 
     DisableRenderCommands();
-
-
     int objcount = 0;
     for (int i = 0; i < SVObjects.count(); i++)
         if (!(SVObjects[i]->IsGroup)) objcount++;
@@ -2089,8 +2350,8 @@ void MainWindow::on_actionSTL_triggered()
             QFileInfo fi(fname);
 
             fname2 = fi.dir().absolutePath() + "/" + fi.baseName() + "_stl/" + fname2;
-//        qDebug()<<"Outputting"<<fname2<<fi.dir().absolutePath() + "/" + fi.baseName() + "_stl";
-            count += (long)SVObjects[i]->WriteSTLfaces(fi.dir().absolutePath() + "/" + fi.baseName() + "_stl", fname2);
+            // qDebug()<<"Outputting"<<fname2<<fi.dir().absolutePath() + "/" + fi.baseName() + "_stl";
+            count += static_cast<long>(SVObjects[i]->WriteSTLfaces(fi.dir().absolutePath() + "/" + fi.baseName() + "_stl", fname2));
         }
 
     ui->OutputLabelOverall->setText("VAXML / STL export complete");
@@ -2100,11 +2361,17 @@ void MainWindow::on_actionSTL_triggered()
     fname = oldfname; //restore fname for use in save as
 }
 
+/**
+ * @brief MainWindow::on_actionAuto_Resurface_triggered
+ */
 void MainWindow::on_actionAuto_Resurface_triggered()
 {
     if (ui->actionAuto_Resurface->isChecked()) on_actionResurface_Now_triggered();
 }
 
+/**
+ * @brief MainWindow::on_actionShow_All_triggered
+ */
 void MainWindow::on_actionShow_All_triggered()
 {
     for (int i = 0; i < SVObjects.count(); i++)   SVObjects[i]->Visible = true;
@@ -2113,6 +2380,9 @@ void MainWindow::on_actionShow_All_triggered()
     UpdateGL();
 }
 
+/**
+ * @brief MainWindow::on_actionHide_All_triggered
+ */
 void MainWindow::on_actionHide_All_triggered()
 {
     //hide everything except groups
@@ -2122,6 +2392,9 @@ void MainWindow::on_actionHide_All_triggered()
     UpdateGL();
 }
 
+/**
+ * @brief MainWindow::on_actionInvert_Show_triggered
+ */
 void MainWindow::on_actionInvert_Show_triggered()
 {
     //First - note what is visible
@@ -2140,6 +2413,9 @@ void MainWindow::on_actionInvert_Show_triggered()
     UpdateGL();
 }
 
+/**
+ * @brief MainWindow::on_actionSave_Memory_triggered
+ */
 void MainWindow::on_actionSave_Memory_triggered()
 {
     FileDirty = true;
@@ -2147,6 +2423,9 @@ void MainWindow::on_actionSave_Memory_triggered()
         for (int i = 0; i < SVObjects.count(); i++) SVObjects[i]->CompressPolyData(false);
 }
 
+/**
+ * @brief MainWindow::on_actionRemove_Piece_triggered
+ */
 void MainWindow::on_actionRemove_Piece_triggered()
 {
     if (ui->PiecesList->selectedItems().count() == 0)
@@ -2171,25 +2450,15 @@ void MainWindow::on_actionRemove_Piece_triggered()
         if (ret == QMessageBox::No) return;
 
         //OK, we are go!
-
         KillSPV(i);
     }
 }
 
+/**
+ * @brief MainWindow::on_actionImport_SPV_triggered
+ */
 void MainWindow::on_actionImport_SPV_triggered()
 {
-    /*  QFileDialog dialog(this);
-        dialog.setFileMode(QFileDialog::ExistingFile);
-        dialog.setNameFilter("SPV files (*.spv)");
-        dialog.setViewMode(QFileDialog::Detail);
-
-        QStringList files;
-        if (dialog.exec())
-             files = dialog.selectedFiles();
-        else return;
-
-        QString ifname=files[0];
-    */
     FilterKeys = false;
 
     QString ifname = QFileDialog::getOpenFileName(
@@ -2207,9 +2476,12 @@ void MainWindow::on_actionImport_SPV_triggered()
     r.ProcessFile(ifname);
     FileDirty = true;
     RefreshInfo();
-
 }
 
+/**
+ * @brief MainWindow::KillSPV
+ * @param retcode
+ */
 void MainWindow::KillSPV(int retcode)
 {
     SPV *s = SPVs[retcode];
@@ -2230,7 +2502,7 @@ void MainWindow::KillSPV(int retcode)
         }
     };
 
-    //Then remove the SPV from the SPVs list and delete that - Put a dealloc in the destructor  for stretches at least
+    //Then remove the SPV from the SPVs list and delete that - Put a dealloc in the destructor for stretches at least
     delete SPVs.takeAt(retcode);
 
     //remove any empty groups (for each group do a trawl for children. Mark any with none.
@@ -2274,7 +2546,6 @@ void MainWindow::KillSPV(int retcode)
         }
     };
 
-
     //Newer code to sort out all the indexes:
     //go through entire list of SVobjects
     //Create conversion table of old index to new index just loop through each, put oldindex in oldindexfor[n]
@@ -2306,31 +2577,20 @@ void MainWindow::KillSPV(int retcode)
 
     FileDirty = true;
     RefreshObjects();
-
 }
+
+/**
+ * @brief MainWindow::on_actionImport_Replacement_triggered
+ */
 void MainWindow::on_actionImport_Replacement_triggered()
 {
     //import, but check we have a piece selected first
-
     if (ui->PiecesList->selectedItems().count() == 0)
     {
         QMessageBox::warning(this, "Can't Replace", "Select a piece to replace first!");
     }
     else
     {
-        /*
-                QFileDialog dialog(this);
-                dialog.setFileMode(QFileDialog::ExistingFile);
-                dialog.setNameFilter("SPV files (*.spv)");
-                dialog.setViewMode(QFileDialog::Detail);
-
-                QStringList files;
-                if (dialog.exec())
-                     files = dialog.selectedFiles();
-                else return;
-
-                QString ifname=files[0];
-        */
         FilterKeys = false;
 
         QString ifname = QFileDialog::getOpenFileName(
@@ -2355,6 +2615,9 @@ void MainWindow::on_actionImport_Replacement_triggered()
     }
 }
 
+/**
+ * @brief MainWindow::RefreshPieces
+ */
 void MainWindow::RefreshPieces()
 {
     ui->PiecesList->clear();
@@ -2367,6 +2630,9 @@ void MainWindow::RefreshPieces()
     }
 }
 
+/**
+ * @brief MainWindow::on_PiecesList_itemSelectionChanged
+ */
 void MainWindow::on_PiecesList_itemSelectionChanged()
 {
     if (ui->PiecesList->count() < SPVs.count()) return;
@@ -2383,21 +2649,30 @@ void MainWindow::on_PiecesList_itemSelectionChanged()
             }
         }
     }
-
 }
 
+/**
+ * @brief MainWindow::on_actionSelect_All_triggered
+ */
 void MainWindow::on_actionSelect_All_triggered()
 {
     for (int j = 0; j < SVObjects.count(); j++)
         SVObjects[j]->widgetitem->setSelected(true);
 }
 
+/**
+ * @brief MainWindow::on_actionSelect_None_triggered
+ */
 void MainWindow::on_actionSelect_None_triggered()
 {
     for (int j = 0; j < SVObjects.count(); j++)
         SVObjects[j]->widgetitem->setSelected(false);
 }
 
+/**
+ * @brief MainWindow::on_PiecesList_itemDoubleClicked
+ * @param item
+ */
 void MainWindow::on_PiecesList_itemDoubleClicked(QListWidgetItem *item)
 {
     int i = ui->PiecesList->currentRow();
@@ -2410,20 +2685,29 @@ void MainWindow::on_PiecesList_itemDoubleClicked(QListWidgetItem *item)
     RefreshPieces();
 }
 
+/**
+ * @brief MainWindow::on_actionIncrease_Size_triggered
+ */
 void MainWindow::on_actionIncrease_Size_triggered()
 {
-    gl3widget->Resize(1.003);
+    gl3widget->Resize(static_cast<float>(1.003));
     FileDirty = true;
     UpdateGL();
 }
 
+/**
+ * @brief MainWindow::on_actionDecrease_Size_triggered
+ */
 void MainWindow::on_actionDecrease_Size_triggered()
 {
-    gl3widget->Resize(.997);
+    gl3widget->Resize(static_cast<float>(.997));
     FileDirty = true;
     UpdateGL();
 }
 
+/**
+ * @brief MainWindow::on_actionReset_Size_triggered
+ */
 void MainWindow::on_actionReset_Size_triggered()
 {
     gl3widget->ResetSize();
@@ -2431,6 +2715,10 @@ void MainWindow::on_actionReset_Size_triggered()
     UpdateGL();
 }
 
+/**
+ * @brief MainWindow::closeEvent
+ * @param event
+ */
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     if (voxml_mode == true)
@@ -2452,6 +2740,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
         event->ignore();
         return;
     }
+
     if (FileDirty)
     {
         QMessageBox msgBox;
@@ -2473,9 +2762,11 @@ void MainWindow::closeEvent(QCloseEvent *event)
             exit(0);
         }
     }
-
 }
 
+/**
+ * @brief MainWindow::on_action_Move_Up_triggered
+ */
 void MainWindow::on_action_Move_Up_triggered()
 {
     QList <QTreeWidgetItem *> selected = ui->treeWidget->selectedItems();
@@ -2513,6 +2804,9 @@ void MainWindow::on_action_Move_Up_triggered()
     RefreshObjects();
 }
 
+/**
+ * @brief MainWindow::on_actionMove_Down_triggered
+ */
 void MainWindow::on_actionMove_Down_triggered()
 {
     QList <QTreeWidgetItem *> selected = ui->treeWidget->selectedItems();
@@ -2550,6 +2844,9 @@ void MainWindow::on_actionMove_Down_triggered()
     RefreshObjects();
 }
 
+/**
+ * @brief MainWindow::on_actionGroup_triggered
+ */
 void MainWindow::on_actionGroup_triggered()
 {
     QList <QTreeWidgetItem *> selected = ui->treeWidget->selectedItems();
@@ -2559,7 +2856,8 @@ void MainWindow::on_actionGroup_triggered()
     for (int i = 0; i < SVObjects.count(); i++)
         if (SVObjects[i]->Index > nextindex) nextindex = SVObjects[i]->Index;
     nextindex++;
-    if (selected.count() == 0) QMessageBox::warning(this, "", "Select objects to group");
+    if (selected.count() == 0)
+        QMessageBox::warning(this, "", "Select objects to group");
     else
     {
         //OK, do grouping
@@ -2590,6 +2888,9 @@ void MainWindow::on_actionGroup_triggered()
     }
 }
 
+/**
+ * @brief MainWindow::on_actionUngroup_triggered
+ */
 void MainWindow::on_actionUngroup_triggered()
 {
     //Ungroup command
@@ -2667,11 +2968,11 @@ void MainWindow::on_actionUngroup_triggered()
 
     FileDirty = true;
     RefreshObjects();
-
-    //if (flag) QMessageBox::warning(this,"","No objects selected that can be removed from groups!");
-    //else RefreshObjects();
 }
 
+/**
+ * @brief MainWindow::on_actionMove_to_group_triggered
+ */
 void MainWindow::on_actionMove_to_group_triggered()
 {
     bool flag = false;
@@ -2728,6 +3029,9 @@ void MainWindow::on_actionMove_to_group_triggered()
     }
 }
 
+/**
+ * @brief MainWindow::UnsetAllAA
+ */
 void MainWindow::UnsetAllAA()
 {
     ui->actionAANone->setChecked(false);
@@ -2737,6 +3041,10 @@ void MainWindow::UnsetAllAA()
     ui->action16x->setChecked(false);
 }
 
+/**
+ * @brief MainWindow::setSamples
+ * @param i
+ */
 void MainWindow::setSamples(int i)
 {
     //qDebug()<<"InSS";
@@ -2776,6 +3084,9 @@ void MainWindow::setSamples(int i)
     gl3widget = gl3widget2;
 }
 
+/**
+ * @brief MainWindow::on_actionAANone_triggered
+ */
 void MainWindow::on_actionAANone_triggered()
 {
     setSamples(1);
@@ -2788,6 +3099,9 @@ void MainWindow::on_actionAANone_triggered()
     on_actionResurface_Now_triggered();
 }
 
+/**
+ * @brief MainWindow::on_action2x_triggered
+ */
 void MainWindow::on_action2x_triggered()
 {
     setSamples(2);
@@ -2799,6 +3113,9 @@ void MainWindow::on_action2x_triggered()
     on_actionResurface_Now_triggered();
 }
 
+/**
+ * @brief MainWindow::on_action4x_triggered
+ */
 void MainWindow::on_action4x_triggered()
 {
     setSamples(4);
@@ -2822,6 +3139,9 @@ void MainWindow::on_action8x_triggered()
     on_actionResurface_Now_triggered();
 }
 
+/**
+ * @brief MainWindow::on_action16x_triggered
+ */
 void MainWindow::on_action16x_triggered()
 {
     setSamples(16);
@@ -2833,6 +3153,9 @@ void MainWindow::on_action16x_triggered()
     on_actionResurface_Now_triggered();
 }
 
+/**
+ * @brief MainWindow::on_actionRescale_by_triggered
+ */
 void MainWindow::on_actionRescale_by_triggered()
 {
     bool ok;
@@ -2843,7 +3166,7 @@ void MainWindow::on_actionRescale_by_triggered()
     FilterKeys = true;
     if (ok)
     {
-        gl3widget->Resize(d);
+        gl3widget->Resize(static_cast<float>(d));
         FileDirty = true;
         UpdateGL();
     }
@@ -2851,7 +3174,11 @@ void MainWindow::on_actionRescale_by_triggered()
         return;
 }
 
-/*void MainWindow::on_actionSet_Scale_Ball_Size_triggered()
+/**
+ * @brief MainWindow::on_actionSet_Scale_Ball_Size_triggered
+ */
+/*
+void MainWindow::on_actionSet_Scale_Ball_Size_triggered()
 {
     //set scale ball to a real size
 
@@ -2870,6 +3197,9 @@ void MainWindow::on_actionRescale_by_triggered()
 }
 */
 
+/**
+ * @brief MainWindow::on_actionBackground_Colour_triggered
+ */
 void MainWindow::on_actionBackground_Colour_triggered()
 {
     FilterKeys = false;
@@ -2881,6 +3211,9 @@ void MainWindow::on_actionBackground_Colour_triggered()
     back_blue = newcolour.blue();
 }
 
+/**
+ * @brief MainWindow::on_actionManual_triggered
+ */
 void MainWindow::on_actionManual_triggered()
 {
     //qDebug()<<qApp->applicationDirPath() + "/SPIERSview_Manual.pdf";
@@ -2888,6 +3221,10 @@ void MainWindow::on_actionManual_triggered()
 
 }
 
+/**
+ * @brief MainWindow::wheelEvent
+ * @param event
+ */
 void MainWindow::wheelEvent(QWheelEvent *event)
 {
     if (ui->actionInvert_Mouse_Wheel->isChecked())
@@ -2896,6 +3233,9 @@ void MainWindow::wheelEvent(QWheelEvent *event)
         ui->ClipAngle->setValue(ui->ClipAngle->value() + event->delta() / 12);
 }
 
+/**
+ * @brief MainWindow::on_actionScale_Grid_Colour_triggered
+ */
 void MainWindow::on_actionScale_Grid_Colour_triggered()
 {
     FilterKeys = false;
@@ -2909,6 +3249,9 @@ void MainWindow::on_actionScale_Grid_Colour_triggered()
     UpdateGL();
 }
 
+/**
+ * @brief MainWindow::on_actionMinor_Grid_Colour_triggered
+ */
 void MainWindow::on_actionMinor_Grid_Colour_triggered()
 {
     FilterKeys = false;
@@ -2921,7 +3264,9 @@ void MainWindow::on_actionMinor_Grid_Colour_triggered()
     UpdateGL();
 }
 
-
+/**
+ * @brief MainWindow::on_actionSet_Image_Folder_triggered
+ */
 void MainWindow::on_actionSet_Image_Folder_triggered()
 {
     //Select output directory
@@ -2949,17 +3294,23 @@ void MainWindow::on_actionSet_Image_Folder_triggered()
     }
 }
 
+/**
+ * @brief MainWindow::ApplyAnimStep
+ */
 void MainWindow::ApplyAnimStep()
 {
-    gl3widget->YRotate(ui->SpinYInc->value());
-    gl3widget->XRotate(ui->SpinXInc->value());
-    gl3widget->ZRotate(ui->SpinZInc->value());
-    gl3widget->Translate(ui->XTrans->value(), ui->YTrans->value(), ui->ZTrans->value());
+    gl3widget->YRotate(static_cast<float>(ui->SpinYInc->value()));
+    gl3widget->XRotate(static_cast<float>(ui->SpinXInc->value()));
+    gl3widget->ZRotate(static_cast<float>(ui->SpinZInc->value()));
+    gl3widget->Translate(static_cast<float>(ui->XTrans->value()), static_cast<float>(ui->YTrans->value()), static_cast<float>(ui->ZTrans->value()));
     int before = ui->ClipAngle->value();
     ui->ClipAngle->setValue(ui->ClipAngle->value() - ui->AnimSpinZoom->value());
     if (before == ui->ClipAngle->value()) UpdateGL(); //Not needed otherwise - clipangle update should do it
 }
 
+/**
+ * @brief MainWindow::AnimSaveImage
+ */
 void MainWindow::AnimSaveImage()
 {
     QImage ScreenCapture = gl3widget->grabFramebuffer();//false);
@@ -2969,7 +3320,7 @@ void MainWindow::AnimSaveImage()
         int wheight = gl3widget->height();
         int wwidth = gl3widget->width();
 
-        int aheight = int((double)wheight / (((double) wwidth) / ((double) ui->AnimRescaleX->value())));
+        int aheight = static_cast<int>(static_cast<double>(wheight) / (static_cast<double>(wwidth) / static_cast<double>(ui->AnimRescaleX->value())));
         ScreenCapture = ScreenCapture.scaled(QSize(ui->AnimRescaleX->value(), aheight), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     }
 
@@ -3003,29 +3354,37 @@ void MainWindow::AnimSaveImage()
 
     s << AnimOutputDir << "/" << ui->AnimFilenameStub->text() << num << formatstring;
 
-    ScreenCapture.save(fileName, 0, qual);
+    ScreenCapture.save(fileName, nullptr, qual);
 
     ui->AnimSpinFileNum->setValue(ui->AnimSpinFileNum->value() + 1);
 }
 
-
+/**
+ * @brief MainWindow::on_actionSave_Image_and_Apply_Step_triggered
+ */
 void MainWindow::on_actionSave_Image_and_Apply_Step_triggered()
 {
     AnimSaveImage();
     ApplyAnimStep();
 }
 
+/**
+ * @brief MainWindow::on_actionApply_Step_triggered
+ */
 void MainWindow::on_actionApply_Step_triggered()
 {
     ApplyAnimStep();
 }
 
+/**
+ * @brief MainWindow::on_actionApply_Steps_triggered
+ */
 void MainWindow::on_actionApply_Steps_triggered()
 {
     bool ok;
     FilterKeys = false;
 
-    int numsteps = QInputDialog::getInt(0, "Number of Steps", "Enter number of animation steps required", 1, 1, 100000, 1, &ok);
+    int numsteps = QInputDialog::getInt(nullptr, "Number of Steps", "Enter number of animation steps required", 1, 1, 100000, 1, &ok);
     FilterKeys = true;
     if (!ok) return;
     UpdateGL();
@@ -3044,12 +3403,15 @@ void MainWindow::on_actionApply_Steps_triggered()
     ui->ProgBarOverall->setValue(100);
 }
 
+/**
+ * @brief MainWindow::on_actionApply_Multiple_Steps_Saving_Images_triggered
+ */
 void MainWindow::on_actionApply_Multiple_Steps_Saving_Images_triggered()
 {
     bool ok;
     FilterKeys = false;
 
-    int numsteps = QInputDialog::getInt(0, "Number of Steps", "Enter number of animation steps required", 1, 1, 100000, 1, &ok);
+    int numsteps = QInputDialog::getInt(nullptr, "Number of Steps", "Enter number of animation steps required", 1, 1, 100000, 1, &ok);
     FilterKeys = true;
     if (!ok) return;
     UpdateGL();
@@ -3069,43 +3431,67 @@ void MainWindow::on_actionApply_Multiple_Steps_Saving_Images_triggered()
     ui->ProgBarOverall->setValue(100);
 }
 
+/**
+ * @brief MainWindow::on_SingleStepButton_pressed
+ */
 void MainWindow::on_SingleStepButton_pressed()
 {
     if (ui->CheckSave->isChecked()) AnimSaveImage();
     ApplyAnimStep();
 }
 
+/**
+ * @brief MainWindow::on_SingleStepSaveButton_pressed
+ */
 void MainWindow::on_SingleStepSaveButton_pressed()
 {
     AnimSaveImage();
     ApplyAnimStep();
 }
 
+/**
+ * @brief MainWindow::on_MultipleStepButton_pressed
+ */
 void MainWindow::on_MultipleStepButton_pressed()
 {
     if (ui->CheckSave->isChecked()) on_actionApply_Multiple_Steps_Saving_Images_triggered();
     else on_actionApply_Steps_triggered();
 }
 
+/**
+ * @brief MainWindow::on_actionReset_to_default_position_triggered
+ */
 void MainWindow::on_actionReset_to_default_position_triggered()
 {
     gl3widget->ResetToDefault();
     UpdateGL();
 }
 
+/**
+ * @brief MainWindow::on_actionSet_new_default_position_triggered
+ */
 void MainWindow::on_actionSet_new_default_position_triggered()
 {
     gl3widget->NewDefault();
     UpdateGL();
 }
 
+/**
+ * @brief MainWindow::on_actionBounding_Box_triggered
+ */
 void MainWindow::on_actionBounding_Box_triggered()
 {
     UpdateGL();
 }
 
-
-//Event filter receiver - to deal with glitchy accelerator keys
+/**
+ * @brief MainWindow::eventFilter
+ * Event filter receiver - to deal with glitchy accelerator keys
+ *
+ * @param object
+ * @param event
+ * @return
+ */
 bool MainWindow::eventFilter(QObject *object, QEvent *event)
 {
     if (FilterKeys == false) return false;
@@ -3122,7 +3508,7 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
     if (event->type() == QEvent::KeyPress)
     {
 
-        QKeyEvent *kevent = (QKeyEvent *)event;
+        QKeyEvent *kevent = static_cast<QKeyEvent *>(event);
 
         //info box delete key
         if (kevent->key() == Qt::Key_Delete)
@@ -3318,7 +3704,6 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
             return true;
         }
 
-
         //More complex ones - same code works fine
         if (kevent->key() ==  Qt::Key_A  && kevent->modifiers() == Qt::ControlModifier && ui->actionAnaglyph_Stereo->isEnabled())
         {
@@ -3381,7 +3766,6 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
             return true;
         }
 
-
         //Now the object keys
         if ( kevent->modifiers() == Qt::NoModifier)
         {
@@ -3394,6 +3778,11 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
 
     return false;
 }
+
+/**
+ * @brief MainWindow::setSpecificProgress
+ * @param p
+ */
 void MainWindow::setSpecificProgress(int p)
 {
     if (p < 0) p = 0;
@@ -3401,12 +3790,18 @@ void MainWindow::setSpecificProgress(int p)
     specificprogress = p;
 }
 
-
+/**
+ * @brief MainWindow::setSpecificLabel
+ * @param t
+ */
 void MainWindow::setSpecificLabel(QString t)
 {
     specificlabel = t;
 }
 
+/**
+ * @brief MainWindow::showSpecificProgress
+ */
 void MainWindow::showSpecificProgress()
 {
     //qDebug()<<"Timer called";
@@ -3416,11 +3811,17 @@ void MainWindow::showSpecificProgress()
     qApp->processEvents();
 }
 
+/**
+ * @brief MainWindow::on_actionBugIssueFeatureRequest_triggered
+ */
 void MainWindow::on_actionBugIssueFeatureRequest_triggered()
 {
     QDesktopServices::openUrl(QUrl(QString(GITURL) + QString(GITREPOSITORY) + QString(GITISSUE)));
 }
 
+/**
+ * @brief MainWindow::on_actionCode_on_GitHub_triggered
+ */
 void MainWindow::on_actionCode_on_GitHub_triggered()
 {
     QDesktopServices::openUrl(QUrl(QString(GITURL) + QString(GITREPOSITORY)));
