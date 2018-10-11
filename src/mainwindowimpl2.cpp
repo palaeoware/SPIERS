@@ -872,7 +872,7 @@ void MainWindowImpl::SetUpGUIFromSettings()
     SegmentsTreeWidget->setUniformRowHeights(true);
 
     RefreshCurves();
-    //qDebug()<<"Done RC in mgui";
+
     CurvesTreeWidget->setColumnWidth(1, 28);
     CurvesTreeWidget->setColumnWidth(2, 20);
     CurvesTreeWidget->setUniformRowHeights(true);
@@ -888,9 +888,7 @@ void MainWindowImpl::SetUpGUIFromSettings()
     OOTreeWidget->setColumnWidth(5, 64);
     OOTreeWidget->setUniformRowHeights(true);
 
-    //TO DO here - set up GUI elements for generation toolbox
-
-    //qDebug()<<"MG1";
+    //GUI elements for generation toolbox
     Slices_Per_MM->setValue(SlicePerMM);
     Pixels_Per_MM->setValue(PixPerMM);
     Edge_Down_MM->setValue(SkewDown);
@@ -902,9 +900,7 @@ void MainWindowImpl::SetUpGUIFromSettings()
     PixelSensitivity->setValue(PixSens);
     DownsampleZ->setValue(ZDownsample);
     DownsampleXY->setValue(XYDownsample);
-//  MaxTrianglesSB->setValue(MaxTriangles);
 
-    //qDebug()<<"MG2";
     //Enable Everything
     CheckMirror->setChecked(OutputMirroring);
     actionSave_Settings->setEnabled(true);

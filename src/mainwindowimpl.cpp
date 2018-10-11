@@ -1300,7 +1300,7 @@ void MainWindowImpl::Menu_File_New()  //create from scratch
         else return;
     */
     QStringList files = QFileDialog::getOpenFileNames(
-                            NULL,
+                            nullptr,
                             "Select source images for dataset",
                             "D:\\Research\\3dFiles\\Grinding\\Acaen\\5-2\\Test",
                             "Images (*.png *.jpg *.jpeg *.bmp)");
@@ -1397,6 +1397,8 @@ void MainWindowImpl::Menu_File_New()  //create from scratch
     }
 
     SetUpGUIFromSettings();
+    //Raise the slice selector so it is clear this is tabbed but present
+    mainwin->SliceSelector->raise();
 
     //Set up a single output object
     OutputObject *o = new OutputObject("");
