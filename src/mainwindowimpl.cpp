@@ -1399,6 +1399,7 @@ void MainWindowImpl::Menu_File_New()  //create from scratch
     SetUpGUIFromSettings();
     //Raise the slice selector so it is clear this is tabbed but present
     mainwin->SliceSelector->raise();
+    DockOutputSettings->setVisible(true);
 
     //Set up a single output object
     OutputObject *o = new OutputObject("");
