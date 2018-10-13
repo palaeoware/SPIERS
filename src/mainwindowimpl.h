@@ -136,12 +136,13 @@ private:
     QStringList drectoryFileList;
     QDockWidget *markersDialogue;
     QDockWidget *info, *cropDock, *aMOptions, *autoAlign;
-    QDial *red, *red2;
-    QDial *green, *green2;
-    QDial *blue, *blue2;
+    QSpinBox *red, *red2;
+    QSpinBox *green, *green2;
+    QSpinBox *blue, *blue2;
     QGridLayout *aMGridLayout;
     QVBoxLayout *markerLayout, *infoLayout, *cropLayout, *aMVertLayout, *autoLayout;
-    QHBoxLayout *horizontalLayout1, *horizontalLayout2, *horizontalLayout3, *horizontalLayout4, *horizontalLayout5, *horizontalLayout6, *horizontalLayout7, *horizontalLayout8;
+    QHBoxLayout *horizontalLayout1, *horizontalLayout2, *horizontalLayout3, *horizontalLayout4, *horizontalLayout5, *horizontalLayout6, *horizontalLayout7, *horizontalLayout8, *horizontalLayout9,
+                *horizontalLayout10, *horizontalLayout11;
     QSpinBox *mThickness, *mSize, *cropWidth, *cropHeight;
     QSpinBox *aMTopLeftX, *aMTopLeftY, *aMWidth, *aMHeight, *aMThickness, *aMHoriz, *aMVert;
     QWidget *layoutWidgetOne, *layoutWidgetTwo, *layoutWidgetThree, *layoutWidgetFour, *layoutWidgetFive;

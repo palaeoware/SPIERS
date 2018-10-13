@@ -162,6 +162,10 @@ QDockWidget{
     titlebar-normal-icon:url(:/darkstyle/icon_restore.png);
 }
 
+QDockWidget > QWidget {
+    border:1px solid rgba(25,25,25,75);
+}
+
 QDockWidget::close-button,QDockWidget::float-button{
     subcontrol-position:top right;
     subcontrol-origin:margin;
@@ -177,7 +181,7 @@ QDockWidget::close-button{
 }
 
 QDockWidget::float-button{
-    right:25px;
+    right:5px;
 }
 
 QTableWidget
@@ -195,10 +199,8 @@ QGroupBox{
 
 QGroupBox::title{
     subcontrol-origin:margin;
-    subcontrol-position:left top;
-    padding:4px 6px;
-    margin-left:3px;
-    background-color:qlineargradient(x1:0,y1:1,x2:0,y2:0,stop:0 rgba(25,25,25,127),stop:1 rgba(53,53,53,75));
+    subcontrol-position:center top;
+    padding:6px 6px;
     border:1px solid rgba(25,25,25,75);
     border-top-left-radius:4px;
     border-top-right-radius:4px;

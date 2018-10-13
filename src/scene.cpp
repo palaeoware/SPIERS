@@ -144,7 +144,7 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
             }
             else
             {
-                QMessageBox::warning(0, "Error", "Setup matrix is not invertible. You should never see this, please email", QMessageBox::Ok);
+                QMessageBox::warning(this, "Error", "Setup matrix is not invertible. You should never see this, please email", QMessageBox::Ok);
                 return;
             }
 
@@ -199,7 +199,7 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
             if (aM.isInvertible())aMi = aM.inverted();
             else
             {
-                QMessageBox::warning(0, "Error", "Matrix is not invertible. You should never see this, please email", QMessageBox::Ok);
+                QMessageBox::warning(this, "Error", "Matrix is not invertible. You should never see this, please email", QMessageBox::Ok);
                 return;
             }
 
@@ -324,7 +324,7 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         if (aM.isInvertible())aMi = aM.inverted();
         else
         {
-            QMessageBox::warning(0, "Error", "Matrix is not invertible. You should never see this, please email", QMessageBox::Ok);
+            QMessageBox::warning(this, "Error", "Matrix is not invertible. You should never see this, please email", QMessageBox::Ok);
             return;
         }
 
@@ -549,7 +549,7 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         }
         else
         {
-            QMessageBox::warning(0, "Error", "Setup matrix is not invertible. You should never see this, please email", QMessageBox::Ok);
+            QMessageBox::warning(this, "Error", "Setup matrix is not invertible. You should never see this, please email", QMessageBox::Ok);
             return;
         }
 

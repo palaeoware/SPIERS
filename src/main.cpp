@@ -29,10 +29,8 @@ int main(int argc, char **argv)
     QPixmap splashPixmap(":/palaeoware_logo_square.png");
     QSplashScreen splash(splashPixmap, Qt::WindowStaysOnTopHint);
     splash.show();
+    splash.showMessage("<font><b>" + QString(PRODUCTNAME) + " v" + QString(UPDATEVERSION) + " </b></font>", Qt::AlignHCenter, Qt::white);
 
-    QString version;
-    version.sprintf("%d.%d.%d", MAJORVERSION, MINORVERSION, PATCHVERSION);
-    splash.showMessage("<font><b>" + QString(PRODUCTNAME) + " v" + version  + " </b></font>", Qt::AlignHCenter, Qt::white);
 
     QApplication::processEvents();
 

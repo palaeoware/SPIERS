@@ -25,6 +25,7 @@
 #include <QTime>
 #include <QUrl>
 #include <QVBoxLayout>
+#include <QFont>
 
 #include <math.h>
 #include <qbitmap.h>
@@ -33,6 +34,7 @@
 #include "globals.h"
 #include "mainwindowimpl.h"
 #include "version.h"
+#include "../SPIERScommon/netmodule.h"
 
 #define PI 3.14159265
 #define TOLERANCE 20
@@ -53,7 +55,7 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
 
     QString version;
     version.sprintf("%d.%d.%d", MAJORVERSION, MINORVERSION, PATCHVERSION);
-    setWindowTitle(QString(PRODUCTNAME) + " v" + version);
+    setWindowTitle(QString(PRODUCTNAME) + " v" + QString(UPDATEVERSION) );
 
     showMaximized();
 
@@ -68,9 +70,9 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     cropUp = 0;
     infoChecked = 0;
     markersLocked = 0;
-    rectPointer = NULL;
-    amRectPointer = NULL;
-    autoMarkersGroup = NULL;
+    rectPointer = nullptr;
+    amRectPointer = nullptr;
+    autoMarkersGroup = nullptr;
     setupFlag = 0;
     verbose = 0;
 
@@ -84,24 +86,24 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     markerList = new QListWidget(markersDialogue);
 
     QLabel *title = new QLabel("Marker Colour");
+    QFont fnt;
+    fnt.setBold(true);
+    title->setFont(fnt);
 
-    red = new QDial(markersDialogue);
-    red->setNotchesVisible(true);
+    red = new QSpinBox(markersDialogue);
     red->setMaximum(255);
-    red->setSingleStep(2);
-    QLabel *redLabel = new QLabel("Red");
+    red->setSingleStep(1);
+    QLabel *redLabel = new QLabel("Red:");
 
-    green = new QDial(markersDialogue);
-    green->setNotchesVisible(true);
+    green = new QSpinBox(markersDialogue);
     green->setMaximum(255);
-    green->setSingleStep(2);
-    QLabel *greenLabel = new QLabel("Green");
+    green->setSingleStep(1);
+    QLabel *greenLabel = new QLabel("Green:");
 
-    blue = new QDial(markersDialogue);
-    blue->setNotchesVisible(true);
+    blue = new QSpinBox(markersDialogue);
     blue->setMaximum(255);
-    blue->setSingleStep(2);
-    QLabel *blueLabel = new QLabel("Blue");
+    blue->setSingleStep(1);
+    QLabel *blueLabel = new QLabel("Blue:");
 
     connect(red, SIGNAL(valueChanged(int)), this, SLOT(changeRed(int) ));
     connect(green, SIGNAL(valueChanged(int)), this, SLOT(changeGreen(int) ));
@@ -171,14 +173,21 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     markerLayout->addLayout(horizontalLayout2);
 
     markerLayout->addWidget(title);
-    markerLayout->addWidget(redLabel);
-    markerLayout->addWidget(red);
 
-    markerLayout->addWidget(greenLabel);
-    markerLayout->addWidget(green);
+    horizontalLayout9 = new QHBoxLayout;
+    horizontalLayout9->addWidget(redLabel);
+    horizontalLayout9->addWidget(red);
+    markerLayout->addLayout(horizontalLayout9);
 
-    markerLayout->addWidget(blueLabel);
-    markerLayout->addWidget(blue);
+    horizontalLayout10 = new QHBoxLayout;
+    horizontalLayout10->addWidget(greenLabel);
+    horizontalLayout10->addWidget(green);
+    markerLayout->addLayout(horizontalLayout10);
+
+    horizontalLayout11 = new QHBoxLayout;
+    horizontalLayout11->addWidget(blueLabel);
+    horizontalLayout11->addWidget(blue);
+    markerLayout->addLayout(horizontalLayout11);
 
     //Dockwidget has inbuilt protected layout, so apply layout to widget and addMarker this docker
     //Can't use set widget for more than one widget
@@ -227,21 +236,18 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     QLabel *cropLabel2 = new QLabel("Crop Box Colour:");
     cropLayout->addWidget(cropLabel2);
 
-    //Can't use same dials as for markers so new below - change to value of RGB constants when switch to crop mode
-    red2 = new QDial(markersDialogue);
-    red2->setNotchesVisible(true);
+    //Can't use same spins as for markers so new below - change to value of RGB constants when switch to crop mode
+    red2 = new QSpinBox(markersDialogue);
     red2->setMaximum(255);
     red2->setSingleStep(2);
     QLabel *redLabel2 = new QLabel("Red");
 
-    green2 = new QDial(markersDialogue);
-    green2->setNotchesVisible(true);
+    green2 = new QSpinBox(markersDialogue);
     green2->setMaximum(255);
     green2->setSingleStep(2);
     QLabel *greenLabel2 = new QLabel("Green");
 
-    blue2 = new QDial(markersDialogue);
-    blue2->setNotchesVisible(true);
+    blue2 = new QSpinBox(markersDialogue);
     blue2->setMaximum(255);
     blue2->setSingleStep(2);
     QLabel *blueLabel2 = new QLabel("Blue");
@@ -272,7 +278,7 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     cropDock->hide();
 
     //Set up Info Window
-    info = new QDockWidget("Info(F9)", this);
+    info = new QDockWidget("Info (F9)", this);
     info->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     info->setFeatures(QDockWidget::DockWidgetMovable);
     info->setFeatures(QDockWidget::DockWidgetFloatable);
@@ -689,7 +695,7 @@ void MainWindowImpl::autoMarkersToggled()
         showInfo(-1, -1);
         delete gridOutline;
         delete autoMarkersGroup;
-        autoMarkersGroup = NULL;
+        autoMarkersGroup = nullptr;
         markersLockToggled();
         linePointers.clear();
         QApplication::restoreOverrideCursor();
@@ -718,11 +724,11 @@ void MainWindowImpl::setupAlignTriggered()
         executeAlign->setDisabled(true);
         int quarterWidth = width / 4;
         int quarterHeight = height / 4;
-        if (autoEdgeOne == NULL)autoEdgeOne = new QRect(0, 0, width, quarterHeight);
-        if (autoEdgeTwo == NULL)autoEdgeTwo = new QRect(0, 0, quarterWidth, height);
+        if (autoEdgeOne == nullptr)autoEdgeOne = new QRect(0, 0, width, quarterHeight);
+        if (autoEdgeTwo == nullptr)autoEdgeTwo = new QRect(0, 0, quarterWidth, height);
         setupFlag = 1;
         redrawImage();
-        QMessageBox::about(0, "Auto-align Setup",
+        QMessageBox::about(this, "Auto-align Setup",
                            "Please drag, rotate and resize both boxes so each contains 3/4 of one edge on all the slices you wish to align. The edges should be a minimum of 45 degrees apart. When complete click the Setup button again.");
     }
     else
@@ -731,7 +737,7 @@ void MainWindowImpl::setupAlignTriggered()
         double angle2 = atan2(setupM2.m12(), setupM2.m11());
         if (fabs(angle) > 1.13 || fabs(angle2) > 1.13)
         {
-            QMessageBox::warning(0, "Error", "Autoalign only works if the horizontal box remains sub-horizontal, and the vertical sub-vertical. Please change the setup so this is the case. ", QMessageBox::Ok);
+            QMessageBox::warning(this, "Error", "Autoalign only works if the horizontal box remains sub-horizontal, and the vertical sub-vertical. Please change the setup so this is the case. ", QMessageBox::Ok);
             setupAlign->setChecked(true);
             return;
         }
@@ -757,9 +763,9 @@ void MainWindowImpl::executeAlignTriggered()
         setupAlign->setChecked(false);
         return;
     }
-    if (autoEdgeOne == NULL || autoEdgeTwo == NULL)
+    if (autoEdgeOne == nullptr || autoEdgeTwo == nullptr)
     {
-        QMessageBox::warning(0, "Error", "Please define edge regions by clicking the Setup on the Auto Align panel.", QMessageBox::Ok);
+        QMessageBox::warning(this, "Error", "Please define edge regions by clicking the Setup on the Auto Align panel.", QMessageBox::Ok);
         return;
     }
 
@@ -781,12 +787,12 @@ void MainWindowImpl::executeAlignTriggered()
 //Make sure selectionis valid
     if (start == -1 || end == -1)
     {
-        QMessageBox::about(0, "Auto-align error", "Please select - at minimum - a single slice to align");
+        QMessageBox::about(nullptr, "Auto-align error", "Please select - at minimum - a single slice to align");
         return;
     }
     if (start == end && start == currentImage)
     {
-        QMessageBox::about(0, "Auto-align error", "You only have the current image - against which others are aligned - selected. Please select some to align");
+        QMessageBox::about(nullptr, "Auto-align error", "You only have the current image - against which others are aligned - selected. Please select some to align");
         return;
     }
 
@@ -827,7 +833,7 @@ void MainWindowImpl::executeAlignTriggered()
             //Variables for summing RGB levels of pixels above and below...
             int totalRabove = 0, totalGabove = 0, totalBabove = 0, totalRbelow = 0, totalGbelow = 0, totalBbelow = 0, totalDiff = 0;
             //For each pixel asses difference in blocks of ten above and below
-            //if((j-10)<0||(j+10)>alignHeight){QMessageBox::warning(0,"Error","Please move the horizontal edge box a minimum of ten pixels away from the edge of the image.", QMessageBox::Ok);return;}
+            //if((j-10)<0||(j+10)>alignHeight){QMessageBox::warning(this,"Error","Please move the horizontal edge box a minimum of ten pixels away from the edge of the image.", QMessageBox::Ok);return;}
 
             //Reminder:j is y, i is x. Cool?
             for (int k = (j - 10); k <= j; k++)
@@ -835,14 +841,14 @@ void MainWindowImpl::executeAlignTriggered()
                 setupM.map(i, k, &mappedI, &mappedK);
                 if (mappedK < 0 && warning == 0)
                 {
-                    QMessageBox::warning(0, "Error",
+                    QMessageBox::warning(this, "Error",
                                          "The horizontal AutoAlign setup box is less than ten pixels from the upper image boundary. we'll deal with this, but if the align doesn't work try moving it further from the edge of the image.",
                                          QMessageBox::Ok);
                     warning = 1;
                 }
                 if (mappedI < 0 || mappedI > alignWidth)
                 {
-                    QMessageBox::warning(0, "Error", "The horizontal AutoAlign setup box goes off the image at the left or right. Please fix.", QMessageBox::Ok);
+                    QMessageBox::warning(this, "Error", "The horizontal AutoAlign setup box goes off the image at the left or right. Please fix.", QMessageBox::Ok);
                     return;
                 }
                 if (mappedK < 0)mappedK = 0;
@@ -857,14 +863,14 @@ void MainWindowImpl::executeAlignTriggered()
                 setupM.map(i, k, &mappedI, &mappedK);
                 if (mappedK > alignHeight && warning == 0)
                 {
-                    QMessageBox::warning(0, "Error",
+                    QMessageBox::warning(this, "Error",
                                          "The horizontal AutoAlign setup box is less than ten pixels from the lower image boundary. we'll deal with this, but if the align doesn't work try moving it further from the edge of the image.",
                                          QMessageBox::Ok);
                     warning = 1;
                 }
                 if (mappedI < 0 || mappedI > alignWidth)
                 {
-                    QMessageBox::warning(0, "Error", "The horizontal AutoAlign setup box goes off the image at the left or right. Please fix.", QMessageBox::Ok);
+                    QMessageBox::warning(this, "Error", "The horizontal AutoAlign setup box goes off the image at the left or right. Please fix.", QMessageBox::Ok);
                     return;
                 }
                 if (mappedK > alignHeight)mappedK = alignHeight - 1;
@@ -913,13 +919,13 @@ void MainWindowImpl::executeAlignTriggered()
     }
 
 //Tolerance = defined at top - percentage of points that we lop off top and bottom when creating a straight line. ATM this is 20.
-    float startAt = (((double)TOLERANCE / 100.) * (float)numberPoints);
-    float endAt = (numberPoints - (((double)TOLERANCE / 100.) * (float)numberPoints));
+    double startAt = ((static_cast<double>(TOLERANCE) / 100.) * (static_cast<double>(numberPoints)));
+    double endAt = (numberPoints - ((static_cast<double>(TOLERANCE) / 100.) * static_cast<double>(numberPoints)));
 
 //Best fit line of these points (20%-80% middle of range, which is sorted horizontally)
     double Sx = 0., Sy = 0., Sxx = 0., Sxy = 0., delta = 0.;
     int number = 0;
-    for (int l = (int)startAt; l < (int)endAt; l++)
+    for (int l = static_cast<int>(startAt); l < static_cast<int>(endAt); l++)
     {
         //Now map the points to the matrix...
         setupM.map(points[l][0], points[l][1], &mappedI, &mappedJ);
@@ -972,14 +978,14 @@ void MainWindowImpl::executeAlignTriggered()
                 setupM2.map(k, i, &mappedK, &mappedI);
                 if (mappedK < 0 && warning == 0)
                 {
-                    QMessageBox::warning(0, "Error",
+                    QMessageBox::warning(this, "Error",
                                          "The vertical AutoAlign setup box is less than ten pixels from the upper image boundary. we'll deal with this, but if the align doesn't work try moving it further from the edge of the image.",
                                          QMessageBox::Ok);
                     warning = 1;
                 }
                 if (mappedI < 0 || mappedI > alignHeight)
                 {
-                    QMessageBox::warning(0, "Error", "The vertical AutoAlign setup box goes off the image at the left or right. Please fix.", QMessageBox::Ok);
+                    QMessageBox::warning(this, "Error", "The vertical AutoAlign setup box goes off the image at the left or right. Please fix.", QMessageBox::Ok);
                     return;
                 }
                 if (mappedK < 0)mappedK = 0;
@@ -993,14 +999,14 @@ void MainWindowImpl::executeAlignTriggered()
                 setupM2.map(k, i, &mappedK, &mappedI);
                 if (mappedK > alignWidth && warning == 0)
                 {
-                    QMessageBox::warning(0, "Error",
+                    QMessageBox::warning(this, "Error",
                                          "The vertical AutoAlign setup box is less than ten pixels from the upper image boundary. we'll deal with this, but if the align doesn't work try moving it further from the edge of the image.",
                                          QMessageBox::Ok);
                     warning = 1;
                 }
                 if (mappedI < 0 || mappedI > alignHeight)
                 {
-                    QMessageBox::warning(0, "Error", "The vertical AutoAlign setup box goes off the image at the left or right. Please fix.", QMessageBox::Ok);
+                    QMessageBox::warning(this, "Error", "The vertical AutoAlign setup box goes off the image at the left or right. Please fix.", QMessageBox::Ok);
                     return;
                 }
                 if (mappedK > alignWidth)mappedK = alignWidth - 1;
@@ -1046,8 +1052,8 @@ void MainWindowImpl::executeAlignTriggered()
         }
     }
 
-    startAt = (((double)TOLERANCE / 100.) * (float)numberPoints);
-    endAt = (numberPoints - (((double)TOLERANCE / 100.) * (float)numberPoints));
+    startAt = ((static_cast<double>(TOLERANCE) / 100.) * static_cast<double>(numberPoints));
+    endAt = (numberPoints - ((static_cast<double>(TOLERANCE) / 100.) * (float)numberPoints));
 
     number = 0;
 //Best fit line of that point
@@ -1069,7 +1075,7 @@ void MainWindowImpl::executeAlignTriggered()
 
     if (a != a || b != b)
     {
-        QMessageBox::warning(0, "NaN", "It would appear that one of your control lines is perfectly vertical - if so please rotate so this is not the case. If not, please email.", QMessageBox::Ok);
+        QMessageBox::warning(this, "NaN", "It would appear that one of your control lines is perfectly vertical - if so please rotate so this is not the case. If not, please email.", QMessageBox::Ok);
         return;
     }
 
@@ -1136,7 +1142,7 @@ void MainWindowImpl::executeAlignTriggered()
                     //Variables for summing RGB levels of pixels above and below...
                     int totalRabove = 0, totalGabove = 0, totalBabove = 0, totalRbelow = 0, totalGbelow = 0, totalBbelow = 0, totalDiff = 0;
                     //For each pixel asses difference in blocks of ten above and below
-                    //if((j-10)<0||(j+10)>alignHeight){QMessageBox::warning(0,"Error","Please move the horizontal edge box a minimum of ten pixels away from the edge of the image.", QMessageBox::Ok);return;}
+                    //if((j-10)<0||(j+10)>alignHeight){QMessageBox::warning(this,"Error","Please move the horizontal edge box a minimum of ten pixels away from the edge of the image.", QMessageBox::Ok);return;}
 
                     //Reminder:j is y, i is x. Cool?
                     for (int k = (j - 10); k <= j; k++)
@@ -1200,8 +1206,8 @@ void MainWindowImpl::executeAlignTriggered()
             }
 
             //Tolerance = defined at top - percentage of points that we lop off top and bottom when creating a straight line. ATM this is 20.
-            float startAt = (((double)TOLERANCE / 100.) * (float)numberPoints);
-            float endAt = (numberPoints - (((double)TOLERANCE / 100.) * (float)numberPoints));
+            double startAt = ((static_cast<double>(TOLERANCE) / 100.) * static_cast<double>(numberPoints));
+            double endAt = (numberPoints - ((static_cast<double>(TOLERANCE) / 100.) * static_cast<double>(numberPoints)));
 
             //Best fit line of these points (20%-80% middle of range, which is sorted horizontally)
             double Sx = 0., Sy = 0., Sxx = 0., Sxy = 0., delta = 0.;
@@ -1338,7 +1344,7 @@ void MainWindowImpl::executeAlignTriggered()
             NIb2 = b;
 
             if (a != a
-                    || b != b)QMessageBox::warning(0, "NaN",
+                    || b != b)QMessageBox::warning(this, "NaN",
                                                        "It would appear that one of the lines here is perfectly vertical - Auto Align will skip the image. Please take a note of its number - a small rotation and repeat Auto Align on this slice should fix the problem. If no line appears vertical, please email.",
                                                        QMessageBox::Ok);
             else
@@ -1539,7 +1545,7 @@ void MainWindowImpl::autoMarkersAlign()
     if (aM.isInvertible())aMi = aM.inverted();
     else
     {
-        QMessageBox::warning(0, "Error", "Matrix is not invertible. You should never see this, please email", QMessageBox::Ok);
+        QMessageBox::warning(this, "Error", "Matrix is not invertible. You should never see this, please email", QMessageBox::Ok);
         return;
     }
 
@@ -1562,7 +1568,7 @@ void MainWindowImpl::autoMarkersAlign()
 
         /*QString errormessage;
         QTextStream(&errormessage)<<"M21\t"<<imageList[currentImage]->m.m21()<<"M12\t"<<imageList[currentImage]->m.m12();
-        QMessageBox::warning(0,"Error",errormessage, QMessageBox::Ok);*/
+        QMessageBox::warning(this,"Error",errormessage, QMessageBox::Ok);*/
     }
 
     imageList[currentImage]->m = aMi;
@@ -1638,7 +1644,7 @@ void MainWindowImpl::removeMarkerSlot()
     if (markersLocked == 1)return;
     if (markers.count() == 5)
     {
-        QMessageBox::warning(0, "Error", "5 is the minimum number of markers.", QMessageBox::Ok);
+        QMessageBox::warning(this, "Error", "5 is the minimum number of markers.", QMessageBox::Ok);
         return;
     }
 
@@ -1723,8 +1729,8 @@ void MainWindowImpl::on_actionOpen_triggered()
     {
         filesDirectoryString = "";
         currentImage = -1;
-        rectPointer = NULL;
-        amRectPointer = NULL;
+        rectPointer = nullptr;
+        amRectPointer = nullptr;
 
         //Write to settings file
         on_actionSave_triggered();
@@ -1822,7 +1828,7 @@ void MainWindowImpl::on_actionOpen_triggered()
 
     if (drectoryFileList.count() == 0)
     {
-        QMessageBox::warning(0, "Error", "No image files in this folder.", QMessageBox::Ok);
+        QMessageBox::warning(this, "Error", "No image files in this folder.", QMessageBox::Ok);
         return;
     }
 
@@ -1963,7 +1969,7 @@ void MainWindowImpl::on_actionOpen_triggered()
         if (imageList[i]->fileName.endsWith(".bmp", Qt::CaseInsensitive))imageList[i]->format = 0;
         if (imageList[i]->format == -1)
         {
-            QMessageBox::warning(0, "Error", "Please check extensions - should be either .jpg, .jpeg, .bmp or .png", QMessageBox::Ok);
+            QMessageBox::warning(this, "Error", "Please check extensions - should be either .jpg, .jpeg, .bmp or .png", QMessageBox::Ok);
             return;
         }
     }
@@ -2026,13 +2032,13 @@ void  MainWindowImpl::redrawImage()
     if (currentImage < 0)return;
     LogText("*1\t");
     //Dismantles group and also destroys group item
-    if (autoMarkersGroup != NULL && autoMarkersGroup->scene() != 0)
+    if (autoMarkersGroup != nullptr && autoMarkersGroup->scene() != 0)
     {
         scene->destroyItemGroup(autoMarkersGroup);
         linePointers.clear();
     }
     LogText("*2\t");
-    if (rectPointer != NULL)
+    if (rectPointer != nullptr)
     {
         scene->removeItem(rectPointer);
         delete rectPointer;
@@ -2161,7 +2167,7 @@ void  MainWindowImpl::redrawDecorations()
         autoMarkersGroup->setZValue(1);
     }
 
-    if (actionCreate_Crop_Area->isChecked() && cropArea != NULL)
+    if (actionCreate_Crop_Area->isChecked() && cropArea != nullptr)
     {
 
         QPen pen;
@@ -2214,7 +2220,7 @@ void  MainWindowImpl::redrawJustDecorations()
     if (currentImage < 0)return;
     int i, numberMarkers = markers.count();
     QBrush brush(Qt::NoBrush);
-    for (i = 0; i < numberMarkers; i++)if (markers[i]->markerPointer != NULL)scene->removeItem(markers[i]->markerPointer);
+    for (i = 0; i < numberMarkers; i++)if (markers[i]->markerPointer != nullptr)scene->removeItem(markers[i]->markerPointer);
     for (i = 0; i < numberMarkers; i++)delete markers[i]->markerPointer;
 
     QPen marker;
@@ -2241,18 +2247,18 @@ void  MainWindowImpl::redrawJustAM()
 
     if (autoMarkersUp == 1)
     {
-        if (autoMarkersGroup != NULL && autoMarkersGroup->scene() != 0)scene->destroyItemGroup(autoMarkersGroup);
-        if (amRectPointer != NULL)
+        if (autoMarkersGroup != nullptr && autoMarkersGroup->scene() != 0)scene->destroyItemGroup(autoMarkersGroup);
+        if (amRectPointer != nullptr)
         {
             scene->removeItem(amRectPointer);
             delete amRectPointer;
         }
         int i, numberMarkers = markers.count();
 
-        for (i = 0; i < numberMarkers; i++)if (markers[i]->markerPointer != NULL)scene->removeItem(markers[i]->markerPointer);
+        for (i = 0; i < numberMarkers; i++)if (markers[i]->markerPointer != nullptr)scene->removeItem(markers[i]->markerPointer);
         for (i = 0; i < numberMarkers; i++)delete markers[i]->markerPointer;
         int numberLines = linePointers.count();
-        for (i = 0; i < numberLines; i++)if (linePointers[i] != NULL)scene->removeItem(linePointers[i]);
+        for (i = 0; i < numberLines; i++)if (linePointers[i] != nullptr)scene->removeItem(linePointers[i]);
         for (i = 0; i < numberLines; i++)delete linePointers[i];
         linePointers.clear();
         QBrush brush(Qt::NoBrush);
@@ -2330,12 +2336,12 @@ void  MainWindowImpl::redrawJustAM()
 
     if (setupFlag == 1)
     {
-        if (suRectPointer != NULL)
+        if (suRectPointer != nullptr)
         {
             scene->removeItem(suRectPointer);
             delete suRectPointer;
         }
-        if (suRectPointer2 != NULL)
+        if (suRectPointer2 != nullptr)
         {
             scene->removeItem(suRectPointer2);
             delete suRectPointer2;
@@ -2366,7 +2372,7 @@ void  MainWindowImpl::redrawJustAM()
 void  MainWindowImpl::redrawJustCropBox()
 {
     if (cropUp == 0)return;
-    if (rectPointer != NULL)
+    if (rectPointer != nullptr)
     {
         scene->removeItem(rectPointer);
         delete rectPointer;
@@ -2429,7 +2435,7 @@ void MainWindowImpl::on_actionAdd_Markers_triggered(bool checked)
             cropUp = 0;
             cropDock->hide();
             //If this is not NULLed here still points to cropArea and when you try delete it in redraw image it crashes....
-            rectPointer = NULL;
+            rectPointer = nullptr;
             QApplication::setOverrideCursor(Qt::ArrowCursor);
             redrawImage();
         }
@@ -2910,7 +2916,7 @@ void MainWindowImpl::on_actionPropogate_Mode_triggered(bool checked)
     {
         if (autoMarkersUp == 1)
         {
-            QMessageBox::warning(0, "Error", "Automarkers doesn't work in propagate mode, please turn off and try again. ", QMessageBox::Ok);
+            QMessageBox::warning(this, "Error", "Automarkers doesn't work in propagate mode, please turn off and try again. ", QMessageBox::Ok);
             actionPropogate_Mode->setChecked(false);
             return;
         }
@@ -2936,7 +2942,7 @@ void MainWindowImpl::on_actionPropogate_Mode_triggered(bool checked)
             {
                 if (currentImage == imageList.count() - 1)
                 {
-                    QMessageBox::warning(0, "Error", "I'm afraid it's not possible to propogate forward from the last image - perhaps time for a coffee?", QMessageBox::Ok);
+                    QMessageBox::warning(this, "Error", "I'm afraid it's not possible to propogate forward from the last image - perhaps time for a coffee?", QMessageBox::Ok);
                     actionPropogate_Mode->setChecked(false);
                     return;
                 }
@@ -2954,7 +2960,7 @@ void MainWindowImpl::on_actionPropogate_Mode_triggered(bool checked)
             {
                 if (currentImage == 0)
                 {
-                    QMessageBox::warning(0, "Error", "I'm afraid it's not possible to propogate back from the first image - perhaps time for a coffee?", QMessageBox::Ok);
+                    QMessageBox::warning(this, "Error", "I'm afraid it's not possible to propogate back from the first image - perhaps time for a coffee?", QMessageBox::Ok);
                     actionPropogate_Mode->setChecked(false);
                     return;
                 }
@@ -3251,7 +3257,7 @@ void MainWindowImpl::on_actionApply_Propogation_triggered()
             if (imageList[i]->format == 2)imageToDraw.save(savename, "PNG", 50);
         }
     }
-    else QMessageBox::warning(0, "Error", "You should never see this - propagation failed, email me.", QMessageBox::Ok);
+    else QMessageBox::warning(this, "Error", "You should never see this - propagation failed, email me.", QMessageBox::Ok);
 
     //Disable propogaiton mode
     actionPropogate_Mode->setChecked(false);
@@ -3317,7 +3323,7 @@ void MainWindowImpl::on_actionCreate_Crop_Area_triggered(bool checked)
                 showInfo(-1, -1);
                 delete gridOutline;
                 delete autoMarkersGroup;
-                autoMarkersGroup = NULL;
+                autoMarkersGroup = nullptr;
                 markersLockToggled();
                 linePointers.clear();
             }
@@ -3346,8 +3352,8 @@ void MainWindowImpl::on_actionCreate_Crop_Area_triggered(bool checked)
         actionShrink_Down->setEnabled(false);
         actionCrop->setEnabled(false);
         delete cropArea;
-        cropArea = NULL;
-        rectPointer = NULL;
+        cropArea = nullptr;
+        rectPointer = nullptr;
         cropUp = 0;
         cropDock->hide();
         layoutWidgetTwo->setMaximumHeight(200);
@@ -3399,7 +3405,7 @@ void MainWindowImpl::on_actionCrop_triggered()
         QDir cut;
         if (cut.mkpath(dirname) == false)
         {
-            QMessageBox::warning(0, "Error", "Can't create cut folder for images", QMessageBox::Ok);
+            QMessageBox::warning(this, "Error", "Can't create cut folder for images", QMessageBox::Ok);
             actionLock_Forward->setChecked(false);
             return;
         }
@@ -3459,7 +3465,7 @@ void MainWindowImpl::on_actionCrop_triggered()
         statusbar->clearMessage();
         statusbar->removeWidget(&progress);
 
-        QMessageBox::warning(0, "Crop completed", "Cropped images placed in cut folder of current directory.", QMessageBox::Ok);
+        QMessageBox::warning(this, "Crop completed", "Cropped images placed in cut folder of current directory.", QMessageBox::Ok);
 
     }
 }
@@ -3501,7 +3507,7 @@ void MainWindowImpl::on_actionLock_Forward_triggered(bool checked)
         lockImage = currentImage;
         if (lockImage < 1)
         {
-            QMessageBox::warning(0, "Error", "This is the beginning of the dataset, locking diabled.", QMessageBox::Ok);
+            QMessageBox::warning(this, "Error", "This is the beginning of the dataset, locking diabled.", QMessageBox::Ok);
             actionLock_Forward->setChecked(false);
             return;
         }
@@ -3547,7 +3553,7 @@ void MainWindowImpl::on_actionLock_Back_triggered(bool checked)
         lockImage = currentImage;
         if (lockImage < 1)
         {
-            QMessageBox::warning(0, "Error", "This is the beginning of the dataset, locking diabled.", QMessageBox::Ok);
+            QMessageBox::warning(this, "Error", "This is the beginning of the dataset, locking diabled.", QMessageBox::Ok);
             actionLock_Back->setChecked(false);
             return;
         }
@@ -3593,7 +3599,7 @@ void MainWindowImpl::on_actionMove_Forward_Back_triggered()
     {
         if (horizontalSlider->maximum() > (imageList.count() - 1))
         {
-            QMessageBox::warning(0, "Error", "This is the end of the dataset, locking diabled.", QMessageBox::Ok);
+            QMessageBox::warning(this, "Error", "This is the end of the dataset, locking diabled.", QMessageBox::Ok);
             return;
         }
         lockImage++;
@@ -3606,7 +3612,7 @@ void MainWindowImpl::on_actionMove_Forward_Back_triggered()
     {
         if (horizontalSlider->minimum() < 2)
         {
-            QMessageBox::warning(0, "Error", "This is the beginning of the dataset, locking diabled.", QMessageBox::Ok);
+            QMessageBox::warning(this, "Error", "This is the beginning of the dataset, locking diabled.", QMessageBox::Ok);
             return;
         }
         lockImage--;
@@ -3704,12 +3710,12 @@ void MainWindowImpl::on_actionHide_Image_triggered()
 {
     if (currentImage == (imageList.count() - 1))
     {
-        QMessageBox::warning(0, "Error", "Cannot hide final Image.", QMessageBox::Ok);
+        QMessageBox::warning(this, "Error", "Cannot hide final Image.", QMessageBox::Ok);
         return;
     }
     if (currentImage == 0)
     {
-        QMessageBox::warning(0, "Error", "Cannot hide first image.", QMessageBox::Ok);
+        QMessageBox::warning(this, "Error", "Cannot hide first image.", QMessageBox::Ok);
         return;
     }
 
@@ -3889,7 +3895,7 @@ void MainWindowImpl::on_actionLoad_Settings_File_triggered()
 {
     if (currentImage == -1)
     {
-        QMessageBox::warning(0, "Error", "Please open the dataset you wish to apply a settings file to.", QMessageBox::Ok);
+        QMessageBox::warning(this, "Error", "Please open the dataset you wish to apply a settings file to.", QMessageBox::Ok);
         return;
     }
 
@@ -3921,7 +3927,7 @@ void MainWindowImpl::on_actionLoad_Settings_File_triggered()
             //Check image list not modified - filenames should remain the same.
             if (!list[0].endsWith(imageList[i]->fileName, Qt::CaseInsensitive))
             {
-                QMessageBox::warning(0, "Error", "Image sequence has been modified. This will prevent the dataset loading correctly", QMessageBox::Ok);
+                QMessageBox::warning(this, "Error", "Image sequence has been modified. This will prevent the dataset loading correctly", QMessageBox::Ok);
                 return;
             }
             else
@@ -3990,7 +3996,7 @@ void MainWindowImpl::on_actionLoad_Settings_File_triggered()
         if (imageList[i]->fileName.endsWith(".bmp", Qt::CaseInsensitive))imageList[i]->format = 0;
         if (imageList[i]->format == -1)
         {
-            QMessageBox::warning(0, "Error", "Please check extensions - should be either .jpg, .jpeg, .bmp or .png", QMessageBox::Ok);
+            QMessageBox::warning(this, "Error", "Please check extensions - should be either .jpg, .jpeg, .bmp or .png", QMessageBox::Ok);
             return;
         }
     }
@@ -4075,7 +4081,7 @@ void MainWindowImpl::on_actionCompress_Dataset_triggered()
 {
     if (currentImage == -1)
     {
-        QMessageBox::warning(0, "Error", "Please open the dataset you wish to compress.", QMessageBox::Ok);
+        QMessageBox::warning(this, "Error", "Please open the dataset you wish to compress.", QMessageBox::Ok);
         return;
     }
 

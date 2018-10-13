@@ -10,7 +10,7 @@ MarkerData::MarkerData(QRectF *startRectangle, int shp)
 {
     markerRect = startRectangle;
     shape = shp;
-    markerPointer = NULL;
+    markerPointer = nullptr;
 }
 
 void writeSuperGlobals();
