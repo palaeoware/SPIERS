@@ -35,10 +35,10 @@ void CustomScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
             if (markers[i]->shape == 0)
             {
-                xT = ((float)x - markers[i]->markerRect->x());
+                xT = ((double)x - markers[i]->markerRect->x());
                 xT = xT * xT;
 
-                yT = ((float)y - (float)markers[i]->markerRect->y());
+                yT = ((double)y - (double)markers[i]->markerRect->y());
                 yT = yT * yT;
 
 
@@ -50,16 +50,16 @@ void CustomScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
             {
                 float xT1, xT2, xT3, yT1, yT2, yT3, distances[3];
 
-                xT1 = ((float)x - ((markers[i]->markerRect->x() + markers[i]->linePoint.x()) / 2.));
-                yT1 = ((float)y - ((markers[i]->markerRect->bottom() + markers[i]->linePoint.y()) / 2.));
+                xT1 = ((double)x - ((markers[i]->markerRect->x() + markers[i]->linePoint.x()) / 2.));
+                yT1 = ((double)y - ((markers[i]->markerRect->bottom() + markers[i]->linePoint.y()) / 2.));
                 distances[0] = sqrt((xT1 * xT1) + (yT1 * yT1));
 
-                xT2 = ((float)x - markers[i]->markerRect->x());
-                yT2 = ((float)y - markers[i]->markerRect->bottom());
+                xT2 = ((double)x - markers[i]->markerRect->x());
+                yT2 = ((double)y - markers[i]->markerRect->bottom());
                 distances[1] = sqrt((xT2 * xT2) + (yT2 * yT2));
 
-                xT3 = ((float)x - markers[i]->linePoint.x());
-                yT3 = ((float)y - markers[i]->linePoint.y());
+                xT3 = ((double)x - markers[i]->linePoint.x());
+                yT3 = ((double)y - markers[i]->linePoint.y());
                 distances[2] = sqrt((xT3 * xT3) + (yT3 * yT3));
 
                 distance = distances[0];
@@ -144,7 +144,7 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
             }
             else
             {
-                QMessageBox::warning(this, "Error", "Setup matrix is not invertible. You should never see this, please email", QMessageBox::Ok);
+                QMessageBox::warning(nullptr, "Error", "Setup matrix is not invertible. You should never see this, please email", QMessageBox::Ok);
                 return;
             }
 
@@ -199,7 +199,7 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
             if (aM.isInvertible())aMi = aM.inverted();
             else
             {
-                QMessageBox::warning(this, "Error", "Matrix is not invertible. You should never see this, please email", QMessageBox::Ok);
+                QMessageBox::warning(nullptr, "Error", "Matrix is not invertible. You should never see this, please email", QMessageBox::Ok);
                 return;
             }
 
@@ -324,7 +324,7 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         if (aM.isInvertible())aMi = aM.inverted();
         else
         {
-            QMessageBox::warning(this, "Error", "Matrix is not invertible. You should never see this, please email", QMessageBox::Ok);
+            QMessageBox::warning(nullptr, "Error", "Matrix is not invertible. You should never see this, please email", QMessageBox::Ok);
             return;
         }
 
@@ -448,12 +448,12 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
                 if (angle > 1.)
                 {
                     int angleint = (int)angle;
-                    angle = angle - (float)angleint;
+                    angle = angle - (double)angleint;
                 }
                 else if (angle < -1.)
                 {
                     int angleint = (int)angle;
-                    angle = angle - (float)angleint;
+                    angle = angle - (double)angleint;
                 }
 
                 aM.translate(-1., angle);
@@ -467,12 +467,12 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
                 if (angle > 1.)
                 {
                     int angleint = (int)angle;
-                    angle = angle - (float)angleint;
+                    angle = angle - (double)angleint;
                 }
                 else if (angle < -1.)
                 {
                     int angleint = (int)angle;
-                    angle = angle - (float)angleint;
+                    angle = angle - (double)angleint;
                 }
 
                 aM.translate(1., -angle);
@@ -486,12 +486,12 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
                 if (angle > 1.)
                 {
                     int angleint = (int)angle;
-                    angle = angle - (float)angleint;
+                    angle = angle - (double)angleint;
                 }
                 else if (angle < -1.)
                 {
                     int angleint = (int)angle;
-                    angle = angle - (float)angleint;
+                    angle = angle - (double)angleint;
                 }
 
                 aM.translate(angle, -1);
@@ -505,12 +505,12 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
                 if (angle > 1.)
                 {
                     int angleint = (int)angle;
-                    angle = angle - (float)angleint;
+                    angle = angle - (double)angleint;
                 }
                 else if (angle < -1.)
                 {
                     int angleint = (int)angle;
-                    angle = angle - (float)angleint;
+                    angle = angle - (double)angleint;
                 }
 
                 aM.translate(angle, 1);
@@ -549,7 +549,7 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         }
         else
         {
-            QMessageBox::warning(this, "Error", "Setup matrix is not invertible. You should never see this, please email", QMessageBox::Ok);
+            QMessageBox::warning(nullptr, "Error", "Setup matrix is not invertible. You should never see this, please email", QMessageBox::Ok);
             return;
         }
 
@@ -815,12 +815,12 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
                 if (angle > 1.)
                 {
                     int angleint = (int)angle;
-                    angle = angle - (float)angleint;
+                    angle = angle - (double)angleint;
                 }
                 else if (angle < -1.)
                 {
                     int angleint = (int)angle;
-                    angle = angle - (float)angleint;
+                    angle = angle - (double)angleint;
                 }
 
                 setupM.translate(-1., angle);
@@ -834,12 +834,12 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
                 if (angle > 1.)
                 {
                     int angleint = (int)angle;
-                    angle = angle - (float)angleint;
+                    angle = angle - (double)angleint;
                 }
                 else if (angle < -1.)
                 {
                     int angleint = (int)angle;
-                    angle = angle - (float)angleint;
+                    angle = angle - (double)angleint;
                 }
 
                 setupM.translate(1., -angle);
@@ -853,12 +853,12 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
                 if (angle > 1.)
                 {
                     int angleint = (int)angle;
-                    angle = angle - (float)angleint;
+                    angle = angle - (double)angleint;
                 }
                 else if (angle < -1.)
                 {
                     int angleint = (int)angle;
-                    angle = angle - (float)angleint;
+                    angle = angle - (double)angleint;
                 }
 
                 setupM.translate(angle, -1);
@@ -872,12 +872,12 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
                 if (angle > 1.)
                 {
                     int angleint = (int)angle;
-                    angle = angle - (float)angleint;
+                    angle = angle - (double)angleint;
                 }
                 else if (angle < -1.)
                 {
                     int angleint = (int)angle;
-                    angle = angle - (float)angleint;
+                    angle = angle - (double)angleint;
                 }
 
                 setupM.translate(angle, 1);
@@ -1019,12 +1019,12 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
                 if (angle > 1.)
                 {
                     int angleint = (int)angle;
-                    angle = angle - (float)angleint;
+                    angle = angle - (double)angleint;
                 }
                 else if (angle < -1.)
                 {
                     int angleint = (int)angle;
-                    angle = angle - (float)angleint;
+                    angle = angle - (double)angleint;
                 }
 
                 setupM2.translate(-1., angle);
@@ -1038,12 +1038,12 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
                 if (angle > 1.)
                 {
                     int angleint = (int)angle;
-                    angle = angle - (float)angleint;
+                    angle = angle - (double)angleint;
                 }
                 else if (angle < -1.)
                 {
                     int angleint = (int)angle;
-                    angle = angle - (float)angleint;
+                    angle = angle - (double)angleint;
                 }
 
                 setupM2.translate(1., -angle);
@@ -1057,12 +1057,12 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
                 if (angle > 1.)
                 {
                     int angleint = (int)angle;
-                    angle = angle - (float)angleint;
+                    angle = angle - (double)angleint;
                 }
                 else if (angle < -1.)
                 {
                     int angleint = (int)angle;
-                    angle = angle - (float)angleint;
+                    angle = angle - (double)angleint;
                 }
 
                 setupM2.translate(angle, -1);
@@ -1076,12 +1076,12 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
                 if (angle > 1.)
                 {
                     int angleint = (int)angle;
-                    angle = angle - (float)angleint;
+                    angle = angle - (double)angleint;
                 }
                 else if (angle < -1.)
                 {
                     int angleint = (int)angle;
-                    angle = angle - (float)angleint;
+                    angle = angle - (double)angleint;
                 }
 
                 setupM2.translate(angle, 1);

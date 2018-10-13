@@ -132,7 +132,7 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     //Initial setup of Markers and markerlist
     for (int i = 0; i < 5; i++)
     {
-        MarkerData *append = new MarkerData(new QRectF((qreal)(i * 20), (qreal)(i * 20), 10., 10.), 0);
+        MarkerData *append = new MarkerData(new QRectF(static_cast<double>(i) * 20., static_cast<double>(i) * 20., 10., 10.), 0);
         markers.append(append);
         QString output;
         output.sprintf("Marker - %d", (i + 1));
@@ -613,7 +613,7 @@ void MainWindowImpl::changeMarkerSize(int size)
 {
     if (markersLocked == 1)return;
     if (selectedMarker < 0)selectedMarker = 0;
-    QSizeF newSize((qreal)size, (qreal)size);
+    QSizeF newSize(static_cast<double>(size), static_cast<double>(size));
     for (int i = 0; i < markers.count(); i++)
     {
         markers[i]->markerRect->setSize(newSize);
@@ -939,10 +939,10 @@ void MainWindowImpl::executeAlignTriggered()
         number++;
     }
 
-    delta = ((double)number * Sxx) - (Sx * Sx);
+    delta = (static_cast<double>(number) * Sxx) - (Sx * Sx);
 
     double a = (Sxx * Sy - Sx * Sxy) / delta;
-    double b = ((double)number * Sxy - Sx * Sy) / delta;
+    double b = (static_cast<double>(number) * Sxy - Sx * Sy) / delta;
 
 //Everything else should be corrected according to this...
     CIa1 = a;
@@ -1053,12 +1053,18 @@ void MainWindowImpl::executeAlignTriggered()
     }
 
     startAt = ((static_cast<double>(TOLERANCE) / 100.) * static_cast<double>(numberPoints));
-    endAt = (numberPoints - ((static_cast<double>(TOLERANCE) / 100.) * (float)numberPoints));
+    endAt = (numberPoints - ((static_cast<double>(TOLERANCE) / 100.) * static_cast<double>(numberPoints)));
 
     number = 0;
-//Best fit line of that point
-    Sx = 0., Sy = 0., Sxx = 0., Sxy = 0., delta = 0.;
-    for (int l = (int)startAt; l < (int)endAt; l++)
+
+    //Best fit line of that point
+    Sx = 0.;
+    Sy = 0.;
+    Sxx = 0.;
+    Sxy = 0.;
+    delta = 0.;
+
+    for (int l = static_cast<int>(startAt); l < static_cast<int>(endAt); l++)
     {
         setupM2.map(points2[l][0], points2[l][1], &mappedI, &mappedJ);
         Sx += mappedI;
@@ -1068,10 +1074,10 @@ void MainWindowImpl::executeAlignTriggered()
         number++;
     }
 
-    delta = ((double)number * Sxx) - (Sx * Sx);
+    delta = (static_cast<double>(number) * Sxx) - (Sx * Sx);
 
     a = (Sxx * Sy - Sx * Sxy) / delta;
-    b = ((double)number * Sxy - Sx * Sy) / delta;
+    b = (static_cast<int>(number) * Sxy - Sx * Sy) / delta;
 
     if (a != a || b != b)
     {
@@ -1083,7 +1089,7 @@ void MainWindowImpl::executeAlignTriggered()
     CIb2 = b;
 
 //Work out corner/point at which line cross: x=(CIa1-CIa2)/(CIb2-CIb1);
-    float CIcornerX, CIcornerY;
+    double CIcornerX, CIcornerY;
 
     CIcornerX = (CIa1 - CIa2) / (CIb2 - CIb1);
     CIcornerY = CIa1 + (CIb1 * CIcornerX);
@@ -1100,7 +1106,7 @@ void MainWindowImpl::executeAlignTriggered()
     tempPointer6->setZValue(1);
 
 //Check that this has worked on control image. Not much use otherwise...
-    if ((QMessageBox::question(0, "Control edges found",
+    if ((QMessageBox::question(nullptr, "Control edges found",
                                "Are the edges correctly marked on the image? This is the image all others will be aligned to. If the edges are incorrect cancel, and try another slice, or adjusting the setup boxes.",
                                QMessageBox::Ok, QMessageBox::Cancel)) == 4194304)
     {
@@ -1212,7 +1218,7 @@ void MainWindowImpl::executeAlignTriggered()
             //Best fit line of these points (20%-80% middle of range, which is sorted horizontally)
             double Sx = 0., Sy = 0., Sxx = 0., Sxy = 0., delta = 0.;
             number = 0;
-            for (int l = (int)startAt; l < (int)endAt; l++)
+            for (int l = static_cast<int>(startAt); l < static_cast<int>(endAt); l++)
             {
                 //Now map the points to the matrix...
                 setupM.map(points[l][0], points[l][1], &mappedI, &mappedJ);
@@ -1224,10 +1230,10 @@ void MainWindowImpl::executeAlignTriggered()
                 number++;
             }
 
-            delta = ((double)number * Sxx) - (Sx * Sx);
+            delta = (static_cast<double>(number) * Sxx) - (Sx * Sx);
 
             a = (Sxx * Sy - Sx * Sxy) / delta;
-            b = ((double)number * Sxy - Sx * Sy) / delta;
+            b = (static_cast<double>(number) * Sxy - Sx * Sy) / delta;
 
             //Everything else should be corrected according to this...
             NIa1 = a;
@@ -1319,13 +1325,19 @@ void MainWindowImpl::executeAlignTriggered()
                 }
             }
 
-            startAt = (((double)TOLERANCE / 100.) * (float)numberPoints);
-            endAt = (numberPoints - (((double)TOLERANCE / 100.) * (float)numberPoints));
+            startAt = ((static_cast<double>(TOLERANCE) / 100.) * static_cast<double>(numberPoints));
+            endAt = (numberPoints - ((static_cast<double>(TOLERANCE) / 100.) * static_cast<double>(numberPoints)));
 
             number = 0;
+
             //Best fit line of that point
-            Sx = 0., Sy = 0., Sxx = 0., Sxy = 0., delta = 0.;
-            for (int l = (int)startAt; l < (int)endAt; l++)
+            Sx = 0.;
+            Sy = 0.;
+            Sxx = 0.;
+            Sxy = 0.;
+            delta = 0.;
+
+            for (int l = static_cast<int>(startAt); l < static_cast<int>(endAt); l++)
             {
                 setupM2.map(points2[l][0], points2[l][1], &mappedI, &mappedJ);
                 Sx += mappedI;
@@ -1335,10 +1347,10 @@ void MainWindowImpl::executeAlignTriggered()
                 number++;
             }
 
-            delta = ((double)number * Sxx) - (Sx * Sx);
+            delta = (static_cast<double>(number) * Sxx) - (Sx * Sx);
 
             a = (Sxx * Sy - Sx * Sxy) / delta;
-            b = ((double)number * Sxy - Sx * Sy) / delta;
+            b = (static_cast<double>(number) * Sxy - Sx * Sy) / delta;
 
             NIa2 = a;
             NIb2 = b;
@@ -1351,8 +1363,7 @@ void MainWindowImpl::executeAlignTriggered()
             {
                 //Now align the image compared to CIa1 etc. - first rotate
                 //First work out corner of this image:
-
-                float NIcornerX, NIcornerY;
+                double NIcornerX, NIcornerY;
 
                 NIcornerX = (NIa1 - NIa2) / (NIb2 - NIb1);
                 NIcornerY = NIa1 + (NIb1 * NIcornerX);
@@ -1560,7 +1571,7 @@ void MainWindowImpl::autoMarkersAlign()
         //Shearing
         qreal m12 = imageList[currentImage]->m.m12();
 
-        long double angle = atan2(m12, m11);
+        double angle = atan2(m12, m11);
 
         aMi.rotateRadians(angle);
 
@@ -1864,7 +1875,7 @@ void MainWindowImpl::on_actionOpen_triggered()
                 //Check image names have not been modified
                 if (!list[0].endsWith(drectoryFileList[i], Qt::CaseInsensitive))
                 {
-                    if ((QMessageBox::question(0, "Error",
+                    if ((QMessageBox::question(this, "Error",
                                                "Image sequence has been modified. This will prevent the dataset loading correctly. If this is because you have appended images to the end of the dataset click OK, otherwise click cancel to return.",
                                                QMessageBox::Ok, QMessageBox::Cancel)) == 4194304)return;
                     else
@@ -3367,7 +3378,7 @@ void MainWindowImpl::on_actionCreate_Crop_Area_triggered(bool checked)
 void MainWindowImpl::on_actionCrop_triggered()
 {
 
-    if ((QMessageBox::question(0, "Crop", "Are you sure you want to crop your images?", QMessageBox::Ok, QMessageBox::Cancel)) == 4194304)return;
+    if ((QMessageBox::question(nullptr, "Crop", "Are you sure you want to crop your images?", QMessageBox::Ok, QMessageBox::Cancel)) == 4194304)return;
     else
     {
         cropping = 1;
@@ -3395,9 +3406,9 @@ void MainWindowImpl::on_actionCrop_triggered()
         else if (chosenFormat == "jpg")format = 1;
         else if (chosenFormat == "png")format = 2;
         else format = 3;
-        if (format == 3)if ((QMessageBox::question(0, "Tiff format chosen",
+        if (format == 3)if ((QMessageBox::question(nullptr, "Tiff format chosen",
                                                        "Tiffs cannot be used with SPIERS edit; this option should only be chosen if the files are to be used in VG Studio or similar software", QMessageBox::Ok, QMessageBox::Cancel)) == 4194304)return;
-        if (format != imageList[min]->format)if ((QMessageBox::question(0, "Change format?", "The format chosen is different to the original images do you wish to proceed?", QMessageBox::Ok,
+        if (format != imageList[min]->format)if ((QMessageBox::question(nullptr, "Change format?", "The format chosen is different to the original images do you wish to proceed?", QMessageBox::Ok,
                                                                             QMessageBox::Cancel)) == 4194304)return;
 
         //Create directory
@@ -3842,7 +3853,7 @@ void MainWindowImpl::on_actionReset_Scene_triggered()
 void MainWindowImpl::on_actionSwap_Image_With_Next_triggered()
 {
     int flag = 0;
-    if (imageList[currentImage + 1]->hidden == 1)if ((QMessageBox::question(0, "Next image hidden", "The next image is hidden, still swap?", QMessageBox::Ok, QMessageBox::Cancel)) == 4194304)return;
+    if (imageList[currentImage + 1]->hidden == 1)if ((QMessageBox::question(nullptr, "Next image hidden", "The next image is hidden, still swap?", QMessageBox::Ok, QMessageBox::Cancel)) == 4194304)return;
 
     QString swapName = imageList[currentImage]->fileName;
     QFile Current(swapName);
@@ -3901,7 +3912,7 @@ void MainWindowImpl::on_actionLoad_Settings_File_triggered()
 
 
     int i, j = 0;
-    if ((QMessageBox::question(0, "Confirm", "Are you sure you want to load a settings file? This will overwrite the current settings and apply the new ones to the currently open dataset.",
+    if ((QMessageBox::question(nullptr, "Confirm", "Are you sure you want to load a settings file? This will overwrite the current settings and apply the new ones to the currently open dataset.",
                                QMessageBox::Ok, QMessageBox::Cancel)) == QMessageBox::Cancel)return;
     QString settingsFile = QFileDialog::getOpenFileName(this, tr("Select settings file"), "d:/");
     if (settingsFile == "") return;
@@ -4085,7 +4096,7 @@ void MainWindowImpl::on_actionCompress_Dataset_triggered()
         return;
     }
 
-    if ((QMessageBox::question(0, "Confirm",
+    if ((QMessageBox::question(nullptr, "Confirm",
                                "Are you sure you want to compress the dataset? It is recommended you only do this once you have finished working on it. All working .xxx files will be deleted, and the image files will be converted to PNGs. The settings file can later be reapplied to the dataset, but the converion to PNGs is permanent.",
                                QMessageBox::Ok, QMessageBox::Cancel)) == QMessageBox::Cancel)return;
 
