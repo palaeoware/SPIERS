@@ -70,6 +70,7 @@ void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const Q
         break;
     }
 
+#ifdef QT_DEBUG
     // Save to debug.log
     QFile outFile("debug.log");
     outFile.open(QIODevice::WriteOnly | QIODevice::Append);
@@ -79,6 +80,11 @@ void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const Q
     // Now print to stout too
     QTextStream console(stdout);
     console << txt << endl;
+#else
+    // Print to stout only
+    QTextStream console(stdout);
+    console << txt << endl;
+#endif
 }
 
 /**

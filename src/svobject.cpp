@@ -654,10 +654,12 @@ void SVObject::MakeVBOs()
     int count = 0;
 
     vtkDataArray *scals = pd->GetPointData()->GetScalars();
-    if (scals) colour = true; //if this returns anything assume valid colour
 
-    //
-    int i = 0, sizethisvao; //i is index of vtk triangles, size is number to do each time
+    //if this returns anything assume valid colour
+    if (scals) colour = true;
+
+    //i is index of vtk triangles, size is number to do each time
+    int i = 0, sizethisvao;
 
     while (i < tcount)
     {
