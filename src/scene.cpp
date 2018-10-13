@@ -22,44 +22,42 @@ void CustomScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
     int x, y;
 
-    x = (int)position.x();
-    y = (int)position.y();
+    x = static_cast<int>(position.x());
+    y = static_cast<int>(position.y());
 
     if (event->button() == Qt::LeftButton)
     {
-        float shortestDistance = 1000.;
+        double shortestDistance = 1000.;
         int shortestMarker = -1;
         for (int i = 0; i < markers.count(); i++)
         {
-            float distance = 100., xT = 0., yT = 0.;
+            double distance = 100., xT = 0., yT = 0.;
 
             if (markers[i]->shape == 0)
             {
-                xT = ((double)x - markers[i]->markerRect->x());
+                xT = (static_cast<double>(x) - markers[i]->markerRect->x());
                 xT = xT * xT;
 
-                yT = ((double)y - (double)markers[i]->markerRect->y());
+                yT = (static_cast<double>(y) - static_cast<double>(markers[i]->markerRect->y()));
                 yT = yT * yT;
 
-
                 distance = sqrt(xT + yT);
-
             }
 
             if (markers[i]->shape == 1)
             {
-                float xT1, xT2, xT3, yT1, yT2, yT3, distances[3];
+                double xT1, xT2, xT3, yT1, yT2, yT3, distances[3];
 
-                xT1 = ((double)x - ((markers[i]->markerRect->x() + markers[i]->linePoint.x()) / 2.));
-                yT1 = ((double)y - ((markers[i]->markerRect->bottom() + markers[i]->linePoint.y()) / 2.));
+                xT1 = (static_cast<double>(x) - ((markers[i]->markerRect->x() + markers[i]->linePoint.x()) / 2.));
+                yT1 = (static_cast<double>(y)  - ((markers[i]->markerRect->bottom() + markers[i]->linePoint.y()) / 2.));
                 distances[0] = sqrt((xT1 * xT1) + (yT1 * yT1));
 
-                xT2 = ((double)x - markers[i]->markerRect->x());
-                yT2 = ((double)y - markers[i]->markerRect->bottom());
+                xT2 = (static_cast<double>(x) - markers[i]->markerRect->x());
+                yT2 = (static_cast<double>(y)  - markers[i]->markerRect->bottom());
                 distances[1] = sqrt((xT2 * xT2) + (yT2 * yT2));
 
-                xT3 = ((double)x - markers[i]->linePoint.x());
-                yT3 = ((double)y - markers[i]->linePoint.y());
+                xT3 = (static_cast<double>(x) - markers[i]->linePoint.x());
+                yT3 = (static_cast<double>(y)  - markers[i]->linePoint.y());
                 distances[2] = sqrt((xT3 * xT3) + (yT3 * yT3));
 
                 distance = distances[0];
@@ -87,7 +85,7 @@ void CustomScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
     if (event->button() == Qt::RightButton)
     {
-        markers[selectedMarker]->markerRect->moveTo((double)x, (double)y);
+        markers[selectedMarker]->markerRect->moveTo(static_cast<double>(x), static_cast<double>(y));
         theMainWindow->redrawImage();
     }
 
@@ -101,14 +99,11 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 //qDebug()<<flagUpSelection;
     QPointF position = event->scenePos();
-    int x = (int)position.x();
-    int y = (int)position.y();
+    int x = static_cast<int>(position.x());
+    int y = static_cast<int>(position.y());
 
 //Update info box
-    if (infoChecked == 1)
-    {
-        showInfo(x, y);
-    }
+    if (infoChecked == 1)showInfo(x, y);
 
     if (cropUp == 1)
     {
@@ -314,7 +309,7 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         int L = gridOutline->left();
         int R = gridOutline->right();
 
-        float w2, h2;
+        double w2, h2;
 
         w2 = theMainWindow->width / 2.;
         h2 = theMainWindow->height / 2;
@@ -447,13 +442,13 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
                 //If the angle is over 1 radian you have to correct the movement by just the figure after the decimal place.
                 if (angle > 1.)
                 {
-                    int angleint = (int)angle;
-                    angle = angle - (double)angleint;
+                    int angleint = static_cast<int>(angle);
+                    angle = angle - static_cast<double>(angleint);
                 }
                 else if (angle < -1.)
                 {
-                    int angleint = (int)angle;
-                    angle = angle - (double)angleint;
+                    int angleint = static_cast<int>(angle);
+                    angle = angle - static_cast<double>(angleint);
                 }
 
                 aM.translate(-1., angle);
@@ -466,13 +461,13 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
                 if (angle > 1.)
                 {
-                    int angleint = (int)angle;
-                    angle = angle - (double)angleint;
+                    int angleint = static_cast<int>(angle);
+                    angle = angle - static_cast<double>(angleint);
                 }
                 else if (angle < -1.)
                 {
-                    int angleint = (int)angle;
-                    angle = angle - (double)angleint;
+                    int angleint = static_cast<int>(angle);
+                    angle = angle - static_cast<double>(angleint);
                 }
 
                 aM.translate(1., -angle);
@@ -485,13 +480,13 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
                 if (angle > 1.)
                 {
-                    int angleint = (int)angle;
-                    angle = angle - (double)angleint;
+                    int angleint = static_cast<int>(angle);
+                    angle = angle - static_cast<double>(angleint);
                 }
                 else if (angle < -1.)
                 {
-                    int angleint = (int)angle;
-                    angle = angle - (double)angleint;
+                    int angleint = static_cast<int>(angle);
+                    angle = angle - static_cast<double>(angleint);
                 }
 
                 aM.translate(angle, -1);
@@ -504,13 +499,13 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
                 if (angle > 1.)
                 {
-                    int angleint = (int)angle;
-                    angle = angle - (double)angleint;
+                    int angleint = static_cast<int>(angle);
+                    angle = angle - static_cast<double>(angleint);
                 }
                 else if (angle < -1.)
                 {
-                    int angleint = (int)angle;
-                    angle = angle - (double)angleint;
+                    int angleint = static_cast<int>(angle);
+                    angle = angle - static_cast<double>(angleint);
                 }
 
                 aM.translate(angle, 1);
@@ -665,10 +660,10 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
             flagUpSelection = flag;
         }
 
-        float hW, hH, left, top;
-        float midW, midH;
-        float hW2, hH2, left2, top2;
-        float midW2, midH2;
+        double hW, hH, left, top;
+        double midW, midH;
+        double hW2, hH2, left2, top2;
+        double midW2, midH2;
 
         hW = autoEdgeOne->width() / 2.;
         hH = autoEdgeOne->height() / 2.;
@@ -814,13 +809,13 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
                 //If the angle is over 1 radian you have to correct the movement by just the figure after the decimal place.
                 if (angle > 1.)
                 {
-                    int angleint = (int)angle;
-                    angle = angle - (double)angleint;
+                    int angleint = static_cast<int>(angle);
+                    angle = angle - static_cast<double>(angleint);
                 }
                 else if (angle < -1.)
                 {
-                    int angleint = (int)angle;
-                    angle = angle - (double)angleint;
+                    int angleint = static_cast<int>(angle);
+                    angle = angle - static_cast<double>(angleint);
                 }
 
                 setupM.translate(-1., angle);
@@ -833,13 +828,13 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
                 if (angle > 1.)
                 {
-                    int angleint = (int)angle;
-                    angle = angle - (double)angleint;
+                    int angleint = static_cast<int>(angle);
+                    angle = angle - static_cast<double>(angleint);
                 }
                 else if (angle < -1.)
                 {
-                    int angleint = (int)angle;
-                    angle = angle - (double)angleint;
+                    int angleint = static_cast<int>(angle);
+                    angle = angle - static_cast<double>(angleint);
                 }
 
                 setupM.translate(1., -angle);
@@ -852,13 +847,13 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
                 if (angle > 1.)
                 {
-                    int angleint = (int)angle;
-                    angle = angle - (double)angleint;
+                    int angleint = static_cast<int>(angle);
+                    angle = angle - static_cast<double>(angleint);
                 }
                 else if (angle < -1.)
                 {
-                    int angleint = (int)angle;
-                    angle = angle - (double)angleint;
+                    int angleint = static_cast<int>(angle);
+                    angle = angle - static_cast<double>(angleint);
                 }
 
                 setupM.translate(angle, -1);
@@ -871,13 +866,13 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
                 if (angle > 1.)
                 {
-                    int angleint = (int)angle;
-                    angle = angle - (double)angleint;
+                    int angleint = static_cast<int>(angle);
+                    angle = angle - static_cast<double>(angleint);
                 }
                 else if (angle < -1.)
                 {
-                    int angleint = (int)angle;
-                    angle = angle - (double)angleint;
+                    int angleint = static_cast<int>(angle);
+                    angle = angle - static_cast<double>(angleint);
                 }
 
                 setupM.translate(angle, 1);
@@ -1018,13 +1013,13 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
                 //If the angle is over 1 radian you have to correct the movement by just the figure after the decimal place.
                 if (angle > 1.)
                 {
-                    int angleint = (int)angle;
-                    angle = angle - (double)angleint;
+                    int angleint = static_cast<int>(angle);
+                    angle = angle - static_cast<double>(angleint);
                 }
                 else if (angle < -1.)
                 {
-                    int angleint = (int)angle;
-                    angle = angle - (double)angleint;
+                    int angleint = static_cast<int>(angle);
+                    angle = angle - static_cast<double>(angleint);
                 }
 
                 setupM2.translate(-1., angle);
@@ -1037,13 +1032,13 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
                 if (angle > 1.)
                 {
-                    int angleint = (int)angle;
-                    angle = angle - (double)angleint;
+                    int angleint = static_cast<int>(angle);
+                    angle = angle - static_cast<double>(angleint);
                 }
                 else if (angle < -1.)
                 {
-                    int angleint = (int)angle;
-                    angle = angle - (double)angleint;
+                    int angleint = static_cast<int>(angle);
+                    angle = angle - static_cast<double>(angleint);
                 }
 
                 setupM2.translate(1., -angle);
@@ -1056,13 +1051,13 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
                 if (angle > 1.)
                 {
-                    int angleint = (int)angle;
-                    angle = angle - (double)angleint;
+                    int angleint = static_cast<int>(angle);
+                    angle = angle - static_cast<double>(angleint);
                 }
                 else if (angle < -1.)
                 {
-                    int angleint = (int)angle;
-                    angle = angle - (double)angleint;
+                    int angleint = static_cast<int>(angle);
+                    angle = angle - static_cast<double>(angleint);
                 }
 
                 setupM2.translate(angle, -1);
@@ -1075,13 +1070,13 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
                 if (angle > 1.)
                 {
-                    int angleint = (int)angle;
-                    angle = angle - (double)angleint;
+                    int angleint = static_cast<int>(angle);
+                    angle = angle - static_cast<double>(angleint);
                 }
                 else if (angle < -1.)
                 {
-                    int angleint = (int)angle;
-                    angle = angle - (double)angleint;
+                    int angleint = static_cast<int>(angle);
+                    angle = angle - static_cast<double>(angleint);
                 }
 
                 setupM2.translate(angle, 1);
@@ -1102,12 +1097,13 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         {
             if (selection == -1)
             {
-                sceneDX = x - (int)markers[selectedMarker]->markerRect->left();
-                sceneDY = y - (int)markers[selectedMarker]->markerRect->top();
+                sceneDX = x - static_cast<int>(markers[selectedMarker]->markerRect->left());
+                sceneDY = y - static_cast<int>(markers[selectedMarker]->markerRect->top());
                 selection = 1;
             }
 
-            if (selection == 1 && sceneDX < 300 && sceneDY < 300)markers[selectedMarker]->markerRect->moveTo(((double)x - (double)sceneDX), ((double)y - (double)sceneDY));
+            if (selection == 1 && sceneDX < 300
+                    && sceneDY < 300)markers[selectedMarker]->markerRect->moveTo((static_cast<double>(x) - static_cast<double>(sceneDX)), (static_cast<double>(y) - static_cast<double>(sceneDY)));
         }
 
 
@@ -1124,30 +1120,25 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
                     markers[selectedMarker]->dX = markers[selectedMarker]->linePoint.x() - markers[selectedMarker]->markerRect->x();
                     markers[selectedMarker]->dY = markers[selectedMarker]->linePoint.y() - markers[selectedMarker]->markerRect->bottom();
 
-                    sceneDX = x - ((int)markers[selectedMarker]->linePoint.x() - (int)(0.5 * markers[selectedMarker]->dX));
-                    sceneDY = y - ((int)markers[selectedMarker]->linePoint.y() - (int)(0.5 * markers[selectedMarker]->dY));
+                    sceneDX = x - (static_cast<int>(markers[selectedMarker]->linePoint.x()) - static_cast<int>(0.5 * markers[selectedMarker]->dX));
+                    sceneDY = y - (static_cast<int>(markers[selectedMarker]->linePoint.y()) - static_cast<int>(0.5 * markers[selectedMarker]->dY));
                 }
             }
             else
             {
                 if (selection == 1)
                 {
-                    markers[selectedMarker]->linePoint.setX((double)x);
-                    markers[selectedMarker]->linePoint.setY((double)y);
+                    markers[selectedMarker]->linePoint.setX(static_cast<double>(x));
+                    markers[selectedMarker]->linePoint.setY(static_cast<double>(y));
                 }
                 if (selection == 2)
-                    markers[selectedMarker]->markerRect->moveTo((double)x, (double)y);
+                    markers[selectedMarker]->markerRect->moveTo(static_cast<double>(x), static_cast<double>(y));
                 if (selection == 3 && sceneDX < 300 && sceneDY < 300)
                 {
                     markers[selectedMarker]->markerRect->moveTo
                     (
-
-                        (
-                            (double)x - (markers[selectedMarker]->dX / 2. + (double)sceneDX)
-                        ),
-                        (
-                            (double)y - (markers[selectedMarker]->dY / 2. + (double)sceneDY)
-                        )
+                        (static_cast<double>(x) - (markers[selectedMarker]->dX / 2. + static_cast<double>(sceneDX))),
+                        (static_cast<double>(y)  - (markers[selectedMarker]->dY / 2. + static_cast<double>(sceneDY)))
                     );
                     markers[selectedMarker]->linePoint.setX((markers[selectedMarker]->markerRect->x() + (markers[selectedMarker]->dX)));
                     markers[selectedMarker]->linePoint.setY((markers[selectedMarker]->markerRect->bottom() + (markers[selectedMarker]->dY)));

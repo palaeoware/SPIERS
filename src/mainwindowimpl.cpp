@@ -1611,8 +1611,8 @@ void MainWindowImpl::autoMarkersAlign()
         else w4 = (width / 4) * 4 + 4; //round up
         tempToDraw.setColorTable(clut);
         //set up pointers to base of array - enables very fast access to data
-        uchar *data1 = (uchar *) imageToDraw.bits(); //image is the source (XRGB) image
-        uchar *data2 = (uchar *) tempToDraw.bits();
+        uchar *data1 = static_cast<uchar *>(imageToDraw.bits()); //image is the source (XRGB) image
+        uchar *data2 = static_cast<uchar *>(tempToDraw.bits());
 
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++)
@@ -1639,7 +1639,7 @@ void MainWindowImpl::autoMarkersAlign()
 void MainWindowImpl::addMarkerSlot()
 {
     if (markersLocked == 1)return;
-    MarkerData *append = new MarkerData(new QRectF((qreal)(10), (qreal)(10), (qreal)mSize->value(), (qreal)mSize->value()), 0);
+    MarkerData *append = new MarkerData(new QRectF(10., 10., static_cast<double>(mSize->value()), static_cast<double>(mSize->value())), 0);
     markers.append(append);
     QString output;
     output.sprintf("Marker - %d", markers.count());
@@ -1762,7 +1762,7 @@ void MainWindowImpl::on_actionOpen_triggered()
         markersDialogue->hide();
         for (i = 0; i < 5; i++)
         {
-            MarkerData *append = new MarkerData(new QRectF((qreal)(i * 20), (qreal)(i * 20), 10., 10.), 0);
+            MarkerData *append = new MarkerData(new QRectF(static_cast<double>(i) * 20., static_cast<double>(i) * 20., 10., 10.), 0);
             markers.append(append);
             QString output;
             output.sprintf("Marker - %d", (i + 1));
@@ -1849,6 +1849,17 @@ void MainWindowImpl::on_actionOpen_triggered()
         ImageData *newimage = new ImageData(filesDirectoryString + "/" + drectoryFileList[i]); //create data structure
         imageList.append(newimage);
         fileList->addItem(drectoryFileList[i]);
+        QFont f;
+        f.setBold(true);
+        if ((i + 1) % 10 == 0) fileList->item(i)->setFont(f); // font.setBold(true);
+        if ((i + 1) % 50 == 0)
+        {
+            fileList->item(i)->setTextColor(QColor(100, 149, 237));
+        }
+        if ((i + 1) % 100 == 0)
+        {
+            fileList->item(i)->setTextColor(QColor("blue"));
+        }
     }
 
     //Read from settings and apply matrices
@@ -1886,7 +1897,7 @@ void MainWindowImpl::on_actionOpen_triggered()
                             numberMarkers = list[0].toInt();
                             int size = list[1].toInt();
                             mSize->setValue(size);
-                            QSizeF newSize((qreal)size, (qreal)size);
+                            QSizeF newSize(static_cast<double>(size), static_cast<double>(size));
                             for (int i = 0; i < markers.count(); i++)markers[i]->markerRect->setSize(newSize);
 
                             mThickness->setValue(list[2].toInt());
@@ -1921,7 +1932,7 @@ void MainWindowImpl::on_actionOpen_triggered()
                     numberMarkers = list[0].toInt();
                     int size = list[1].toInt();
                     mSize->setValue(size);
-                    QSizeF newSize((qreal)size, (qreal)size);
+                    QSizeF newSize(static_cast<double>(size), static_cast<double>(size));
                     for (int i = 0; i < markers.count(); i++)markers[i]->markerRect->setSize(newSize);
 
                     mThickness->setValue(list[2].toInt());
@@ -1951,7 +1962,7 @@ void MainWindowImpl::on_actionOpen_triggered()
 
             else if (i > (x + 5) && i <= (x + numberMarkers))
             {
-                MarkerData *append = new MarkerData(new QRectF(list[0].toDouble(), list[1].toDouble(), (qreal)mSize->value(), (qreal)mSize->value()), list[2].toInt());
+                MarkerData *append = new MarkerData(new QRectF(list[0].toDouble(), list[1].toDouble(), static_cast<double>(mSize->value()), static_cast<double>(mSize->value())), list[2].toInt());
                 markers.append(append);
                 QString output;
                 output.sprintf("Marker - %d", (j + 1));
@@ -2043,7 +2054,7 @@ void  MainWindowImpl::redrawImage()
     if (currentImage < 0)return;
     LogText("*1\t");
     //Dismantles group and also destroys group item
-    if (autoMarkersGroup != nullptr && autoMarkersGroup->scene() != 0)
+    if (autoMarkersGroup != nullptr && autoMarkersGroup->scene() != nullptr)
     {
         scene->destroyItemGroup(autoMarkersGroup);
         linePointers.clear();
@@ -2258,7 +2269,7 @@ void  MainWindowImpl::redrawJustAM()
 
     if (autoMarkersUp == 1)
     {
-        if (autoMarkersGroup != nullptr && autoMarkersGroup->scene() != 0)scene->destroyItemGroup(autoMarkersGroup);
+        if (autoMarkersGroup != nullptr && autoMarkersGroup->scene() != nullptr)scene->destroyItemGroup(autoMarkersGroup);
         if (amRectPointer != nullptr)
         {
             scene->removeItem(amRectPointer);
@@ -2435,12 +2446,11 @@ void MainWindowImpl::on_actionAuto_Align_triggered (bool checked)
 //Setup markers
 void MainWindowImpl::on_actionAdd_Markers_triggered(bool checked)
 {
-
     if (checked == true)
     {
         if (actionCreate_Crop_Area->isChecked())
         {
-
+            autoAlign->setEnabled(true);
             actionCreate_Crop_Area->setChecked(false);
             delete cropArea;
             cropUp = 0;
@@ -2449,6 +2459,7 @@ void MainWindowImpl::on_actionAdd_Markers_triggered(bool checked)
             rectPointer = nullptr;
             QApplication::setOverrideCursor(Qt::ArrowCursor);
             redrawImage();
+
         }
 
         selectedMarker = 0;
@@ -2620,8 +2631,8 @@ void MainWindowImpl::rotate (qreal rotateAngle)
         else w4 = (width / 4) * 4 + 4; //round up
         tempToDraw.setColorTable(clut);
         //set up pointers to base of array - enables very fast access to data
-        uchar *data1 = (uchar *) imageToDraw.bits(); //image is the source (XRGB) image
-        uchar *data2 = (uchar *) tempToDraw.bits();
+        uchar *data1 = static_cast<uchar *>(imageToDraw.bits()); //image is the source (XRGB) image
+        uchar *data2 = static_cast<uchar *>(tempToDraw.bits());
 
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++)
@@ -2719,8 +2730,8 @@ void MainWindowImpl::resize(qreal sizeChange)
         else w4 = (width / 4) * 4 + 4; //round up
         tempToDraw.setColorTable(clut);
         //set up pointers to base of array - enables very fast access to data
-        uchar *data1 = (uchar *) imageToDraw.bits(); //image is the source (XRGB) image
-        uchar *data2 = (uchar *) tempToDraw.bits();
+        uchar *data1 = static_cast<uchar *>(imageToDraw.bits()); //image is the source (XRGB) image
+        uchar *data2 = static_cast<uchar *>(tempToDraw.bits());
 
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++)
@@ -2903,8 +2914,8 @@ void MainWindowImpl::redrawShift()
         else w4 = (width / 4) * 4 + 4; //round up
         tempToDraw.setColorTable(clut);
         //set up pointers to base of array - enables very fast access to data
-        uchar *data1 = (uchar *) Shifted.bits(); //image is the source (XRGB) image
-        uchar *data2 = (uchar *) tempToDraw.bits();
+        uchar *data1 = static_cast<uchar *>(Shifted.bits()); //image is the source (XRGB) image
+        uchar *data2 = static_cast<uchar *>(tempToDraw.bits());
 
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++)
@@ -3142,8 +3153,8 @@ void MainWindowImpl::on_actionApply_Propogation_triggered()
                 else w4 = (width / 4) * 4 + 4; //round up
                 tempToDraw.setColorTable(clut);
                 //set up pointers to base of array - enables very fast access to data
-                uchar *data1 = (uchar *) imageToDraw.bits(); //image is the source (XRGB) image
-                uchar *data2 = (uchar *) tempToDraw.bits();
+                uchar *data1 = static_cast<uchar *>(imageToDraw.bits()); //image is the source (XRGB) image
+                uchar *data2 = static_cast<uchar *>(tempToDraw.bits());
 
                 for (int x = 0; x < width; x++)
                     for (int y = 0; y < height; y++)
@@ -3250,9 +3261,10 @@ void MainWindowImpl::on_actionApply_Propogation_triggered()
                 if ((width % 4) == 0) w4 = width; // no problem with width
                 else w4 = (width / 4) * 4 + 4; //round up
                 tempToDraw.setColorTable(clut);
+
                 //set up pointers to base of array - enables very fast access to data
-                uchar *data1 = (uchar *) imageToDraw.bits(); //image is the source (XRGB) image
-                uchar *data2 = (uchar *) tempToDraw.bits();
+                uchar *data1 = static_cast<uchar *>(imageToDraw.bits()); //image is the source (XRGB) image
+                uchar *data2 = static_cast<uchar *>(tempToDraw.bits());
 
                 for (int x = 0; x < width; x++)
                     for (int y = 0; y < height; y++)
@@ -4061,8 +4073,8 @@ void MainWindowImpl::on_actionLoad_Settings_File_triggered()
                 else w4 = (width / 4) * 4 + 4; //round up
                 tempToDraw.setColorTable(clut);
                 //set up pointers to base of array - enables very fast access to data
-                uchar *data1 = (uchar *) imageToDraw.bits(); //image is the source (XRGB) image
-                uchar *data2 = (uchar *) tempToDraw.bits();
+                uchar *data1 = static_cast<uchar *>(imageToDraw.bits()); //image is the source (XRGB) image
+                uchar *data2 = static_cast<uchar *>(tempToDraw.bits());
 
                 for (int x = 0; x < width; x++)
                     for (int y = 0; y < height; y++)
