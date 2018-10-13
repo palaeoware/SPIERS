@@ -153,8 +153,12 @@ void SVObject::DoUpdates()
  */
 void SVObject::ForceUpdates(int thisobj, int totalobj)
 {
+    qDebug() << "[Where I'm I?] In ForceUpdates";
+
     if (thisobj >= 0)
     {
+        qDebug() << "[Where I'm I?] In ForceUpdates - thisobj >= 0";
+
         QString status;
         status.sprintf("Reprocessing %d of %d", thisobj + 1, totalobj);
         MainWin->ui->OutputLabelOverall->setText(status);
@@ -164,7 +168,11 @@ void SVObject::ForceUpdates(int thisobj, int totalobj)
             MainWin->ui->ProgBarOverall->setValue((thisobj * 100) / totalobj);
 
     }
+
+    qDebug() << "[Where I'm I?] In ForceUpdates calling MakeDlists();";
     MakeDlists();
+
+    qDebug() << "[Where I'm I?] In ForceUpdates calling CompressPolyData(false);";
     CompressPolyData(false); //return it to compressed format
 }
 
@@ -174,11 +182,10 @@ void SVObject::ForceUpdates(int thisobj, int totalobj)
  */
 static void ProgressHandler(vtkObject *, unsigned long, void *, void *progress)
 {
-    //qDebug()<<"HERE";
     double *amount = static_cast<double *>(progress);
     int iamount = static_cast<int>((*amount) * 100.0);
+    qDebug() << "[ProgressHandler] " << iamount << "%";
     MainWin->setSpecificProgress(iamount);
-    //if ((progresshandlercounter++)%10==0)
     qApp->processEvents();
 }
 
@@ -188,6 +195,8 @@ static void ProgressHandler(vtkObject *, unsigned long, void *, void *progress)
  */
 static void ErrorHandler(vtkObject *, unsigned long, void *, void *progress)
 {
+    Q_UNUSED(progress)
+
     QMessageBox::critical(MainWin, "Error", "Fatal VTK error: This is likely an 'out of memory' issue - if however you see this message when working with small objects please ttact the software author");
 }
 
@@ -196,6 +205,8 @@ static void ErrorHandler(vtkObject *, unsigned long, void *, void *progress)
  */
 void SVObject::DeleteVTKObjects()
 {
+    qDebug() << "[Where I'm I?] In DeleteVTKObjects";
+
     int cells = static_cast<int>(pd->GetNumberOfCells());
 
     if (IslandRemoval && pd->GetNumberOfCells() != 0) islandfinder->Delete();
@@ -216,7 +227,12 @@ void SVObject::DeleteVTKObjects()
  */
 void SVObject::GetFinalPolyData()
 {
+    qDebug() << "[Where I'm I?] In GetFinalPolyData";
+
     if (IsGroup) return;
+
+
+    qDebug() << "[Where I'm I?] In GetFinalPolyData - this is not a group...";
 
     if (voxml_mode == false)
     {
@@ -250,7 +266,7 @@ void SVObject::GetFinalPolyData()
                 decimator = vtkDecimatePro::New();
 
                 decimator->AccumulateErrorOff();
-                decimator->SetTargetReduction(1.0 - (double)Resample / 100.0);
+                decimator->SetTargetReduction(1.0 - static_cast<double>(Resample) / 100.0);
                 decimator->PreserveTopologyOn();
                 decimator->SetInputData(PolyData);
 
@@ -263,7 +279,7 @@ void SVObject::GetFinalPolyData()
                 decimator->Update();
                 cb->Delete();
                 cberror->Delete();
-                dout = (vtkPolyDataAlgorithm *)decimator;
+                dout = static_cast<vtkPolyDataAlgorithm *>(decimator);
                 qDebug() << "[Simplifying Object] End - Type 0";
             }
 
@@ -295,7 +311,7 @@ void SVObject::GetFinalPolyData()
                 //qDebug()<<qdecimator->GetActualReduction();
                 cb->Delete();
                 cberror->Delete();
-                dout = (vtkPolyDataAlgorithm *)qdecimator;
+                dout = static_cast<vtkPolyDataAlgorithm *>(qdecimator);
                 qDebug() << "[Simplifying Object] End - Type 1";
             }
         }
@@ -306,7 +322,7 @@ void SVObject::GetFinalPolyData()
             qDebug() << "[Finding Islands] Start";
             qApp->processEvents();
 
-            islandfinder = (MyConnectivityFilter *)MyConnectivityFilter::New();
+            islandfinder = static_cast<MyConnectivityFilter *>(MyConnectivityFilter::New());
 
             if (Resample == 100)
                 islandfinder->SetInputData(PolyData);
@@ -408,30 +424,44 @@ void SVObject::GetFinalPolyData()
             qDebug() << "[Smoothing] End";
         }
 
+
+        qDebug() << "[Getting data] Getting data...";
         if ((Resample == 100 && IslandRemoval == 0 && Smoothing == 0))
         {
+            qDebug() << "[Getting data] Getting data... using PolyData";
             pd = PolyData;
         }
         else
         {
             if (Smoothing != 0)
+            {
+                qDebug() << "[Getting data] Getting data... using smoother->GetOutput()";
                 pd = smoother->GetOutput();
+            }
             else
             {
                 if (IslandRemoval != 0)
+                {
+                    qDebug() << "[Getting data] Getting data... using pdislands";
                     pd = pdislands;
+                }
                 else
+                {
+                    qDebug() << "[Getting data] Getting data... using dout->GetOutput()";
                     pd = dout->GetOutput();
+                }
             }
         }
     }
 
+    qDebug() << "[Calculating Normals] Calculating Normals";
     MainWin->setSpecificLabel("Calculating Normals");
     qApp->processEvents();
 
     // Now new simplified normal generating code
     int tcount = static_cast<int>(pd->GetNumberOfCells());
-    int pcount = static_cast<int>(pd->GetNumberOfPoints());
+    //int pcount = static_cast<int>(pd->GetNumberOfPoints());
+
     normalx.clear();
     normaly.clear();
     normalz.clear();
@@ -441,9 +471,9 @@ void SVObject::GetFinalPolyData()
 
     for (int i = 0; i < tcount; i++)
     {
-        vtkTriangle *cell = (vtkTriangle *) pd->GetCell(i);
+        vtkTriangle *cell = static_cast<vtkTriangle *>(pd->GetCell(i));
         vtkIdType tri[3]; //vertex indices
-        for (vtkIdType j = 0; j < 3; j++) tri[j] = cell->GetPointId(j);
+        for (vtkIdType j = 0; j < 3; j++) tri[j] = cell->GetPointId(static_cast<int>(j));
 
         //now find the actual vertex value
         double x[9]; //3 points - hopefully as nine consecutive values
@@ -455,15 +485,15 @@ void SVObject::GetFinalPolyData()
         vtkPolygon::ComputeNormal(3, x, n);
 
         //add to the normals
-        normalx[tri[0]] += (float)n[0];
-        normaly[tri[0]] += (float)n[1];
-        normalz[tri[0]] += (float)n[2];
-        normalx[tri[1]] += (float)n[0];
-        normaly[tri[1]] += (float)n[1];
-        normalz[tri[1]] += (float)n[2];
-        normalx[tri[2]] += (float)n[0];
-        normaly[tri[2]] += (float)n[1];
-        normalz[tri[2]] += (float)n[2];
+        normalx[static_cast<int>(tri[0])] += static_cast<float>(n[0]);
+        normaly[static_cast<int>(tri[0])] += static_cast<float>(n[1]);
+        normalz[static_cast<int>(tri[0])] += static_cast<float>(n[2]);
+        normalx[static_cast<int>(tri[1])] += static_cast<float>(n[0]);
+        normaly[static_cast<int>(tri[1])] += static_cast<float>(n[1]);
+        normalz[static_cast<int>(tri[1])] += static_cast<float>(n[2]);
+        normalx[static_cast<int>(tri[2])] += static_cast<float>(n[0]);
+        normaly[static_cast<int>(tri[2])] += static_cast<float>(n[1]);
+        normalz[static_cast<int>(tri[2])] += static_cast<float>(n[2]);
 
         if (i % 10000 == 0)
         {
@@ -471,6 +501,8 @@ void SVObject::GetFinalPolyData()
             qApp->processEvents();
         }
     }
+
+    qDebug() << "[Where I'm I?] End of GetFinalPolyData";
 
     return;
 }
@@ -480,7 +512,8 @@ void SVObject::GetFinalPolyData()
  */
 void SVObject::MakeVBOs()
 {
-    //return;
+    qDebug() << "[Where I'm I?] In MakeVBOs";
+
     //Copy of old MakeDlists, updated to work with VBOs for OpenGL 2+
 
     if (IsGroup) return;
@@ -519,6 +552,7 @@ void SVObject::MakeVBOs()
     }
 
     //create bounding box
+    qDebug() << "[Where I'm I?] In MakeVBOs - creating bounding box";
 
     if (BoundingBoxBuffer.isCreated()) BoundingBoxBuffer.destroy();
     BoundingBoxBuffer.create();
@@ -527,24 +561,36 @@ void SVObject::MakeVBOs()
 
     QVector<QVector3D> lineVertices;
 
-    lineVertices << QVector3D(objectxmin, objectymin,  objectzmin) << QVector3D( objectxmax, objectymin,  objectzmin);
-    lineVertices << QVector3D(objectxmin, objectymin,  objectzmin) << QVector3D( objectxmin, objectymax,  objectzmin);
-    lineVertices << QVector3D(objectxmin, objectymin,  objectzmin) << QVector3D( objectxmin, objectymin,  objectzmax);
+    lineVertices << QVector3D(objectxmin, objectymin,  objectzmin)
+                 << QVector3D( objectxmax, objectymin,  objectzmin);
+    lineVertices << QVector3D(objectxmin, objectymin,  objectzmin)
+                 << QVector3D( objectxmin, objectymax,  objectzmin);
+    lineVertices << QVector3D(objectxmin, objectymin,  objectzmin)
+                 << QVector3D( objectxmin, objectymin,  objectzmax);
 
-    lineVertices << QVector3D(objectxmax, objectymax,  objectzmax) << QVector3D( objectxmin, objectymax,  objectzmax);
-    lineVertices << QVector3D(objectxmax, objectymax,  objectzmax) << QVector3D( objectxmax, objectymin,  objectzmax);
-    lineVertices << QVector3D(objectxmax, objectymax,  objectzmax) << QVector3D( objectxmax, objectymax,  objectzmin);
+    lineVertices << QVector3D(objectxmax, objectymax,  objectzmax)
+                 << QVector3D( objectxmin, objectymax,  objectzmax);
+    lineVertices << QVector3D(objectxmax, objectymax,  objectzmax)
+                 << QVector3D( objectxmax, objectymin,  objectzmax);
+    lineVertices << QVector3D(objectxmax, objectymax,  objectzmax)
+                 << QVector3D( objectxmax, objectymax,  objectzmin);
 
     //lineVertices << QVector3D(objectxmax, objectymin,  objectzmin) << QVector3D( objectxmin, objectymin,  objectzmin);
-    lineVertices << QVector3D(objectxmax, objectymin,  objectzmin) << QVector3D( objectxmax, objectymax,  objectzmin);
-    lineVertices << QVector3D(objectxmax, objectymin,  objectzmin) << QVector3D( objectxmax, objectymin,  objectzmax);
+    lineVertices << QVector3D(objectxmax, objectymin,  objectzmin)
+                 << QVector3D( objectxmax, objectymax,  objectzmin);
+    lineVertices << QVector3D(objectxmax, objectymin,  objectzmin)
+                 << QVector3D( objectxmax, objectymin,  objectzmax);
 
-    lineVertices << QVector3D(objectxmin, objectymax,  objectzmin) << QVector3D( objectxmax, objectymax,  objectzmin);
+    lineVertices << QVector3D(objectxmin, objectymax,  objectzmin)
+                 << QVector3D( objectxmax, objectymax,  objectzmin);
     //lineVertices << QVector3D(objectxmin, objectymax,  objectzmin) << QVector3D( objectxmin, objectymin,  objectzmin);
-    lineVertices << QVector3D(objectxmin, objectymax,  objectzmin) << QVector3D( objectxmin, objectymax,  objectzmax);
+    lineVertices << QVector3D(objectxmin, objectymax,  objectzmin)
+                 << QVector3D( objectxmin, objectymax,  objectzmax);
 
-    lineVertices << QVector3D(objectxmin, objectymin,  objectzmax) << QVector3D( objectxmax, objectymin,  objectzmax);
-    lineVertices << QVector3D(objectxmin, objectymin,  objectzmax) << QVector3D( objectxmin, objectymax,  objectzmax);
+    lineVertices << QVector3D(objectxmin, objectymin,  objectzmax)
+                 << QVector3D( objectxmax, objectymin,  objectzmax);
+    lineVertices << QVector3D(objectxmin, objectymin,  objectzmax)
+                 << QVector3D( objectxmin, objectymax,  objectzmax);
     //lineVertices << QVector3D(objectxmin, objectymin,  objectzmax) << QVector3D( objectxmin, objectymin,  objectzmin);
 
     QVector<QVector3D> lineNormals;
@@ -1137,7 +1183,6 @@ int SVObject::WriteSTLfaces(QDir stldir, QString fname)
     DeleteVTKObjects();
 
     return tcount;
-
 }
 
 /**
@@ -1167,10 +1212,6 @@ void SVObject::MakePolyData()
     }
 
     actualarray->SetNumberOfValues(TrigCount * 4);
-    //PolyData->Allocate(TrigCount,1000000);
-    //cellarray->Allocate(TrigCount);
-    //cellarray->SetNumberOfCells(TrigCount);
-    //test
 
     int pos = 0;
     for (int i = 0; i < Isosurfaces.count(); i++)

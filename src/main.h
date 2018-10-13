@@ -5,11 +5,11 @@
 #include <QEvent>
 #include <QKeyEvent>
 
-class myapp : public QApplication
+class main : public QApplication
 {
     Q_OBJECT
 public:
-    myapp(int &argc, char *argv[]);
+    main(int &argc, char *argv[]);
 
     QString fn;
     bool namereceived;

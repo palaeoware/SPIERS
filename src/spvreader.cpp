@@ -66,8 +66,7 @@ void SPVreader::ProcessFile(QString filename)
 
     //set the class-level globals
     FileName = filename;
-    //qDebug()<<FileName;
-    //FileName="mm";
+    qDebug() << "[Global] FileName = " << FileName;
 
     //call internal version with messier interface
     InternalProcessFile(filename);
@@ -81,6 +80,8 @@ void SPVreader::ProcessFile(QString filename)
  */
 void SPVreader::FixUpData()
 {
+    qDebug() << "[Where I'm I?] In FixUpData";
+
     //Fix any odd characters in keys
     for (int i = 0; i < SVObjects.count(); i++)
     {
@@ -176,16 +177,16 @@ void SPVreader::WriteSPV(bool withpd)
             out << o->Colour[0];
             out << o->Colour[1];
             out << o->Colour[2];
-            if (o->Transparency < 0) out << (int)0;
+            if (o->Transparency < 0) out << static_cast<int>(0);
             else out << o->Transparency; //bodge for backward compatibility
             out << o->IsGroup;
             out << o->InGroup;
             out << o->Position;
             out << o->Visible;
             out << o->Resample;
-            if (o->IslandRemoval < 0) out << (int)0;
+            if (o->IslandRemoval < 0) out << static_cast<int>(0);
             else out << o->IslandRemoval; //bodge for backward compatibility
-            if (o->Smoothing < 0) out << (int)0;
+            if (o->Smoothing < 0) out << static_cast<int>(0);
             else out << o->Smoothing; //bodge for backward compatibility
 
             if (o->BuggedData) out << o->ResampleType - 10000;
@@ -215,7 +216,7 @@ void SPVreader::WriteSPV(bool withpd)
                 {
                     out << -3;
                     out << o->AllSlicesSize;
-                    OutputFile.write((char *)o->AllSlicesCompressed, o->AllSlicesSize);
+                    OutputFile.write(reinterpret_cast<char *>(o->AllSlicesCompressed), o->AllSlicesSize);
                 }
                 else
                 {
@@ -225,7 +226,7 @@ void SPVreader::WriteSPV(bool withpd)
                     for (int j = 0; j < s->kDim - 2; j++) //allow for two end caps
                     {
                         if (o->compressedslices.count() == 0) //<v5, no comp slices
-                            out << (int) -1;
+                            out << static_cast<int>(-1);
                         else
                         {
                             CompressedSlice *sl = o->compressedslices[j + 1];
@@ -233,16 +234,16 @@ void SPVreader::WriteSPV(bool withpd)
                             if (sl->empty)
                             {
                                 //no data, just write a -1
-                                out << (int) -1;
+                                out << static_cast<int>(-1);
                             }
                             else
                             {
-                                out << (int)0; //code for there is a grid and then data
+                                out << static_cast<int>(0); //code for there is a grid and then data
                                 //write the grid
-                                out.writeRawData((char *)sl->grid, s->GridSize);
+                                out.writeRawData(reinterpret_cast<char *>(sl->grid), s->GridSize);
                                 //now write the compressed data
                                 out << sl->datasize;
-                                out.writeRawData((char *)sl->data, sl->datasize);
+                                out.writeRawData(reinterpret_cast<char *>(sl->data), sl->datasize);
                             }
                         }
 
@@ -326,21 +327,26 @@ void SPVreader::WriteSPV(bool withpd)
  */
 void SPVreader::ReadSPV6(QString Filename)
 {
+    qDebug() << "[Where I'm I?] In ReadSPV6 | filename = " << Filename;
+
     int BaseIndex;
     //actually reads 6 and up
     double dummy;
+
     //Read in new version of SPV out
     QFile InputFile(Filename);
     if (InputFile.open(QIODevice::ReadOnly) == false)
     {
+        qDebug() << "[Where I'm I?] In ReadSPV6 | File Error = Fatal - Can't open SPV file for reading";
         QMessageBox::warning(MainWin, "File Error", "Fatal - Can't open SPV file for reading");
         exit(0);
     }
 
-
     BaseIndex = -1;
     for (int i = 0; i < SVObjects.count(); i++) //non 0 for imports
         if (SVObjects[i]->Index > BaseIndex) BaseIndex = SVObjects[i]->Index;
+
+    qDebug() << "[Where I'm I?] In ReadSPV6 | BaseIndex = " << BaseIndex;
 
     BaseIndex++; //will now be first free index number
 
@@ -356,6 +362,8 @@ void SPVreader::ReadSPV6(QString Filename)
 
     in >> dummy; //will be -1
     in >> version;
+
+    qDebug() << "[Where I'm I?] In ReadSPV6 | Version = " << version;
 
     int spvcount = 1;
     int totalobjcount;
@@ -373,10 +381,13 @@ void SPVreader::ReadSPV6(QString Filename)
         MainWin->ui->actionSave_Memory->setChecked(t);
     }
 
+    qDebug() << "[Where I'm I?] In ReadSPV6 | Reading file... | spvcount = " << spvcount;
+
     MainWin->setSpecificLabel("Reading file...");
     MainWin->setSpecificProgress(0);
     qApp->processEvents();
 
+    // For loop - for each
     for (int spv_i = 0; spv_i < spvcount; spv_i++) //for each spv
     {
         QString filenamenopath;
@@ -405,7 +416,7 @@ void SPVreader::ReadSPV6(QString Filename)
         thisspv->SlicePerMM = SlicePerMM;
         thisspv->SkewDown = -SkewDown * PixPerMM;
         thisspv->SkewLeft = -SkewLeft * PixPerMM;
-        mm_per_unit = ((float)(SPVs[0]->iDim) / (float)SCALE) / SPVs[0]->PixPerMM;
+        mm_per_unit = ((static_cast<float>(SPVs[0]->iDim) / static_cast<float>(SCALE)) / static_cast<float>(SPVs[0]->PixPerMM));
 
         //create and append all the SVObjects
         for (int i = 0; i < objectcount; i++)
@@ -418,7 +429,7 @@ void SPVreader::ReadSPV6(QString Filename)
         }
 
         in >> thisspv->MirrorFlag;
-//        qDebug()<<"Just mirror"<<thisspv->MirrorFlag;
+        qDebug() << "Just mirror " << thisspv->MirrorFlag;
 
         float Mat[16];
         if (version == 6) //matrix now
@@ -428,15 +439,18 @@ void SPVreader::ReadSPV6(QString Filename)
             {
                 for (int j = 0; j < 16; j++)
                     thisspv->ComponentObjects[i]->matrix[j] = Mat[j];
+
                 //NEW BODGE - transpose this matrix
                 TransposeMatrix(thisspv->ComponentObjects[i]->matrix);
-                for (int j = 0; j < 16; j++) thisspv->ComponentObjects[i]->defaultmatrix[j] = thisspv->ComponentObjects[i]->matrix[j];
-                thisspv->ComponentObjects[i]->gotdefaultmatrix = true;
 
+                for (int j = 0; j < 16; j++)
+                    thisspv->ComponentObjects[i]->defaultmatrix[j] = thisspv->ComponentObjects[i]->matrix[j];
+
+                thisspv->ComponentObjects[i]->gotdefaultmatrix = true;
             }
         }
 
-        thisspv->stretches = (double *)malloc((kDim + 1) * sizeof(double));
+        thisspv->stretches = static_cast<double *>(malloc((static_cast<unsigned long long>(kDim) + 1) * sizeof(double)));
         for (int i = 0; i < thisspv->kDim + 1; i++)
             in >> thisspv->stretches[i];
 
@@ -470,8 +484,12 @@ void SPVreader::ReadSPV6(QString Filename)
             }
 
             if (version >= 7) for (int i = 0; i < 16; i++) in >> o->matrix[i];
+
             TransposeMatrix(o->matrix);
-            for (int j = 0; j < 16; j++) thisspv->ComponentObjects[i]->defaultmatrix[j] = thisspv->ComponentObjects[i]->matrix[j];
+
+            for (int j = 0; j < 16; j++)
+                thisspv->ComponentObjects[i]->defaultmatrix[j] = thisspv->ComponentObjects[i]->matrix[j];
+
             thisspv->ComponentObjects[i]->gotdefaultmatrix = true;
 
             if (version >= 7)
@@ -479,6 +497,7 @@ void SPVreader::ReadSPV6(QString Filename)
                 in >> o->Index;
                 o->Index += BaseIndex;
             }
+
             if (version >= 7)
             {
                 in >> o->scale;
@@ -541,17 +560,15 @@ void SPVreader::ReadSPV6(QString Filename)
                 }
                 else
                 {
-
                     CompressedSlice *BlankSlice = new CompressedSlice(o, true);
                     (o->compressedslices).append(BlankSlice);
                     int ThisSlice = 1;
-                    //qDebug()<<"pieces"<<pieces;
+                    qDebug() << "pieces" << pieces;
                     for (int j = 0; j < pieces; j++)
                     {
 
                         MainWin->setSpecificProgress((j * 100) / pieces);
                         if (j % 10 == 0) qApp->processEvents();
-
 
                         if (j % (thisspv->kDim - 2) == 0) ThisSlice = 1; // reached a restart from merge
 
@@ -582,20 +599,20 @@ void SPVreader::ReadSPV6(QString Filename)
                             newslice->data = (unsigned char *)malloc(newslice->datasize);
 
                             temp = in.readRawData((char *)newslice->data, newslice->datasize);
-                            //qDebug()<<"1."<<t.elapsed();
+                            //qDebug() << "1." << t.elapsed();
                             if (j < (thisspv->kDim - 2)) //no merge complications
                             {
                                 (o->compressedslices).append(newslice);
-                                //qDebug()<<"h1";
+                                //qDebug() << "h1";
                             }
                             else
                             {
                                 o->compressedslices[ThisSlice]->Merge(newslice, "c:/test.bmp");
                                 delete newslice;
-                                //qDebug()<<"h2";
+                                //qDebug() << "h2";
                             }
                             ThisSlice++;
-                            //qDebug()<<"2."<<t.elapsed();
+                            //qDebug() << "2." << t.elapsed();
                         }
                     }
 
@@ -619,12 +636,11 @@ void SPVreader::ReadSPV6(QString Filename)
 
                 }
             }
-            //qDebug()<<"3."<<t.elapsed();
+            //qDebug() << "3." << t.elapsed();
         }
-
-
     }
 
+    qDebug() << "[Where I'm I?] In ReadSPV6 | Now the orphan objects - which can only be groups";
     //Now the orphan objects - which can only be groups
     if (version >= 8)
     {
@@ -647,6 +663,8 @@ void SPVreader::ReadSPV6(QString Filename)
 
     if (!(in.atEnd()))
     {
+        qDebug() << "[Where I'm I?] In ReadSPV6 | checking for InfoLists";
+
         QString check;
         in >> check;
         if (check != "InfoLists")
@@ -658,6 +676,8 @@ void SPVreader::ReadSPV6(QString Filename)
     //Now scale stuff and a few interface things
     if (!(in.atEnd()))
     {
+        qDebug() << "[Where I'm I?] In ReadSPV6 | checking for scaleball data";
+
         in >> ScaleBallColour[0];
         in >> ScaleBallColour[1];
         in >> ScaleBallColour[2];
@@ -703,38 +723,44 @@ void SPVreader::ReadSPV6(QString Filename)
             }
         }
 
+    qDebug() << "[Where I'm I?] In ReadSPV6 calling FixUpData();";
     FixUpData();
-    MainWin->RefreshObjects();
-    MainWin->RefreshInfo();
 
+    qDebug() << "[Where I'm I?] In ReadSPV6 calling RefreshObjects();";
+    MainWin->RefreshObjects();
+
+    qDebug() << "[Where I'm I?] In ReadSPV6 calling RefreshInfo()";
+    MainWin->RefreshInfo();
 
     int items = 0;
     for (int z = BaseIndex; z < SVObjects.count(); z++) if (!(SVObjects[z]->IsGroup)) items++;
 
     int icount = 1;
+
     //Now do all the processing
-
-
-
+    qDebug() << "[Where I'm I?] In ReadSPV6 starting processing...";
     for (int i = BaseIndex; i < SVObjects.count(); i++)
     {
         if (!(SVObjects[i]->IsGroup))
         {
             QString status;
             QTextStream ts(&status);
+
+            qDebug() << "Processing...'" << SVObjects[i]->Name << "', " << icount << " of " << items;
             ts << "Processing '" << SVObjects[i]->Name << "', " << icount << " of " << items;
+
             MainWin->ui->OutputLabelOverall->setText(status);
             MainWin->ui->ProgBarOverall->setValue((icount++ * 100) / items);
             if (SVObjects[i]->SurfaceMe)
             {
                 mc surfacer(SVObjects[i]); //create surfacer object
 
-                unsigned char *fullarray = 0;
+                unsigned char *fullarray = nullptr;
                 if (SVObjects[i]->AllSlicesCompressed)
                 {
 
                     int size = SVObjects[i]->spv->size;
-                    if ((fullarray = (unsigned char *)malloc(size * SVObjects[i]->spv->kDim)) == NULL)
+                    if ((fullarray = (unsigned char *)malloc(size * SVObjects[i]->spv->kDim)) == nullptr)
                     {
                         QMessageBox::warning((QWidget *)MainWin, "Memory Error", "Fatal Error - could not obtain enough memory to reconstruct volume.\nTry exporting from a newer version of SPIERSview");
                         exit(0);
@@ -762,21 +788,29 @@ void SPVreader::ReadSPV6(QString Filename)
                 if (fullarray)
                 {
                     free(fullarray);
-                    SVObjects[i]->spv->fullarray = 0;
+                    SVObjects[i]->spv->fullarray = nullptr;
                 }
+
+                qDebug() << "[Where I'm I?] In ReadSPV6 - calling MakePolyData()";
                 SVObjects[i]->MakePolyData();
             }
+
             //Next job - do isosurface stretching and convert into VTK format
             SVObjects[i]->ForceUpdates(-1, -1);
             MainWin->UpdateGL();
         }
     }
+
     int ttrig = 0;
-    for (int i = 0; i < SVObjects.count(); i++) ttrig += SVObjects[i]->Triangles;
-    QString status;
-    status.sprintf("Completed", ttrig / 1000);
+    for (int i = 0; i < SVObjects.count(); i++)
+        ttrig += SVObjects[i]->Triangles;
+
+    qDebug() << "[Where I'm I?] In ReadSPV6 - Completed " << (ttrig / 1000);
+    QString status = QString("Completed %1").arg(ttrig / 1000);
     MainWin->ui->OutputLabelOverall->setText(status);
     MainWin->ui->ProgBarOverall->setValue(100);
+
+    qDebug() << "[Where I'm I?] In ReadSPV6 calling UpdateGL() at function end.";
     MainWin->UpdateGL();
     //MainWin->UpdateScaleEnabling();
 }
@@ -802,15 +836,19 @@ bool SPVreader::is_sp2(char *fn)
  */
 void SPVreader::FileFailed(QString fname, bool write, int n)
 {
-    QString Message;
-    if (write)
-        Message.sprintf
-        ("Error code % d - could not open file %s for writing - it may be write-protected", n, fname);
-    else
-        Message.sprintf("Error code % d - could not open file %s - does it exist?", n, fname);
+    qDebug() << "[Where I'm I?] In FileFailed";
 
-    QMessageBox::warning((QWidget *)MainWin, "File Error", Message);
-    exit(0);
+    QString message;
+    if (write)
+        message = QString("Error code %1 - could not open file %2 for writing - it may be write-protected").arg(n).arg(fname);
+    else
+        message = QString("Error code %1 - could not open file %2 - does it exist?").arg(n).arg(fname);
+
+
+    qDebug() << "[Where I'm I?] In FileFailed - something has gone wrong, exiting! | meesage = " << message;
+    QMessageBox::warning(static_cast<QWidget *>(MainWin), "File Error", message);
+
+    QCoreApplication::quit();
 }
 
 /**
@@ -819,6 +857,8 @@ void SPVreader::FileFailed(QString fname, bool write, int n)
  */
 void SPVreader::InternalProcessFile(QString filename)
 {
+    qDebug() << "[Where I'm I?] In InternalProcessFile";
+
     QFileInfo fi(filename);
 
     QString path = fi.absolutePath();
@@ -827,7 +867,8 @@ void SPVreader::InternalProcessFile(QString filename)
     IsSP2 = (fi.suffix() == "sp2");
     if (!IsSP2)
     {
-        ProcessSPV(filename, 0, (float *)nullptr);
+        qDebug() << "[Where I'm I?] In InternalProcessFile - about to call ProcessSPV with NON .sp2 file | filecount = 0 | matrix = nullptr";
+        ProcessSPV(filename, 0, nullptr);
         return;
     }
     else
@@ -860,10 +901,10 @@ void SPVreader::InternalProcessFile(QString filename)
             if (strcmp("END", buffer) == 0 && filecount == 0) return; //Error - sp2 file does not refer to any spv files
             if (strcmp("END", buffer) != 0)
             {
-                float bright;
+                //float bright;
                 float matrix[16];
                 QString d(in.readLine());
-                bright = d.toFloat();
+                //bright = d.toFloat();
                 for (int m = 0; m < 16; m++)
                 {
                     QString d(in.readLine());
@@ -872,13 +913,15 @@ void SPVreader::InternalProcessFile(QString filename)
 
                 QString spvname = path + "/" + QString(namebuff);
 
-                ProcessSPV(spvname, filecount, matrix);
+                qDebug() << "[Where I'm I?] In InternalProcessFile - about to call ProcessSPV with .sp2 file | filecount = " << filecount << " | matrix = " << matrix;
+                ProcessSPV(spvname, static_cast<unsigned int>(filecount), matrix);
             }
             filecount++;
         }
         while (strcmp(buffer, "END"));
+
         //work out proper scale - from FIRST Spv (maybe this one, maybe not)
-        mm_per_unit = ((float)(SPVs[0]->iDim) / (float)SCALE) / SPVs[0]->PixPerMM;
+        mm_per_unit = (static_cast<float>(SPVs[0]->iDim) / static_cast<float>(SCALE)) / static_cast<float>(SPVs[0]->PixPerMM);
 
         SP2_lock = false;
     }
@@ -891,10 +934,10 @@ void SPVreader::InternalProcessFile(QString filename)
  */
 void SPVreader::invert_endian(unsigned char *data, int count)
 {
+#ifdef _BIG_ENDIAN
     unsigned char newdata[8]; //max size is double
     int n;
 
-#ifdef _BIG_ENDIAN
     for (n = 0; n < count; n++) newdata[count - 1 - n] = data[n];
     for (n = 0; n < count; n++) data[n] = newdata[n];
 #endif
@@ -929,28 +972,47 @@ void SPVreader::WriteWithEndian(FILE *file, unsigned char *pointer, int size, in
  */
 int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMatrix = nullptr)
 {
-    double p1, p2, p3, p4, dummydouble;
-    int pos, flen, n, m, version, ii, dummyint;
-    int fwidth, fheight, filesused, items, bsize; //these need to be 32 bit ints
-    int SPVnumber;
+    qDebug() << "[Where I'm I?] In ProcessSPV | filename = " << filename << "; index = " << index << "; passedMatrix = " << PassedMatrix;
+
+    double p1;
+    double p2;
+    double p3;
+    double p4;
+    //double dummydouble;
+    int pos;
+    int flen;
+    int n;
+    int version;
+    int dummyint;
+    //int ii;
+    //int m;
+    int fwidth; //these need to be 32 bit ints
+    int fheight; //these need to be 32 bit ints
+    int filesused; //these need to be 32 bit ints
+    int items; //these need to be 32 bit ints
+    int bsize; //these need to be 32 bit ints
+    //int SPVnumber;
     unsigned char *tarray;
     unsigned char *fullarray; //this is legacy
     uLongf size;
     double temp;
     char dummy[4096];
-    int slen, temp2;
+    int slen;
+    int temp2;
     FILE *file;
-    short OutKeys[201], OutResamples[201], OutColours[201 * 3]; // these must be 16 bit ints
-    int BaseIndex, firstgroup;
-
+    short OutKeys[201]; // these must be 16 bit ints
+    short OutResamples[201]; // these must be 16 bit ints
+    short OutColours[201 * 3]; // these must be 16 bit ints
+    int BaseIndex;
+    int firstgroup;
     int errnum = 0;
 
     QFile f(filename);
     f.open(QIODevice::ReadOnly);
-    //qDebug()<<f.handle();
+    qDebug() << "File Handle = " << f.handle();
     file = fdopen(f.handle(), "rb");
+
     if (file == nullptr)
-        //if (!f.open(file,QIODevice::ReadOnly,QFile::AutoCloseHandle))
     {
         FileFailed(filename, false, errnum);
         return 1;
@@ -958,28 +1020,37 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
 
     //read all the parameters in
     fread(&p1, 8, 1, file);
-    invert_endian((unsigned char *)(&p1), 8);
+    invert_endian(reinterpret_cast<unsigned char *>(&p1), 8);
 
     version = 1; //default
-    if (p1 < 0) // V1 SPV files lacked a versioning system...
-        // Work around is for first param to be negative in
-        // v2 and up. For V2 and up, next param is int version
-        // followed by real p1.
+
+    // V1 SPV files lacked a versioning system...
+    // Work around is for first param to be negative in
+    // v2 and up. For V2 and up, next param is int version
+    // followed by real p1.
+    if (p1 < 0)
     {
         fread(&version, sizeof(int), 1, file);
-        invert_endian((unsigned char *)(&version), 4);
+        invert_endian(reinterpret_cast<unsigned char *>(&version), 4);
         fread(&p1, 8, 1, file);
-        invert_endian((unsigned char *)(&p1), 8);
+        invert_endian(reinterpret_cast<unsigned char *>(&p1), 8);
     }
+
+    qDebug() << "[Version] " << version;
 
     if (version > 5 && version < 1000)
     {
+        qDebug() << "[Version] Reading NEW STYLE file";
+
         //New style file
         fclose(file);
         ReadSPV6(filename);
+        return 0;
     }
     else
     {
+        qDebug() << "[Version] Reading OLD STYLE file";
+
         if (ReplaceIndex >= 0)
         {
             ReplaceIndex = -3;    //can't replace with a pre-v6 spv
@@ -987,23 +1058,24 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
         }
         //Legacy SPV - continue with old code
         fread(&p2, 8, 1, file);
-        invert_endian((unsigned char *)(&p2), 8);
+        invert_endian(reinterpret_cast<unsigned char *>(&p2), 8);
         fread(&p3, 8, 1, file);
-        invert_endian((unsigned char *)(&p3), 8);
+        invert_endian(reinterpret_cast<unsigned char *>(&p3), 8);
         fread(&p4, 8, 1, file);
-        invert_endian((unsigned char *)(&p4), 8);
+        invert_endian(reinterpret_cast<unsigned char *>(&p4), 8);
         fread(&fwidth, 4, 1, file);
-        invert_endian((unsigned char *)(&fwidth), 4);
+        invert_endian(reinterpret_cast<unsigned char *>(&fwidth), 4);
         fread(&fheight, 4, 1, file);
-        invert_endian((unsigned char *)(&fheight), 4);
+        invert_endian(reinterpret_cast<unsigned char *>(&fheight), 4);
         fread(&filesused, 4, 1, file);
-        invert_endian((unsigned char *)(&filesused), 4);
+        invert_endian(reinterpret_cast<unsigned char *>(&filesused), 4);
         fread(&items, 4, 1, file);
-        invert_endian((unsigned char *)(&items), 4);
+        invert_endian(reinterpret_cast<unsigned char *>(&items), 4);
 
         SPV *thisspv = new SPV(SPVs.count(), version, fwidth, fheight, filesused);
         SPVs.append(thisspv);
         thisspv->filename = filename;
+
         //get filename without path
         QString fn = filename;
         fn = fn.mid(qMax(fn.lastIndexOf("\\"), fn.lastIndexOf("/")) + 1);
@@ -1015,7 +1087,7 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
         thisspv->SkewDown = -p3 * p1;
         thisspv->SkewLeft = -p4 * p1;
 
-        mm_per_unit = ((float)(fwidth) / (float)SCALE) / thisspv->PixPerMM;
+        mm_per_unit = (static_cast<float>(fwidth) / static_cast<float>(SCALE)) / static_cast<float>(thisspv->PixPerMM);
 
         //create and append all the SVObjects
         for (int i = 0; i < items; i++)
@@ -1029,39 +1101,42 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
 
         //Keys array - currently there are 201
         fread(OutKeys, sizeof(OutKeys), 1, file);
-        for (n = 0; n < 201; n++) invert_endian((unsigned char *)(&OutKeys[n]), 2);
+        for (n = 0; n < 201; n++) invert_endian(reinterpret_cast<unsigned char *>(&OutKeys[n]), 2);
         fread(OutColours, sizeof(OutColours), 1, file);
-        for (n = 0; n < 201 * 3; n++) invert_endian((unsigned char *)(&OutColours[n]), 2);
+        for (n = 0; n < 201 * 3; n++) invert_endian(reinterpret_cast<unsigned char *>(&OutColours[n]), 2);
         fread(OutResamples, sizeof(OutResamples), 1, file);
-        for (n = 0; n < 201; n++) invert_endian((unsigned char *)(&OutResamples[n]), 2);
+        for (n = 0; n < 201; n++) invert_endian(reinterpret_cast<unsigned char *>(&OutResamples[n]), 2);
 
         //put these in my new structures
         for (int i = 0; i < items; i++)
         {
-            thisspv->ComponentObjects[i]->Key = (QChar) OutKeys[i];
-            thisspv->ComponentObjects[i]->Colour[0] = (uchar) OutColours[i];
-            thisspv->ComponentObjects[i]->Colour[1] = (uchar) OutColours[i + 201];
-            thisspv->ComponentObjects[i]->Colour[2] = (uchar) OutColours[i + 201 * 2];
-            thisspv->ComponentObjects[i]->Resample = (int) OutResamples[i];
+            thisspv->ComponentObjects[i]->Key = static_cast<QChar>(OutKeys[i]);
+            thisspv->ComponentObjects[i]->Colour[0] = static_cast<uchar>(OutColours[i]);
+            thisspv->ComponentObjects[i]->Colour[1] = static_cast<uchar>(OutColours[i + 201]);
+            thisspv->ComponentObjects[i]->Colour[2] = static_cast<uchar>(OutColours[i + 201 * 2]);
+            thisspv->ComponentObjects[i]->Resample = static_cast<int>(OutResamples[i]);
             if (PassedMatrix)
                 for (int j = 0; j < 16; j++)
                 {
                     thisspv->ComponentObjects[i]->matrix[j] = PassedMatrix[j];
                 }
             TransposeMatrix(thisspv->ComponentObjects[i]->matrix);
-            for (int j = 0; j < 16; j++) thisspv->ComponentObjects[i]->defaultmatrix[j] = thisspv->ComponentObjects[i]->matrix[j];
+
+            for (int j = 0; j < 16; j++)
+                thisspv->ComponentObjects[i]->defaultmatrix[j] = thisspv->ComponentObjects[i]->matrix[j];
+
             thisspv->ComponentObjects[i]->gotdefaultmatrix = true;
         }
 
         //Handle stretch array (v2 only)
-        double *stretches = (double *)malloc((filesused + 1) * sizeof(double));
+        double *stretches = reinterpret_cast<double *>(malloc((static_cast<unsigned long long>(filesused) + 1) * sizeof(double)));
         thisspv->stretches = stretches;
         if (version > 1)
         {
             //Read stretches array
-            fread(stretches, filesused * sizeof(double), 1, file);
+            fread(stretches, static_cast<unsigned long long>(filesused) * sizeof(double), 1, file);
             for (n = 0; n < filesused; n++)
-                invert_endian((unsigned char *)(&stretches[n]), sizeof(double));
+                invert_endian(reinterpret_cast<unsigned char *>(&stretches[n]), sizeof(double));
             temp = stretches[n];
         }
         else //V1.0 - must construct a stretcharray with no changes
@@ -1079,13 +1154,12 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
         pos = 0;
         flen = fwidth * fheight - 1;
 
-
         if (version < 5) //old file, need old style large array
         {
             //alloc the main array
-            if ((fullarray = (unsigned char *)malloc(filesused * fwidth * fheight)) == nullptr)
+            if ((fullarray = reinterpret_cast<unsigned char *>(malloc(static_cast<unsigned long long>(filesused) * static_cast<unsigned long long>(fwidth) * static_cast<unsigned long long>(fheight)))) == nullptr)
             {
-                QMessageBox::warning((QWidget *)MainWin, "Memory Error", "Fatal Error - could not obtain enough memory to reconstruct volume.\nTry exporting from a newer version of SPIERSview");
+                QMessageBox::warning(static_cast<QWidget *>(MainWin), "Memory Error", "Fatal Error - could not obtain enough memory to reconstruct volume.\nTry exporting from a newer version of SPIERSview");
                 exit(0);
             }
 
@@ -1099,8 +1173,8 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
                 endfullarray[i] = 0;
         }
         else fullarray = nullptr; //no fullarrray
-        //Previously made blank slices here- now we just have a blank flag in the compressedslices object
 
+        //Previously made blank slices here- now we just have a blank flag in the compressedslices object
         for (int m = 0; m < items; m++) //for each item in the file
         {
 
@@ -1118,12 +1192,11 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
             if (version > 4)
             {
                 //Chunked compression - build into fullarray
-
                 int pieces;
 
                 //read the number of pieces of the file - ought to be same as file count, but no chances!
                 fread(&pieces, 4, 1, file);
-                invert_endian((unsigned char *)(&pieces), 4);
+                invert_endian(reinterpret_cast<unsigned char *>(&pieces), 4);
 
                 CompressedSlice *blankslice = new CompressedSlice(thisobj, true);
                 (thisobj->compressedslices).append(blankslice);
@@ -1139,7 +1212,7 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
 
                     //read the size
                     fread(&bsize, 4, 1, file);
-                    invert_endian((unsigned char *)(&bsize), 4);
+                    invert_endian(reinterpret_cast<unsigned char *>(&bsize), 4);
 
                     CompressedSlice *s = new CompressedSlice(thisobj, false);
 
@@ -1147,17 +1220,16 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
                         s->empty = true;
                     else
                     {
-                        tarray = (unsigned char *)malloc(bsize);
-                        fread(tarray, bsize, 1, file);
+                        tarray = reinterpret_cast<unsigned char *>(malloc(static_cast<size_t>(bsize)));
+                        fread(tarray, static_cast<size_t>(bsize), 1, file);
                         s->datasize = bsize;
                         s->data = tarray;
 
-                        s->grid = (unsigned char *)malloc(thisspv->GridSize);
+                        s->grid = reinterpret_cast<unsigned char *>(malloc(static_cast<size_t>(thisspv->GridSize)));
                         if (version >= 1000) //read the grid
-                            fread(s->grid, thisspv->GridSize, 1, file);
+                            fread(s->grid, static_cast<size_t>(thisspv->GridSize), 1, file);
                         //if no grid all grid squares are on
-                        else for (int i = 0; i < thisspv->GridSize; i++) s->grid[i] = (uchar)255;
-//                      for (int i=0; i<thisspv->GridSize; i++) qDebug()<<"Grid "<<i<<"="<< s->grid[i]<<s->grid;
+                        else for (int i = 0; i < thisspv->GridSize; i++) s->grid[i] = static_cast<uchar>(255);
                     }
 
                     if (p < (filesused - 2)) //no merge complications
@@ -1192,18 +1264,17 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
             {
                 //old style - one chunk
                 //get the compressed file size
-                //sprintf(dummy, "Old-style (non-chunked), fullarray is %d\n",fullarray); DebugPrint(dummy);
 
                 fread(&bsize, 4, 1, file);
-                invert_endian((unsigned char *)(&bsize), 4);
+                invert_endian(reinterpret_cast<unsigned char *>(&bsize), 4);
 
                 //alloc and read in
-                tarray = (unsigned char *)malloc(bsize);
-                fread(tarray, bsize, 1, file);
+                tarray = reinterpret_cast<unsigned char *>(malloc(static_cast<size_t>(bsize)));
+                fread(tarray, static_cast<size_t>(bsize), 1, file);
 
                 //uncompress it
-                size = filesused * fwidth * fheight;
-                temp2 = uncompress(fullarray, &size, tarray, bsize);
+                size = static_cast<unsigned long>(filesused * fwidth * fheight);
+                temp2 = uncompress(fullarray, &size, tarray, static_cast<unsigned long>(bsize));
                 thisobj->AllSlicesCompressed = tarray;
                 thisobj->AllSlicesSize = bsize;
                 thisspv->fullarray = fullarray;
@@ -1211,15 +1282,15 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
 
 
             int TrigCount;
-            double *TrigArray;
+            double *TrigArray = nullptr;
             if (version > 3) //contains spline info
             {
                 fread(&TrigCount, 4, 1, file);
-                invert_endian((unsigned char *)(&TrigCount), 4);
+                invert_endian(reinterpret_cast<unsigned char *>(&TrigCount), 4);
                 if (TrigCount > 0)
                 {
-                    TrigArray = (double *)malloc(6 * TrigCount * sizeof(double));
-                    fread(TrigArray, 6 * TrigCount * sizeof(double), 1, file);
+                    TrigArray = reinterpret_cast<double *>(malloc(6 * static_cast<unsigned long long>(TrigCount) * sizeof(double)));
+                    fread(TrigArray, 6 * static_cast<unsigned long long>(TrigCount) * sizeof(double), 1, file);
 
                     //Now worry about endianism - note loop is skipped on Win32 for speed
                     //#ifdef _BIG_ENDIAN
@@ -1253,7 +1324,7 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
 
 
         //now ready to read panel arrays
-        int TableStart = ftell(file);
+        //int TableStart = ftell(file);
 
         int ttrig = 0;
         for (int i = 0; i < SVObjects.count(); i++) ttrig += SVObjects[i]->Triangles;
@@ -1263,7 +1334,6 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
         MainWin->ui->ProgBarOverall->setValue(100);
         qApp->processEvents();
 
-
         //now back at end with all data stored for later writing.
         //attempt to read arrays - expect errors - these will indicate that they weren't there!
 
@@ -1271,12 +1341,12 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
         int ListCount = -1;
 
         if (fread(&dummyint, sizeof(int), 1, file) != 1) goto out;
-        invert_endian((unsigned char *)&dummyint, sizeof(int));
+        invert_endian(reinterpret_cast<unsigned char *>(&dummyint), sizeof(int));
 
         if (dummyint != 10000) goto out; //10000 is code for listcount stuff follows...
 
         if (fread(&ListCount, sizeof(ListCount), 1, file) != 1) goto out;
-        invert_endian((unsigned char *)&ListCount, sizeof(ListCount));
+        invert_endian(reinterpret_cast<unsigned char *>(&ListCount), sizeof(ListCount));
 
 
         //If Listcount > count of objects in the SPV create new blank group objects
@@ -1303,13 +1373,13 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
         unsigned char ListKeys[201];
         //For now just read these as fixed size arrays. Need an alternative to read arbitrary numbers of them in
         if (fread(&(ObjNumbers[0]), sizeof(int)*ListCount, 1, file) != 1) goto out;
-        for (n = 0; n < ListCount; n++) invert_endian((unsigned char *)(&ObjNumbers[n]), sizeof(int));
+        for (n = 0; n < ListCount; n++) invert_endian(reinterpret_cast<unsigned char *>(&ObjNumbers[n]), sizeof(int));
         if (fread(&(InGroup[0]), sizeof(int)*ListCount, 1, file) != 1) goto out;
-        for (n = 0; n < ListCount; n++) invert_endian((unsigned char *)(&InGroup[n]), sizeof(int));
+        for (n = 0; n < ListCount; n++) invert_endian(reinterpret_cast<unsigned char *>(&InGroup[n]), sizeof(int));
         if (fread(&(IsGroup[0]), sizeof(bool)*ListCount, 1, file) != 1) goto out;
-        for (n = 0; n < ListCount; n++) invert_endian((unsigned char *)(&IsGroup[n]), sizeof(bool));
+        for (n = 0; n < ListCount; n++) invert_endian(reinterpret_cast<unsigned char *>(&IsGroup[n]), sizeof(bool));
         if (fread(&(ShowGroups[0]), sizeof(bool)*ListCount, 1, file) != 1) goto out;
-        for (n = 0; n < ListCount; n++) invert_endian((unsigned char *)(&ShowGroups[n]), sizeof(bool));
+        for (n = 0; n < ListCount; n++) invert_endian(reinterpret_cast<unsigned char *>(&ShowGroups[n]), sizeof(bool));
         if (fread(&(ListKeys[0]), ListCount, 1, file) != 1) goto out;
 
         //OK, old style had funny order - groups may not be at end - I think it's actually display order

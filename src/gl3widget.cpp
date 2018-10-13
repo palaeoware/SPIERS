@@ -38,7 +38,9 @@ GlWidget::GlWidget(QWidget *parent)
     setFocusPolicy(Qt::NoFocus);
     DefaultClipAngle = MainWin->ui->ClipAngle->value() / 10;
     //setAutoBufferSwap(true);
-    //qDebug()<<"Done init widget";
+
+    qDebug() << "Done init widget";
+
     QSurfaceFormat f;
     f.setMajorVersion(2);
     f.setMinorVersion(0);
@@ -63,10 +65,10 @@ GlWidget::~GlWidget()
  */
 void GlWidget::initializeGL()
 {
-    //qDebug()<<"In igl";
-    //qDebug()<<this->context();
-    glfunctions = this->context()->functions();
+    qDebug() << "[Where I'm I?] In initializeGL";
+    qDebug() << this->context();
 
+    glfunctions = this->context()->functions();
     glfunctions->glEnable(GL_DEPTH_TEST);
     glfunctions->glEnable(GL_BLEND);
     glfunctions->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -100,8 +102,10 @@ void GlWidget::initializeGL()
         QVector<QVector3D> fontVertices;
         for (int i = 0; i < rowmans_size[charnumber] / 4; i++)
         {
-            fontVertices << QVector3D((static_cast<float>(rowmans[charnumber][i * 4])) / FONT_SCALE_FACTOR, (static_cast<float>(rowmans[charnumber][i * 4 + 1])) / FONT_SCALE_FACTOR,
-                                      0.0) << QVector3D((static_cast<float>(rowmans[charnumber][i * 4 + 2])) / FONT_SCALE_FACTOR, (static_cast<float>(rowmans[charnumber][i * 4 + 3])) / FONT_SCALE_FACTOR, 0.0);
+            fontVertices << QVector3D((static_cast<float>(rowmans[charnumber][i * 4])) / static_cast<float>(FONT_SCALE_FACTOR),
+                                      (static_cast<float>(rowmans[charnumber][i * 4 + 1])) / static_cast<float>(FONT_SCALE_FACTOR), 0.0)
+                         << QVector3D((static_cast<float>(rowmans[charnumber][i * 4 + 2])) / static_cast<float>(FONT_SCALE_FACTOR), (static_cast<float>(rowmans[charnumber][i * 4 + 3])) / static_cast<float>(FONT_SCALE_FACTOR),
+                                      0.0);
         }
 
         VBOcharacters[charnumber - 16].create();
@@ -123,8 +127,10 @@ void GlWidget::initializeGL()
         QVector<QVector3D> fontVertices;
         for (int i = 0; i < rowmans_size[charnumber] / 4; i++)
         {
-            fontVertices << QVector3D((static_cast<float>(rowmans[charnumber][i * 4])) / FONT_SCALE_FACTOR, (static_cast<float>(rowmans[charnumber][i * 4 + 1])) / FONT_SCALE_FACTOR,
-                                      0.0) << QVector3D((static_cast<float>(rowmans[charnumber][i * 4 + 2])) / FONT_SCALE_FACTOR, (static_cast<float>(rowmans[charnumber][i * 4 + 3])) / FONT_SCALE_FACTOR, 0.0);
+            fontVertices << QVector3D((static_cast<float>(rowmans[charnumber][i * 4])) / static_cast<float>(FONT_SCALE_FACTOR),
+                                      (static_cast<float>(rowmans[charnumber][i * 4 + 1])) / static_cast<float>(FONT_SCALE_FACTOR), 0.0)
+                         << QVector3D((static_cast<float>(rowmans[charnumber][i * 4 + 2])) / static_cast<float>(FONT_SCALE_FACTOR),
+                                      (static_cast<float>(rowmans[charnumber][i * 4 + 3])) / static_cast<float>(FONT_SCALE_FACTOR), 0.0);
         }
 
         VBOcharacters[ii].create();
@@ -140,11 +146,19 @@ void GlWidget::initializeGL()
     QVector<QVector3D> occVertices;
     QVector<QVector3D> occNormals;
 
-    occVertices << QVector3D(-500000, -50000,  -1.001) << QVector3D( 500000, -500000,  -1.001) << QVector3D( 500000,  500000,  -1.001) // Front
-                << QVector3D( 500000,  50000,  -1.001) << QVector3D(-500000,  500000,  -1.001) << QVector3D(-500000, -500000,  -1.001);
-    occNormals << QVector3D( 0,  0,  1) << QVector3D( 0,  0,  1) << QVector3D( 0,  0,  1) // Front
-               << QVector3D( 0,  0,  1) << QVector3D( 0,  0,  1) << QVector3D( 0,  0,  1);
+    occVertices << QVector3D(-500000, -50000,  static_cast<float>(-1.001))
+                << QVector3D( 500000, -500000,  static_cast<float>(-1.001))
+                << QVector3D( 500000,  500000,  static_cast<float>(-1.001)) // Front
+                << QVector3D( 500000,  50000,  static_cast<float>(-1.001))
+                << QVector3D(-500000,  500000,  static_cast<float>(-1.001))
+                << QVector3D(-500000, -500000,  static_cast<float>(-1.001));
 
+    occNormals << QVector3D( 0,  0,  1)
+               << QVector3D( 0,  0,  1)
+               << QVector3D( 0,  0,  1) // Front
+               << QVector3D( 0,  0,  1)
+               << QVector3D( 0,  0,  1)
+               << QVector3D( 0,  0,  1);
 
     numOccVertices = 6;
 
@@ -167,7 +181,7 @@ void GlWidget::initializeGL()
  */
 void GlWidget::resizeGL(int width, int height)
 {
-    //qDebug()<<"in rgl";
+    qDebug() << "in rgl";
     if (height == 0)
     {
         height = 1;
@@ -207,6 +221,8 @@ void GlWidget::DoPMatrix(int width, int height)
  */
 void GlWidget::DrawLine(QMatrix4x4 vMatrix, QVector3D lPosition, float pos, bool major, bool horizontal)
 {
+    qDebug() << "[Where I'm I?] In DrawLine";
+
     //vMatrix.translate(pos,0,-1);
     if (!horizontal) vMatrix.translate(pos, 0, -1);
     else vMatrix.translate(0, pos, -1);
@@ -231,7 +247,6 @@ void GlWidget::DrawLine(QMatrix4x4 vMatrix, QVector3D lPosition, float pos, bool
     VBOline.release();
 
     glfunctions->glDrawArrays(GL_LINES, 0, 2);
-
 }
 
 /**
@@ -245,12 +260,14 @@ void GlWidget::DrawLine(QMatrix4x4 vMatrix, QVector3D lPosition, float pos, bool
  */
 void GlWidget::RenderCharacter(GLfloat x, GLfloat y, GLfloat z, int charactercode, QMatrix4x4 vMatrix, QColor Colour)
 {
+    qDebug() << "[Where I'm I?] In RenderCharacter";
+
     vMatrix.translate(x, y, z);
     vMatrix.rotate(180.0, 1.0, 0.0, 0.0);
     //float asp=(float)this->width()/(float)this->height();
     vMatrix.scale((ClipAngle / static_cast<float>(this->height())));
 
-    //qDebug()<<ClipAngle;
+    qDebug() << ClipAngle;
     //vMatrix*=globalmatrix; //DON'T scale with globalmatrix
 
     lightingShaderProgram.setUniformValue("mvpMatrix", pMatrix * vMatrix);
@@ -266,11 +283,11 @@ void GlWidget::RenderCharacter(GLfloat x, GLfloat y, GLfloat z, int charactercod
     VBOcharacters[charactercode].release();
 
     glfunctions->glDrawArrays(GL_LINES, 0, CharacterLineCounts[charactercode]);
-
 }
 
 /**
  * @brief GlWidget::RenderNumber
+ * mm true if size in mm - else render m
  * @param x
  * @param y
  * @param z
@@ -281,8 +298,9 @@ void GlWidget::RenderCharacter(GLfloat x, GLfloat y, GLfloat z, int charactercod
  * @param vMatrix
  */
 void GlWidget::RenderNumber(GLfloat x, GLfloat y, GLfloat z, float number, int decimalplaces, bool mm, bool major, QMatrix4x4 vMatrix )
-//mm true if size in mm - else render m
 {
+    qDebug() << "[Where I'm I?] In RenderNumber";
+
     QColor numcolour;
     if (major)
         numcolour = QColor(grid_red, grid_green, grid_blue);
@@ -337,7 +355,7 @@ void GlWidget::RenderNumber(GLfloat x, GLfloat y, GLfloat z, float number, int d
  */
 void GlWidget::DrawScaleGrid(QMatrix4x4 vMatrix, QVector3D lPosition)
 {
-
+    qDebug() << "[Where I'm I?] In DrawScaleGrid";
 
     lightingShaderProgram.bind();
     lightingShaderProgram.setUniformValue("lightPosition", lPosition);
@@ -401,9 +419,10 @@ void GlWidget::DrawScaleGrid(QMatrix4x4 vMatrix, QVector3D lPosition)
     for (int i = -10; i < 10;
             i++) RenderNumber((((10.0 / FONT_SCALE_FACTOR)*ClipAngle / (float)this->height())), ((float)i)*s * coarse - (((10.0 / FONT_SCALE_FACTOR)*ClipAngle / (float)this->height())), -.99, ((float)i * coarse),
                                   dp, mm, true, vMatrix);
-    for (int i = -10; i < 10;
-            i++) if (i != 0) RenderNumber((float)i * s * coarse + (((10.0 / FONT_SCALE_FACTOR)*ClipAngle / (float)this->height())), 0 - (((10.0 / FONT_SCALE_FACTOR)*ClipAngle / (float)this->height())), -.99,
-                                                  ((float)i * coarse), dp, mm, true, vMatrix);
+    for (int i = -10; i < 10; i++)
+        if (i != 0)
+            RenderNumber((float)i * s * coarse + (((10.0 / FONT_SCALE_FACTOR)*ClipAngle / (float)this->height())), 0 - (((10.0 / FONT_SCALE_FACTOR)*ClipAngle / (float)this->height())), -.99, ((float)i * coarse),
+                         dp, mm, true, vMatrix);
 }
 
 /**
@@ -413,13 +432,14 @@ void GlWidget::DrawScaleGrid(QMatrix4x4 vMatrix, QVector3D lPosition)
  */
 void GlWidget::DrawObjects(bool rightview, bool halfsize)
 {
-    //qDebug()<\<"In DrawObjects widget";
+    qDebug() << "[Where I'm I?] In DrawObjects";
+
     QMatrix4x4 vMatrix; //view matrix
     vMatrix.setToIdentity();
 
 
     QVector3D cameraPosition = QVector3D(0, 0, campos);
-    QVector3D rightcameraPosition = QVector3D(StereoSeparation * STEREO_SEPARATION_MODIFIER / campos, 0, campos);
+    QVector3D rightcameraPosition = QVector3D(static_cast<float>(StereoSeparation) * static_cast<float>(STEREO_SEPARATION_MODIFIER) / static_cast<float>(campos), 0, campos);
     QVector3D cameraUpDirection = QVector3D(0, 1, 0);
 
     if (rightview)
@@ -478,15 +498,15 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
                         float mcolor[3];
                         if (MainWin->ui->actionMute_Colours->isChecked())
                         {
-                            mcolor[0] = ((GLfloat)(SVObjects[i]->Colour[0] / 3 + 170));
-                            mcolor[1] = ((GLfloat)(SVObjects[i]->Colour[1] / 3 + 170));
-                            mcolor[2] = ((GLfloat)(SVObjects[i]->Colour[2] / 3 + 170));
+                            mcolor[0] = (static_cast<GLfloat>(SVObjects[i]->Colour[0] / 3 + 170));
+                            mcolor[1] = (static_cast<GLfloat>(SVObjects[i]->Colour[1] / 3 + 170));
+                            mcolor[2] = (static_cast<GLfloat>(SVObjects[i]->Colour[2] / 3 + 170));
                         }
                         else
                         {
-                            mcolor[0] = ((GLfloat)(SVObjects[i]->Colour[0]));
-                            mcolor[1] = ((GLfloat)(SVObjects[i]->Colour[1]));
-                            mcolor[2] = ((GLfloat)(SVObjects[i]->Colour[2]));
+                            mcolor[0] = (static_cast<GLfloat>(SVObjects[i]->Colour[0]));
+                            mcolor[1] = (static_cast<GLfloat>(SVObjects[i]->Colour[1]));
+                            mcolor[2] = (static_cast<GLfloat>(SVObjects[i]->Colour[2]));
                         }
 
                         if (MainWin->ui->actionBounding_Box->isChecked())
@@ -494,14 +514,14 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
                             if (SVObjects[i]->BoundingBoxBuffer.isCreated())
                             {
                                 //qDebug()<<"Exists, drawing";
-                                useshader->setUniformValue("ambientColor", QColor(mcolor[0], mcolor[1], mcolor[2]));
+                                useshader->setUniformValue("ambientColor", QColor(static_cast<int>(mcolor[0]), static_cast<int>(mcolor[1]), static_cast<int>(mcolor[2])));
                                 useshader->setUniformValue("diffuseColor", QColor(0.0, 0.0, 0.0));
                                 useshader->setUniformValue("specularColor", QColor(0.0, 0.0, 0.0));
-                                useshader->setUniformValue("alpha", (GLfloat) 1.0);
-                                useshader->setUniformValue("ambientReflection", (GLfloat)1.0);
-                                useshader->setUniformValue("diffuseReflection", (GLfloat)1.0);
-                                useshader->setUniformValue("specularReflection", (GLfloat)0.0);
-                                useshader->setUniformValue("shininess", (GLfloat) 100.0);
+                                useshader->setUniformValue("alpha", static_cast<GLfloat>(1.0));
+                                useshader->setUniformValue("ambientReflection", static_cast<GLfloat>(1.0));
+                                useshader->setUniformValue("diffuseReflection", static_cast<GLfloat>(1.0));
+                                useshader->setUniformValue("specularReflection", static_cast<GLfloat>(0.0));
+                                useshader->setUniformValue("shininess", static_cast<GLfloat>(100.0));
                                 SVObjects[i]->BoundingBoxBuffer.bind();
                                 useshader->setAttributeBuffer("vertex", GL_FLOAT, 0, 3, 0);
                                 useshader->enableAttributeArray("vertex");
@@ -517,39 +537,52 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
                         {
 
                             GLfloat shininess = 0.0;
-                            if (SVObjects[i]->Shininess == 3) shininess = 1.0;
-                            if (SVObjects[i]->Shininess == 2) shininess = .7;
-                            if (SVObjects[i]->Shininess == 1) shininess = .3;
-                            if (SVObjects[i]->Shininess == 0) shininess = 0.0;
-                            if (SVObjects[i]->Shininess < 0) shininess = ((GLfloat)(0 - SVObjects[i]->Shininess)) / 100.0;
+                            if (SVObjects[i]->Shininess == 3) shininess = static_cast<float>(1.0);
+                            if (SVObjects[i]->Shininess == 2) shininess = static_cast<float>(.7);
+                            if (SVObjects[i]->Shininess == 1) shininess = static_cast<float>(.3);
+                            if (SVObjects[i]->Shininess == 0) shininess = static_cast<float>(0.0);
+                            if (SVObjects[i]->Shininess < 0) shininess = (static_cast<GLfloat>(0 - SVObjects[i]->Shininess)) / static_cast<float>(100.0);
 
-                            useshader->setUniformValue("ambientReflection", (GLfloat)1.0);
-                            useshader->setUniformValue("diffuseReflection", (GLfloat)1.0);
+                            useshader->setUniformValue("ambientReflection", static_cast<GLfloat>(1.0));
+                            useshader->setUniformValue("diffuseReflection", static_cast<GLfloat>(1.0));
                             useshader->setUniformValue("specularReflection", shininess);
-                            useshader->setUniformValue("shininess", (GLfloat) (200.0 - pow((double)180.0, shininess)));
+                            useshader->setUniformValue("shininess", static_cast<GLfloat>(200.0 - pow(static_cast<double>(180.0), shininess)));
 
                             //calculate alpha
                             float t = 1.0;
-                            if (SVObjects[i]->Transparency == 4) t = .25;
-                            if (SVObjects[i]->Transparency == 3) t = .45;
-                            if (SVObjects[i]->Transparency == 2) t = .6;
-                            if (SVObjects[i]->Transparency == 1) t = .8;
-                            if (SVObjects[i]->Transparency < 0) t = ((float)(100 + SVObjects[i]->Transparency)) / 100.0;
+                            if (SVObjects[i]->Transparency == 4) t = static_cast<float>(.25);
+                            if (SVObjects[i]->Transparency == 3) t = static_cast<float>(.45);
+                            if (SVObjects[i]->Transparency == 2) t = static_cast<float>(.6);
+                            if (SVObjects[i]->Transparency == 1) t = static_cast<float>(.8);
+                            if (SVObjects[i]->Transparency < 0) t = (static_cast<float>(100 + SVObjects[i]->Transparency)) / static_cast<float>(100.0);
                             useshader->setUniformValue("alpha", t);
 
                             if (!(SVObjects[i]->colour))
                             {
-                                useshader->setUniformValue("ambientColor", QColor(mcolor[0] / 5, mcolor[1] / 5, mcolor[2] / 5));
-                                useshader->setUniformValue("diffuseColor", QColor(mcolor[0] / 1.5, mcolor[1] / 1.5, mcolor[2] / 1.5));
-                                useshader->setUniformValue("specularColor", QColor(mcolor[0], mcolor[1], mcolor[2]));
+                                useshader->setUniformValue("ambientColor", QColor(
+                                                               static_cast<int>(mcolor[0]) / 5,
+                                                               static_cast<int>(mcolor[1]) / 5,
+                                                               static_cast<int>(mcolor[2]) / 5
+                                                           ));
+                                useshader->setUniformValue("diffuseColor", QColor(
+                                                               static_cast<int>(mcolor[0] / static_cast<float>(1.5)),
+                                                               static_cast<int>(mcolor[1] / static_cast<float>(1.5)),
+                                                               static_cast<int>(mcolor[2] / static_cast<float>(1.5))
+                                                           ));
+                                useshader->setUniformValue("specularColor", QColor(
+                                                               static_cast<int>(mcolor[0]),
+                                                               static_cast<int>(mcolor[1]),
+                                                               static_cast<int>(mcolor[2])
+                                                           ));
                             }
+
                             for (int j = 0; j < SVObjects[i]->VertexBuffers.count(); j++)
                             {
 
                                 SVObjects[i]->VertexBuffers[j]->bind();
                                 useshader->setAttributeBuffer("vertex", GL_FLOAT, 0, 3, 0);
                                 useshader->enableAttributeArray("vertex");
-                                useshader->setAttributeBuffer("normal", GL_FLOAT, 3 * SVObjects[i]->VBOVertexCounts[j]*sizeof(GLfloat), 3, 0);
+                                useshader->setAttributeBuffer("normal", GL_FLOAT, 3 * static_cast<int>(SVObjects[i]->VBOVertexCounts[j])*static_cast<int>(sizeof(GLfloat)), 3, 0);
                                 useshader->enableAttributeArray("normal");
                                 SVObjects[i]->VertexBuffers[j]->release();
 
@@ -579,8 +612,10 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
  */
 void GlWidget::paintGL()
 {
-    //qDebug()<<"paintgl";
-    glfunctions->glClearColor((float)back_red / (float)255, (float)back_green / (float)255, (float)back_blue / (float)255, 0.5f);
+    qDebug() << "[Where I'm I?] In paintGL";
+
+    glfunctions->glClearColor(static_cast<float>(back_red) / static_cast<float>(255), static_cast<float>(back_green) / static_cast<float>(255), static_cast<float>(back_blue) / static_cast<float>(255),
+                              0.5f);
     glfunctions->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     if (MainWin->ui->actionSplit_Stereo->isChecked())
@@ -657,10 +692,10 @@ void GlWidget::SetStereoSeparation(float s)
  */
 void GlWidget::SetClip(int Start, int Depth, int Angle)
 {
-    //qDebug()<<"In SetClip ";
-    ClipStart = (float)(Start + 1) / 50;
-    ClipDepth = ClipStart + 0.005 + ((float)Depth) / 100;
-    ClipAngle = ((float)Angle) / 10;
+    qDebug() << "In SetClip ";
+    ClipStart = static_cast<float>(Start + 1) / 50;
+    ClipDepth = static_cast<float>(ClipStart) + static_cast<float>(0.005) + (static_cast<float>(Depth)) / static_cast<float>(100);
+    ClipAngle = static_cast<float>(Angle) / 10;
     update();
 }
 
@@ -693,7 +728,7 @@ void GlWidget::Rotate(double angle)
         {
             QMatrix4x4 rotmatrix;
             rotmatrix.setToIdentity();
-            rotmatrix.rotate(angle, 0.0f, 0.0f, 1.0f);
+            rotmatrix.rotate(static_cast<float>(angle), 0.0f, 0.0f, 1.0f);
             if (i == 0) Zrot += angle;
 
             QMatrix4x4 svmatrix(SVObjects[i]->matrix);
@@ -714,19 +749,23 @@ void GlWidget::Rotate(double angle)
  */
 void GlWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    //qDebug()<<"In mousemove ";
+    //qDebug() << "In mousemove ";
     bool donesomething = false;
     bool rotmode = false;
-    if (event->buttons() & Qt::RightButton || ((event->buttons() & Qt::LeftButton) && event->modifiers() == Qt::CTRL) || ((event->buttons() & Qt::LeftButton)
-                                                                                                                          && MainWin->ui->actionRotate_Lock->isChecked()))
+    if (
+        event->buttons() & Qt::RightButton
+        || ((event->buttons() & Qt::LeftButton) && event->modifiers() == Qt::CTRL)
+        || ((event->buttons() & Qt::LeftButton) && MainWin->ui->actionRotate_Lock->isChecked())
+    )
+    {
         rotmode = true;
-
+    }
     //If shift held - rotate round center
     if ((rotmode && event->modifiers() == Qt::SHIFT)  || (event->modifiers() == Qt::ALT && event->buttons() & Qt::LeftButton) )
     {
         //rotate amount is angular distance between prev and now
-        double before = atan2((double)(LastMouseXpos - xdim / 2), (double)(LastMouseYpos - ydim / 2));
-        double after = atan2((double)(event->x() - xdim / 2), (double)(event->y() - ydim / 2));
+        double before = atan2(static_cast<double>(LastMouseXpos - xdim / 2), static_cast<double>(LastMouseYpos - ydim / 2));
+        double after = atan2(static_cast<double>(event->x() - xdim / 2), static_cast<double>(event->y() - ydim / 2));
         double amount;
         //handle wrapping
         double amount1 = after - before;
@@ -739,8 +778,8 @@ void GlWidget::mouseMoveEvent(QMouseEvent *event)
     }
     else if (rotmode)
     {
-        float yangle = ((float) (event->x() - LastMouseXpos)) / SENSITIVITY;
-        float xangle = ((float) (event->y() - LastMouseYpos)) / SENSITIVITY;
+        float yangle = (static_cast<float>(event->x() - LastMouseXpos)) / SENSITIVITY;
+        float xangle = (static_cast<float>(event->y() - LastMouseYpos)) / SENSITIVITY;
 
         //add 'em to matrix
         /*         if (MainWin->ui->actionReposition_Scale_Ball->isChecked())
@@ -792,8 +831,8 @@ void GlWidget::mouseMoveEvent(QMouseEvent *event)
 
     if (!rotmode && event->buttons() & Qt::LeftButton && donesomething == false)
     {
-        float ObjXpos = ((float)(event->x() - LastMouseXpos)) / (SENSITIVITY * 100);
-        float ObjYpos = 0 - ((float)(event->y() - LastMouseYpos)) / (SENSITIVITY * 100);
+        float ObjXpos = (static_cast<float>(event->x() - LastMouseXpos)) / (SENSITIVITY * 100);
+        float ObjYpos = 0 - (static_cast<float>(event->y() - LastMouseYpos)) / (SENSITIVITY * 100);
 
         /*      if (MainWin->ui->actionReposition_Scale_Ball->isChecked())
               {
@@ -1015,7 +1054,7 @@ void GlWidget::Translate(float x, float y, float z)
         {
             QMatrix4x4 rotmatrix;
             rotmatrix.setToIdentity();
-            rotmatrix.translate(x / 10.0, y / 10.0, z / 10.0);
+            rotmatrix.translate(static_cast<float>(x) / static_cast<float>(10.0), static_cast<float>(y) / static_cast<float>(10.0), static_cast<float>(z) / static_cast<float>(10.0));
             if (i == 0)
             {
                 Xtrans += x;
@@ -1041,7 +1080,7 @@ void GlWidget::Translate(float x, float y, float z)
  */
 void GlWidget::Resize(float value)
 {
-    //qDebug()<<"In resize ";
+    qDebug() << "In resize ";
     /*
         if (MainWin->ui->actionReposition_Scale_Ball->isChecked() || (voxml_mode && MainWin->ui->actionShow_Ball_2->isChecked()))
        {
@@ -1067,7 +1106,7 @@ void GlWidget::Resize(float value)
             QMatrix4x4 rotmatrix;
             rotmatrix.setToIdentity();
             rotmatrix.scale(value, value, value);
-            SVObjects[i]->scale *= value;
+            SVObjects[i]->scale *= static_cast<double>(value);
 
             QMatrix4x4 svmatrix(SVObjects[i]->matrix);
             if (!SP2_lock)
@@ -1110,7 +1149,8 @@ void GlWidget::ResetSize()
             {
                 QMatrix4x4 rotmatrix;
                 rotmatrix.setToIdentity();
-                rotmatrix.scale(1.0 / SVObjects[i]->scale, 1.0 / SVObjects[i]->scale, 1.0 / SVObjects[i]->scale);
+                rotmatrix.scale(static_cast<float>(1.0) / static_cast<float>(SVObjects[i]->scale), static_cast<float>(1.0) / static_cast<float>(SVObjects[i]->scale),
+                                static_cast<float>(1.0) / static_cast<float>(SVObjects[i]->scale));
 
                 QMatrix4x4 svmatrix(SVObjects[i]->matrix);
                 if (!SP2_lock)
@@ -1130,7 +1170,7 @@ void GlWidget::ResetSize()
  */
 void GlWidget::ResetToDefault()
 {
-    //qDebug()<<"In rtd ";
+    qDebug() << "In rtd ";
     for (int j = 0; j < SVObjects.count(); j++)
     {
         if (SVObjects[j]->gotdefaultmatrix)
@@ -1144,7 +1184,7 @@ void GlWidget::ResetToDefault()
     Xtrans = 0;
     Ytrans = 0;
     Ztrans = 0;
-    MainWin->ui->ClipAngle->setValue(ClipAngle * 10); //should trigger a refresh? not if no change!
+    MainWin->ui->ClipAngle->setValue(static_cast<int>(ClipAngle) * 10); //should trigger a refresh? not if no change!
 }
 
 /**
@@ -1152,7 +1192,7 @@ void GlWidget::ResetToDefault()
  */
 void GlWidget::NewDefault()
 {
-    //qDebug()<<"In ND ";
+    qDebug() << "In ND ";
     if (SVObjects.count() > 0) //if need to record default and not some spurious early call with no data
     {
         for (int j = 0; j < SVObjects.count(); j++)

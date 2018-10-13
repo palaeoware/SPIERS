@@ -45,6 +45,8 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
+    qDebug() << "[Where I'm I?] In MainWindow";
+
     specificprogress = 0;
     ui->setupUi(this);
     MainWin = this; //set global pointer to this window
@@ -92,6 +94,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     QObject::connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close())); //quit
 
+    qDebug() << "[Where I'm I?] In MainWindow - Starting Timers";
     StartTimer = new QTimer(this);
     StartTimer->setSingleShot(true);
     StartTimer->setInterval(0);//as soon as may be
@@ -218,7 +221,7 @@ MainWindow::~MainWindow()
  */
 void MainWindow::UpdateGL()
 {
-    //qDebug()<<"In udgl ";
+    qDebug() << "[Where I'm I?] In UpdateGL";
 
     gl3widget->update();
     //do the info at bottom too
@@ -231,6 +234,8 @@ void MainWindow::UpdateGL()
  */
 void MainWindow::StartTimer_fired()
 {
+    qDebug() << "[Where I'm I?] In StartTimer_fired | fname = " << fname;
+
     //Some General initialisation
     NextActualDlist = 1;
 
@@ -239,6 +244,7 @@ void MainWindow::StartTimer_fired()
 
     if (fname == "") //no filename provided
     {
+        qDebug() << "[Where I'm I?] In StartTimer_fired - no fname provided... opening file dialog";
 agin:
         FilterKeys = false;
 
@@ -254,11 +260,15 @@ agin:
             MacBodgeClickedNoForUpdateDownload = false;
             goto agin;
         }
-        if (fname.isNull()) exit(0); //if nothing there, cancel
+        if (fname.isNull()) QCoreApplication::quit(); //if nothing there, cancel
     }
+
+    qDebug() << "[Where I'm I?] In StartTimer_fired - fname should now be set fname = " << fname;
 
     if (fname.right(3) == "xml") //catches xml or voxml
     {
+        qDebug() << "[Where I'm I?] In StartTimer_fired - file is XML or VAXML";
+
         voxml v;
         if (v.read_voxml(fname))
         {
@@ -267,13 +277,19 @@ agin:
             EnableRenderCommands();
             RefreshObjects();
             StripDownForVoxml(); //reduce interface to view-only level
+
+            qDebug() << "[Where I'm I?] In StartTimer_fired - about to call RefreshInfo()";
             RefreshInfo();
+
+            qDebug() << "[Where I'm I?] In StartTimer_fired - about to call UpdateGL()";
             UpdateGL();
         }
-        else exit(0);
+        else QCoreApplication::quit();
     }
     else if (fname.right(4) == "spvf") //finalised files
     {
+        qDebug() << "[Where I'm I?] In StartTimer_fired - file is SPVF";
+
         voxml v;
         if (v.read_spvf(fname))
         {
@@ -282,19 +298,29 @@ agin:
             EnableRenderCommands();
             RefreshObjects();
             StripDownForVoxml(); //reduce interface to view-only level
+
+            qDebug() << "[Where I'm I?] In StartTimer_fired - about to call RefreshInfo()";
             RefreshInfo();
+
+            qDebug() << "[Where I'm I?] In StartTimer_fired - about to call UpdateGL()";
             UpdateGL();
         }
-        else exit(0);
+        else QCoreApplication::quit();
     }
     else
     {
+        qDebug() << "[Where I'm I?] In StartTimer_fired - file is SPV OR SP2";
+
         QString shortfname = "SPIERSview - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
         this->setWindowTitle(shortfname);
-        SPVreader r;
-        r.ProcessFile(fname);
+        SPVreader reader;
+        reader.ProcessFile(fname);
         //widget->ResizeScaleBall(1.0);
+
+        qDebug() << "[Where I'm I?] In StartTimer_fired - about to call RefreshInfo()";
         RefreshInfo();
+
+        qDebug() << "[Where I'm I?] In StartTimer_fired - about to call UpdateGL()";
         UpdateGL();
     }
 }
@@ -520,7 +546,7 @@ void MainWindow::SpinTimer_fired()
         }
         else
         {
-            int dp = (int)(log10(1.0 / Volume) + 5);
+            int dp = static_cast<int>(log10(1.0 / Volume) + 5);
             if (dp < 0) dp = 0;
 
             if (dp > 10)
@@ -531,7 +557,6 @@ void MainWindow::SpinTimer_fired()
         //mess.sprintf(QString(QString("%d objects: %d KTr, %.") + dp + QString("f cubic mm")).toLatin1(), ObjCount,TotalTriangles/1000, Volume);
     }
     ktrlabel->setText(mess);
-
 }
 
 /**
@@ -548,6 +573,8 @@ void MainWindow::on_actionShow_Scale_Grid_triggered()
  */
 void MainWindow::on_ClipStart_valueChanged(int clip)
 {
+    Q_UNUSED(clip)
+
     gl3widget->SetClip(ui->ClipStart->value(), ui->ClipDepth->value(), ui->ClipAngle->value());
     UpdateGL();
 }
@@ -1165,6 +1192,8 @@ void MainWindow::on_infoTreeWidget_itemSelectionChanged()
  */
 void MainWindow::on_infoTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
 {
+    Q_UNUSED(column)
+
     if (voxml_mode) return; //disabled in VAXML mode
     FileDirty = true;
 
@@ -1917,6 +1946,8 @@ void MainWindow::EnableRenderCommands()
  */
 void MainWindow::DisableRenderCommands()
 {
+    qDebug() << "[Where I'm I?] In DisableRenderCommands";
+
     ui->actionAuto_Resurface->setEnabled(false);
     ui->actionResurface_Now->setEnabled(false);
     ui->actionOff->setEnabled(false);
@@ -2551,8 +2582,6 @@ void MainWindow::KillSPV(int retcode)
     //Create conversion table of old index to new index just loop through each, put oldindex in oldindexfor[n]
     //Now go through and fix old indices
     //Then go through and fix parents using same lookup table (called InGroup)
-
-    int newindex = 0;
     QList <int> indices;
 
     //work out my lookuptable
@@ -2675,6 +2704,8 @@ void MainWindow::on_actionSelect_None_triggered()
  */
 void MainWindow::on_PiecesList_itemDoubleClicked(QListWidgetItem *item)
 {
+    Q_UNUSED(item)
+
     int i = ui->PiecesList->currentRow();
     FilterKeys = false;
     QString temp =
@@ -2895,7 +2926,6 @@ void MainWindow::on_actionUngroup_triggered()
 {
     //Ungroup command
     //For all selected objects:
-    bool flag = true;
     for (int i = 0; i < SVObjects.count(); i++)
     {
         if (SVObjects[i]->widgetitem->isSelected())
@@ -2903,7 +2933,6 @@ void MainWindow::on_actionUngroup_triggered()
             if (SVObjects[i]->InGroup != -1)
             {
                 SVObjects[i]->InGroup = SVObjects[SVObjects[i]->Parent()]->InGroup;
-                flag = false;
             }
         }
     }
@@ -2921,7 +2950,6 @@ void MainWindow::on_actionUngroup_triggered()
     }
 
     //Now - are there any emtpty groups, and if so are they selected? If so we can delete them
-
 
     //remove any empty groups (for each group do a trawl for children. Mark any with none.
     for (int i = 0; i < SVObjects.count(); i++)
@@ -2964,7 +2992,6 @@ void MainWindow::on_actionUngroup_triggered()
             it2.remove();
         }
     };
-
 
     FileDirty = true;
     RefreshObjects();
@@ -3494,17 +3521,18 @@ void MainWindow::on_actionBounding_Box_triggered()
  */
 bool MainWindow::eventFilter(QObject *object, QEvent *event)
 {
+    Q_UNUSED(object)
+
     if (FilterKeys == false) return false;
-    bool flag = false;
+
     //is focus in a spin box?
     if (qApp->focusWidget())
     {
         QString name = qApp->focusWidget()->metaObject()->className();
         //qDebug()<<name;
         if (name == "QSpinBox" || name == "QDoubleSpinBox") return false;
-        if (name == "QTreeWidget") flag = true;
-
     }
+
     if (event->type() == QEvent::KeyPress)
     {
 

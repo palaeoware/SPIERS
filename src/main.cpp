@@ -21,64 +21,114 @@
 
 #include "main.h"
 
-myapp::myapp(int &argc, char *argv[]) : QApplication(argc, argv)
+/**
+ * @brief qMain::qMain
+ * @param argc
+ * @param argv
+ */
+main::main(int &argc, char *argv[]) : QApplication(argc, argv)
 {
-
 }
 
-bool myapp::event(QEvent *event)
+/**
+ * @brief qMain::event
+ * @param event
+ * @return
+ */
+bool main::event(QEvent *event)
 {
     return QApplication::event(event);
 }
 
+/**
+ * @brief logMessageOutput
+ * @param type
+ * @param context
+ * @param msg
+ */
+void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+    QByteArray localMsg = msg.toLocal8Bit();
+    QString txt;
+
+    switch (type)
+    {
+    case QtDebugMsg:
+        txt = QString("Debug: %1 (%2:%3, %4)").arg(localMsg.constData()).arg(context.file).arg(context.line).arg(context.function);
+        break;
+    case QtWarningMsg:
+        txt = QString("Info: %1 (%2:%3, %4)").arg(localMsg.constData()).arg(context.file).arg(context.line).arg(context.function);
+        break;
+    case QtCriticalMsg:
+        txt = QString("Critical: %1 (%2:%3, %4)").arg(localMsg.constData()).arg(context.file).arg(context.line).arg(context.function);
+        break;
+    case QtFatalMsg:
+        txt = QString("Fatal: %1 (%2:%3, %4)").arg(localMsg.constData()).arg(context.file).arg(context.line).arg(context.function);
+        break;
+    case QtInfoMsg:
+        txt = QString("Info: %1 (%2:%3, %4)").arg(localMsg.constData()).arg(context.file).arg(context.line).arg(context.function);
+        break;
+    }
+
+    // Save to debug.log
+    QFile outFile("debug.log");
+    outFile.open(QIODevice::WriteOnly | QIODevice::Append);
+    QTextStream log(&outFile);
+    log << txt << endl;
+
+    // Now print to stout too
+    QTextStream console(stdout);
+    console << txt << endl;
+}
+
+/**
+ * @brief qMain
+ * @param argc
+ * @param argv
+ * @return
+ */
 int main(int argc, char *argv[])
 {
-
-    //This has the app draw at HiDPI scaling on HiDPI displays, usually two pixels for every one logical pixel
+    // This has the app draw at HiDPI scaling on HiDPI displays, usually two pixels for every one logical pixel
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
-    //This has QPixmap images use the @2x images when available
-    //See this bug for more details on how to get this right: https://bugreports.qt.io/browse/QTBUG-44486#comment-327410
+    // This has QPixmap images use the @2x images when available
+    // See this bug for more details on how to get this right: https://bugreports.qt.io/browse/QTBUG-44486#comment-327410
 #if (QT_VERSION >= 0x050600)
     QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 #endif
 
-    //Style program with our dark style
+    // Install the message handler to log to file
+    qInstallMessageHandler(logMessageOutput);
+
+    // Style program with our dark style
     QApplication::setStyle(new DarkStyleTheme);
 
-    myapp a(argc, argv);
+    class main app(argc, argv);
 
-    a.setQuitOnLastWindowClosed(true);
+    app.setQuitOnLastWindowClosed(true);
 
-    //set the fname global from argument
-    QStringList args = a.arguments();
+    // Set the fname global from argument
+    QStringList args = app.arguments();
 
+    // Sets fname (= filename) global to open from args
+    fname = "";
     if (args.count() > 1)
     {
         fname = args[1];
     }
-    else fname = "";
 
-    /*
-    if (argc!=2) fname="";
-     else
-    {
-         if ((*(argv[1])=='-') && (*(argv[1] + 1)=='x')) exit(0);
-         else fname=argv[1];
-     }
-     */
+    // Check for any version updates
+    NetModule netModule;
+    netModule.CheckForNew();
 
-    NetModule n;
-    n.CheckForNew();
-    MainWindow w;
-    a.installEventFilter(&w); //event filter - deal with glitchy keyboard shortcuts
-    w.show();
-    //QString s=qApp->applicationDirPath() + "/SPIERSupdater.exe";
-    //ShellExecuteW(0, 0, (WCHAR *)(s.utf16()), 0, 0, SW_SHOWNORMAL);
-    // Normal version is:
-    //QProcess::startDetached(s);  //but this falls foul of vista UAC
+    MainWindow mainWindow;
 
-    return a.exec();
+    // Event filter - deal with glitchy keyboard shortcuts
+    app.installEventFilter(&mainWindow);
+    mainWindow.show();
+
+    return app.exec();
 }
 #endif
 
@@ -87,23 +137,23 @@ int main(int argc, char *argv[])
 
 #include "main.h"
 
-/*
-void log(QString m)
-{
-    QFile f1("log.txt");
-    f1.open(QIODevice::Append);
-    QTextStream g2(&f1);
-    g2<<m<<"\n";
-}*/
-
-myapp::myapp(int argc, char *argv[]) : QApplication(argc, argv)
+/**
+ * @brief qMain::qMain
+ * @param argc
+ * @param argv
+ */
+main::main(int argc, char *argv[]) : QApplication(argc, argv)
 {
     //do nothing
     donthandlefileevent = false;
 }
 
-
-bool myapp::event(QEvent *event)
+/**
+ * @brief qMain::event
+ * @param event
+ * @return
+ */
+bool main::event(QEvent *event)
 {
     //we don't do anything if we were passed and argv1 - i.e. if we are a child process of first one
     if (donthandlefileevent == true) return QApplication::event(event);
@@ -129,6 +179,12 @@ bool myapp::event(QEvent *event)
     }
 }
 
+/**
+ * @brief qMain
+ * @param argc
+ * @param argv
+ * @return
+ */
 int main(int argc, char *argv[])
 {
     MacBodgeClickedNoForUpdateDownload = false;
@@ -137,7 +193,7 @@ int main(int argc, char *argv[])
     if (argc == 2) if (QString(argv[1]).length() < 2) argc = 1; //this to cure weird mac crash
     argc = 1;
 
-    myapp a(argc, argv);
+    main a(argc, argv);
 
 
 
@@ -185,8 +241,4 @@ int main(int argc, char *argv[])
 
     return a.exec();
 }
-
-
 #endif
-
-
