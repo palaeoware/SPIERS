@@ -177,7 +177,7 @@ QDockWidget::close-button{
 }
 
 QDockWidget::float-button{
-    right:25px;
+    right:5px;
 }
 
 QTableWidget

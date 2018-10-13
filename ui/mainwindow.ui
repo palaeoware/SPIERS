@@ -2979,13 +2979,13 @@ Interpreted Images:</string>
    </property>
    <property name="minimumSize">
     <size>
-     <width>170</width>
+     <width>180</width>
      <height>62</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
-     <width>170</width>
+     <width>180</width>
      <height>100000</height>
     </size>
    </property>
@@ -2999,7 +2999,7 @@ Interpreted Images:</string>
     <set>Qt::LeftDockWidgetArea</set>
    </property>
    <property name="windowTitle">
-    <string>Slice Selector (F2)</string>
+    <string>Slice Selector (F2) </string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -3013,13 +3013,13 @@ Interpreted Images:</string>
     </property>
     <property name="minimumSize">
      <size>
-      <width>170</width>
+      <width>180</width>
       <height>40</height>
      </size>
     </property>
     <property name="maximumSize">
      <size>
-      <width>170</width>
+      <width>180</width>
       <height>16777215</height>
      </size>
     </property>
