@@ -5,7 +5,6 @@
 #include "output.h"
 #include "curves.h"
 #include "brush.h"
-//#include "zlib.h"
 
 #include <QProcess>
 #include <QMutexLocker>
@@ -37,6 +36,12 @@ void CopyingImpl::WriteSPVData(int FullOutArrayCount, QByteArray FullOutArray, Q
     for (int z = 0; z < TrigCount; z++)
         (*out) << (*TrigArray)[z];
 }
+
+void CopyingImpl::escape()
+{
+    escapeFlag = true;
+}
+
 
 void CopyingImpl::MakeMergeObject(int *FullOutArrayCount, QByteArray *FullOutArray, QVector <double> *TrigArray, int *TrigCount, int parent, long long int asize, int filesused, int awidth,
                                   int aheight, QDataStream *out, QList <double> *stretches)
@@ -78,7 +83,6 @@ void CopyingImpl::MakeMergeObject(int *FullOutArrayCount, QByteArray *FullOutArr
             else
             {
                 //normal obj
-
                 //call function to make the array
                 PopulateOutputArray (FullOutArrayCount, FullOutArray, &Count, FirstOutputFile, LastOutputFile, i, awidth, aheight, label);
                 if (out != 0) PopulateTriangleList (i, FirstOutputFile, LastOutputFile, stretches, OutputObjects[i]->Resample, TrigArray, TrigCount);
@@ -443,7 +447,6 @@ void CopyingImpl::MeasureVols()
 void CopyingImpl::ExportSPV(int flag)  //0 for export, 1 for export and launch, 2 for export to temp file and launch
 {
     //Export to SPIERSview
-
     int n;
     long long int asize = 0;
     QString outputfile;
@@ -459,7 +462,6 @@ void CopyingImpl::ExportSPV(int flag)  //0 for export, 1 for export and launch, 
     QList <int> translationtable1; //tt1[myobjectindex] = index of object in output list.
 
     StupidBodgyFunction(&translationtable1, -1); //Stupid function to get correct order for object data
-    //qDebug()<<"1";
     int ActualOutputObjectCount = translationtable1.count();
     if (ActualOutputObjectCount == 0)
     {
@@ -783,6 +785,8 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
     Q_UNUSED(flen);
     int awidth, aheight;
 
+    escapeFlag = false;
+
 
     //qDebug()<<"FileDirty"<<FilesDirty;
 
@@ -883,7 +887,6 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
     out << PixPerMM / ((double)(XYDownsample * ColMonoScale));
     out << SlicePerMM; // ((double) ZDownsample);
     out << SkewDown << SkewLeft;
-    //qDebug()<<"Outputing"<< SkewDown<<SkewLeft;
     out << awidth << aheight;
     out << filesused + 2;
     out << ActualOutputObjectCount;
@@ -940,8 +943,6 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
     GetOutputList(&outlist, &translationtable, &nexttransentry, &translationtable2, &nexttransentry2, -1); //replaces old do out recursive.
     //outlist is list of the items to be output. Note that some might be merged groups!
 
-//--------------------
-
     //OK, now we get onto the new code!
 
     //Reset PB to be based on the file count
@@ -970,7 +971,7 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
 
         Object->SetUpForRender();
         Object->Outputarray.resize(awidth * aheight);
-//            qDebug()<<"Object name"<<Object->Name<<"MasksList"<<Object->UseMasks<<"SegList"<<Object->UseSegs<<"OA:"<<Object->Outputarray.size()<<fwidth<<fheight<<fwidth*fheight;
+        //            qDebug()<<"Object name"<<Object->Name<<"MasksList"<<Object->UseMasks<<"SegList"<<Object->UseSegs<<"OA:"<<Object->Outputarray.size()<<fwidth<<fheight<<fwidth*fheight;
     }
 
     max = (awidth * aheight) - 1; //downsampled
@@ -1000,16 +1001,14 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
     for (f = loopfrom; freached(f, loopto, loopfrom); f += loopstep) //loop through all files
     {
 //        qDebug()<<"Start loop";
+        qApp->processEvents();
+        if (escapeFlag)break;
         progressBar->setValue(count++);
         QString message;
         QTextStream ms(&message);
         ms << "File: " << f;
         label->setText(message);
         qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
-
-
-//        qDebug()<<"File"<<f;
-//        qDebug()<<"H1";
 
         //Check - are all of these flagged as NOT dirty? if so we don't need to do anything!
         bool dflag = false;
@@ -1018,8 +1017,6 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
 
         if (dflag)
         {
-//            qDebug()<<"H2";
-//            qDebug()<<"in"<<f;
             //Now loop round all the objects and clear their arrays as needbe - this is NOT for subobjects in a merge
             foreach (Object, outlist)
             {
@@ -1035,7 +1032,6 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
                 //Blank the output array
                 Object->Outputarray.fill(0);
             }
-//            qDebug()<<"H3";
 
             //Now can loop through each file if zdownsample>1 and build arrays for all object
             for (i = 0; i < ZDownsample; i++)
@@ -1065,8 +1061,6 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
                         //HERE - for each object do all the below - need to get all the pointers local etc for speed...
                         bigpos = Object->bigpos; //reset to start of parent object array
                         tpos = Object->tpos; //reset to start of parent object array
-
-//                        qDebug()<<"H3c";
                         UseMasks = &(Obj->UseMasks);
                         UseSegs = &(Obj->UseSegs);
 
@@ -1109,11 +1103,6 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
                                     bigpos++;
                                 }
 
-                            //qDebug()<<"H3e"<<countme<<countme2;
-                            //qDebug()<<(*UseSegs);
-                            //qDebug()<<(*UseMasks);
-                            //for (int iii=0; iii<8; iii++) qDebug()<<"Segcount"<<iii<<"is"<< segcounts[iii]<<"Usesegs"<<(*UseSegs)[iii];
-
                             //Now curves/
                             for (int sn = 0; sn < CurveCount; sn++)
                             {
@@ -1128,7 +1117,6 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
                                 }
                             }
 
-//                            qDebug()<<"H3f";
                         }
                         else //Need to do resample, so work in temp array
                         {
@@ -1193,14 +1181,10 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
 
                 FilesDirty[f + i] = false;
 
-
-//                qDebug()<<"H4";
-
             }
 
             foreach (Object, outlist)
             {
-//                qDebug()<<"H4a";
                 //Do resampling, padding, compression, store compressed array
                 OutputArray = &(Object->Outputarray);
                 temparray = &(Object->temparray);
@@ -1233,7 +1217,6 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
 
                 bool zflag = true;
 
-//                qDebug()<<"H4b";
                 //GRID
                 int gxsize = (awidth / GRID_SCALE) + 1;
                 int gysize = (aheight / GRID_SCALE) + 1;
@@ -1264,45 +1247,16 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
 
                 }
 
-//                qDebug()<<"H4c";
 
                 //Is whole grid array still 0?
                 Gpos = 0;
                 for (m = 0; m < gysize; m++) for (n = 0; n < gxsize; n++) if ((*GridArray)[Gpos++]) zflag = false;
-//                qDebug()<<"H4c2"<<zflag;
 
-//                 zflag=false; //THIS IS A DEBUG LINE
                 //COMPRESSION
                 //QByteArray *comp1 = new QByteArray();
 
                 if (!zflag)
                 {
-//                    qDebug()<<"H4c3"<<OutputArray->size();
-                    //QByteArray *t = new QByteArray(OutputArray->size()+4,'\0');
-                    //QByteArray *t = new QByteArray;
-                    /*uLongf dlength=OutputArray->size();
-                    t->resize(OutputArray->size()+4);
-                    int rval = compress2((uchar *)((t->data())+4), &dlength, (uchar *)OutputArray->constData(), dlength, 9);
-
-                    if (rval==Z_OK) qDebug()<<"Compress OK to "<<dlength;
-                    if (rval==Z_MEM_ERROR) qDebug()<<"compress memory error";
-                    if (rval==Z_BUF_ERROR) qDebug()<<"Compress buffer error";
-                    if (rval==Z_STREAM_ERROR) qDebug()<<"Compress stream error";
-
-
-                    dlength=600;
-                    qDebug()<<"About to resize";
-                    t->resize(dlength+4);
-                    int FAS=0;
-                    uchar *data=(uchar *)t->data();
-                    data[FAS]=(uchar)(dlength % 256);
-                    dlength/=256;
-                    data[FAS+1]=(uchar) (dlength % 256);
-                    dlength/=256;
-                    data[FAS+2]=(uchar) (dlength % 256);
-                    dlength/=256;
-                    data[FAS+3]=(uchar) dlength;
-                    */
 
                     (*(Object->CompressedSPVarrays[f])) = qCompress((*OutputArray), 9);
                     //delete Object->CompressedSPVarrays[f];
@@ -1310,17 +1264,9 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
                     //qDebug()<<"Storing compression in "<<f<<"size is"<<Object->CompressedSPVarrays[f]->size();
                 }
 
-//                qDebug()<<"H4d";
-
-                //regardless, we append it
             }
-//             qDebug()<<"H5";
-
         }
-        //else qDebug()<<"out"<<f;
-//        qDebug()<<"Restart loop";
     }
-//            qDebug()<<"H6";
 
     //restore settings for current file
     for (int j = 0; j < SegmentCount; j++) LoadGreyData(CurrentFile, j);
@@ -1402,11 +1348,18 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
         out.writeRawData(s.toLatin1().constData(), s.size());
     }
 
+
     File.close();
     LoadAllData(CurrentFile);
     copying = false;
 
     close(); //done, close the window
+
+    if (escapeFlag)
+    {
+        File.remove();
+        return;
+    }
 
     if (flag > 0) //launch viewer
     {

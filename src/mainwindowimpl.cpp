@@ -143,6 +143,8 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     QObject::connect(shortcutleft2, SIGNAL(triggered()), this, SLOT(left_pressed()));
     QObject::connect(shortcutspace, SIGNAL(triggered()), this, SLOT(TransToggled()));
 
+    escapeFlag = false;
+
     addAction(shortcutq);
     addAction(shortcuta);
     addAction(shortcutright);

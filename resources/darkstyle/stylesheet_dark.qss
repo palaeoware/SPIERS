@@ -162,6 +162,10 @@ QDockWidget{
     titlebar-normal-icon:url(:/darkstyle/icon_restore.png);
 }
 
+QDockWidget > QWidget {
+    border:1px solid rgba(25,25,25,75);
+}
+
 QDockWidget::close-button,QDockWidget::float-button{
     subcontrol-position:top right;
     subcontrol-origin:margin;

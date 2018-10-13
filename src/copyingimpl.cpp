@@ -26,6 +26,7 @@ Now used in several other circumstances too
 #include <QtGlobal>
 #include <QListWidget>
 #include <QFileDialog>
+#include <QShortcut>
 //#include <zlib.h>
 
 
@@ -36,6 +37,8 @@ CopyingImpl::CopyingImpl(QWidget *parent, Qt::WindowFlags f)
     setWindowIcon(QIcon(":/icons/ProgramIcon.bmp"));
     CountMessage = "";
     copying = false;
+
+    new QShortcut(QKeySequence(Qt::Key_Escape), this, SLOT(escape()));
 
 }
 

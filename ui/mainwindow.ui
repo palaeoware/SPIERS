@@ -532,13 +532,13 @@
     </property>
     <property name="minimumSize">
      <size>
-      <width>170</width>
+      <width>180</width>
       <height>400</height>
      </size>
     </property>
     <property name="maximumSize">
      <size>
-      <width>170</width>
+      <width>180</width>
       <height>16777215</height>
      </size>
     </property>
@@ -752,7 +752,7 @@
              <bool>false</bool>
             </property>
             <property name="buttonSymbols">
-             <enum>QAbstractSpinBox::PlusMinus</enum>
+             <enum>QAbstractSpinBox::UpDownArrows</enum>
             </property>
             <property name="keyboardTracking">
              <bool>false</bool>
