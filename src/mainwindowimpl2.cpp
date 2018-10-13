@@ -971,11 +971,11 @@ void MainWindowImpl::SetUpGUIFromSettings()
         if ((i + 1) % 10 == 0) item->setFont(f); // font.setBold(true);
         if ((i + 1) % 50 == 0)
         {
-            item->setTextColor(QColor("dark blue"));
+            item->setTextColor(QColor(100, 149, 237));
         }
         if ((i + 1) % 100 == 0)
         {
-            item->setTextColor(QColor("dark red"));
+            item->setTextColor(QColor("blue"));
         }
 
         SliceSelectorList->addItem(item);
