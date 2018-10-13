@@ -34,7 +34,7 @@ GlWidget::GlWidget(QWidget *parent)
     LastMouseYpos = -1;
     setMouseTracking(true);//do nothing except pass parent on
     campos = 3;
-    StereoSeparation = float(.04);
+    StereoSeparation = static_cast<float>(.04);
     setFocusPolicy(Qt::NoFocus);
     DefaultClipAngle = MainWin->ui->ClipAngle->value() / 10;
     //setAutoBufferSwap(true);
@@ -607,6 +607,7 @@ void GlWidget::paintGL()
         glfunctions->glColorMask(true, true, true, true);
         return;
     }
+
     if (MainWin->ui->actionQuadBuffer_Stereo->isChecked())
     {
         DoPMatrix(xdim, ydim);

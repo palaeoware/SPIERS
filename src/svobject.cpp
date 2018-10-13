@@ -13,7 +13,6 @@
 #include <QDebug>
 #include <QApplication>
 #include <QDir>
-
 #include <QMessageBox>
 #include <QList>
 #include <QVector3D>
@@ -33,7 +32,7 @@
 #include "ui_mainwindow.h"
 
 QList <SVObject *> SVObjects;
-int progresshandlercounter; //doesn't matter what it starts at!
+//int progresshandlercounter; //doesn't matter what it starts at!
 
 /**
  * @brief SVObject::SVObject
@@ -90,7 +89,8 @@ SVObject::~SVObject()
     cellarray->Delete();
     qDeleteAll(compressedslices.begin(), compressedslices.end());
     qDeleteAll(Isosurfaces.begin(), Isosurfaces.end());
-    if (AllSlicesCompressed != nullptr) free (AllSlicesCompressed);
+    if (AllSlicesCompressed != nullptr)
+        free(AllSlicesCompressed);
 
     //qDeleteAll(VBOs);
     qDeleteAll(VertexBuffers);
@@ -158,7 +158,8 @@ void SVObject::ForceUpdates(int thisobj, int totalobj)
         QString status;
         status.sprintf("Reprocessing %d of %d", thisobj + 1, totalobj);
         MainWin->ui->OutputLabelOverall->setText(status);
-        if (totalobj == 0)  MainWin->ui->ProgBarOverall->setValue(100);
+        if (totalobj == 0)
+            MainWin->ui->ProgBarOverall->setValue(100);
         else
             MainWin->ui->ProgBarOverall->setValue((thisobj * 100) / totalobj);
 
@@ -174,8 +175,8 @@ void SVObject::ForceUpdates(int thisobj, int totalobj)
 static void ProgressHandler(vtkObject *, unsigned long, void *, void *progress)
 {
     //qDebug()<<"HERE";
-    double *amount = (double *)progress;
-    int iamount = (int)((*amount) * 100.0);
+    double *amount = static_cast<double *>(progress);
+    int iamount = static_cast<int>((*amount) * 100.0);
     MainWin->setSpecificProgress(iamount);
     //if ((progresshandlercounter++)%10==0)
     qApp->processEvents();
@@ -195,7 +196,7 @@ static void ErrorHandler(vtkObject *, unsigned long, void *, void *progress)
  */
 void SVObject::DeleteVTKObjects()
 {
-    int cells = pd->GetNumberOfCells();
+    int cells = static_cast<int>(pd->GetNumberOfCells());
 
     if (IslandRemoval && pd->GetNumberOfCells() != 0) islandfinder->Delete();
     if (Smoothing && cells != 0) smoother->Delete();
@@ -237,11 +238,13 @@ void SVObject::GetFinalPolyData()
             normalz.clear();
             return;
         }
+
         if (Resample != 100)
         {
             if (ResampleType == 0)
             {
                 MainWin->setSpecificLabel("Simplifying Object");
+                qDebug() << "[Simplifying Object] Start - Type 0";
                 qApp->processEvents();
 
                 decimator = vtkDecimatePro::New();
@@ -261,11 +264,13 @@ void SVObject::GetFinalPolyData()
                 cb->Delete();
                 cberror->Delete();
                 dout = (vtkPolyDataAlgorithm *)decimator;
+                qDebug() << "[Simplifying Object] End - Type 0";
             }
 
             if (ResampleType == 1) //quadric
             {
                 MainWin->setSpecificLabel("Simplifying Object with Quadric algoritim");
+                qDebug() << "[Simplifying Object] Start - Type 1 (Quadric)";
                 qApp->processEvents();
 
                 qdecimator = vtkQuadricDecimation::New();
@@ -291,22 +296,28 @@ void SVObject::GetFinalPolyData()
                 cb->Delete();
                 cberror->Delete();
                 dout = (vtkPolyDataAlgorithm *)qdecimator;
+                qDebug() << "[Simplifying Object] End - Type 1";
             }
         }
 
         if (IslandRemoval != 0)
         {
             MainWin->setSpecificLabel("Finding Islands");
+            qDebug() << "[Finding Islands] Start";
             qApp->processEvents();
 
             islandfinder = (MyConnectivityFilter *)MyConnectivityFilter::New();
 
-            if (Resample == 100) islandfinder->SetInputData(PolyData);
-            else islandfinder->SetInputConnection(dout->GetOutputPort());
+            if (Resample == 100)
+                islandfinder->SetInputData(PolyData);
+            else
+                islandfinder->SetInputConnection(dout->GetOutputPort());
 
             islandfinder->ScalarConnectivityOff();
-            if (IslandRemoval == 5) islandfinder->SetExtractionModeToLargestRegion();
-            else islandfinder->SetExtractionModeToAllRegions();
+            if (IslandRemoval == 5)
+                islandfinder->SetExtractionModeToLargestRegion();
+            else
+                islandfinder->SetExtractionModeToAllRegions();
 
             islandfinder->ColorRegionsOff();
 
@@ -318,9 +329,10 @@ void SVObject::GetFinalPolyData()
             islandfinder->AddObserver(vtkCommand::ErrorEvent, cberror, 1.0);
             islandfinder->Update();
 
+            // One big region - so just take output
             if (IslandRemoval == 5)
-                //One big region - so just take outpout
             {
+                qDebug() << "[Finding Islands] Filter Limit = high Island Removal = " << IslandRemoval;
                 pdislands = islandfinder->GetOutput();
             }
             else
@@ -331,7 +343,7 @@ void SVObject::GetFinalPolyData()
                 if (IslandRemoval == 3) filterlimit = 600;
                 if (IslandRemoval == 4) filterlimit = 4000;
                 if (IslandRemoval < 0) filterlimit = 0 - IslandRemoval;
-                //qDebug()<<"FL"<<filterlimit;
+                qDebug() << "[Finding Islands] Filter Limit = " << filterlimit << " Island Removal = " << IslandRemoval;
                 MainWin->setSpecificLabel("Filtering Islands");
                 qApp->processEvents();
 
@@ -349,18 +361,24 @@ void SVObject::GetFinalPolyData()
                 cberror->Delete();
                 pdislands = islandfinder->GetOutput();
             }
+            qDebug() << "[Finding Islands] End";
         }
 
+        // Do any required smoothing
         if (Smoothing != 0)
         {
             MainWin->setSpecificLabel("Performing Smoothing");
+            qDebug() << "[Smoothing] Start";
             qApp->processEvents();
             smoother = vtkWindowedSincPolyDataFilter::New();
-            if (Resample == 100 && IslandRemoval == 0) smoother->SetInputData(PolyData);
+            if (Resample == 100 && IslandRemoval == 0)
+                smoother->SetInputData(PolyData);
             else
             {
-                if (IslandRemoval != 0) smoother->SetInputData(pdislands);
-                else smoother->SetInputConnection(dout->GetOutputPort());
+                if (IslandRemoval != 0)
+                    smoother->SetInputData(pdislands);
+                else
+                    smoother->SetInputConnection(dout->GetOutputPort());
             }
 
             smoother->FeatureEdgeSmoothingOff();
@@ -376,7 +394,7 @@ void SVObject::GetFinalPolyData()
             if (Smoothing < 0) smoother->SetNumberOfIterations(0 - Smoothing);
             smoother->SetPassBand(.05);
 
-            //          qDebug()<<"About to smooth "<<Name<<Key<<" count is" <<PolyData->GetNumberOfCells();
+            qDebug() << "[Smoothing] About to smooth " << Name << Key << " count is" << PolyData->GetNumberOfCells();
             cb = vtkCallbackCommand::New();
             cb->SetCallback(ProgressHandler);
             cberror = vtkCallbackCommand::New();
@@ -386,16 +404,24 @@ void SVObject::GetFinalPolyData()
             smoother->Update();
             cb->Delete();
             cberror->Delete();
-            //         qDebug()<<"Smoothed"<<Name<<Key;
+            qDebug() << "[Smoothing] Smoothed" << Name << Key;
+            qDebug() << "[Smoothing] End";
         }
-        if ((Resample == 100 && IslandRemoval == 0 && Smoothing == 0)) pd = PolyData;
+
+        if ((Resample == 100 && IslandRemoval == 0 && Smoothing == 0))
+        {
+            pd = PolyData;
+        }
         else
         {
-            if (Smoothing != 0) pd = smoother->GetOutput();
+            if (Smoothing != 0)
+                pd = smoother->GetOutput();
             else
             {
-                if (IslandRemoval != 0) pd = pdislands;
-                else pd = dout->GetOutput();
+                if (IslandRemoval != 0)
+                    pd = pdislands;
+                else
+                    pd = dout->GetOutput();
             }
         }
     }
@@ -404,10 +430,8 @@ void SVObject::GetFinalPolyData()
     qApp->processEvents();
 
     // Now new simplified normal generating code
-
-
-    int tcount = pd->GetNumberOfCells();
-    int pcount = pd->GetNumberOfPoints();
+    int tcount = static_cast<int>(pd->GetNumberOfCells());
+    int pcount = static_cast<int>(pd->GetNumberOfPoints());
     normalx.clear();
     normaly.clear();
     normalz.clear();
@@ -532,7 +556,6 @@ void SVObject::MakeVBOs()
     BoundingBoxBuffer.release();
 
     //Do some clever stuff - apply matrix to bounding box basically
-
     QVector3D v1(d[0], d[2], d[4]), v2(d[1], d[3], d[5]);
     QMatrix4x4 mat(
         (qreal)matrix[0],
@@ -723,7 +746,7 @@ void SVObject::CompressPolyData(bool flag)
     QDataStream out(&outdata, QIODevice::WriteOnly);
     out.setByteOrder(QDataStream::LittleEndian);
     //Convert the polydata to an output format, compress, and write
-    if (PolyData == 0) return;
+    if (PolyData == nullptr) return;
 
     int tcount = PolyData->GetNumberOfCells();
     int pcount = PolyData->GetNumberOfPoints();
@@ -770,6 +793,9 @@ void SVObject::CompressPolyData(bool flag)
     qApp->processEvents();
 }
 
+/**
+ * @brief SVObject::UnCompressPolyData
+ */
 void SVObject::UnCompressPolyData()
 {
     if (PolyDataCompressed == false) return;
@@ -831,6 +857,10 @@ void SVObject::UnCompressPolyData()
 
 }
 
+/**
+ * @brief SVObject::WritePD
+ * @param outfile
+ */
 void SVObject::WritePD(QFile *outfile)
 {
     if (PolyDataCompressed == false) CompressPolyData(true);
@@ -841,6 +871,10 @@ void SVObject::WritePD(QFile *outfile)
     outfile->write(CompressedPolyData);   //Convert the polydata to an output format, compress, and write
 }
 
+/**
+ * @brief SVObject::ReadPD
+ * @param infile
+ */
 void SVObject::ReadPD(QFile *infile)
 {
 
@@ -861,6 +895,14 @@ void SVObject::ReadPD(QFile *infile)
     }
 }
 
+/**
+ * @brief SVObject::DoMatrixDXFoutput
+ * @param v
+ * @param x
+ * @param y
+ * @param z
+ * @return
+ */
 QString SVObject::DoMatrixDXFoutput(int v, float x, float y, float z)
 {
 
@@ -882,12 +924,16 @@ QString SVObject::DoMatrixDXFoutput(int v, float x, float y, float z)
     return S;
 }
 
+/**
+ * @brief SVObject::WriteDXFfaces
+ * @param outfile
+ * @return
+ */
 int SVObject::WriteDXFfaces(QFile *outfile)
 {
     QTextStream dxf(outfile);
 
     QString header, name;
-
 
     //work out object number
     int ocount = 1;
@@ -941,6 +987,13 @@ int SVObject::WriteDXFfaces(QFile *outfile)
     return tcount;
 }
 
+/**
+ * @brief SVObject::AppendCompressedFaces
+ * @param mainfile
+ * @param internalfile
+ * @param qMain
+ * @return
+ */
 int SVObject::AppendCompressedFaces(QString mainfile, QString internalfile, QDataStream *main)
 {
     QByteArray b;
@@ -1001,6 +1054,12 @@ int SVObject::AppendCompressedFaces(QString mainfile, QString internalfile, QDat
     return tcount;
 }
 
+/**
+ * @brief SVObject::WriteSTLfaces
+ * @param stldir
+ * @param fname
+ * @return
+ */
 int SVObject::WriteSTLfaces(QDir stldir, QString fname)
 {
 
@@ -1081,6 +1140,9 @@ int SVObject::WriteSTLfaces(QDir stldir, QString fname)
 
 }
 
+/**
+ * @brief SVObject::MakePolyData
+ */
 void SVObject::MakePolyData()
 {
     int VertexCount = 0;
@@ -1095,7 +1157,6 @@ void SVObject::MakePolyData()
     qApp->processEvents();
     verts->SetNumberOfPoints(VertexCount);
 
-
     int VertexBase = 0;
     for (int i = 0; i < Isosurfaces.count(); i++)
     {
@@ -1104,7 +1165,6 @@ void SVObject::MakePolyData()
         MainWin->setSpecificProgress((i * 50) / Isosurfaces.count());
         qApp->processEvents();
     }
-
 
     actualarray->SetNumberOfValues(TrigCount * 4);
     //PolyData->Allocate(TrigCount,1000000);
@@ -1138,6 +1198,11 @@ void SVObject::MakePolyData()
     return;
 }
 
+/**
+ * @brief SVObject::MakePolyVerts
+ * @param slice
+ * @param VertexBase
+ */
 void SVObject::MakePolyVerts(int slice, int VertexBase)
 //make a polydata object for this slice
 //Modified from old MakeDlist. Takes and applies my distortions to mesh, writes into PolyData structure for VTK normalisation and filtering
@@ -1167,8 +1232,8 @@ void SVObject::MakePolyVerts(int slice, int VertexBase)
     //First - loop round vertices stretching as appropriate. THEN do triangles.
 
     //set up some variablees from SPV, as locals for speed (cut out a pointer ref)
-    float (SkewLeft) = spv->SkewLeft;
-    float (SkewDown) = spv->SkewDown;
+    float SkewLeft = spv->SkewLeft;
+    float SkewDown = spv->SkewDown;
     double *stretches = spv->stretches;
     bool MirrorFlag = spv->MirrorFlag;
     for (vertex = 0; vertex < (iso->nVertices); vertex++)
@@ -1201,5 +1266,4 @@ void SVObject::MakePolyVerts(int slice, int VertexBase)
         else
             verts->InsertPoint(vertex + VertexBase, x, y, z);
     }
-
 }

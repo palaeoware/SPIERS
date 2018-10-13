@@ -235,7 +235,6 @@ void MainWindow::StartTimer_fired()
     NextActualDlist = 1;
 
     //Get Filename
-
     DisableRenderCommands();
 
     if (fname == "") //no filename provided
@@ -296,6 +295,7 @@ agin:
         r.ProcessFile(fname);
         //widget->ResizeScaleBall(1.0);
         RefreshInfo();
+        UpdateGL();
     }
 }
 
