@@ -79,19 +79,18 @@ void MainWindowImpl::SetUpDocks()
     addDockWidget (Qt::RightDockWidgetArea, DockHist);
     addDockWidget (Qt::RightDockWidgetArea, DockInfo);
 
-    tabifyDockWidget(dockWidget_Main,SliceSelector);
+    tabifyDockWidget(dockWidget_Main, SliceSelector);
 
     dockWidget_Main->setVisible(true);
     SliceSelector->setVisible(false);
     DockMasksSettings->setVisible(true);
     DockCurvesSettings->setVisible(false);
-    DockSegmentsSettings->setVisible(true);
+    DockSegmentsSettings->setVisible(false);
     DockOutputSettings->setVisible(false);
     DockHist->setVisible(false);
     DockInfo->setVisible(false);
     dockWidget_Generate->setVisible(true);
 
-//  dockWidget_Main->setFloating(false);
     SliceSelector->setFloating(false);
     DockMasksSettings->setFloating(false);
     DockCurvesSettings->setFloating(false);
@@ -101,37 +100,13 @@ void MainWindowImpl::SetUpDocks()
     DockHist->setFloating(false);
     dockWidget_Generate->setFloating(false);
 
-    //QVBoxLayout *mylayout = new QVBoxLayout; //layout - any will do, box works fine
-    //mylayout->addWidget(GVHist);
-    //remove old layout - a bodge
-    //DockHist->layout()->addWidget(GVHist);
-    //DockHist->setLayout(mylayout);
-
     GVHist = new histgv;
     DockHist->setWidget(GVHist);
 
-    //SliderPos->setVisible(false);
-    //spinBox->setVisible(false);
-    //graphicsView->setVisible(false);
-
-
-    //dockWidget_Generate->resize(dockWidget_Generate->width(), 180 );
-    //dock them
-
-    //SliceSelector->setGeometry(9,230, 170, 100);
-    //SliceSelector->setMinimumSize(170, 100);
-    //SliceSelector->setMaximumSize(170, 1000);
-    //dockWidget_Main->setGeometry(0,56, 170, 706);
-    //dockWidget_Main->setMinimumSize(170, 600);
-    //dockWidget_Main->setMaximumSize(170, 1200);
-
-    //DockHist->setFloating(true);
-    //DockHist->setAllowedAreas(
-
     //sort out toolbar too
-
     toolBar->addSeparator();
-    QLabel *l1 = new QLabel("Brush Size:");
+    QLabel *l1 = new QLabel(" Brush Size:");
+    l1->setMargin(5);
     toolBar->addWidget(l1);
 
     BrushSize = new KeysafeSpinBox;

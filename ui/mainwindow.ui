@@ -589,6 +589,12 @@
          <property name="title">
           <string>Brightness Mode</string>
          </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
          <layout class="QGridLayout">
           <property name="leftMargin">
            <number>2</number>
@@ -820,6 +826,9 @@
          <property name="title">
           <string>Masks</string>
          </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
          <layout class="QHBoxLayout">
           <property name="spacing">
            <number>2</number>
@@ -886,6 +895,9 @@
          </property>
          <property name="title">
           <string>Segments</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
          </property>
          <layout class="QHBoxLayout">
           <property name="spacing">
@@ -957,6 +969,9 @@
          <property name="title">
           <string>Source Min/Max levels</string>
          </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
          <layout class="QVBoxLayout">
           <property name="spacing">
            <number>2</number>
@@ -1024,6 +1039,9 @@
          </property>
          <property name="title">
           <string>Source transparency</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
          </property>
          <layout class="QHBoxLayout">
           <property name="spacing">
@@ -3051,6 +3069,8 @@ Interpreted Images:</string>
    <addaction name="separator"/>
    <addaction name="actionUndo"/>
    <addaction name="actionRedo"/>
+   <addaction name="separator"/>
+   <addaction name="actionSquare"/>
    <addaction name="action3D_Brush"/>
   </widget>
   <action name="actionA_command">
@@ -3391,7 +3411,7 @@ Interpreted Images:</string>
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Square</string>
+    <string>Square Brush</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Return</string>

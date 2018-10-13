@@ -36,6 +36,7 @@ Main Window class - lots of functions to
 #include "settingsimpl.h"
 #include "backthread.h"
 #include "histogram.h"
+#include "../../SPIERScommon/netmodule.h"
 
 #include <QColorDialog>
 #include <QFileDialog>
@@ -63,7 +64,7 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     ReadSuperGlobals();
     AppMainWindow = this;
     setupUi(this);
-    setStatusBar(0);
+    setStatusBar(nullptr);
 
     setWindowIcon(QIcon(":/icons/ProgramIcon.bmp"));
     showMaximized();
@@ -94,23 +95,19 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     QObject::connect(actionRedo, SIGNAL(triggered()), this, SLOT(Redo())); //quit
 
     //connect other stuff
-
     QObject::connect(ZoomSlider, SIGNAL(valueChanged(int)), this, SLOT(Zoom_Slider_Changed(int)));
     QObject::connect(SliderPos, SIGNAL(valueChanged(int)), this, SLOT(Moveimage(int)));
     QObject::connect(TransSlider, SIGNAL(valueChanged(int)), this, SLOT(Trans_Changed(int)));
     QObject::connect(MinSlider, SIGNAL(valueChanged(int)), this, SLOT(Min_Changed(int)));
     QObject::connect(MaxSlider, SIGNAL(valueChanged(int)), this, SLOT(Max_Changed(int)));
-
     QObject::connect(BrushSize, SIGNAL(valueChanged(int)), this, SLOT(BrushChanged(int)));
     QObject::connect(SpinDown, SIGNAL(valueChanged(int)), this, SLOT(BrightDownChanged(int)));
     QObject::connect(SpinUp, SIGNAL(valueChanged(int)), this, SLOT(BrightUpChanged(int)));
     QObject::connect(SpinSoft, SIGNAL(valueChanged(int)), this, SLOT(SoftChanged(int)));
-
     QObject::connect(MaskBoxLeft, SIGNAL(currentIndexChanged(int)), this, SLOT(LeftMaskChanged(int)));
     QObject::connect(MaskBoxRight, SIGNAL(currentIndexChanged(int)), this, SLOT(RightMaskChanged(int)));
     QObject::connect(SegBoxLeft, SIGNAL(currentIndexChanged(int)), this, SLOT(LeftSegChanged(int)));
     QObject::connect(SegBoxRight, SIGNAL(currentIndexChanged(int)), this, SLOT(RightSegChanged(int)));
-
 
     QActionGroup *myActionGroup = new QActionGroup(this);
     // These actions were created via qt designer
@@ -184,10 +181,6 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     BuildRecentFiles();  //do the menus
     InitStates();
 
-//    BackThread=new MyThread;
-//  BackThread->start();
-//  BackThread->setPriority(QThread::LowestPriority);
-
     //set up key combo for outputitems
     QStringList items;
     items << "[-]" << "A" << "B" << "C" << "D" << "E" << "F" << "G" << "H" << "I" << "J" << "K" << "L" << "M" << "N" << "O" << "P" << "Q" << "R" << "S" << "T" << "U" << "V" << "W" << "X" << "Y" << "Z";
@@ -223,7 +216,6 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     actionRedo->setIcon(QIcon(":/icons/redo.bmp"));
 
     bodgeflag = false;
-
 
     //sort out mask headings issue
     MasksTreeWidget->headerItem()->setText(0, "");
@@ -270,6 +262,10 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     rangescene->Refresh();
     RangeGraphicsView->fitInView(0, 0, 255, 255);
 
+    // Makes sure you can see tab labels when docked with decent size font
+    mainwin->setTabPosition(Qt::LeftDockWidgetArea, QTabWidget::West);
+    mainwin->setWindowTitle("SPIERSEdit - Version " + QString(UPDATEVERSION) + " - No files loaded");
+
     pausetimers = false;
 
     //Disable copy segments
@@ -277,10 +273,8 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     actionCopy_segment_from_next_slice->setVisible(false);
     DirectCurves->setVisible(false);
 
-
     //Install event handler at application level - this catches all wheel events and
     //sends them to the graphics view
-
     qApp->installEventFilter(graphicsView);
 
     ExportingImages = false;
