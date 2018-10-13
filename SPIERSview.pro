@@ -4,6 +4,11 @@
 
 QT += network xml gui core opengl
 
+# Allow debug in release
+QMAKE_CXXFLAGS_RELEASE += -g
+QMAKE_CFLAGS_RELEASE += -g
+QMAKE_LFLAGS_RELEASE =
+
 TARGET = SPIERSview64
 
 TEMPLATE = app
