@@ -211,7 +211,7 @@ void NetModule::slotReadyRead()
                 //The openUrl method may work on PC, but this definately does, so stick with it
 
 
-                exit(0);
+                QCoreApplication::quit();
 #endif
 #ifdef __APPLE__
                 QMessageBox::information(0, "Update",
