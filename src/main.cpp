@@ -104,13 +104,13 @@ int main(int argc, char *argv[])
     QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 #endif
 
+    QApplication app( argc, argv );
+
     // Install the message handler to log to file
     qInstallMessageHandler(logMessageOutput);
 
     // Style program with our dark style
     QApplication::setStyle(new DarkStyleTheme);
-
-    class main app(argc, argv);
 
     app.setQuitOnLastWindowClosed(true);
 

@@ -75,7 +75,7 @@ void DarkStyleTheme::polish(QPalette &palette)
     palette.setColor(QPalette::Button, QColor(53, 53, 53));
     palette.setColor(QPalette::ButtonText, Qt::white);
     palette.setColor(QPalette::Disabled, QPalette::ButtonText, QColor(127, 127, 127));
-    palette.setColor(QPalette::BrightText, Qt::blue);
+    palette.setColor(QPalette::BrightText, Qt::red);
     palette.setColor(QPalette::Link, QColor(0, 0, 100)); //Blue
     palette.setColor(QPalette::Highlight, QColor(0, 0, 100)); //Blue
     palette.setColor(QPalette::Disabled, QPalette::Highlight, QColor(80, 80, 80));

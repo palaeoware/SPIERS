@@ -833,14 +833,23 @@ void MainWindow::RefreshOneItem(QTreeWidgetItem *item, int i)
     rs << SVObjects[i]->Resample << "%";
 
     item->setText(0, SVObjects[i]->Name);
-    item->setText(2, KeySt);
+
 
     QLabel *show = new QLabel();
+    show->setAlignment(Qt::AlignCenter);
     if (SVObjects[i]->Visible)
-        show->setPixmap(QPixmap(":/eye.bmp"));
+    {
+        QPixmap p = QPixmap(":/darkstyle/icon_radiobutton_checked");
+        show->setPixmap(p.scaled(18, 18, Qt::KeepAspectRatio));
+    }
     else
-        show->setPixmap(QPixmap(":/eye_off.bmp"));
-    ui->treeWidget->setItemWidget (item, 1, show);
+    {
+        QPixmap p = QPixmap(":/darkstyle/icon_radiobutton_unchecked.png");
+        show->setPixmap(p.scaled(18, 18, Qt::KeepAspectRatio));
+    }
+    ui->treeWidget->setItemWidget(item, 1, show);
+
+    item->setText(2, KeySt);
 
     if (SVObjects[i]->IsGroup)
     {
