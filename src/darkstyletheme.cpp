@@ -91,7 +91,6 @@ void DarkStyleTheme::polish(QApplication *app)
 {
     if (!app) return;
 
-
     //ARTS - Increase font size for better reading,
     /*
     QFont defaultFont = QApplication::font();

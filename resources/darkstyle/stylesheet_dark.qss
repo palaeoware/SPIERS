@@ -452,22 +452,6 @@ QSlider::sub-page:horizontal:disabled{
  * Indivdual object styling
  */
 
-QWidget#GV_Population, QWidget#GV_Environment {
-    border: 1px solid palette(base);
-}
-
-QLabel#savePathLabel, QLabel#pollingRateLabel, QLabel#imagesLabel, QLabel#outputSettingsLabel, QLabel#advancedSettingsLabel {
-    font-weight: bold;
-}
-
-QLabel#imagesInfoLabel, QLabel#textLogInfoLabel, QLabel#textLogInfo1Label, QLabel#textLogInfo2Label, QLabel#textLogInfo3Label {
-    color: palette(highlight);
-}
-
-QCheckBox#saveAllImagesCheckbox {
-    font-style: italic;
-}
-
 QLabel#aboutTextLabel1 {
     font-weight: bold;
 }
