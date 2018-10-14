@@ -1,5 +1,5 @@
 #include "svobject.h"
-#include "SPIERSviewglobals.h"
+#include "globals.h"
 #include "spv.h"
 #include "vtkIdList.h"
 #include "compressedslice.h"
@@ -234,7 +234,7 @@ void SVObject::GetFinalPolyData()
 
     qDebug() << "[Where I'm I?] In GetFinalPolyData - this is not a group...";
 
-    if (voxml_mode == false)
+    if (vaxml_mode == false)
     {
         if (PolyDataCompressed) UnCompressPolyData();
 
@@ -730,7 +730,7 @@ void SVObject::MakeVBOs()
     qApp->processEvents();
 
     //and delete any vtk objects used
-    if (voxml_mode == false) DeleteVTKObjects();
+    if (vaxml_mode == false) DeleteVTKObjects();
 
     Dirty = false;
 
@@ -755,7 +755,7 @@ void SVObject::CompressPolyData(bool flag)
 {
     //MainWin->ui->actionSave_Memory->setChecked(true);
     if (IsGroup) return;
-    if (voxml_mode) return;
+    if (vaxml_mode) return;
     if (PolyDataCompressed == true) return;
     if (flag == false && !(MainWin->ui->actionSave_Memory->isChecked())) //if not a saving to ps call and if the save memory flag is unticked
         //we don't compress at all
@@ -847,7 +847,7 @@ void SVObject::CompressPolyData(bool flag)
 void SVObject::UnCompressPolyData()
 {
     if (PolyDataCompressed == false) return;
-    if (voxml_mode) return;
+    if (vaxml_mode) return;
 
     MainWin->setSpecificLabel("Decompressing...");
     MainWin->setSpecificProgress(0);

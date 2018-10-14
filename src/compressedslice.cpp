@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include "spv.h"
 #include "svobject.h"
-#include "SPIERSviewglobals.h"
+#include "globals.h"
 #include <QFile>
 #include <QTextStream>
 #include <QDebug>

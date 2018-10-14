@@ -1,5 +1,5 @@
-#ifndef SPIERSVIEWGLOBALS_H
-#define SPIERSVIEWGLOBALS_H
+#ifndef GLOBALS_H
+#define GLOBALS_H
 
 //Whole bunch of global variables and definitions for the project
 
@@ -41,7 +41,7 @@ extern float Xtrans, Ytrans, Ztrans;
 #define GL_MINOR 1
 
 extern QStringList i_comments, i_reference, i_author, i_specimen, i_provenance, i_classification_name, i_classification_rank, i_title; //info stuff
-extern bool voxml_mode;
+extern bool vaxml_mode;
 
 extern int ScaleBallColour[3]; //info stuff
 extern float ScaleBallScale; //resize applied to ball - for scale calc
@@ -50,7 +50,7 @@ extern float mm_per_unit;
 
 extern float ScaleMatrix[16];
 
-//bounding box on import voxml stuff
+//bounding box on import VAXML stuff
 extern float minx, maxx, miny, maxy, minz, maxz;
 extern bool firstobject;
 extern int model_ktr;
@@ -58,4 +58,4 @@ extern int model_ktr;
 extern QString STLHash;
 extern QMatrix4x4 globalmatrix;
 
-#endif // SPIERSVIEWGLOBALS_H
+#endif // GLOBALS_H

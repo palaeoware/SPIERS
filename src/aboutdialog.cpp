@@ -1,7 +1,7 @@
 #include "aboutdialog.h"
 #include "ui_aboutdialog.h"
 #include "../SPIERScommon/netmodule.h"
-#include "SPIERSviewglobals.h"
+#include "globals.h"
 #include "version.h"
 #include "mainwindow.h"
 
@@ -65,7 +65,7 @@ aboutdialog::aboutdialog(QWidget *parent) :
     html += "</body></html>";
     m_ui->textBrowser->setHtml(html);
 
-    if (voxml_mode) m_ui->HashLabel->setText("STL hash: " + STLHash);*/
+    if (vaxml_mode) m_ui->HashLabel->setText("STL hash: " + STLHash);*/
 }
 
 aboutdialog::~aboutdialog()

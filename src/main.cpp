@@ -10,7 +10,7 @@
 
 #include "darkstyletheme.h"
 #include "mainwindow.h"
-#include "SPIERSviewglobals.h"
+#include "globals.h"
 #include "../SPIERScommon/netmodule.h"
 
 #ifndef __APPLE__

@@ -7,7 +7,7 @@
 #include <QTextStream>
 #include <QTime>
 
-#include "SPIERSviewglobals.h"
+#include "globals.h"
 #include <QDebug>
 #include <QMatrix4x4>
 #include "spv.h"
@@ -18,7 +18,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "vtkProperty2D.h"
-#include "voxml.h"
+#include "vaxml.h"
 
 /**
  * @brief SPVreader::SPVreader
@@ -113,8 +113,8 @@ void WriteFinalised()
         return;
     }
 
-    voxml v;
-    if (v.write_voxml(fname, true) == false) return;
+    VAXML v;
+    if (v.writeVAXML(fname, true) == false) return;
 
     //Add the STLs
     //2. Write VAXML in text mode
@@ -555,8 +555,8 @@ void SPVreader::ReadSPV6(QString Filename)
                 if (pieces == -3) //Code for 'single compressed thing
                 {
                     in >> o->AllSlicesSize;
-                    o->AllSlicesCompressed = (unsigned char *)malloc(o->AllSlicesSize);
-                    InputFile.read((char *)o->AllSlicesCompressed, o->AllSlicesSize);
+                    o->AllSlicesCompressed = static_cast<unsigned char *>(malloc(static_cast<size_t>(o->AllSlicesSize)));
+                    InputFile.read(reinterpret_cast<char *>(o->AllSlicesCompressed), o->AllSlicesSize);
                 }
                 else
                 {
@@ -590,15 +590,17 @@ void SPVreader::ReadSPV6(QString Filename)
                             //read the grid
                             t.start();
                             CompressedSlice *newslice = new CompressedSlice(o, false);
-                            newslice->grid = (unsigned char *)malloc(thisspv->GridSize);
+                            newslice->grid = static_cast<unsigned char *>(malloc(static_cast<size_t>(thisspv->GridSize)));
+
                             int temp;
-                            temp = in.readRawData((char *)(newslice->grid), thisspv->GridSize);
+                            temp = in.readRawData(reinterpret_cast<char *>(newslice->grid), thisspv->GridSize);
+                            Q_UNUSED(temp)
 
                             in >> newslice->datasize;
 
-                            newslice->data = (unsigned char *)malloc(newslice->datasize);
+                            newslice->data = static_cast<unsigned char *>(malloc(static_cast<size_t>(newslice->datasize)));
 
-                            temp = in.readRawData((char *)newslice->data, newslice->datasize);
+                            temp = in.readRawData(reinterpret_cast<char *>(newslice->data), newslice->datasize);
                             //qDebug() << "1." << t.elapsed();
                             if (j < (thisspv->kDim - 2)) //no merge complications
                             {
@@ -940,6 +942,9 @@ void SPVreader::invert_endian(unsigned char *data, int count)
 
     for (n = 0; n < count; n++) newdata[count - 1 - n] = data[n];
     for (n = 0; n < count; n++) data[n] = newdata[n];
+#else
+    Q_UNUSED(data)
+    Q_UNUSED(count)
 #endif
     return;
 }
@@ -1403,7 +1408,7 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
             else
                 thisspv->ComponentObjects[realindex]->InGroup = ObjNumbers[InGroup[i]];
 
-            thisspv->ComponentObjects[realindex]->Key = (QChar) ListKeys[i];
+            thisspv->ComponentObjects[realindex]->Key = static_cast<QChar>(ListKeys[i]);
         }
 
         //now read strings
@@ -1411,7 +1416,7 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
         {
             if (fread(&slen, sizeof(int), 1, file) != 1) goto out;
             //read this many characters
-            if (fread(dummy, slen, 1, file) != 1) goto out;
+            if (fread(dummy, static_cast<size_t>(slen), 1, file) != 1) goto out;
             dummy[slen] = '\0'; //terminate it
             QString readinname = dummy;
 

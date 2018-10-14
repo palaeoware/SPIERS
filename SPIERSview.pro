@@ -22,7 +22,7 @@ INCLUDEPATH += "$$PWD/../../../../msys64/mingw64/include/vtk-8.1"
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
     src/darkstyletheme.cpp \
-    src/SPIERSviewglobals.cpp \
+    src/globals.cpp \
     src/spvreader.cpp \
     src/svobject.cpp \
     src/spv.cpp \
@@ -30,18 +30,20 @@ SOURCES += src/main.cpp \
     src/mc.cpp \
     src/myconnectivityfilter.cpp \
     src/movetogroup.cpp \
-    src/voxml.cpp \
+    src/vaxml.cpp \
     src/quickhelpbox.cpp \
     src/aboutdialog.cpp \
     src/gl3widget.cpp \
     ../SPIERScommon/netmodule.cpp \
     ../SPIERScommon/semanticversion.cpp \
-    ../SPIERScommon/prereleasecomponent.cpp
+    ../SPIERScommon/prereleasecomponent.cpp \
+    src/vaxmlgroup.cpp \
+    src/vaxmlobject.cpp
 
 
 HEADERS += src/mainwindow.h \
     src/darkstyletheme.h \
-    src/SPIERSviewglobals.h \
+    src/globals.h \
     src/spvreader.h \
     src/svobject.h \
     src/spv.h \
@@ -49,7 +51,7 @@ HEADERS += src/mainwindow.h \
     src/mc.h \
     src/myconnectivityfilter.h \
     src/movetogroup.h \
-    src/voxml.h \
+    src/vaxml.h \
     src/quickhelpbox.h \
     src/aboutdialog.h \
     src/glvbo.h \
@@ -59,7 +61,9 @@ HEADERS += src/mainwindow.h \
     src/version.h \
     ../SPIERScommon/netmodule.h \
     ../SPIERScommon/semanticversion.h \
-    ../SPIERScommon/prereleasecomponent.h
+    ../SPIERScommon/prereleasecomponent.h \
+    src/vaxmlgroup.h \
+    src/vaxmlobject.h
 
 LIBS += -L$$PWD/../../../../msys64/mingw64/lib \
 # VTK - Libary

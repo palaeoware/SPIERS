@@ -26,11 +26,11 @@
 #include "spv.h"
 #include "ui_mainwindow.h"
 #include "svobject.h"
-#include "voxml.h"
+#include "vaxml.h"
 #include "quickhelpbox.h"
 #include "version.h"
 #include "aboutdialog.h"
-#include "SPIERSviewglobals.h"
+#include "globals.h"
 #include "spvreader.h"
 #include "../SPIERScommon/netmodule.h"
 #include <vtkProperty2D.h>
@@ -133,7 +133,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     gl3widget->SetClip(ui->ClipStart->value(), ui->ClipDepth->value(), ui->ClipAngle->value());
 
-    voxml_mode = false;
+    vaxml_mode = false;
     ScaleMatrix[0] = 1.0;
     ScaleMatrix[1] = 0.0;
     ScaleMatrix[2] = 0.0;
@@ -265,12 +265,12 @@ agin:
 
     qDebug() << "[Where I'm I?] In StartTimer_fired - fname should now be set fname = " << fname;
 
-    if (fname.right(3) == "xml") //catches xml or voxml
+    if (fname.right(3) == "xml") //catches xml or vaxml
     {
         qDebug() << "[Where I'm I?] In StartTimer_fired - file is XML or VAXML";
 
-        voxml v;
-        if (v.read_voxml(fname))
+        VAXML v;
+        if (v.readVAXML(fname))
         {
             QString shortfname = "SPIERSview - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
             this->setWindowTitle(shortfname);
@@ -290,8 +290,8 @@ agin:
     {
         qDebug() << "[Where I'm I?] In StartTimer_fired - file is SPVF";
 
-        voxml v;
-        if (v.read_spvf(fname))
+        VAXML v;
+        if (v.readSPVF(fname))
         {
             QString shortfname = "SPIERSview - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
             this->setWindowTitle(shortfname);
@@ -521,7 +521,7 @@ void MainWindow::SpinTimer_fired()
                 //qDebug()<<"j,SVJ"<<j<<SVObjects[j];
                 //qDebug()<<"SVJ"<<SVObjects[j]->spv;
                 //qDebug()<<"SVJ"<<SVObjects[j]->spv->PixPerMM;
-                if (!voxml_mode)
+                if (!vaxml_mode)
                 {
                     double spvscale = (1.0 / SVObjects[j]->spv->PixPerMM) * SVObjects[j]->scale;
                     spvscale = spvscale * spvscale * (1.0 / SVObjects[j]->spv->SlicePerMM) * SVObjects[j]->scale; //square it, multiply by slice spacing
@@ -540,7 +540,7 @@ void MainWindow::SpinTimer_fired()
         QString oc;
         if (ObjCount == 1) oc = "object";
         else oc = "objects";
-        if (voxml_mode)
+        if (vaxml_mode)
         {
             mess = QString("%1 %3: %2 KTr ").arg(ObjCount).arg(TotalTriangles / 1000).arg(oc);
         }
@@ -998,7 +998,7 @@ void MainWindow::RefreshObjects()
     //set columwidths
     ui->treeWidget->setUniformRowHeights(true);
 
-    if (voxml_mode)
+    if (vaxml_mode)
     {
         ui->treeWidget->setColumnHidden(6, true);
         ui->treeWidget->setColumnHidden(7, true);
@@ -1194,7 +1194,7 @@ void MainWindow::on_infoTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int 
 {
     Q_UNUSED(column)
 
-    if (voxml_mode) return; //disabled in VAXML mode
+    if (vaxml_mode) return; //disabled in VAXML mode
     FileDirty = true;
 
     //work out if this is a root or child item
@@ -1306,7 +1306,7 @@ void MainWindow::deleteinfo()
 {
     if (ui->infoTreeWidget->isVisible() == false) return;
     if (ui->infoTreeWidget->selectedItems().count() != 1) return;
-    if (voxml_mode) return;
+    if (vaxml_mode) return;
     QTreeWidgetItem *item = ui->infoTreeWidget->selectedItems().at(0);
 
     QString oldtext = item->text(0);
@@ -1750,12 +1750,12 @@ void MainWindow::on_actionResurface_Now_triggered()
 {
     {
         //show prog bars if needbe
-        if (ui->actionProgress_Bars->isChecked() == false && voxml_mode == true)
+        if (ui->actionProgress_Bars->isChecked() == false && vaxml_mode == true)
         {
             ui->actionProgress_Bars->setEnabled(false);
             ui->ProgressDock->setVisible(true);
         }
-        if (voxml_mode == false) MainWin->DisableRenderCommands();
+        if (vaxml_mode == false) MainWin->DisableRenderCommands();
         //How many to change?
         int ObjectsRedoing = 0;
         for (int i = 0; i < SVObjects.count(); i++) if (SVObjects[i]->Dirty && SVObjects[i]->IsGroup == false) ObjectsRedoing++;
@@ -1787,8 +1787,8 @@ void MainWindow::on_actionResurface_Now_triggered()
         ui->OutputLabelOverall->setText("Complete");
         ui->ProgBarOverall->setValue(100);
 
-        if (voxml_mode == false) MainWin->EnableRenderCommands();
-        if (ui->actionProgress_Bars->isChecked() == false && voxml_mode == true)
+        if (vaxml_mode == false) MainWin->EnableRenderCommands();
+        if (ui->actionProgress_Bars->isChecked() == false && vaxml_mode == true)
         {
             ui->actionProgress_Bars->setEnabled(true);
             ui->ProgressDock->setVisible(false);
@@ -2286,8 +2286,8 @@ void MainWindow::on_actionSave_Finalised_As_triggered()
     for (int i = 0; i < SVObjects.count(); i++)
         if (!(SVObjects[i]->IsGroup && (SVObjects[i]->Visible || ui->actionExport_Hidden_Objects->isChecked()))) objcount++;
 
-    voxml v;
-    if (v.write_voxml(fname, true) == false)
+    VAXML v;
+    if (v.writeVAXML(fname, true) == false)
     {
         EnableRenderCommands();
         return;
@@ -2348,9 +2348,9 @@ void MainWindow::on_actionSTL_triggered()
         if (!(SVObjects[i]->IsGroup)) objcount++;
 
 //    qDebug()<<fname;
-    //Now write the voxml file - use current file name - do first to avoid finding problems after long STL export!
-    voxml v;
-    if (v.write_voxml(fname, false) == false)
+    //Now write the vaxml file - use current file name - do first to avoid finding problems after long STL export!
+    VAXML v;
+    if (v.writeVAXML(fname, false) == false)
     {
         ui->OutputLabelOverall->setText("VAXML export failed");
         EnableRenderCommands();
@@ -2752,7 +2752,7 @@ void MainWindow::on_actionReset_Size_triggered()
  */
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    if (voxml_mode == true)
+    if (vaxml_mode == true)
     {
         event->accept();
         return;

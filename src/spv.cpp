@@ -1,5 +1,5 @@
 #include "spv.h"
-#include "SPIERSviewglobals.h"
+#include "globals.h"
 #include <QDebug>
 
 /**

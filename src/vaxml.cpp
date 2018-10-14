@@ -1,6 +1,3 @@
-#include "voxml.h"
-#include "svobject.h"
-#include "spv.h"
 #include <QXmlStreamReader>
 #include <QString>
 #include <QMessageBox>
@@ -11,69 +8,38 @@
 #include <QCryptographicHash>
 #include <QVector3D>
 #include <QBuffer>
+
+#include "vaxml.h"
+#include "svobject.h"
+#include "spv.h"
 #include "vtkSTLReader.h"
 #include "vtkPLYReader.h"
-#include "SPIERSviewglobals.h"
+#include "globals.h"
 #include "ui_mainwindow.h"
 #include "../SPIERScommon/netmodule.h"
 
-QStringList  i_comments, i_reference, i_author, i_specimen, i_provenance, i_classification_name, i_classification_rank, i_title;
-QMatrix4x4 globalmatrix;
-bool voxml_mode;
-float minx, maxx, miny, maxy, minz, maxz;
 bool firstobject;
+bool vaxml_mode;
+float minx;
+float maxx;
+float miny;
+float maxy;
+float minz;
+float maxz;
+QStringList i_comments;
+QStringList i_reference;
+QStringList i_author;
+QStringList i_specimen;
+QStringList i_provenance;
+QStringList i_classification_name;
+QStringList i_classification_rank;
+QStringList i_title;
+QMatrix4x4 globalmatrix;
 
 /**
- * @brief voxml_group::voxml_group
+ * @brief VAXML::VAXML
  */
-voxml_group::voxml_group()
-{
-    name = "";
-    key = 0;
-    visible = true;
-    ingroup = "";
-    position = -1;
-}
-
-/**
- * @brief voxml_object::voxml_object
- */
-voxml_object::voxml_object()
-{
-    name = "[Unnamed object]";
-    key = 0;
-    visible = true;
-    ingroup = "";
-    file = "";
-    url = "";
-
-    red = 255;
-    green = 255;
-    blue = 255;
-    matrix[0] = 1.0;
-    matrix[1] = 0.0;
-    matrix[2] = 0.0;
-    matrix[3] = 0.0;
-    matrix[4] = 0.0;
-    matrix[5] = 1.0;
-    matrix[6] = 0.0;
-    matrix[7] = 0.0;
-    matrix[8] = 0.0;
-    matrix[9] = 0.0;
-    matrix[10] = 1.0;
-    matrix[11] = 0.0;
-    matrix[12] = 0.0;
-    matrix[13] = 0.0;
-    matrix[14] = 0.0;
-    matrix[15] = 1.0;
-    transparency = 0;
-    position = -1;
-};
-
-/**
- * @brief voxml::voxml
- */
-voxml::voxml()
+VAXML::VAXML()
 {
     //set defaults
     version = 1; //default to v1, where export didn't even export a version (doh!)
@@ -98,27 +64,27 @@ voxml::voxml()
 }
 
 /**
- * @brief voxml::~voxml
+ * @brief VAXML::~VAXML
  */
-voxml::~voxml()
+VAXML::~VAXML()
 {
     qDeleteAll(groups.begin(), groups.end());
     qDeleteAll(objects.begin(), objects.end());
 }
 
 /**
- * @brief voxml::read_spvf
+ * @brief VAXML::readSPVF
  * @param fname
  * @return
  */
-bool voxml::read_spvf(QString fname)
+bool VAXML::readSPVF(QString fname)
 {
     //open the file
     QFile *file = new QFile(fname);
     QFileInfo fi(fname);
     QString fpath = fi.canonicalPath();
 
-//    qDebug()<<"H1";
+    //qDebug()<<"H1";
     if (file->open(QIODevice::ReadOnly) == false)
     {
         QMessageBox::information(nullptr, "test", "Error - could not open SPVF file");
@@ -131,7 +97,7 @@ bool voxml::read_spvf(QString fname)
 
     QString xmlstring;
 
-//    qDebug()<<"H2";
+    //qDebug()<<"H2";
     //Set up string as a buffer so same code can read it!
     in >> xmlstring; //read the XML
     //qDebug()<<"XML:"<<xmlstring;
@@ -163,16 +129,16 @@ bool voxml::read_spvf(QString fname)
                         {
                             QString text = xml.readElementText();
                             int i = text.toInt(&flag);
-                            if (!flag) return xml_error("invalid version: " + text);
-                            //if (version>0) return xml_error("multiple version tags");
+                            if (!flag) return xmlError("invalid version: " + text);
+                            //if (version>0) return xmlError("multiple version tags");
                             version = i;
                         }
 
                         if (xml.name() == "title")
                         {
                             QString text = xml.readElementText();
-                            if (text.length() == 0) xml_error("invalid (empty) title");
-                            if (title.length() > 0) return xml_error("multiple title tags");
+                            if (text.length() == 0) xmlError("invalid (empty) title");
+                            if (title.length() > 0) return xmlError("multiple title tags");
                             title = text;
                             i_title.clear();
                             i_title.append(title);
@@ -182,7 +148,7 @@ bool voxml::read_spvf(QString fname)
                         {
                             QString text = xml.readElementText();
                             float i = text.toFloat(&flag);
-                            if (!flag) return xml_error("invalid scale: " + text);
+                            if (!flag) return xmlError("invalid scale: " + text);
                             scale = i;
                         }
 
@@ -231,8 +197,8 @@ bool voxml::read_spvf(QString fname)
                                     nam = xml.readElementText(QXmlStreamReader::IncludeChildElements);
                                 }
                             };
-                            if (nam == "" && rank == "")  return xml_error("invalid classification (no rank or name)");
-                            if (nam == "")  return xml_error("invalid classification (no name)");
+                            if (nam == "" && rank == "")  return xmlError("invalid classification (no rank or name)");
+                            if (nam == "")  return xmlError("invalid classification (no name)");
                             if (rank == "") rank = "Unspecified";
                             classification_rank.append(rank);
                             classification_name.append(nam);
@@ -258,7 +224,7 @@ bool voxml::read_spvf(QString fname)
                         if (xml.name() == "group")
                         {
                             //create the group
-                            voxml_group *new_group = new (voxml_group);
+                            VAXMLGroup *new_group = new (VAXMLGroup);
                             groups.append(new_group);
 
                             while (xml.readNextStartElement())
@@ -266,8 +232,8 @@ bool voxml::read_spvf(QString fname)
                                 if (xml.name() == "name")
                                 {
                                     QString text = xml.readElementText();
-                                    if (text.length() == 0) xml_error("invalid (empty) group name");
-                                    if (new_group->name.length() > 0) return xml_error("multiple names for a group");
+                                    if (text.length() == 0) xmlError("invalid (empty) group name");
+                                    if (new_group->name.length() > 0) return xmlError("multiple names for a group");
                                     new_group->name = text;
                                 }
 
@@ -275,8 +241,8 @@ bool voxml::read_spvf(QString fname)
                                 if (xml.name() == "key")
                                 {
                                     QString text = xml.readElementText();
-                                    if (text.length() > 1) xml_error("invalid key for group");
-                                    if (new_group->key > nullptr) return xml_error("multiple keys for a group");
+                                    if (text.length() > 1) xmlError("invalid key for group");
+                                    if (new_group->key > nullptr) return xmlError("multiple keys for a group");
                                     QByteArray b = text.toUpper().toLatin1();
                                     new_group->key = QChar(b.at(0));
                                 }
@@ -285,28 +251,28 @@ bool voxml::read_spvf(QString fname)
                                 {
                                     QString text = xml.readElementText();
                                     int i = text.toInt(&flag);
-                                    if (!flag || i > 1 || i < 0) return xml_error("invalid visible (should be 1 or 0): " + text);
+                                    if (!flag || i > 1 || i < 0) return xmlError("invalid visible (should be 1 or 0): " + text);
                                     new_group->visible = i;
                                 }
 
                                 if (xml.name() == "ingroup")
                                 {
                                     QString text = xml.readElementText();
-                                    if (text.length() == 0) xml_error("invalid (empty) group name");
-                                    if (new_group->ingroup.length() > 0) return xml_error("multiple ingroup entries for a group");
+                                    if (text.length() == 0) xmlError("invalid (empty) group name");
+                                    if (new_group->ingroup.length() > 0) return xmlError("multiple ingroup entries for a group");
                                     new_group->ingroup = text;
                                 }
                                 if (xml.name() == "position")
                                 {
                                     QString text = xml.readElementText();
                                     int t = text.toInt(&flag);
-                                    if (!flag) return xml_error("error in position for group");
+                                    if (!flag) return xmlError("error in position for group");
                                     new_group->position = t;
                                 }
                             };
 
                         }
-                        else return xml_error("invalid element in <groups> section: " + xml.name().toString());
+                        else return xmlError("invalid element in <groups> section: " + xml.name().toString());
 
                     };
                 }
@@ -317,7 +283,7 @@ bool voxml::read_spvf(QString fname)
                         if (xml.name() == "object")
                         {
                             //create the object
-                            voxml_object *new_obj = new (voxml_object);
+                            VAXMLObject *new_obj = new (VAXMLObject);
                             objects.append(new_obj);
 
                             while (xml.readNextStartElement())
@@ -331,8 +297,8 @@ bool voxml::read_spvf(QString fname)
                                         {
                                             QString text = xml.readElementText();
                                             float i = text.toFloat(&flag);
-                                            if (!flag) return xml_error("invalid transparency: " + text);
-                                            if (i < 0 || i > 1) return xml_error("invalid transparency: " + text);
+                                            if (!flag) return xmlError("invalid transparency: " + text);
+                                            if (i < 0 || i > 1) return xmlError("invalid transparency: " + text);
                                             new_obj->transparency = i;
                                         }
 
@@ -344,8 +310,8 @@ bool voxml::read_spvf(QString fname)
                                                 {
                                                     QString text = xml.readElementText();
                                                     int i = text.toInt(&flag);
-                                                    if (!flag) return xml_error("invalid red colour: " + text);
-                                                    if (i < 0 || i > 255) return xml_error("invalid red colour: " + text);
+                                                    if (!flag) return xmlError("invalid red colour: " + text);
+                                                    if (i < 0 || i > 255) return xmlError("invalid red colour: " + text);
                                                     new_obj->red = i;
                                                 }
 
@@ -353,8 +319,8 @@ bool voxml::read_spvf(QString fname)
                                                 {
                                                     QString text = xml.readElementText();
                                                     int i = text.toInt(&flag);
-                                                    if (!flag) return xml_error("invalid green colour: " + text);
-                                                    if (i < 0 || i > 255) return xml_error("invalid green colour: " + text);
+                                                    if (!flag) return xmlError("invalid green colour: " + text);
+                                                    if (i < 0 || i > 255) return xmlError("invalid green colour: " + text);
                                                     new_obj->green = i;
                                                 }
 
@@ -362,8 +328,8 @@ bool voxml::read_spvf(QString fname)
                                                 {
                                                     QString text = xml.readElementText();
                                                     int i = text.toInt(&flag);
-                                                    if (!flag) return xml_error("invalid blule colour: " + text);
-                                                    if (i < 0 || i > 255) return xml_error("invalid blue colour: " + text);
+                                                    if (!flag) return xmlError("invalid blule colour: " + text);
+                                                    if (i < 0 || i > 255) return xmlError("invalid blue colour: " + text);
                                                     new_obj->blue = i;
                                                 }
                                             };
@@ -374,24 +340,24 @@ bool voxml::read_spvf(QString fname)
                                 if (xml.name() == "file")
                                 {
                                     QString text = xml.readElementText();
-                                    if (text.length() == 0) xml_error("invalid (empty) object file");
-                                    if (new_obj->file.length() > 0) return xml_error("multiple files for an object");
+                                    if (text.length() == 0) xmlError("invalid (empty) object file");
+                                    if (new_obj->file.length() > 0) return xmlError("multiple files for an object");
                                     new_obj->file = text;
                                 }
 
                                 if (xml.name() == "url") //will ignore in practice
                                 {
                                     QString text = xml.readElementText();
-                                    if (text.length() == 0) xml_error("invalid (empty) object URL");
-                                    if (new_obj->url.length() > 0) return xml_error("multiple URLs for an object");
+                                    if (text.length() == 0) xmlError("invalid (empty) object URL");
+                                    if (new_obj->url.length() > 0) return xmlError("multiple URLs for an object");
                                     new_obj->url = text;
                                 }
 
                                 if (xml.name() == "name")
                                 {
                                     QString text = xml.readElementText();
-                                    if (text.length() == 0) xml_error("invalid (empty) object name");
-                                    if (new_obj->name != "[Unnamed object]") return xml_error("multiple names for an object");
+                                    if (text.length() == 0) xmlError("invalid (empty) object name");
+                                    if (new_obj->name != "[Unnamed object]") return xmlError("multiple names for an object");
                                     new_obj->name = text;
 
                                 }
@@ -399,8 +365,8 @@ bool voxml::read_spvf(QString fname)
                                 if (xml.name() == "key")
                                 {
                                     QString text = xml.readElementText();
-                                    if (text.length() > 1) xml_error("invalid key for object");
-                                    if (new_obj->key > nullptr) return xml_error("multiple keys for a object");
+                                    if (text.length() > 1) xmlError("invalid key for object");
+                                    if (new_obj->key > nullptr) return xmlError("multiple keys for a object");
                                     QByteArray b = text.toUpper().toLatin1();
                                     new_obj->key = QChar(b.at(0));
                                 }
@@ -409,15 +375,15 @@ bool voxml::read_spvf(QString fname)
                                 {
                                     QString text = xml.readElementText();
                                     int i = text.toInt(&flag);
-                                    if (!flag || i > 1 || i < 0) return xml_error("invalid visible (should be 1 or 0): " + text);
+                                    if (!flag || i > 1 || i < 0) return xmlError("invalid visible (should be 1 or 0): " + text);
                                     new_obj->visible = i;
                                 }
 
                                 if (xml.name() == "ingroup")
                                 {
                                     QString text = xml.readElementText();
-                                    if (text.length() == 0) xml_error("invalid (empty) group name");
-                                    if (new_obj->ingroup.length() > 0) return xml_error("multiple ingroup entries for an object");
+                                    if (text.length() == 0) xmlError("invalid (empty) group name");
+                                    if (new_obj->ingroup.length() > 0) return xmlError("multiple ingroup entries for an object");
                                     new_obj->ingroup = text;
                                 }
 
@@ -425,7 +391,7 @@ bool voxml::read_spvf(QString fname)
                                 {
                                     QString text = xml.readElementText();
                                     int t = text.toInt(&flag);
-                                    if (!flag) return xml_error("error in position for object");
+                                    if (!flag) return xmlError("error in position for object");
                                     new_obj->position = t;
                                 }
 
@@ -437,10 +403,10 @@ bool voxml::read_spvf(QString fname)
                                         QTextStream t(&n);
                                         t << "m" << i;
                                         xml.readNextStartElement();
-                                        if (xml.name() != n) return xml_error("error in object matrix item: " + n );
+                                        if (xml.name() != n) return xmlError("error in object matrix item: " + n );
                                         QString text = xml.readElementText();
                                         float v = text.toFloat(&flag);
-                                        if (!flag) return xml_error("error in object matrix item: " + n );
+                                        if (!flag) return xmlError("error in object matrix item: " + n );
                                         new_obj->matrix[i] = v;
                                     }
                                     xml.skipCurrentElement(); //required to skip to end of matrix
@@ -450,7 +416,7 @@ bool voxml::read_spvf(QString fname)
                         }
                     };
                 }
-                //else return xml_error("invalid element in <objects> section: " + xml.name().toString());
+                //else return xmlError("invalid element in <objects> section: " + xml.name().toString());
             };
         }
     }
@@ -533,15 +499,14 @@ bool voxml::read_spvf(QString fname)
         //Do actual reading
 
 
-        //done - code from here on is as in normal voxml reader
+        //done - code from here on is as in normal VAXML reader
 
         PolyData.append(pd);
         f += (100.0 / objects.count());
-        //MainWin->setSpecificProgress((int)f);
-        MainWin->setSpecificProgress((int)(f / 2.0));
+        MainWin->setSpecificProgress(static_cast<int>(f / static_cast<float>(2.0)));
         qApp->processEvents();
     }
-    voxml_mode = true;
+    vaxml_mode = true;
     //qDebug()<<"H6";
 
     //All OK - create the local objects
@@ -575,7 +540,7 @@ bool voxml::read_spvf(QString fname)
     for (int i = 0; i < groups.count(); i++)
     {
         SVObject *svo = spv->ComponentObjects[i];
-        svo->InGroup = find_group_from_name(spv, groups[i]->ingroup); //works for empty ingroup - will miss all and return -1
+        svo->InGroup = findGroupFromName(spv, groups[i]->ingroup); //works for empty ingroup - will miss all and return -1
     }
 
     int firstrealobj = groups.count();
@@ -593,11 +558,11 @@ bool voxml::read_spvf(QString fname)
         svo->Name = objects[i]->name;
         if (objects[i]->position != -1) svo->Position = objects[i]->position;
         svo->Key = objects[i]->key;
-        svo->InGroup = find_group_from_name(spv, objects[i]->ingroup); //works for empty ingroup - will miss all and return -1
-        svo->Colour[0] = objects[i]->red;
-        svo->Colour[1] = objects[i]->green;
-        svo->Colour[2] = objects[i]->blue;
-        svo->Transparency = conv_trans(objects[i]->transparency);
+        svo->InGroup = findGroupFromName(spv, objects[i]->ingroup); //works for empty ingroup - will miss all and return -1
+        svo->Colour[0] = static_cast<uchar>(objects[i]->red);
+        svo->Colour[1] = static_cast<uchar>(objects[i]->green);
+        svo->Colour[2] = static_cast<uchar>(objects[i]->blue);
+        svo->Transparency = convTrans(objects[i]->transparency);
         for (int j = 0; j < 16; j++) svo->matrix[j] = objects[i]->matrix[j];
         svo->spv = spv;
         svo->pd = PolyData[i];
@@ -610,23 +575,21 @@ bool voxml::read_spvf(QString fname)
         svo->MakeDlists();
         MainWin->UpdateGL();
         f += (100.0 / objects.count());
-        MainWin->ui->ProgBarOverall->setValue(50 + (int)(f / 2.0));
+        MainWin->ui->ProgBarOverall->setValue(50 + static_cast<int>(f / static_cast<float>(2.0)));
     }
 
     return true;
-
-
 }
 
 /**
- * @brief voxml::read_voxml
+ * @brief VAXML::readVAXML
  * @param fname
  * @return
  */
-bool voxml::read_voxml(QString fname)
+bool VAXML::readVAXML(QString fname)
 {
 
-    qDebug() << "Here";
+    //qDebug() << "Here";
     QByteArray shasharray;
 
     //open the file
@@ -640,7 +603,6 @@ bool voxml::read_voxml(QString fname)
         QMessageBox::information(nullptr, "test", "Error - could not open file VAXML file");
         return false;
     }
-
 
     //setup XML reader
     QXmlStreamReader xml;
@@ -659,40 +621,20 @@ bool voxml::read_voxml(QString fname)
                 {
                     while (xml.readNextStartElement())
                     {
-
-                        //qDebug()<<xml.name();
-                        /*                             if (xml.name() == "matrix")
-                                                     {
-                                                         for (int i=0; i<16; i++)
-                                                         {
-                                                             QString n;
-                                                             QTextStream t(&n);
-                                                             t<<"m"<<i;
-                                                             xml.readNextStartElement();
-                        //                                     qDebug()<<xml.name()<<n;
-                                                             if (xml.name()!=n) return xml_error("error in header matrix item: " + n );
-                                                             QString text = xml.readElementText();
-                                                             float v=text.toFloat(&flag);
-                                                             if (!flag) return xml_error("error in header matrix item: " + n );
-                                                             matrix[i]=v;
-                                                         }
-                                                         xml.skipCurrentElement(); //required to skip to end of matrix
-                                                     }
-                        */
                         if (xml.name() == "version")
                         {
                             QString text = xml.readElementText();
                             int i = text.toInt(&flag);
-                            if (!flag) return xml_error("invalid version: " + text);
-                            //if (version>0) return xml_error("multiple version tags");
+                            if (!flag) return xmlError("invalid version: " + text);
+                            //if (version>0) return xmlError("multiple version tags");
                             version = i;
                         }
 
                         if (xml.name() == "title")
                         {
                             QString text = xml.readElementText();
-                            if (text.length() == 0) xml_error("invalid (empty) title");
-                            if (title.length() > 0) return xml_error("multiple title tags");
+                            if (text.length() == 0) xmlError("invalid (empty) title");
+                            if (title.length() > 0) return xmlError("multiple title tags");
                             title = text;
                             i_title.clear();
                             i_title.append(title);
@@ -702,7 +644,7 @@ bool voxml::read_voxml(QString fname)
                         {
                             QString text = xml.readElementText();
                             float i = text.toFloat(&flag);
-                            if (!flag) return xml_error("invalid scale: " + text);
+                            if (!flag) return xmlError("invalid scale: " + text);
                             scale = i;
                         }
 
@@ -751,8 +693,8 @@ bool voxml::read_voxml(QString fname)
                                     nam = xml.readElementText(QXmlStreamReader::IncludeChildElements);
                                 }
                             };
-                            if (nam == "" && rank == "")  return xml_error("invalid classification (no rank or name)");
-                            if (nam == "")  return xml_error("invalid classification (no name)");
+                            if (nam == "" && rank == "")  return xmlError("invalid classification (no rank or name)");
+                            if (nam == "")  return xmlError("invalid classification (no name)");
                             if (rank == "") rank = "Unspecified";
                             classification_rank.append(rank);
                             classification_name.append(nam);
@@ -778,7 +720,7 @@ bool voxml::read_voxml(QString fname)
                         if (xml.name() == "group")
                         {
                             //create the group
-                            voxml_group *new_group = new (voxml_group);
+                            VAXMLGroup *new_group = new (VAXMLGroup);
                             groups.append(new_group);
 
                             while (xml.readNextStartElement())
@@ -786,8 +728,14 @@ bool voxml::read_voxml(QString fname)
                                 if (xml.name() == "name")
                                 {
                                     QString text = xml.readElementText();
-                                    if (text.length() == 0) xml_error("invalid (empty) group name");
-                                    if (new_group->name.length() > 0) return xml_error("multiple names for a group");
+                                    if (text.length() == 0)
+                                    {
+                                        xmlError("invalid (empty) group name");
+                                    }
+                                    if (new_group->name.length() > 0)
+                                    {
+                                        return xmlError("multiple names for a group");
+                                    }
                                     new_group->name = text;
                                 }
 
@@ -795,8 +743,14 @@ bool voxml::read_voxml(QString fname)
                                 if (xml.name() == "key")
                                 {
                                     QString text = xml.readElementText();
-                                    if (text.length() > 1) xml_error("invalid key for group");
-                                    if (new_group->key > 0) return xml_error("multiple keys for a group");
+                                    if (text.length() > 1)
+                                    {
+                                        xmlError("invalid key for group");
+                                    }
+                                    if (new_group->key > nullptr)
+                                    {
+                                        return xmlError("multiple keys for a group");
+                                    }
                                     QByteArray b = text.toUpper().toLatin1();
                                     new_group->key = QChar(b.at(0));
                                 }
@@ -805,28 +759,28 @@ bool voxml::read_voxml(QString fname)
                                 {
                                     QString text = xml.readElementText();
                                     int i = text.toInt(&flag);
-                                    if (!flag || i > 1 || i < 0) return xml_error("invalid visible (should be 1 or 0): " + text);
+                                    if (!flag || i > 1 || i < 0) return xmlError("invalid visible (should be 1 or 0): " + text);
                                     new_group->visible = i;
                                 }
 
                                 if (xml.name() == "ingroup")
                                 {
                                     QString text = xml.readElementText();
-                                    if (text.length() == 0) xml_error("invalid (empty) group name");
-                                    if (new_group->ingroup.length() > 0) return xml_error("multiple ingroup entries for a group");
+                                    if (text.length() == 0) xmlError("invalid (empty) group name");
+                                    if (new_group->ingroup.length() > 0) return xmlError("multiple ingroup entries for a group");
                                     new_group->ingroup = text;
                                 }
                                 if (xml.name() == "position")
                                 {
                                     QString text = xml.readElementText();
                                     int t = text.toInt(&flag);
-                                    if (!flag) return xml_error("error in position for group");
+                                    if (!flag) return xmlError("error in position for group");
                                     new_group->position = t;
                                 }
                             };
 
                         }
-                        else return xml_error("invalid element in <groups> section: " + xml.name().toString());
+                        else return xmlError("invalid element in <groups> section: " + xml.name().toString());
 
                     };
                 }
@@ -837,7 +791,7 @@ bool voxml::read_voxml(QString fname)
                         if (xml.name() == "object")
                         {
                             //create the object
-                            voxml_object *new_obj = new (voxml_object);
+                            VAXMLObject *new_obj = new (VAXMLObject);
                             objects.append(new_obj);
 
                             while (xml.readNextStartElement())
@@ -851,8 +805,8 @@ bool voxml::read_voxml(QString fname)
                                         {
                                             QString text = xml.readElementText();
                                             float i = text.toFloat(&flag);
-                                            if (!flag) return xml_error("invalid transparency: " + text);
-                                            if (i < 0 || i > 1) return xml_error("invalid transparency: " + text);
+                                            if (!flag) return xmlError("invalid transparency: " + text);
+                                            if (i < 0 || i > 1) return xmlError("invalid transparency: " + text);
                                             new_obj->transparency = i;
                                         }
 
@@ -864,8 +818,8 @@ bool voxml::read_voxml(QString fname)
                                                 {
                                                     QString text = xml.readElementText();
                                                     int i = text.toInt(&flag);
-                                                    if (!flag) return xml_error("invalid red colour: " + text);
-                                                    if (i < 0 || i > 255) return xml_error("invalid red colour: " + text);
+                                                    if (!flag) return xmlError("invalid red colour: " + text);
+                                                    if (i < 0 || i > 255) return xmlError("invalid red colour: " + text);
                                                     new_obj->red = i;
                                                 }
 
@@ -873,8 +827,8 @@ bool voxml::read_voxml(QString fname)
                                                 {
                                                     QString text = xml.readElementText();
                                                     int i = text.toInt(&flag);
-                                                    if (!flag) return xml_error("invalid green colour: " + text);
-                                                    if (i < 0 || i > 255) return xml_error("invalid green colour: " + text);
+                                                    if (!flag) return xmlError("invalid green colour: " + text);
+                                                    if (i < 0 || i > 255) return xmlError("invalid green colour: " + text);
                                                     new_obj->green = i;
                                                 }
 
@@ -882,8 +836,8 @@ bool voxml::read_voxml(QString fname)
                                                 {
                                                     QString text = xml.readElementText();
                                                     int i = text.toInt(&flag);
-                                                    if (!flag) return xml_error("invalid blule colour: " + text);
-                                                    if (i < 0 || i > 255) return xml_error("invalid blue colour: " + text);
+                                                    if (!flag) return xmlError("invalid blule colour: " + text);
+                                                    if (i < 0 || i > 255) return xmlError("invalid blue colour: " + text);
                                                     new_obj->blue = i;
                                                 }
                                             };
@@ -894,24 +848,24 @@ bool voxml::read_voxml(QString fname)
                                 if (xml.name() == "file")
                                 {
                                     QString text = xml.readElementText();
-                                    if (text.length() == 0) xml_error("invalid (empty) object file");
-                                    if (new_obj->file.length() > 0) return xml_error("multiple files for an object");
+                                    if (text.length() == 0) xmlError("invalid (empty) object file");
+                                    if (new_obj->file.length() > 0) return xmlError("multiple files for an object");
                                     new_obj->file = text;
                                 }
 
                                 if (xml.name() == "url")
                                 {
                                     QString text = xml.readElementText();
-                                    if (text.length() == 0) xml_error("invalid (empty) object URL");
-                                    if (new_obj->url.length() > 0) return xml_error("multiple URLs for an object");
+                                    if (text.length() == 0) xmlError("invalid (empty) object URL");
+                                    if (new_obj->url.length() > 0) return xmlError("multiple URLs for an object");
                                     new_obj->url = text;
                                 }
 
                                 if (xml.name() == "name")
                                 {
                                     QString text = xml.readElementText();
-                                    if (text.length() == 0) xml_error("invalid (empty) object name");
-                                    if (new_obj->name != "[Unnamed object]") return xml_error("multiple names for an object");
+                                    if (text.length() == 0) xmlError("invalid (empty) object name");
+                                    if (new_obj->name != "[Unnamed object]") return xmlError("multiple names for an object");
                                     new_obj->name = text;
 
                                 }
@@ -919,8 +873,8 @@ bool voxml::read_voxml(QString fname)
                                 if (xml.name() == "key")
                                 {
                                     QString text = xml.readElementText();
-                                    if (text.length() > 1) xml_error("invalid key for object");
-                                    if (new_obj->key > 0) return xml_error("multiple keys for a object");
+                                    if (text.length() > 1) xmlError("invalid key for object");
+                                    if (new_obj->key > nullptr) return xmlError("multiple keys for a object");
                                     QByteArray b = text.toUpper().toLatin1();
                                     new_obj->key = QChar(b.at(0));
                                 }
@@ -929,15 +883,15 @@ bool voxml::read_voxml(QString fname)
                                 {
                                     QString text = xml.readElementText();
                                     int i = text.toInt(&flag);
-                                    if (!flag || i > 1 || i < 0) return xml_error("invalid visible (should be 1 or 0): " + text);
+                                    if (!flag || i > 1 || i < 0) return xmlError("invalid visible (should be 1 or 0): " + text);
                                     new_obj->visible = i;
                                 }
 
                                 if (xml.name() == "ingroup")
                                 {
                                     QString text = xml.readElementText();
-                                    if (text.length() == 0) xml_error("invalid (empty) group name");
-                                    if (new_obj->ingroup.length() > 0) return xml_error("multiple ingroup entries for an object");
+                                    if (text.length() == 0) xmlError("invalid (empty) group name");
+                                    if (new_obj->ingroup.length() > 0) return xmlError("multiple ingroup entries for an object");
                                     new_obj->ingroup = text;
                                 }
 
@@ -945,7 +899,7 @@ bool voxml::read_voxml(QString fname)
                                 {
                                     QString text = xml.readElementText();
                                     int t = text.toInt(&flag);
-                                    if (!flag) return xml_error("error in position for object");
+                                    if (!flag) return xmlError("error in position for object");
                                     new_obj->position = t;
                                 }
 
@@ -957,10 +911,10 @@ bool voxml::read_voxml(QString fname)
                                         QTextStream t(&n);
                                         t << "m" << i;
                                         xml.readNextStartElement();
-                                        if (xml.name() != n) return xml_error("error in object matrix item: " + n );
+                                        if (xml.name() != n) return xmlError("error in object matrix item: " + n );
                                         QString text = xml.readElementText();
                                         float v = text.toFloat(&flag);
-                                        if (!flag) return xml_error("error in object matrix item: " + n );
+                                        if (!flag) return xmlError("error in object matrix item: " + n );
                                         new_obj->matrix[i] = v;
                                     }
                                     xml.skipCurrentElement(); //required to skip to end of matrix
@@ -970,7 +924,7 @@ bool voxml::read_voxml(QString fname)
                         }
                     };
                 }
-                else return xml_error("invalid element in <objects> section: " + xml.name().toString());
+                else return xmlError("invalid element in <objects> section: " + xml.name().toString());
             };
         }
     }
@@ -978,48 +932,49 @@ bool voxml::read_voxml(QString fname)
     //qDebug()<<"Past";
     //some more error checking
     //1. Do all groups referred to by ingroup exist?
-//    qDebug()<<"Groups"<<groups.count();
-    foreach (voxml_group *g, groups)
+    //qDebug()<<"Groups"<<groups.count();
+    foreach (VAXMLGroup *g, groups)
     {
         if (g->ingroup != "") //if it's in a group
         {
             bool flag = false;
-            foreach (voxml_group *g2, groups)
+            foreach (VAXMLGroup *g2, groups)
             {
                 if (g->ingroup == g2->name && g2 != g) flag = true;
             }
-            if (flag == false) return xml_error("missing group name: " + g->ingroup);
+            if (flag == false) return xmlError("missing group name: " + g->ingroup);
         }
     }
 
-    foreach (voxml_object *o, objects)
+    foreach (VAXMLObject *o, objects)
     {
         if (o->ingroup != "") //if it's in a group
         {
             bool flag = false;
-            foreach (voxml_group *g2, groups)
+            foreach (VAXMLGroup *g2, groups)
             {
                 if (o->ingroup == g2->name) flag = true;
             }
-            if (flag == false) return xml_error("missing group name: " + o->ingroup);
+            if (flag == false) return xmlError("missing group name: " + o->ingroup);
         }
     }
 
     //2. Do all groups have unique names?
-    foreach (voxml_group *g, groups)
+    foreach (VAXMLGroup *g, groups)
     {
-        foreach (voxml_group *g2, groups)
+        foreach (VAXMLGroup *g2, groups)
         {
-            if (g->name == g2->name && g2 != g) return xml_error("repeated group name: " + g->name);
+            if (g->name == g2->name && g2 != g) return xmlError("repeated group name: " + g->name);
         }
     }
 
     //3. Do all files exist?
-    foreach (voxml_object *o, objects)
+    foreach (VAXMLObject *o, objects)
     {
+        Q_UNUSED(o)
     }
 
-    //Got and checked voxml stuff - now try and load the STL/PLYs and set everything up!
+    //Got and checked VAXML stuff - now try and load the STL/PLYs and set everything up!
 
     //Now attempt to read all the STL/PLYs.
     QList <vtkPolyData *> PolyData;
@@ -1028,14 +983,14 @@ bool voxml::read_voxml(QString fname)
     qApp->processEvents();
 
     float f = 0.0;
-    foreach (voxml_object *o, objects)
+    foreach (VAXMLObject *o, objects)
     {
 
         QFile file(fpath + "/" + o->file);
         if (!(file.exists()))
         {
             if (o->url.length() == 0)
-                return xml_error("referenced file '" + file.fileName() + "' does not exist.");
+                return xmlError("referenced file '" + file.fileName() + "' does not exist.");
             else
             {
                 //File not there - let's download it!
@@ -1054,7 +1009,7 @@ bool voxml::read_voxml(QString fname)
                     qApp->processEvents();
                 }
                 while (n.DownloadDone == false && n.DownloadError == false);
-                if (n.DownloadError) return xml_error("Problem downloading referenced file '" + file.fileName() + "' from URL " + o->url);
+                if (n.DownloadError) return xmlError("Problem downloading referenced file '" + file.fileName() + "' from URL " + o->url);
             }
 
         }
@@ -1074,14 +1029,14 @@ bool voxml::read_voxml(QString fname)
             pd = reader->GetOutput();
             PolyData.append(pd);
             f += (100.0 / objects.count());
-            MainWin->ui->ProgBarOverall->setValue((int)(f / 2.0));
+            MainWin->ui->ProgBarOverall->setValue(static_cast<int>(f / static_cast<float>(2.0)));
             qApp->processEvents();
 
             //now add some bytes from the STL to the hash - pick 50 bytes scattered through file.
             QFile stlfile((fpath + "/" + o->file).toLatin1());
             QFileInfo stlfi((fpath + "/" + o->file).toLatin1());
             stlfile.open(QIODevice::ReadOnly);
-            int inc = stlfi.size() / 50;
+            int inc = static_cast<int>(stlfi.size()) / 50;
             for (int i = 1; i < 50; i++)
             {
                 stlfile.seek(i * inc);
@@ -1101,14 +1056,14 @@ bool voxml::read_voxml(QString fname)
             pd = reader->GetOutput();
             PolyData.append(pd);
             f += (100.0 / objects.count());
-            MainWin->ui->ProgBarOverall->setValue((int)(f / 2.0));
+            MainWin->ui->ProgBarOverall->setValue(static_cast<int>(f / static_cast<float>(2.0)));
             qApp->processEvents();
 
             //now add some bytes from the PLY to the hash - pick 50 bytes scattered through file.
             QFile plyfile((fpath + "/" + o->file).toLatin1());
             QFileInfo plyfi((fpath + "/" + o->file).toLatin1());
             plyfile.open(QIODevice::ReadOnly);
-            int inc = plyfi.size() / 50;
+            int inc = static_cast<int>(plyfi.size()) / 50;
             for (int i = 1; i < 50; i++)
             {
                 plyfile.seek(i * inc);
@@ -1118,12 +1073,10 @@ bool voxml::read_voxml(QString fname)
             }
 
         }
-        else xml_error("File '" + file.fileName() + "' is not STL or PLY format");
-
+        else xmlError("File '" + file.fileName() + "' is not STL or PLY format");
     }
 
-
-    voxml_mode = true;
+    vaxml_mode = true;
 
     //All OK - create the local objects
     //Create a 'dummy' spv
@@ -1149,7 +1102,6 @@ bool voxml::read_voxml(QString fname)
 
     mm_per_unit = scale;
 
-
     for (int i = 0; i < groups.count(); i++)
     {
         SVObject *svo = new SVObject(i);
@@ -1161,11 +1113,12 @@ bool voxml::read_voxml(QString fname)
         if (groups[i]->position != -1) svo->Position = groups[i]->position;
         svo->Key = groups[i]->key;
     }
+
     //second pass to set up ingroups
     for (int i = 0; i < groups.count(); i++)
     {
         SVObject *svo = spv->ComponentObjects[i];
-        svo->InGroup = find_group_from_name(spv, groups[i]->ingroup); //works for empty ingroup - will miss all and return -1
+        svo->InGroup = findGroupFromName(spv, groups[i]->ingroup); //works for empty ingroup - will miss all and return -1
     }
 
     int firstrealobj = groups.count();
@@ -1183,11 +1136,11 @@ bool voxml::read_voxml(QString fname)
         svo->Name = objects[i]->name;
         if (objects[i]->position != -1) svo->Position = objects[i]->position;
         svo->Key = objects[i]->key;
-        svo->InGroup = find_group_from_name(spv, objects[i]->ingroup); //works for empty ingroup - will miss all and return -1
-        svo->Colour[0] = objects[i]->red;
-        svo->Colour[1] = objects[i]->green;
-        svo->Colour[2] = objects[i]->blue;
-        svo->Transparency = conv_trans(objects[i]->transparency);
+        svo->InGroup = findGroupFromName(spv, objects[i]->ingroup); //works for empty ingroup - will miss all and return -1
+        svo->Colour[0] = static_cast<uchar>(objects[i]->red);
+        svo->Colour[1] = static_cast<uchar>(objects[i]->green);
+        svo->Colour[2] = static_cast<uchar>(objects[i]->blue);
+        svo->Transparency = convTrans(objects[i]->transparency);
         for (int j = 0; j < 16; j++) svo->matrix[j] = objects[i]->matrix[j];
         svo->spv = spv;
         svo->pd = PolyData[i];
@@ -1202,7 +1155,7 @@ bool voxml::read_voxml(QString fname)
         svo->MakeDlists();
         MainWin->UpdateGL();
         f += (100.0 / objects.count());
-        MainWin->ui->ProgBarOverall->setValue(50 + (int)(f / 2.0));
+        MainWin->ui->ProgBarOverall->setValue(50 + static_cast<int>(f / static_cast<float>(2.0)));
     }
 
     //qDebug()<<"Final ` box is "<<minx<<maxx<<miny<<maxy<<minz<<maxz;
@@ -1211,131 +1164,33 @@ bool voxml::read_voxml(QString fname)
 
     globalmatrix.setToIdentity();
 
-
-
     //work out rescale
     qreal rescale = 1;
     float biggestsize = qMax(maxx - minx, qMax(maxy - miny, maxz - minz));
-    if (biggestsize > 3 || biggestsize < 1 ) rescale = 3 / ((qreal)(biggestsize));
+    if (biggestsize > 3 || biggestsize < 1 ) rescale = 3 / (static_cast<qreal>(biggestsize));
 
 
     //work out translate
-    float midx = rescale * (maxx + minx) / 2;
-    float midy = rescale * (maxy + miny) / 2;
-    float midz = rescale * (maxz + minz) / 2;
+    float midx = static_cast<float>(static_cast<float>(rescale) * (maxx + minx) / 2);
+    float midy = static_cast<float>(static_cast<float>(rescale) * (maxy + miny) / 2);
+    float midz = static_cast<float>(static_cast<float>(rescale) * (maxz + minz) / 2);
 
-    globalmatrix.translate(0 - midx, 0 - midy, 0.3 - midz);
-    globalmatrix.scale(rescale);
-    globalrescale = rescale;
+    globalmatrix.translate(0 - midx, 0 - midy, static_cast<float>(0.3) - midz);
+    globalmatrix.scale(static_cast<float>(rescale));
+    globalrescale = static_cast<float>(rescale);
+
     //In theory now have a transform matrix to apply to EVERYTHING
-
     //qDebug()<<"Global matrix is "<<globalmatrix;
     return true;
 }
 
 /**
- * @brief voxml::conv_trans
- * @param t
- * @return
- */
-int voxml::conv_trans(float t)
-// do an approx convert from float trans to SPIERSview's 0-4 codes
-{
-    //
-    t = 1 - t;
-    if (t > .9) return 0;
-    if (t > .5) return 1;
-    if (t > .3) return 2;
-    if (t > .1) return 3;
-    return 4;
-}
-
-/**
- * @brief voxml::conv_trans_export
- * @param t
- * @return
- */
-float voxml::conv_trans_export(int t)
-{
-    //do it the other way
-    if (t == 1) return .3;
-    if (t == 2) return .6;
-    if (t == 3) return .8;
-    if (t == 4) return .95;
-}
-
-/**
- * @brief voxml::find_group_from_name
- * @param spv
- * @param name
- * @return
- */
-int voxml::find_group_from_name(SPV *spv, QString name)
-{
-    for (int i = 0; i < spv->ComponentObjects.count(); i++)
-    {
-        if (spv->ComponentObjects[i]->Name == name) return i;
-    }
-    return -1;
-}
-
-/**
- * @brief voxml::xml_error
- * @param ErrorText
- * @return
- */
-bool voxml::xml_error(QString ErrorText)
-{
-    QMessageBox::critical(nullptr,
-                          "VAXML reader",
-                          "Error reading VAXML file: " + ErrorText,
-                          QMessageBox::Ok);
-    return false;
-}
-
-/**
- * @brief voxml::read_element
- * @param xml
- * @return
- */
-bool voxml::read_element(QXmlStreamReader *xml)
-{
-    if  (xml->hasError()) return false;
-
-    QXmlStreamReader::TokenType token;
-    do
-    {
-        token = xml->readNext();
-    }
-    while (token == QXmlStreamReader::StartDocument);
-
-    if  (xml->hasError()) return false;
-
-    return true;
-}
-
-/**
- * @brief voxml::encode
- * @param text
- * @return
- */
-QString voxml::encode(QString text)
-{
-    text = text.replace(QChar('&'), "&amp;");
-    text = text.replace(QChar(39), "&apos;");
-    text = text.replace(QChar(34), "&quot;");
-    text = text.replace(QChar('<'), "&lt;");
-    text = text.replace(QChar('>'), "&gt;");
-    return text;
-}
-
-/**
- * @brief voxml::write_voxml
+ * @brief VAXML::writeVAXML
  * @param fname
  * @param mode
  * @return
  */
-bool voxml::write_voxml(QString fname, bool mode) //mode true means this is part of finalilsed mode
+bool VAXML::writeVAXML(QString fname, bool mode) //mode true means this is part of finalilsed mode
 {
 
     file.setFileName(fname);
@@ -1356,11 +1211,11 @@ bool voxml::write_voxml(QString fname, bool mode) //mode true means this is part
             {
                 if (o->Name == o2->Name && o2 != o && o2->IsGroup)
                 {
-                    if (mode == true) QMessageBox::critical(0,
+                    if (mode == true) QMessageBox::critical(nullptr,
                                                                 "SPV save",
                                                                 "Finalised mode requires that all groups have unique names: please fix your group names before saving",
                                                                 QMessageBox::Ok);
-                    else QMessageBox::critical(0,
+                    else QMessageBox::critical(nullptr,
                                                    "VAXML writer",
                                                    "VAXML requires that all groups have unique names: please fix your group names before exporting",
                                                    QMessageBox::Ok);
@@ -1375,18 +1230,17 @@ bool voxml::write_voxml(QString fname, bool mode) //mode true means this is part
     {
         if (o->Name.length() < 1)
         {
-            if (mode == true) QMessageBox::critical(0,
+            if (mode == true) QMessageBox::critical(nullptr,
                                                         "SPV save",
                                                         "Finalised mode requires that all objects and groups have names: please name all items before saving",
                                                         QMessageBox::Ok);
-            else QMessageBox::critical(0,
+            else QMessageBox::critical(nullptr,
                                            "VAXML writer",
                                            "VAXML requires that all objects and groups have names: please name all items before exporting",
                                            QMessageBox::Ok);
             return false;
         }
     }
-
 
     QString outstring;
 
@@ -1422,7 +1276,7 @@ bool voxml::write_voxml(QString fname, bool mode) //mode true means this is part
         {
             out << "<group>\n";
             out << "<name>" << encode(o->Name) << "</name>\n";
-            if (o->Key != 0) out << "<key>" << o->Key << "</key>\n";
+            if (o->Key != nullptr) out << "<key>" << o->Key << "</key>\n";
             if (o->Visible) out << "<visible>1</visible>\n";
             else out << "<visible>0</visible>\n";
             if (o->InGroup != -1) out << "<ingroup>" + encode(SVObjects[o->Parent()]->Name) + "</ingroup>\n";
@@ -1440,7 +1294,7 @@ bool voxml::write_voxml(QString fname, bool mode) //mode true means this is part
         {
             out << "<object>\n";
             out << "<name>" << encode(o->Name) << "</name>\n";
-            if (o->Key != 0) out << "<key>" << o->Key << "</key>\n";
+            if (o->Key != nullptr) out << "<key>" << o->Key << "</key>\n";
             if (o->Visible) out << "<visible>1</visible>\n";
             else out << "<visible>0</visible>\n";
 
@@ -1465,14 +1319,13 @@ bool voxml::write_voxml(QString fname, bool mode) //mode true means this is part
 
             out << "<material>\n";
             out << "<colour>";
-            out << "<red>" << (int)(o->Colour[0]) << "</red>";
-            out << "<green>" << (int)(o->Colour[1]) << "</green>";
-            out << "<blue>" << (int)(o->Colour[2]) << "</blue>";
+            out << "<red>" << static_cast<int>(o->Colour[0]) << "</red>";
+            out << "<green>" << static_cast<int>(o->Colour[1]) << "</green>";
+            out << "<blue>" << static_cast<int>(o->Colour[2]) << "</blue>";
             out << "</colour>\n";
             if (o->Transparency != 0)
             {
-                float t = conv_trans_export(o->Transparency);
-                out << "<transparency>" << conv_trans_export(o->Transparency) << "</transparency>";
+                out << "<transparency>" << convTransExport(o->Transparency) << "</transparency>";
             }
             out << "</material>\n";
             out << "</object>\n";
@@ -1486,10 +1339,7 @@ bool voxml::write_voxml(QString fname, bool mode) //mode true means this is part
     {
         if (file.open(QIODevice::WriteOnly) == false)
         {
-            QMessageBox::critical(0,
-                                  "SPVF save",
-                                  "Cannot open SPVF file for writing. Perhaps it exists and is write protected?",
-                                  QMessageBox::Ok);
+            QMessageBox::critical(nullptr, "SPVF save", "Cannot open SPVF file for writing. Perhaps it exists and is write protected?", QMessageBox::Ok);
             return false;
         }
     }
@@ -1497,10 +1347,7 @@ bool voxml::write_voxml(QString fname, bool mode) //mode true means this is part
     {
         if (file.open(QIODevice::WriteOnly | QIODevice::Text) == false)
         {
-            QMessageBox::critical(0,
-                                  "VAXML writer",
-                                  "Cannot open VAXML file for writing. Perhaps it exists and is write protected?",
-                                  QMessageBox::Ok);
+            QMessageBox::critical(nullptr, "VAXML writer", "Cannot open VAXML file for writing. Perhaps it exists and is write protected?", QMessageBox::Ok);
             return false;
         }
     }
@@ -1520,4 +1367,97 @@ bool voxml::write_voxml(QString fname, bool mode) //mode true means this is part
     }
 
     return true;
+}
+
+/**
+ * @brief VAXML::convTrans
+ * @param t
+ * @return int
+ */
+int VAXML::convTrans(float t)
+// do an approx convert from float trans to SPIERSview's 0-4 codes
+{
+    //
+    t = 1 - t;
+    if (t > static_cast<float>(.9)) return 0;
+    if (t > static_cast<float>(.5)) return 1;
+    if (t > static_cast<float>(.3)) return 2;
+    if (t > static_cast<float>(.1)) return 3;
+    return 4;
+}
+
+/**
+ * @brief VAXML::convTransExport
+ * @param t
+ * @return float
+ */
+float VAXML::convTransExport(int t)
+{
+    //do it the other way
+    if (t == 1) return static_cast<float>(.3);
+    if (t == 2) return static_cast<float>(.6);
+    if (t == 3) return static_cast<float>(.8);
+    if (t == 4) return static_cast<float>(.95);
+}
+
+/**
+ * @brief VAXML::findGroupFromName
+ * @param spv
+ * @param name
+ * @return int
+ */
+int VAXML::findGroupFromName(SPV *spv, QString name)
+{
+    for (int i = 0; i < spv->ComponentObjects.count(); i++)
+    {
+        if (spv->ComponentObjects[i]->Name == name) return i;
+    }
+    return -1;
+}
+
+/**
+ * @brief VAXML::xmlError
+ * @param ErrorText
+ * @return
+ */
+bool VAXML::xmlError(QString ErrorText)
+{
+    QMessageBox::critical(nullptr, "VAXML reader", "Error reading VAXML file: " + ErrorText, QMessageBox::Ok);
+    return false;
+}
+
+/**
+ * @brief VAXML::readElement
+ * @param xml
+ * @return
+ */
+bool VAXML::readElement(QXmlStreamReader *xml)
+{
+    if  (xml->hasError()) return false;
+
+    QXmlStreamReader::TokenType token;
+    do
+    {
+        token = xml->readNext();
+    }
+    while (token == QXmlStreamReader::StartDocument);
+
+    if  (xml->hasError()) return false;
+
+    return true;
+}
+
+/**
+ * @brief VAXML::encode
+ * @param text
+ * @return
+ */
+QString VAXML::encode(QString text)
+{
+    text = text.replace(QChar('&'), "&amp;");
+    text = text.replace(QChar(39), "&apos;");
+    text = text.replace(QChar(34), "&quot;");
+    text = text.replace(QChar('<'), "&lt;");
+    text = text.replace(QChar('>'), "&gt;");
+    return text;
 }

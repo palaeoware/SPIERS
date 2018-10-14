@@ -6,7 +6,7 @@
 #include <QOpenGLBuffer>
 //#include <QOpenGLFormat>
 #include <QOpenGLFunctions>
-#include "SPIERSviewglobals.h"
+#include "globals.h"
 
 class GlWidget : public QOpenGLWidget
 {

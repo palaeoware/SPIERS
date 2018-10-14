@@ -1,7 +1,7 @@
 
 #include "gl3widget.h"
 #include "svobject.h"
-#include "SPIERSviewglobals.h"
+#include "globals.h"
 #include "spv.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -1082,7 +1082,7 @@ void GlWidget::Resize(float value)
 {
     qDebug() << "In resize ";
     /*
-        if (MainWin->ui->actionReposition_Scale_Ball->isChecked() || (voxml_mode && MainWin->ui->actionShow_Ball_2->isChecked()))
+        if (MainWin->ui->actionReposition_Scale_Ball->isChecked() || (vaxml_mode && MainWin->ui->actionShow_Ball_2->isChecked()))
        {
           QMatrix4x4 rotmatrix;
           rotmatrix.setToIdentity();
@@ -1124,7 +1124,7 @@ void GlWidget::Resize(float value)
  */
 void GlWidget::ResetSize()
 {
-    /*    if (MainWin->ui->actionReposition_Scale_Ball->isChecked() || (voxml_mode && MainWin->ui->actionShow_Ball_2->isChecked()))
+    /*    if (MainWin->ui->actionReposition_Scale_Ball->isChecked() || (vaxml_mode && MainWin->ui->actionShow_Ball_2->isChecked()))
         {
           QMatrix4x4 rotmatrix;
           rotmatrix.setToIdentity();

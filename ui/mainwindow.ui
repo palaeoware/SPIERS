@@ -1923,9 +1923,9 @@
     <bool>false</bool>
    </property>
   </action>
-  <action name="actionExport_VOXML">
+  <action name="actionExport_VAXML">
    <property name="text">
-    <string>Export VOXML...</string>
+    <string>Export VAXML...</string>
    </property>
   </action>
   <action name="actionSave_Finalised_As">

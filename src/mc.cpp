@@ -1,12 +1,13 @@
-#include "mc.h"
-#include "svobject.h"
-#include "spv.h"
-#include "compressedslice.h"
-#include "SPIERSviewglobals.h"
 #include <QTextStream>
 #include <QApplication>
 #include <QDebug>
 #include <QTime>
+
+#include "mc.h"
+#include "svobject.h"
+#include "spv.h"
+#include "compressedslice.h"
+#include "globals.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -375,7 +376,7 @@ void mc::Surface_Chunked()
     QTime t;
     t.start();
 
-    Layer *layer;              /* scalar field data and edges    */
+    Layer *layer; // scalar field data and edges
     int i, j, k, e;
     bool empty[6];
     int gridxscale = ((object->spv->iDim) / GRIDSIZE) + 1;
@@ -383,14 +384,14 @@ void mc::Surface_Chunked()
 
     int size = object->spv->size;
 
-    unsigned char *temppointer;
+    //unsigned char *temppointer;
 
     //set up an empty array for use with slices flagged as empty
-    unsigned char *blankpointer = (unsigned char *)malloc(size);
-    for (int ii = 0; ii < size; ii++) blankpointer[ii] = (unsigned char)0;
+    unsigned char *blankpointer = static_cast<unsigned char *>(malloc(static_cast<size_t>(size)));
+    for (int ii = 0; ii < size; ii++) blankpointer[ii] = static_cast<unsigned char>(0);
 
     //set up the slice buffers
-    for (int ii = 0; ii < 6; ii++) slicebuffers_copy[ii] = slicebuffers[ii] = (unsigned char *)malloc(size); //get memory (2 copies of pointers)
+    for (int ii = 0; ii < 6; ii++) slicebuffers_copy[ii] = slicebuffers[ii] = static_cast<unsigned char *>(malloc(static_cast<size_t>(size))); //get memory (2 copies of pointers)
 
     //decompress the first four layers
     //blank the first two (-1 and -2)
@@ -416,8 +417,9 @@ void mc::Surface_Chunked()
         if (ii < object->compressedslices.count()) if (object->compressedslices[ii]->empty == false) empty[ii + 2] = false;
     }
 
-    layer = (Layer *) malloc(sizeof(Layer));
-    if (layer == nullptr) exit(0);
+    layer = static_cast<Layer *>(malloc(sizeof(Layer)));
+    if (layer == nullptr)
+        exit(0);
 
     /* initially, botData points to the start of dataset, and */
     /* topData points to the next layer */
@@ -425,7 +427,7 @@ void mc::Surface_Chunked()
     layer->topData = slicebuffers[3];
 
     /* allocate storage to hold the indexing tags for edges in the layer */
-    layer->edges = (int *) malloc((iDim - 1) * (jDim - 1) * 12 * sizeof(int));
+    layer->edges = static_cast<int *>(malloc(static_cast<unsigned long long>(iDim - 1) * static_cast<unsigned long long>(jDim - 1) * 12 * sizeof(int)));
 
     /* initialize the edge table to EMPTY */
     for (i = 0; i < (iDim - 1) * (jDim - 1) * 12; i++)
@@ -550,12 +552,12 @@ void mc::Surface_Chunked()
 void mc::Surface_Non_Chunked()
 {
     //Old version
-    Layer  *layer;              /* scalar field data and edges    */
+    Layer *layer; // scalar field data and edges
     int i, j, k, e;
 
     unsigned char *dataset = object->spv->fullarray;
     // sprintf(dummy, "Old non-chunking version in MC\n"); DebugPrint(dummy);
-    layer = (Layer *) malloc(sizeof(Layer));
+    layer = static_cast<Layer *>(malloc(sizeof(Layer)));
     if (layer == nullptr)
         exit(0);
 
@@ -564,7 +566,7 @@ void mc::Surface_Non_Chunked()
     layer->botData = dataset;
     layer->topData = dataset + OFFSET(0, 0, 1, iDim, jDim);
     /* allocate storage to hold the indexing tags for edges in the layer */
-    layer->edges = (int *) malloc((iDim - 1) * (jDim - 1) * 12 * sizeof(int));
+    layer->edges = static_cast<int *>(malloc(static_cast<unsigned long long>(iDim - 1) * static_cast<unsigned long long>(jDim - 1) * 12 * sizeof(int)));
 
     /* initialize the edge table to EMPTY */
     for (i = 0; i < (iDim - 1) * (jDim - 1) * 12; i++)
@@ -638,19 +640,15 @@ void mc::Surface_Non_Chunked()
 void mc::march_non_chunked(datum *dataset, Layer *layer, int k, float threshold, isosurface *iso)
 {
 
-    isosurface    *layerIso;          /* portion of isosurface in layer   */
-
-    int         *fPtr;
-    int          *lPtr;
-    datum          cell[8];           /* grid values at 8 cell vertices   */
-    int           cellVerts[12];     /* verts at the 12 edges in a cell  */
-    int            i, j, ii, jj, e;
-    int           vertSize;          /* allocation for verts and normals */
-    int           triSize;           /* allocation for triangles         */
-    unsigned char  cellIndex;         /* index for edgeTable lookup       */
-
-    //TRY GETTING OUT HERE!!!!
-    //if (!sliceflags[k]) return;
+    isosurface *layerIso; // portion of isosurface in layer
+    //int *fPtr;
+    //int *lPtr;
+    datum cell[8]; // grid values at 8 cell vertices
+    int cellVerts[12]; // verts at the 12 edges in a cell
+    int i, j, ii, jj, e;
+    //int vertSize; // allocation for verts and normals
+    //int triSize; // allocation for triangles
+    unsigned char cellIndex; // index for edgeTable lookup
 
     /* initialize the cellVerts table */
     for (i = 0; i < 12; i++)
@@ -917,25 +915,29 @@ void mc::march_non_chunked(datum *dataset, Layer *layer, int k, float threshold,
  */
 isosurface *mc::march_chunked(Layer *layer, int k, int vertbase, unsigned char *grid, int gridxscale, int gridyscale)
 {
+    Q_UNUSED(grid)
+    Q_UNUSED(gridxscale)
 
-    isosurface    *layerIso;          /* portion of isosurface in layer   */
+    isosurface *layerIso; // portion of isosurface in layer
+    datum cell[8]; // grid values at 8 cell vertices
+    int cellVerts[12]; // verts at the 12 edges in a cell
+    int i;
+    int j;
+    int ii;
+    int jj;
+    int e;
+    //int vertSize; // allocation for verts and normals
+    //int triSize; // allocation for triangles
+    unsigned char cellIndex; // xindex for edgeTable lookup
 
-    datum          cell[8];           /* grid values at 8 cell vertices   */
-    int           cellVerts[12];     /* verts at the 12 edges in a cell  */
-    int            i, j, ii, jj, e;
-    int           vertSize;          /* allocation for verts and normals */
-    int           triSize;           /* allocation for triangles         */
-    unsigned char  cellIndex;         /* index for edgeTable lookup       */
-
-    /* initialize the cellVerts table */
+    // initialize the cellVerts table
     for (i = 0; i < 12; i++)
     {
         cellVerts[i] = EMPTY_EDGE;
     }
 
-    /* allocate and initialize storage for this layer's portion of isosurface */
+    // allocate and initialize storage for this layer's portion of isosurface
     layerIso = new isosurface;
-
 
     //do counting
     for (i = 0; i < iDim; i++)
@@ -1294,7 +1296,6 @@ int mc::makeVertex(int whichEdge, int i, int j, int k, float threshold, datum *d
     default:
         fprintf(stderr, "mc: makeVertex: bad edge index\n");
         exit(1);
-        break;
     }
 
     /* determine the relative distance along edge from->to */
@@ -1302,25 +1303,25 @@ int mc::makeVertex(int whichEdge, int i, int j, int k, float threshold, datum *d
     d = ( *(dataset + OFFSET(from[0], from[1], from[2], iDim, jDim)) - threshold) /
         ( *(dataset + OFFSET(from[0], from[1], from[2], iDim, jDim)) -
           * (dataset + OFFSET(to[0], to[1], to[2], iDim, jDim)) );
-    if (d < EPSILON)
+    if (d < static_cast<float>(EPSILON))
     {
         d = 0.0;
     }
-    else if (d > (1 - EPSILON))
+    else if (d > static_cast<float>((1 - EPSILON)))
     {
         d = 1.0;
     }
 
-    v[0] = (int)(2 * (from[0] + d * (to[0] - from[0])));
-    v[1] = (int)(2 * (from[1] + d * (to[1] - from[1])));
-    v[2] = (int)(2 * (from[2] + d * (to[2] - from[2])));
+    v[0] = static_cast<int>(2 * (from[0] + d * (to[0] - from[0])));
+    v[1] = static_cast<int>(2 * (from[1] + d * (to[1] - from[1])));
+    v[2] = static_cast<int>(2 * (from[2] + d * (to[2] - from[2])));
 
     /* insert the vertex into the isosurface structure */
     /* compute the tag for this vertex, and return the tag        */
 
     for (ii = 0; ii < 3; ii++)
     {
-        layerIso->vertices[ii + layerIso->nVertices * 3] = (int) v[ii];
+        layerIso->vertices[ii + layerIso->nVertices * 3] = static_cast<int>(v[ii]);
     }
     if (++(layerIso->nVertices) >= layerIso->vertexarraysize)
     {
@@ -1412,7 +1413,7 @@ int mc::makeVertex2(int whichEdge, int i, int j, int k, isosurface *layerIso, in
 
     for (int ii = 0; ii < 3; ii++)
     {
-        layerIso->vertices[ii + layerIso->nVertices * 3] = (int) v[ii];
+        layerIso->vertices[ii + layerIso->nVertices * 3] = static_cast<int>(v[ii]);
     }
     if (++(layerIso->nVertices) >= layerIso->vertexarraysize)
     {
