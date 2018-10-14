@@ -2,7 +2,6 @@
 #include "ui_aboutdialog.h"
 #include "../SPIERScommon/netmodule.h"
 #include "globals.h"
-#include "version.h"
 #include "mainwindow.h"
 
 aboutdialog::aboutdialog(QWidget *parent) :
@@ -18,17 +17,16 @@ aboutdialog::aboutdialog(QWidget *parent) :
     m_ui->header->setPixmap(picture_1);
     m_ui->header->setAlignment(Qt::AlignCenter);
 
-    m_ui->textLabel_1->setText(QString(PRODUCTNAME));
+    m_ui->textLabel_1->setText(QString(PRODUCTNAME) + " v" + QString(UPDATEVERSION));
     m_ui->textLabel_1->setObjectName("aboutTextLabel1");
     m_ui->textLabel_1->setAlignment(Qt::AlignCenter);
 
     m_ui->textLabel_2->setWordWrap(true);
-    m_ui->textLabel_2->setText("This  software is " + QString(PRODUCTNAME) +
+    m_ui->textLabel_2->setText("This  software is " + QString(PRODUCTNAME) + " v" + QString(UPDATEVERSION) +
                                ". It was coded by"
-                               " Mark Sutton (m.sutton@imperial.ac.uk). It uses a GUI theme created/implemented by Alan R.T. Spencer (alan.spencer@imperial.ac.uk) and Russell Garwood (russell.garwood@gmail.com)"
+                               " Mark Sutton (m.sutton@imperial.ac.uk). With additional code by Alan R.T. Spencer (alan.spencer@imperial.ac.uk) and Russell Garwood (russell.garwood@gmail.com)."
                                "<br><br>Reports are appreciated, and comments, suggestions, and feature requests are welcome.");
     m_ui->textLabel_2->setAlignment(Qt::AlignCenter);
-
 
     m_ui->textLabel_3->setWordWrap(true);
     m_ui->textLabel_3->setText("<b>Copyright and License:</b>"
@@ -49,23 +47,6 @@ aboutdialog::aboutdialog(QWidget *parent) :
     m_ui->footer2->setAlignment(Qt::AlignCenter);
 
     m_ui->buttonBox->setStandardButtons(QDialogButtonBox::Close);
-
-    /*
-    QString html;
-    html = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-\"";
-    html += "html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style" ;
-    html += "type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\"";
-    html += "font-family:'Arial'; font-size:8.25pt; font-weight:400; font-style:normal;\">";
-    QString v;
-    v.sprintf("%3.2f", UPDATEVERSION);
-    html += "<center><h2>SPIERSview " + v + "</h2></center>";
-    html += "<p>This is freely distributed software - see licence.txt for details.</p>";
-    html += "<p>Please contact m.sutton@ic.ac.uk with bug reports or suggestions.</p>";
-    html += "<p>See www.spiers-software.org for more information.</p>";
-    html += "</body></html>";
-    m_ui->textBrowser->setHtml(html);
-
-    if (vaxml_mode) m_ui->HashLabel->setText("STL hash: " + STLHash);*/
 }
 
 aboutdialog::~aboutdialog()

@@ -28,7 +28,6 @@
 #include "svobject.h"
 #include "vaxml.h"
 #include "quickhelpbox.h"
-#include "version.h"
 #include "aboutdialog.h"
 #include "globals.h"
 #include "spvreader.h"
@@ -85,7 +84,7 @@ MainWindow::MainWindow(QWidget *parent)
     f.setSampleBuffers(true);
     f.setSamples(1);
 
-    gl3widget = new GlWidget(ui->frameVTK); //,f);
+    gl3widget = new GlWidget(ui->frameVTK);
     gllayout = new QHBoxLayout;
     gllayout->addWidget(gl3widget);
     gllayout->setSpacing(2);
@@ -151,11 +150,6 @@ MainWindow::MainWindow(QWidget *parent)
     ScaleMatrix[14] = 0.0;
     ScaleMatrix[15] = 1.0;
 
-//  ScaleBallColour[0]=255;
-//  ScaleBallColour[1]=128;
-//  ScaleBallColour[2]=128;
-
-//  ScaleBallScale=1.0;
     mm_per_unit = 1.0;
     globalrescale = 1.0;
 
@@ -224,7 +218,6 @@ void MainWindow::UpdateGL()
     qDebug() << "[Where I'm I?] In UpdateGL";
 
     gl3widget->update();
-    //do the info at bottom too
 }
 
 // Timer handlers
@@ -250,9 +243,9 @@ agin:
 
         fname = QFileDialog::getOpenFileName(
                     this,
-                    "Select SPIERSview file",
+                    "Select " + QString(PRODUCTNAME) + " file",
                     "",
-                    "SPIERSview files (*.spv *.sp2 *spvf *.xml *.vaxml)");
+                    QString(PRODUCTNAME) + " files (*.spv *.sp2 *spvf *.xml *.vaxml)");
         FilterKeys = true;
 
         if (MacBodgeClickedNoForUpdateDownload == true && fname.isNull())
@@ -272,7 +265,7 @@ agin:
         VAXML v;
         if (v.readVAXML(fname))
         {
-            QString shortfname = "SPIERSview - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
+            QString shortfname = QString(PRODUCTNAME) + " v" + QString(UPDATEVERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
             this->setWindowTitle(shortfname);
             EnableRenderCommands();
             RefreshObjects();
@@ -293,7 +286,7 @@ agin:
         VAXML v;
         if (v.readSPVF(fname))
         {
-            QString shortfname = "SPIERSview - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
+            QString shortfname = QString(PRODUCTNAME) + " v" + QString(UPDATEVERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
             this->setWindowTitle(shortfname);
             EnableRenderCommands();
             RefreshObjects();
@@ -311,11 +304,10 @@ agin:
     {
         qDebug() << "[Where I'm I?] In StartTimer_fired - file is SPV OR SP2";
 
-        QString shortfname = "SPIERSview - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
+        QString shortfname = QString(PRODUCTNAME) + " v" + QString(UPDATEVERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
         this->setWindowTitle(shortfname);
         SPVreader reader;
         reader.ProcessFile(fname);
-        //widget->ResizeScaleBall(1.0);
 
         qDebug() << "[Where I'm I?] In StartTimer_fired - about to call RefreshInfo()";
         RefreshInfo();
@@ -327,6 +319,7 @@ agin:
 
 /**
  * @brief MainWindow::StripDownForVoxml
+ * This function hides/disables many of the menu items availbe normally for VAXML files.
  */
 void MainWindow::StripDownForVoxml()
 {
@@ -346,12 +339,6 @@ void MainWindow::StripDownForVoxml()
     ui->actionRemove_Piece->setEnabled(false);
     ui->actionExport_Hidden_Objects->setVisible(false);
     ui->actionExport_Hidden_Objects->setEnabled(false);
-//    ui->menuExport->setVisible(false);
-//    ui->menuExport->setEnabled(false);
-    //ui->actionSTL->setVisible(false);
-    //ui->actionSTL->setEnabled(false);
-    //ui->actionDXF->setVisible(false);
-    //ui->actionDXF->setEnabled(false);
     ui->actionAuto_Resurface->setVisible(false);
     ui->actionAuto_Resurface->setEnabled(false);
     ui->actionResurface_Now->setVisible(false);
@@ -362,10 +349,6 @@ void MainWindow::StripDownForVoxml()
     ui->actionReposition_Selected->setEnabled(false);
     ui->actionPieces_Panel->setVisible(false);
     ui->actionPieces_Panel->setEnabled(false);
-//    ui->actionSelect_All->setVisible(false);
-//    ui->actionSelect_All->setEnabled(false);
-//    ui->actionSelect_None->setVisible(false);
-//    ui->actionSelect_None->setEnabled(false);
     ui->actionGroup->setVisible(false);
     ui->actionGroup->setEnabled(false);
     ui->actionUngroup->setVisible(false);
@@ -380,45 +363,14 @@ void MainWindow::StripDownForVoxml()
     ui->actionSet_Resampling->setEnabled(false);
     ui->actionQuadric_Fidelity_Reduction->setVisible(false);
     ui->actionQuadric_Fidelity_Reduction->setEnabled(false);
-
     ui->menuSmoothing->setVisible(false);
     ui->menuSmoothing->setEnabled(false);
     ui->menuIsland_Removal->setVisible(false);
     ui->menuIsland_Removal->setEnabled(false);
-
-    /*
-    ui->actionOff->setVisible(false);
-    ui->actionOff->setEnabled(false);
-    ui->actionVery_Weak->setVisible(false);
-    ui->actionVery_Weak->setEnabled(false);
-    ui->actionWeak->setVisible(false);
-    ui->actionWeak->setEnabled(false);
-    ui->actionMedium_2->setVisible(false);
-    ui->actionMedium_2->setEnabled(false);
-    ui->actionStrongish->setVisible(false);
-    ui->actionStrongish->setEnabled(false);
-    ui->actionStrong->setVisible(false);
-    ui->actionStrong->setEnabled(false);
-    ui->actionStrongest->setVisible(false);
-    ui->actionStrongest->setEnabled(false);
-    ui->actionOff_2->setVisible(false);
-    ui->actionOff_2->setEnabled(false);
-    ui->actionRemove_Tiny->setVisible(false);
-    ui->actionRemove_Tiny->setEnabled(false);
-    ui->actionRemove_Small->setVisible(false);
-    ui->actionRemove_Small->setEnabled(false);
-    ui->actionRemove_Medium->setVisible(false);
-    ui->actionRemove_Medium->setEnabled(false);
-    ui->actionRemove_Large->setVisible(false);
-    ui->actionRemove_Large->setEnabled(false);
-    ui->actionRemove_All->setVisible(false);
-    ui->actionRemove_All->setEnabled(false);
-    */
     ui->actionIncrease_Size->setEnabled(false);
     ui->actionDecrease_Size->setEnabled(false);
     ui->actionReset_Size->setVisible(false);
     ui->actionReset_Size->setEnabled(false);
-
     ui->actionProgress_Bars->setChecked(false);
     on_actionProgress_Bars_triggered();
 }
@@ -525,7 +477,7 @@ void MainWindow::SpinTimer_fired()
                 {
                     double spvscale = (1.0 / SVObjects[j]->spv->PixPerMM) * SVObjects[j]->scale;
                     spvscale = spvscale * spvscale * (1.0 / SVObjects[j]->spv->SlicePerMM) * SVObjects[j]->scale; //square it, multiply by slice spacing
-                    Volume += static_cast<double>(SVObjects[j]->Voxels) * spvscale;
+                    Volume += static_cast<double>(SVObjects[j]->voxels) * spvscale;
                 }
                 TotalTriangles += SVObjects[j]->Triangles;
                 ObjCount++;
@@ -554,7 +506,6 @@ void MainWindow::SpinTimer_fired()
             else
                 mess = QString("%1 %4: %2 KTr, %3 cubic mm ").arg(ObjCount).arg(TotalTriangles / 1000).arg(Volume, 0, 'f', dp).arg(oc);
         }
-        //mess.sprintf(QString(QString("%d objects: %d KTr, %.") + dp + QString("f cubic mm")).toLatin1(), ObjCount,TotalTriangles/1000, Volume);
     }
     ktrlabel->setText(mess);
 }
@@ -620,7 +571,8 @@ void MainWindow::on_actionZoom_Out_triggered()
  */
 void MainWindow::on_actionAnaglyph_Stereo_triggered()
 {
-    if (gl3widget->context()->format().stereo()) on_actionQuadBuffer_Stereo_triggered();
+    if (gl3widget->context()->format().stereo())
+        on_actionQuadBuffer_Stereo_triggered();
     else
         UpdateGL();
 }
@@ -653,8 +605,12 @@ void MainWindow::on_actionQuadBuffer_Stereo_triggered()
     setSamples(gl3widget->context()->format().samples());
 
     for (int i = 0; i < SVObjects.count(); i++)
+    {
         if (!SVObjects[i]->IsGroup)
+        {
             SVObjects[i]->Dirty = true;
+        }
+    }
     on_actionResurface_Now_triggered();
     UpdateGL();
 }
@@ -1037,11 +993,7 @@ void MainWindow::RefreshObjects()
         }
     }
 
-    //OOTreeWidget->resizeColumnToContents(0);
     ui->treeWidget->setUpdatesEnabled(true);
-
-    //on_OOTreeWidget_itemSelectionChanged();
-
     RefreshPieces();
     return;
 }
@@ -1056,10 +1008,10 @@ void MainWindow::RefreshInfo()
 
     //First - if there is a title use it for window title
     if (i_title.count() == 1)
-        setWindowTitle("SPIERSview: " + i_title[0]);
+        setWindowTitle(QString(PRODUCTNAME) + ": " + i_title[0]);
     else
     {
-        QString shortfname = "SPIERSview - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
+        QString shortfname = QString(PRODUCTNAME) + " v" + QString(UPDATEVERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
         setWindowTitle(shortfname);
     }
     ui->infoTreeWidget->clear();
@@ -1295,7 +1247,6 @@ void MainWindow::on_infoTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int 
                 RefreshInfo();
             }
         }
-        //edit item
     }
 }
 
@@ -1769,7 +1720,7 @@ void MainWindow::on_actionResurface_Now_triggered()
             {
                 qDeleteAll(SVObjects[i]->VertexBuffers);
                 qDeleteAll(SVObjects[i]->ColourBuffers);
-                SVObjects[i]->BoundingBoxBuffer.destroy();
+                SVObjects[i]->boundingBoxBuffer.destroy();
                 SVObjects[i]->VertexBuffers.clear();
                 SVObjects[i]->ColourBuffers.clear();
             }
@@ -1901,8 +1852,6 @@ void MainWindow::EnableRenderCommands()
     ui->actionAuto_Resurface->setEnabled(true);
     ui->actionResurface_Now->setEnabled(true);
     ui->actionOff->setEnabled(true);
-    //ui->actionLow->setEnabled(true);
-    //ui->actionMedium->setEnabled(true);
     ui->actionMedium_2->setEnabled(true);
     ui->actionOff_2->setEnabled(true);
     ui->actionRemove_All->setEnabled(true);
@@ -1938,7 +1887,6 @@ void MainWindow::EnableRenderCommands()
     ui->action16x->setEnabled(true);
 
     qApp->processEvents();
-    //qDebug()<<"Out";
 }
 
 /**
@@ -1951,8 +1899,6 @@ void MainWindow::DisableRenderCommands()
     ui->actionAuto_Resurface->setEnabled(false);
     ui->actionResurface_Now->setEnabled(false);
     ui->actionOff->setEnabled(false);
-    //ui->actionLow->setEnabled(false);
-    //ui->actionMedium->setEnabled(false);
     ui->actionMedium_2->setEnabled(false);
     ui->actionOff_2->setEnabled(false);
     ui->actionRemove_All->setEnabled(false);
@@ -2494,9 +2440,9 @@ void MainWindow::on_actionImport_SPV_triggered()
 
     QString ifname = QFileDialog::getOpenFileName(
                          this,
-                         "Select SPIERSview file to import",
+                         "Select " + QString(PRODUCTNAME) + " file to import",
                          "",
-                         "SPIERSview files (*.spv)");
+                         QString(PRODUCTNAME) + " files (*.spv)");
     FilterKeys = true;
 
     //Now we do a whole load of initialisation!
@@ -2624,9 +2570,9 @@ void MainWindow::on_actionImport_Replacement_triggered()
 
         QString ifname = QFileDialog::getOpenFileName(
                              this,
-                             "Select SPIERSview file to import",
+                             "Select " + QString(PRODUCTNAME) + " file to import",
                              "",
-                             "SPIERSview files (*.spv)");
+                             QString(PRODUCTNAME) + " files (*.spv)");
         FilterKeys = true;
 
         //Now we do a whole load of initialisation!
@@ -2767,7 +2713,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
         msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
         msgBox.setDefaultButton(QMessageBox::Cancel);
         int ret = msgBox.exec();
-        if (ret == QMessageBox::Yes) exit(0);
+        if (ret == QMessageBox::Yes) QCoreApplication::quit();
         event->ignore();
         return;
     }
@@ -2784,13 +2730,13 @@ void MainWindow::closeEvent(QCloseEvent *event)
         {
             on_actionSave_Changes_triggered();
             event->accept();
-            exit(0);
+            QCoreApplication::quit();
         }
         else if (ret == QMessageBox::Cancel) event->ignore();
         else if (ret == QMessageBox::Discard)
         {
             event->accept();
-            exit(0);
+            QCoreApplication::quit();
         }
     }
 }
@@ -3084,7 +3030,7 @@ void MainWindow::setSamples(int i)
         qDeleteAll(SVObjects[i]->ColourBuffers);
         SVObjects[i]->VertexBuffers.clear();
         SVObjects[i]->ColourBuffers.clear();
-        SVObjects[i]->BoundingBoxBuffer.destroy();
+        SVObjects[i]->boundingBoxBuffer.destroy();
     }
 
     QGLFormat fmt;
@@ -3188,8 +3134,7 @@ void MainWindow::on_actionRescale_by_triggered()
     bool ok;
     FilterKeys = false;
 
-    double d = QInputDialog::getDouble(this, "Rescale object",
-                                       tr("Amount (1 = no rescale):"), 1, 0.00001, 1000, 4, &ok);
+    double d = QInputDialog::getDouble(this, "Rescale object", tr("Amount (1 = no rescale):"), 1, 0.00001, 1000, 4, &ok);
     FilterKeys = true;
     if (ok)
     {
@@ -3200,29 +3145,6 @@ void MainWindow::on_actionRescale_by_triggered()
     else
         return;
 }
-
-/**
- * @brief MainWindow::on_actionSet_Scale_Ball_Size_triggered
- */
-/*
-void MainWindow::on_actionSet_Scale_Ball_Size_triggered()
-{
-    //set scale ball to a real size
-
-    bool ok;
-    float oldsize=(ScaleBallScale/globalrescale)*mm_per_unit;
-    double d = QInputDialog::getDouble(this, "Scale ball size",
-                                       tr("New size for scale ball in mm:"), oldsize, 0.001, 10000, 3, &ok);
-    if (ok)
-    {
-        widget->ResizeScaleBall((float)d);
-        UpdateGL();
-    }
-    else
-    return;
-
-}
-*/
 
 /**
  * @brief MainWindow::on_actionBackground_Colour_triggered
@@ -3245,7 +3167,6 @@ void MainWindow::on_actionManual_triggered()
 {
     //qDebug()<<qApp->applicationDirPath() + "/SPIERSview_Manual.pdf";
     QDesktopServices::openUrl(QUrl("file:" + qApp->applicationDirPath() + "/SPIERSview_Manual.pdf", QUrl::TolerantMode));
-
 }
 
 /**
@@ -3299,10 +3220,7 @@ void MainWindow::on_actionSet_Image_Folder_triggered()
     //Select output directory
     FilterKeys = false;
 
-    QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
-                                                    AnimOutputDir,
-                                                    QFileDialog::ShowDirsOnly
-                                                    | QFileDialog::DontResolveSymlinks);
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"), AnimOutputDir, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
     FilterKeys = true;
 
     if (dir != "")
@@ -3322,9 +3240,9 @@ void MainWindow::on_actionSet_Image_Folder_triggered()
 }
 
 /**
- * @brief MainWindow::ApplyAnimStep
+ * @brief MainWindow::animationApplyStep
  */
-void MainWindow::ApplyAnimStep()
+void MainWindow::animationApplyStep()
 {
     gl3widget->YRotate(static_cast<float>(ui->SpinYInc->value()));
     gl3widget->XRotate(static_cast<float>(ui->SpinXInc->value()));
@@ -3336,11 +3254,11 @@ void MainWindow::ApplyAnimStep()
 }
 
 /**
- * @brief MainWindow::AnimSaveImage
+ * @brief MainWindow::animationSaveImage
  */
-void MainWindow::AnimSaveImage()
+void MainWindow::animationSaveImage()
 {
-    QImage ScreenCapture = gl3widget->grabFramebuffer();//false);
+    QImage screenCapture = gl3widget->grabFramebuffer();//false);
 
     if (ui->actionRescale_Output->isChecked())
     {
@@ -3348,7 +3266,7 @@ void MainWindow::AnimSaveImage()
         int wwidth = gl3widget->width();
 
         int aheight = static_cast<int>(static_cast<double>(wheight) / (static_cast<double>(wwidth) / static_cast<double>(ui->AnimRescaleX->value())));
-        ScreenCapture = ScreenCapture.scaled(QSize(ui->AnimRescaleX->value(), aheight), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        screenCapture = screenCapture.scaled(QSize(ui->AnimRescaleX->value(), aheight), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     }
 
     QString fileName;
@@ -3381,7 +3299,7 @@ void MainWindow::AnimSaveImage()
 
     s << AnimOutputDir << "/" << ui->AnimFilenameStub->text() << num << formatstring;
 
-    ScreenCapture.save(fileName, nullptr, qual);
+    screenCapture.save(fileName, nullptr, qual);
 
     ui->AnimSpinFileNum->setValue(ui->AnimSpinFileNum->value() + 1);
 }
@@ -3391,8 +3309,8 @@ void MainWindow::AnimSaveImage()
  */
 void MainWindow::on_actionSave_Image_and_Apply_Step_triggered()
 {
-    AnimSaveImage();
-    ApplyAnimStep();
+    animationSaveImage();
+    animationApplyStep();
 }
 
 /**
@@ -3400,7 +3318,7 @@ void MainWindow::on_actionSave_Image_and_Apply_Step_triggered()
  */
 void MainWindow::on_actionApply_Step_triggered()
 {
-    ApplyAnimStep();
+    animationApplyStep();
 }
 
 /**
@@ -3422,7 +3340,7 @@ void MainWindow::on_actionApply_Steps_triggered()
     for (int i = 0; i < numsteps; i++)
     {
         ui->ProgBarOverall->setValue((i * 100) / numsteps);
-        ApplyAnimStep();
+        animationApplyStep();
         UpdateGL();
         QApplication::processEvents();
     }
@@ -3449,8 +3367,8 @@ void MainWindow::on_actionApply_Multiple_Steps_Saving_Images_triggered()
     for (int i = 0; i < numsteps; i++)
     {
         ui->ProgBarOverall->setValue((i * 100) / numsteps);
-        AnimSaveImage();
-        ApplyAnimStep();
+        animationSaveImage();
+        animationApplyStep();
         UpdateGL();
         QApplication::processEvents();
     }
@@ -3463,8 +3381,9 @@ void MainWindow::on_actionApply_Multiple_Steps_Saving_Images_triggered()
  */
 void MainWindow::on_SingleStepButton_pressed()
 {
-    if (ui->CheckSave->isChecked()) AnimSaveImage();
-    ApplyAnimStep();
+    if (ui->CheckSave->isChecked())
+        animationSaveImage();
+    animationApplyStep();
 }
 
 /**
@@ -3472,8 +3391,8 @@ void MainWindow::on_SingleStepButton_pressed()
  */
 void MainWindow::on_SingleStepSaveButton_pressed()
 {
-    AnimSaveImage();
-    ApplyAnimStep();
+    animationSaveImage();
+    animationApplyStep();
 }
 
 /**
@@ -3481,8 +3400,10 @@ void MainWindow::on_SingleStepSaveButton_pressed()
  */
 void MainWindow::on_MultipleStepButton_pressed()
 {
-    if (ui->CheckSave->isChecked()) on_actionApply_Multiple_Steps_Saving_Images_triggered();
-    else on_actionApply_Steps_triggered();
+    if (ui->CheckSave->isChecked())
+        on_actionApply_Multiple_Steps_Saving_Images_triggered();
+    else
+        on_actionApply_Steps_triggered();
 }
 
 /**
@@ -3835,7 +3756,6 @@ void MainWindow::showSpecificProgress()
     //qDebug()<<"Timer called";
     ui->ProgBarSpecific->setValue(specificprogress);
     ui->OutputLabelSpecific->setText(specificlabel);
-    //if (specificprogress!=0) this->setWindowState(Qt::WindowMaximized);
     qApp->processEvents();
 }
 

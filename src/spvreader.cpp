@@ -6,12 +6,12 @@
 #include <QDataStream>
 #include <QTextStream>
 #include <QTime>
-
-#include "globals.h"
 #include <QDebug>
 #include <QMatrix4x4>
+
+#include "globals.h"
 #include "spv.h"
-#include "mc.h"
+#include "marchingcubes.h"
 #include "zlib.h"
 #include "svobject.h"
 #include "compressedslice.h"
@@ -189,7 +189,7 @@ void SPVreader::WriteSPV(bool withpd)
             if (o->Smoothing < 0) out << static_cast<int>(0);
             else out << o->Smoothing; //bodge for backward compatibility
 
-            if (o->BuggedData) out << o->ResampleType - 10000;
+            if (o->buggedData) out << o->ResampleType - 10000;
             else out << o->ResampleType;
 
             //transpose it to write
@@ -339,7 +339,7 @@ void SPVreader::ReadSPV6(QString Filename)
     {
         qDebug() << "[Where I'm I?] In ReadSPV6 | File Error = Fatal - Can't open SPV file for reading";
         QMessageBox::warning(MainWin, "File Error", "Fatal - Can't open SPV file for reading");
-        exit(0);
+        QCoreApplication::quit();
     }
 
     BaseIndex = -1;
@@ -480,7 +480,7 @@ void SPVreader::ReadSPV6(QString Filename)
             if (o->ResampleType < 0)
             {
                 o->ResampleType = 10000 + o->ResampleType;
-                o->BuggedData = true;
+                o->buggedData = true;
             }
 
             if (version >= 7) for (int i = 0; i < 16; i++) in >> o->matrix[i];
@@ -755,7 +755,7 @@ void SPVreader::ReadSPV6(QString Filename)
             MainWin->ui->ProgBarOverall->setValue((icount++ * 100) / items);
             if (SVObjects[i]->SurfaceMe)
             {
-                mc surfacer(SVObjects[i]); //create surfacer object
+                MarchingCubes surfacer(SVObjects[i]); //create surfacer object
 
                 unsigned char *fullarray = nullptr;
                 if (SVObjects[i]->AllSlicesCompressed)
@@ -765,7 +765,7 @@ void SPVreader::ReadSPV6(QString Filename)
                     if ((fullarray = (unsigned char *)malloc(size * SVObjects[i]->spv->kDim)) == nullptr)
                     {
                         QMessageBox::warning((QWidget *)MainWin, "Memory Error", "Fatal Error - could not obtain enough memory to reconstruct volume.\nTry exporting from a newer version of SPIERSview");
-                        exit(0);
+                        QCoreApplication::quit();
                     }
 
                     //ensure top and bottom are blank
@@ -786,7 +786,7 @@ void SPVreader::ReadSPV6(QString Filename)
                         if (fullarray[iii]) count++;
 
                 }
-                surfacer.SurfaceObject();
+                surfacer.surfaceObject();
                 if (fullarray)
                 {
                     free(fullarray);
@@ -1165,7 +1165,7 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
             if ((fullarray = reinterpret_cast<unsigned char *>(malloc(static_cast<unsigned long long>(filesused) * static_cast<unsigned long long>(fwidth) * static_cast<unsigned long long>(fheight)))) == nullptr)
             {
                 QMessageBox::warning(static_cast<QWidget *>(MainWin), "Memory Error", "Fatal Error - could not obtain enough memory to reconstruct volume.\nTry exporting from a newer version of SPIERSview");
-                exit(0);
+                QCoreApplication::quit();
             }
 
             //ensure top and bottom are blank
@@ -1193,7 +1193,7 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
 
             SVObject *thisobj = thisspv->ComponentObjects[m];
 
-            if (version < 4) thisobj->BuggedData = true;
+            if (version < 4) thisobj->buggedData = true;
             if (version > 4)
             {
                 //Chunked compression - build into fullarray
@@ -1309,8 +1309,8 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
             else TrigCount = 0;
 
             //Make isosurface
-            mc surfacer(thisobj); //create surfacer object
-            surfacer.SurfaceObject();
+            MarchingCubes surfacer(thisobj); //create surfacer object
+            surfacer.surfaceObject();
             //qDebug()<<"Surfaced";
             //Next job - do isosurface stretching and convert into VTK format
             thisobj->MakePolyData();

@@ -11,7 +11,7 @@ class aboutdialog : public QDialog
 {
     Q_OBJECT
 public:
-    aboutdialog(QWidget *parent = 0);
+    aboutdialog(QWidget *parent = nullptr);
     ~aboutdialog();
 
 protected:

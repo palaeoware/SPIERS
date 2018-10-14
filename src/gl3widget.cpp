@@ -511,7 +511,7 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
 
                         if (MainWin->ui->actionBounding_Box->isChecked())
                         {
-                            if (SVObjects[i]->BoundingBoxBuffer.isCreated())
+                            if (SVObjects[i]->boundingBoxBuffer.isCreated())
                             {
                                 //qDebug()<<"Exists, drawing";
                                 useshader->setUniformValue("ambientColor", QColor(static_cast<int>(mcolor[0]), static_cast<int>(mcolor[1]), static_cast<int>(mcolor[2])));
@@ -522,13 +522,13 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
                                 useshader->setUniformValue("diffuseReflection", static_cast<GLfloat>(1.0));
                                 useshader->setUniformValue("specularReflection", static_cast<GLfloat>(0.0));
                                 useshader->setUniformValue("shininess", static_cast<GLfloat>(100.0));
-                                SVObjects[i]->BoundingBoxBuffer.bind();
+                                SVObjects[i]->boundingBoxBuffer.bind();
                                 useshader->setAttributeBuffer("vertex", GL_FLOAT, 0, 3, 0);
                                 useshader->enableAttributeArray("vertex");
                                 useshader->setAttributeBuffer("normal", GL_FLOAT, 12 * 6 * sizeof(GLfloat), 3, 0);
                                 useshader->enableAttributeArray("normal");
 
-                                SVObjects[i]->BoundingBoxBuffer.release();
+                                SVObjects[i]->boundingBoxBuffer.release();
                                 glfunctions->glDrawArrays(GL_LINES, 0, 24);
                             }
                             //else qDebug()<<"Not created";

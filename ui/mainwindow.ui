@@ -2086,6 +2086,9 @@
    <property name="shortcutContext">
     <enum>Qt::ApplicationShortcut</enum>
    </property>
+   <property name="visible">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="actionSave_Image_and_Apply_Step">
    <property name="enabled">

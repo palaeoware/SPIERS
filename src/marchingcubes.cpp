@@ -3,7 +3,7 @@
 #include <QDebug>
 #include <QTime>
 
-#include "mc.h"
+#include "marchingcubes.h"
 #include "svobject.h"
 #include "spv.h"
 #include "compressedslice.h"
@@ -11,38 +11,22 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-//DEFINES FOR MACROS ETC
-
-/* macro to do array-style indexing into the scalar field */
+// macro to do array-style indexing into the scalar field
 #define OFFSET(I, J, K, IDIM, JDIM) ((I) + ((IDIM) * (J)) + ((IDIM * JDIM) * (K)))
 
 //new version for chunked data
 #define DATA(I, J, K) (*(slicebuffers[(K-k)+2]+I+(iDim*J)))
 
-/* macro to do array-style indexing into the layer edge table */
+// macro to do array-style indexing into the layer edge table
 #define EDGE_OFFSET(E, I, J, IDIM) ((E) + (12 * (I)) + ((12 * (IDIM-1)) * (J-1)))
 
 #define EPSILON 0.000001
 
-/* tag for an empty edge */
+// tag for an empty edge
 #define EMPTY_EDGE -1
 
-/**
- * @brief isosurface::isosurface
- */
-isosurface::isosurface() //constructor
-{
-    used = false;
-
-    nVertices    = 0;
-    nTriangles   = 0;
-    trianglearraysize = 1000;
-    vertexarraysize = 1000;
-    triangles.resize(3 * trianglearraysize);
-    vertices.resize(3 * vertexarraysize);
-}
-
-int mc::edgeTable[256] =
+// edge lookup table
+int MarchingCubes::edgeTable[256] =
 {
     0x0, 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c,
     0x80c, 0x905, 0xa0f, 0xb06, 0xc0a, 0xd03, 0xe09, 0xf00,
@@ -78,8 +62,8 @@ int mc::edgeTable[256] =
     0x70c, 0x605, 0x50f, 0x406, 0x30a, 0x203, 0x109, 0x0
 };
 
-
-int mc::triTable[256][16] =
+// triangle lookup table
+int MarchingCubes::triTable[256][16] =
 {
     {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
     {0, 8, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
@@ -340,10 +324,15 @@ int mc::triTable[256][16] =
 };
 
 /**
- * @brief mc::mc
+ * @brief MarchingCubes::MarchingCubes
+ * This class impliments marching cubes, first published in the 1987 SIGGRAPH proceedings by Lorensen and Cline,
+ * which ia an alogorithm for extracting a polygonal mesh of an isosurface from a three-dimensional discrete scalar field.
+ *
  * @param o
+ * @see Lorensen, W. E. and Cline, H. E., "Marching Cubes: A High Resolution 3D Surface Construction Algorithm," Computer Graphics, vol. 21, no. 3, pp. 163-169, July 1987.
+ * @see Lorensen, W. E., "Marching Through the Visible Man," IEEE Visualization, Proceedings of the 6th conference on Visualization '95, pp. 368-373. 1994.
  */
-mc::mc(SVObject *o)
+MarchingCubes::MarchingCubes(SVObject *o)
 {
     object = o;
     iDim = object->spv->iDim;
@@ -353,31 +342,40 @@ mc::mc(SVObject *o)
 }
 
 /**
- * @brief mc::SurfaceObject
+ * @brief MarchingCubes::surfaceObject
+ * Surfaces an object
  */
-void mc::SurfaceObject()
+void MarchingCubes::surfaceObject()
 {
-    //First check - are we working with old or new format?
+    // Are we working with old or new format?
     if (object->spv->fullarray)
-        Surface_Non_Chunked();
+    {
+        // Old version
+        surfaceNonChunked();
+    }
     else
-        Surface_Chunked();
+    {
+        // New version that returns the single slice Isosurface object
+        surfaceChunked();
+    }
 
-    //qDebug()<<"Count for "<<object->Name<<" is "<<pointcount;
-    object->Voxels = pointcount;
+    object->voxels = pointcount;
     return;
 }
 
 /**
- * @brief mc::Surface_Chunked
+ * @brief MarchingCubes::surfaceChunked
  */
-void mc::Surface_Chunked()
+void MarchingCubes::surfaceChunked()
 {
     QTime t;
     t.start();
 
-    Layer *layer; // scalar field data and edges
-    int i, j, k, e;
+    ScalarFieldLayer *layer; // scalar field data and edges
+    int i;
+    int j;
+    int k;
+    int e;
     bool empty[6];
     int gridxscale = ((object->spv->iDim) / GRIDSIZE) + 1;
     int gridyscale = ((object->spv->jDim) / GRIDSIZE) + 1;
@@ -417,9 +415,11 @@ void mc::Surface_Chunked()
         if (ii < object->compressedslices.count()) if (object->compressedslices[ii]->empty == false) empty[ii + 2] = false;
     }
 
-    layer = static_cast<Layer *>(malloc(sizeof(Layer)));
+    layer = static_cast<ScalarFieldLayer *>(malloc(sizeof(ScalarFieldLayer)));
     if (layer == nullptr)
-        exit(0);
+    {
+        QCoreApplication::quit();
+    }
 
     /* initially, botData points to the start of dataset, and */
     /* topData points to the next layer */
@@ -436,7 +436,7 @@ void mc::Surface_Chunked()
     }
 
     //Is this empty?? Surface it anyway I think - grid will control the work
-    object->Isosurfaces.append(march_chunked(layer, 0, 0, object->compressedslices[0]->grid, gridxscale, gridyscale));
+    object->Isosurfaces.append(marchChunked(layer, 0, 0, object->compressedslices[0]->grid, gridxscale, gridyscale));
     TotalTriangles += object->Isosurfaces[0]->nTriangles;
     int vertbase = object->Isosurfaces[0]->nVertices;
 
@@ -519,16 +519,16 @@ void mc::Surface_Chunked()
         {
             //do a march if this slice is not empty
             //qDebug()<<"Marching slice "<<k;
-            object->Isosurfaces.append(march_chunked(layer, k, vertbase, object->compressedslices[k]->grid, gridxscale, gridyscale));
+            object->Isosurfaces.append(marchChunked(layer, k, vertbase, object->compressedslices[k]->grid, gridxscale, gridyscale));
             //qDebug()<<"DONE Marching slice "<<k;
             vertbase += object->Isosurfaces[k]->nVertices;
             TotalTriangles += object->Isosurfaces[k]->nTriangles;
         }
         else
         {
-            //add a blank isosurface
+            //add a blank Isosurface
             //qDebug()<<"XXXX Skipping slice "<<k;
-            isosurface *blankiso = new isosurface;
+            Isosurface *blankiso = new Isosurface;
             object->Isosurfaces.append(blankiso);
 
         }
@@ -547,24 +547,25 @@ void mc::Surface_Chunked()
 }
 
 /**
- * @brief mc::Surface_Non_Chunked
+ * @brief MarchingCubes::surfaceNonChunked
  */
-void mc::Surface_Non_Chunked()
+void MarchingCubes::surfaceNonChunked()
 {
     //Old version
-    Layer *layer; // scalar field data and edges
+    ScalarFieldLayer *layer; // scalar field data and edges
     int i, j, k, e;
 
     unsigned char *dataset = object->spv->fullarray;
     // sprintf(dummy, "Old non-chunking version in MC\n"); DebugPrint(dummy);
-    layer = static_cast<Layer *>(malloc(sizeof(Layer)));
+    layer = static_cast<ScalarFieldLayer *>(malloc(sizeof(ScalarFieldLayer)));
     if (layer == nullptr)
-        exit(0);
+        QCoreApplication::quit();
 
     /* initially, botData points to the start of dataset, and */
     /* topData points to the next layer */
     layer->botData = dataset;
     layer->topData = dataset + OFFSET(0, 0, 1, iDim, jDim);
+
     /* allocate storage to hold the indexing tags for edges in the layer */
     layer->edges = static_cast<int *>(malloc(static_cast<unsigned long long>(iDim - 1) * static_cast<unsigned long long>(jDim - 1) * 12 * sizeof(int)));
 
@@ -574,13 +575,13 @@ void mc::Surface_Non_Chunked()
         *(layer->edges + i) = EMPTY_EDGE;
     }
 
-    /* allocate the storage for the isosurface and initialize */
-    isosurface *iso = new isosurface();
+    /* allocate the storage for the Isosurface and initialize */
+    Isosurface *iso = new Isosurface();
     iso->vertices.resize(0);
     iso->triangles.resize(0);
     iso->trianglearraysize = 0;
     iso->vertexarraysize = 0;
-    march_non_chunked(dataset, layer, 0, 128, iso);
+    marchNonChunked(dataset, layer, 0, 128, iso);
     /* now do the remaining layers */
     for (k = 1; k < kDim - 1; k++)
     {
@@ -596,9 +597,6 @@ void mc::Surface_Non_Chunked()
         /* now topData points to next layer of scalar data*/
         layer->topData = dataset + OFFSET(0, 0, k + 1, iDim, jDim);
 
-        //skip for empty
-        //if (sliceflags[k])
-        //{
         /* percolate the last layer's top edges to this layer's bottom edges */
         for (i = 0; i < iDim - 1; i++)
         {
@@ -615,7 +613,7 @@ void mc::Surface_Non_Chunked()
                 }
             }
         }
-        march_non_chunked(dataset, layer, k, 128, iso);
+        marchNonChunked(dataset, layer, k, 128, iso);
     }
 
     TotalTriangles += iso->nTriangles;
@@ -628,7 +626,7 @@ void mc::Surface_Non_Chunked()
 }
 
 /**
- * @brief mc::march_non_chunked
+ * @brief MarchingCubes::marchNonChunked
  * Old version
  *
  * @param dataset
@@ -637,17 +635,17 @@ void mc::Surface_Non_Chunked()
  * @param threshold
  * @param iso
  */
-void mc::march_non_chunked(datum *dataset, Layer *layer, int k, float threshold, isosurface *iso)
+void MarchingCubes::marchNonChunked(unsigned char *dataset, ScalarFieldLayer *layer, int k, float threshold, Isosurface *iso)
 {
 
-    isosurface *layerIso; // portion of isosurface in layer
-    //int *fPtr;
-    //int *lPtr;
-    datum cell[8]; // grid values at 8 cell vertices
+    Isosurface *layerIso; // portion of Isosurface in layer
+    unsigned char cell[8]; // grid values at 8 cell vertices
     int cellVerts[12]; // verts at the 12 edges in a cell
-    int i, j, ii, jj, e;
-    //int vertSize; // allocation for verts and normals
-    //int triSize; // allocation for triangles
+    int i;
+    int j;
+    int ii;
+    int jj;
+    int e;
     unsigned char cellIndex; // index for edgeTable lookup
 
     /* initialize the cellVerts table */
@@ -656,8 +654,8 @@ void mc::march_non_chunked(datum *dataset, Layer *layer, int k, float threshold,
         cellVerts[i] = EMPTY_EDGE;
     }
 
-    /* allocate and initialize storage for this layer's portion of isosurface */
-    layerIso = new isosurface;
+    /* allocate and initialize storage for this layer's portion of Isosurface */
+    layerIso = new Isosurface;
 
     //Counting
     for (i = 0; i < iDim; i++)
@@ -902,8 +900,8 @@ void mc::march_non_chunked(datum *dataset, Layer *layer, int k, float threshold,
 }
 
 /**
- * @brief mc::march_chunked
- * New version that returns the single slice isosurface object
+ * @brief MarchingCubes::marchChunked
+ * New version that returns the single slice Isosurface object
  *
  * @param layer
  * @param k
@@ -913,13 +911,13 @@ void mc::march_non_chunked(datum *dataset, Layer *layer, int k, float threshold,
  * @param gridyscale
  * @return
  */
-isosurface *mc::march_chunked(Layer *layer, int k, int vertbase, unsigned char *grid, int gridxscale, int gridyscale)
+Isosurface *MarchingCubes::marchChunked(ScalarFieldLayer *layer, int k, int vertbase, unsigned char *grid, int gridxscale, int gridyscale)
 {
     Q_UNUSED(grid)
     Q_UNUSED(gridxscale)
 
-    isosurface *layerIso; // portion of isosurface in layer
-    datum cell[8]; // grid values at 8 cell vertices
+    Isosurface *layerIso; // portion of Isosurface in layer
+    unsigned char cell[8]; // grid values at 8 cell vertices
     int cellVerts[12]; // verts at the 12 edges in a cell
     int i;
     int j;
@@ -936,8 +934,8 @@ isosurface *mc::march_chunked(Layer *layer, int k, int vertbase, unsigned char *
         cellVerts[i] = EMPTY_EDGE;
     }
 
-    // allocate and initialize storage for this layer's portion of isosurface
-    layerIso = new isosurface;
+    // allocate and initialize storage for this layer's portion of Isosurface
+    layerIso = new Isosurface;
 
     //do counting
     for (i = 0; i < iDim; i++)
@@ -989,7 +987,7 @@ isosurface *mc::march_chunked(Layer *layer, int k, int vertbase, unsigned char *
                     {
                         if (*(layer->edges + EDGE_OFFSET(0, i, j, iDim)) == EMPTY_EDGE)
                         {
-                            cellVerts[0]  = makeVertex2(0, i, j, k, layerIso, vertbase);
+                            cellVerts[0]  = makeVertexFast(0, i, j, k, layerIso, vertbase);
                         }
                         else
                         {
@@ -1000,7 +998,7 @@ isosurface *mc::march_chunked(Layer *layer, int k, int vertbase, unsigned char *
                     {
                         if (*(layer->edges + EDGE_OFFSET(1, i, j, iDim)) == EMPTY_EDGE)
                         {
-                            cellVerts[1]  =  makeVertex2(1, i, j, k, layerIso, vertbase);
+                            cellVerts[1]  =  makeVertexFast(1, i, j, k, layerIso, vertbase);
                         }
                         else
                         {
@@ -1011,7 +1009,7 @@ isosurface *mc::march_chunked(Layer *layer, int k, int vertbase, unsigned char *
                     {
                         if (*(layer->edges + EDGE_OFFSET(2, i, j, iDim)) == EMPTY_EDGE)
                         {
-                            cellVerts[2]  = makeVertex2(2, i, j, k, layerIso, vertbase);
+                            cellVerts[2]  = makeVertexFast(2, i, j, k, layerIso, vertbase);
                         }
                         else
                         {
@@ -1022,7 +1020,7 @@ isosurface *mc::march_chunked(Layer *layer, int k, int vertbase, unsigned char *
                     {
                         if (*(layer->edges + EDGE_OFFSET(3, i, j, iDim)) == EMPTY_EDGE)
                         {
-                            cellVerts[3]  = makeVertex2(3, i, j, k, layerIso, vertbase);
+                            cellVerts[3]  = makeVertexFast(3, i, j, k, layerIso, vertbase);
                         }
                         else
                         {
@@ -1033,7 +1031,7 @@ isosurface *mc::march_chunked(Layer *layer, int k, int vertbase, unsigned char *
                     {
                         if (*(layer->edges + EDGE_OFFSET(4, i, j, iDim)) == EMPTY_EDGE)
                         {
-                            cellVerts[4]  = makeVertex2(4, i, j, k, layerIso, vertbase);
+                            cellVerts[4]  = makeVertexFast(4, i, j, k, layerIso, vertbase);
                         }
                         else
                         {
@@ -1044,7 +1042,7 @@ isosurface *mc::march_chunked(Layer *layer, int k, int vertbase, unsigned char *
                     {
                         if (*(layer->edges + EDGE_OFFSET(5, i, j, iDim)) == EMPTY_EDGE)
                         {
-                            cellVerts[5]  = makeVertex2(5, i, j, k, layerIso, vertbase);
+                            cellVerts[5]  = makeVertexFast(5, i, j, k, layerIso, vertbase);
                         }
                         else
                         {
@@ -1055,7 +1053,7 @@ isosurface *mc::march_chunked(Layer *layer, int k, int vertbase, unsigned char *
                     {
                         if (*(layer->edges + EDGE_OFFSET(6, i, j, iDim)) == EMPTY_EDGE)
                         {
-                            cellVerts[6]  =  makeVertex2(6, i, j, k, layerIso, vertbase);
+                            cellVerts[6]  =  makeVertexFast(6, i, j, k, layerIso, vertbase);
                         }
                         else
                         {
@@ -1066,7 +1064,7 @@ isosurface *mc::march_chunked(Layer *layer, int k, int vertbase, unsigned char *
                     {
                         if (*(layer->edges + EDGE_OFFSET(7, i, j, iDim)) == EMPTY_EDGE)
                         {
-                            cellVerts[7]  = makeVertex2(7, i, j, k, layerIso, vertbase);
+                            cellVerts[7]  = makeVertexFast(7, i, j, k, layerIso, vertbase);
                         }
                         else
                         {
@@ -1077,7 +1075,7 @@ isosurface *mc::march_chunked(Layer *layer, int k, int vertbase, unsigned char *
                     {
                         if (*(layer->edges + EDGE_OFFSET(8, i, j, iDim)) == EMPTY_EDGE)
                         {
-                            cellVerts[8]  = makeVertex2(8, i, j, k, layerIso, vertbase);
+                            cellVerts[8]  = makeVertexFast(8, i, j, k, layerIso, vertbase);
                         }
                         else
                         {
@@ -1088,7 +1086,7 @@ isosurface *mc::march_chunked(Layer *layer, int k, int vertbase, unsigned char *
                     {
                         if (*(layer->edges + EDGE_OFFSET(9, i, j, iDim)) == EMPTY_EDGE)
                         {
-                            cellVerts[9]  = makeVertex2(9, i, j, k, layerIso, vertbase);
+                            cellVerts[9]  = makeVertexFast(9, i, j, k, layerIso, vertbase);
                         }
                         else
                         {
@@ -1099,7 +1097,7 @@ isosurface *mc::march_chunked(Layer *layer, int k, int vertbase, unsigned char *
                     {
                         if (*(layer->edges + EDGE_OFFSET(10, i, j, iDim)) == EMPTY_EDGE)
                         {
-                            cellVerts[10]  =  makeVertex2(10, i, j, k, layerIso, vertbase);
+                            cellVerts[10]  =  makeVertexFast(10, i, j, k, layerIso, vertbase);
                         }
                         else
                         {
@@ -1110,7 +1108,7 @@ isosurface *mc::march_chunked(Layer *layer, int k, int vertbase, unsigned char *
                     {
                         if (*(layer->edges + EDGE_OFFSET(11, i, j, iDim)) == EMPTY_EDGE)
                         {
-                            cellVerts[11]  =  makeVertex2(11, i, j, k, layerIso, vertbase);
+                            cellVerts[11]  =  makeVertexFast(11, i, j, k, layerIso, vertbase);
                         }
                         else
                         {
@@ -1174,7 +1172,7 @@ isosurface *mc::march_chunked(Layer *layer, int k, int vertbase, unsigned char *
 }
 
 /**
- * @brief mc::makeVertex
+ * @brief MarchingCubes::makeVertex
  * Old version
  *
  * @param whichEdge
@@ -1186,15 +1184,15 @@ isosurface *mc::march_chunked(Layer *layer, int k, int vertbase, unsigned char *
  * @param layerIso
  * @return
  */
-int mc::makeVertex(int whichEdge, int i, int j, int k, float threshold, datum *dataset, isosurface *layerIso)
+int MarchingCubes::makeVertex(int whichEdge, int i, int j, int k, float threshold, unsigned char *dataset, Isosurface *layerIso)
 {
 
-    int       from[3]; /* first grid vertex                              */
-    int         to[3]; /* second grid vertex                             */
-    float        v[3]; /* the interpolated vertex                        */
-    float        d;    /* relative distance along edge for interpolation */
+    int from[3]; // first grid vertex
+    int to[3]; // second grid vertex
+    float v[3]; // the interpolated vertex
+    float d; // relative distance along edge for interpolation
+    int ii;
 
-    int         ii;
     switch (whichEdge)
     {
     case 0:
@@ -1294,12 +1292,12 @@ int mc::makeVertex(int whichEdge, int i, int j, int k, float threshold, datum *d
         to[2] = k + 1;
         break;
     default:
-        fprintf(stderr, "mc: makeVertex: bad edge index\n");
-        exit(1);
+        fprintf(stderr, "MarchingCubes: makeVertex: bad edge index\n");
+        QCoreApplication::exit();
     }
 
     /* determine the relative distance along edge from->to */
-    /* that the isosurface vertex lies */
+    /* that the Isosurface vertex lies */
     d = ( *(dataset + OFFSET(from[0], from[1], from[2], iDim, jDim)) - threshold) /
         ( *(dataset + OFFSET(from[0], from[1], from[2], iDim, jDim)) -
           * (dataset + OFFSET(to[0], to[1], to[2], iDim, jDim)) );
@@ -1316,7 +1314,7 @@ int mc::makeVertex(int whichEdge, int i, int j, int k, float threshold, datum *d
     v[1] = static_cast<int>(2 * (from[1] + d * (to[1] - from[1])));
     v[2] = static_cast<int>(2 * (from[2] + d * (to[2] - from[2])));
 
-    /* insert the vertex into the isosurface structure */
+    /* insert the vertex into the Isosurface structure */
     /* compute the tag for this vertex, and return the tag        */
 
     for (ii = 0; ii < 3; ii++)
@@ -1332,7 +1330,7 @@ int mc::makeVertex(int whichEdge, int i, int j, int k, float threshold, datum *d
 }
 
 /**
- * @brief mc::makeVertex2
+ * @brief MarchingCubes::makeVertexFast
  * Newer optimised version
  *
  * @param whichEdge
@@ -1343,9 +1341,9 @@ int mc::makeVertex(int whichEdge, int i, int j, int k, float threshold, datum *d
  * @param vertbase
  * @return
  */
-int mc::makeVertex2(int whichEdge, int i, int j, int k, isosurface *layerIso, int vertbase)
+int MarchingCubes::makeVertexFast(int whichEdge, int i, int j, int k, Isosurface *layerIso, int vertbase)
 {
-    int        v[3];
+    int v[3];
 
     switch (whichEdge)
     {

@@ -423,7 +423,7 @@ bool VAXML::readSPVF(QString fname)
     //qDebug()<<"H4";
 
     //Now attempt to read all the STLs.
-    QList <vtkPolyData *> PolyData;
+    QList <vtkPolyData *> localPolyData;
 
     MainWin->setSpecificLabel("Setting up objects");
     qApp->processEvents();
@@ -444,7 +444,7 @@ bool VAXML::readSPVF(QString fname)
         QDataStream stl_in(&stlbuffer);
 
 
-        vtkPolyData *pd;
+        vtkPolyData *polydata;
         vtkPoints *verts;
         vtkCellArray *cellarray;
         vtkIdTypeArray *actualarray;
@@ -452,8 +452,8 @@ bool VAXML::readSPVF(QString fname)
         verts = vtkPoints::New();
         actualarray = vtkIdTypeArray::New();
         cellarray = vtkCellArray::New();
-        pd = vtkPolyData::New();
-        pd->Initialize();
+        polydata = vtkPolyData::New();
+        polydata->Initialize();
         verts->Initialize();
         cellarray->Initialize();
         actualarray->Initialize();
@@ -494,14 +494,14 @@ bool VAXML::readSPVF(QString fname)
 //        qDebug()<<"Read "<<tcount<<"triangles";
 
         cellarray->SetCells(tcount, actualarray);
-        pd->SetPolys(cellarray);
-        pd->SetPoints(verts);
+        polydata->SetPolys(cellarray);
+        polydata->SetPoints(verts);
         //Do actual reading
 
 
         //done - code from here on is as in normal VAXML reader
 
-        PolyData.append(pd);
+        localPolyData.append(polydata);
         f += (100.0 / objects.count());
         MainWin->setSpecificProgress(static_cast<int>(f / static_cast<float>(2.0)));
         qApp->processEvents();
@@ -565,7 +565,7 @@ bool VAXML::readSPVF(QString fname)
         svo->Transparency = convTrans(objects[i]->transparency);
         for (int j = 0; j < 16; j++) svo->matrix[j] = objects[i]->matrix[j];
         svo->spv = spv;
-        svo->pd = PolyData[i];
+        svo->polydata = localPolyData[i];
     }
 
     //surface them. Two loops needed as matrices must be in place before I start buggering with this!
@@ -977,7 +977,7 @@ bool VAXML::readVAXML(QString fname)
     //Got and checked VAXML stuff - now try and load the STL/PLYs and set everything up!
 
     //Now attempt to read all the STL/PLYs.
-    QList <vtkPolyData *> PolyData;
+    QList <vtkPolyData *> localPolyData;
 
     MainWin->ui->OutputLabelOverall->setText("Importing objects");
     qApp->processEvents();
@@ -1024,10 +1024,10 @@ bool VAXML::readVAXML(QString fname)
             vtkSTLReader *reader = vtkSTLReader::New();
             reader->SetFileName(QString(fpath + "/" + o->file).toLatin1());
             reader->Update();
-            vtkPolyData *pd;
-            pd = vtkPolyData::New();
-            pd = reader->GetOutput();
-            PolyData.append(pd);
+            vtkPolyData *polydata;
+            polydata = vtkPolyData::New();
+            polydata = reader->GetOutput();
+            localPolyData.append(polydata);
             f += (100.0 / objects.count());
             MainWin->ui->ProgBarOverall->setValue(static_cast<int>(f / static_cast<float>(2.0)));
             qApp->processEvents();
@@ -1051,10 +1051,10 @@ bool VAXML::readVAXML(QString fname)
             vtkPLYReader *reader = vtkPLYReader::New();
             reader->SetFileName(QString(fpath + "/" + o->file).toLatin1());
             reader->Update();
-            vtkPolyData *pd;
-            pd = vtkPolyData::New();
-            pd = reader->GetOutput();
-            PolyData.append(pd);
+            vtkPolyData *polydata;
+            polydata = vtkPolyData::New();
+            polydata = reader->GetOutput();
+            localPolyData.append(polydata);
             f += (100.0 / objects.count());
             MainWin->ui->ProgBarOverall->setValue(static_cast<int>(f / static_cast<float>(2.0)));
             qApp->processEvents();
@@ -1143,7 +1143,7 @@ bool VAXML::readVAXML(QString fname)
         svo->Transparency = convTrans(objects[i]->transparency);
         for (int j = 0; j < 16; j++) svo->matrix[j] = objects[i]->matrix[j];
         svo->spv = spv;
-        svo->pd = PolyData[i];
+        svo->polydata = localPolyData[i];
     }
 
     //surface them. Two loops needed as matrices must be in place before I start buggering with this!

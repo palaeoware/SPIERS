@@ -6,17 +6,20 @@
 
 class SVObject;
 
+/**
+ * @brief The SPV class
+ */
 class SPV
 {
 public:
     SPV(int index, int FileVersion, int iDim, int jDim, int kDim);
     ~SPV();
-    QList <SVObject*> ComponentObjects;
+    QList <SVObject *> ComponentObjects;
     float bright;
     QString filename, filenamenopath;
     int FileVersion;
     double *stretches;
-    double PixPerMM, SlicePerMM, SkewDown,SkewLeft;
+    double PixPerMM, SlicePerMM, SkewDown, SkewLeft;
     int iDim, jDim, kDim;
     int size;
     int GridSize;

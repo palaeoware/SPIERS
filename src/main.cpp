@@ -222,7 +222,7 @@ int main(int argc, char *argv[])
     {
         if ((*(argv[1]) == '-') && (*(argv[1] + 1) == 'x'))
         {
-            exit(0);
+            QCoreApplication::quit();
         }
         else
         {

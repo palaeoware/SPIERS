@@ -24,7 +24,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = 0);
+    MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void UpdateGL();
     void RefreshObjects();
@@ -74,8 +74,8 @@ private:
     void RefreshPieces();
     void KillSPV(int i);
     void wheelEvent(QWheelEvent *event);
-    void ApplyAnimStep();
-    void AnimSaveImage();
+    void animationApplyStep();
+    void animationSaveImage();
     QString AnimOutputDir;
     QString DegConvert(float angle);
     QString TransConvert(float trans);

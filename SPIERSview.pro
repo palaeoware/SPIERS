@@ -27,8 +27,8 @@ SOURCES += src/main.cpp \
     src/svobject.cpp \
     src/spv.cpp \
     src/compressedslice.cpp \
-    src/mc.cpp \
-    src/myconnectivityfilter.cpp \
+    src/marchingcubes.cpp \
+    src/dataconnectivityfilter.cpp \
     src/movetogroup.cpp \
     src/vaxml.cpp \
     src/quickhelpbox.cpp \
@@ -38,7 +38,9 @@ SOURCES += src/main.cpp \
     ../SPIERScommon/semanticversion.cpp \
     ../SPIERScommon/prereleasecomponent.cpp \
     src/vaxmlgroup.cpp \
-    src/vaxmlobject.cpp
+    src/vaxmlobject.cpp \
+    src/isosurface.cpp \
+    src/scalarfieldlayer.cpp
 
 
 HEADERS += src/mainwindow.h \
@@ -48,8 +50,8 @@ HEADERS += src/mainwindow.h \
     src/svobject.h \
     src/spv.h \
     src/compressedslice.h \
-    src/mc.h \
-    src/myconnectivityfilter.h \
+    src/marchingcubes.h \
+    src/dataconnectivityfilter.h \
     src/movetogroup.h \
     src/vaxml.h \
     src/quickhelpbox.h \
@@ -58,31 +60,17 @@ HEADERS += src/mainwindow.h \
     src/gl3widget.h \
     src/rowmans.h \
     src/main.h \
-    src/version.h \
     ../SPIERScommon/netmodule.h \
     ../SPIERScommon/semanticversion.h \
     ../SPIERScommon/prereleasecomponent.h \
     src/vaxmlgroup.h \
-    src/vaxmlobject.h
+    src/vaxmlobject.h \
+    src/isosurface.h \
+    src/scalarfieldlayer.h
 
 LIBS += -L$$PWD/../../../../msys64/mingw64/lib \
 # VTK - Libary
 # libvtk* name to match static lib created
-# Removed to get it to compile with VTK 8.1
-#-llibvtkexpat-8.1 \
-#-llibvtkInfovisCore-8.1 \
-#-llibvtkalglib-8.1 \
-#-llibvtkfreetype-8.1 \
-#-llibvtkhdf5-8.1 \
-#-llibvtkhdf5_hl-8.1 \
-#-llibvtkjpeg-8.1 \
-#-llibvtkjsoncpp-8.1 \
-#-llibvtklibxml2-8.1 \
-#-llibvtkNetCDF_cxx-8.1 \
-#-llibvtkoggtheora-8.1 \
-#-llibvtkpng-8.1 \
-#-llibvtktiff-8.1 \
-#-llibvtkzlib-8.1 \
 -llibvtkCommonExecutionModel-8.1 \
 -llibvtkCommonDataModel-8.1 \
 -llibvtkCommonColor-8.1 \

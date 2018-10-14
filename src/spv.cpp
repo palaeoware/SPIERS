@@ -1,6 +1,7 @@
+#include <QDebug>
+
 #include "spv.h"
 #include "globals.h"
-#include <QDebug>
 
 /**
  * @brief SPVs

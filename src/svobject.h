@@ -9,17 +9,21 @@
 #include <QOpenGLBuffer>
 #include <QOpenGLVertexArrayObject>
 #include <QGLShaderProgram>
-
-#include "mc.h" //for isosurface
-#include "vtkPolyData.h"
-#include "vtkPoints.h"
 #include <QObject>
 #include <QFile>
+#include <QTreeWidgetItem>
+
+#include "isosurface.h"
+#include "dataconnectivityfilter.h"
+#include "spv.h"
+#include "compressedslice.h"
+
+#include "vtkPolyData.h"
+#include "vtkPoints.h"
 #include "vtkPolyDataNormals.h"
 #include "vtkSmoothPolyDataFilter.h"
 #include "vtkWindowedSincPolyDataFilter.h"
 #include "vtkDecimatePro.h"
-#include "myconnectivityfilter.h"
 #include "vtkIdTypeArray.h"
 #include "vtkPointData.h"
 #include "vtkTriangle.h"
@@ -30,10 +34,9 @@
 #include "vtkCellArray.h"
 #include "vtkIdTypeArray.h"
 
-class SPV;
-class CompressedSlice;
-class QTreeWidgetItem;
-
+/**
+ * @brief The SVObject class
+ */
 class SVObject
 {
 
@@ -48,13 +51,18 @@ public:
     void UnCompressPolyData();
     void CompressPolyData(bool flag);
     void DoUpdates();
-    void ForceUpdates(int,int);
+    void ForceUpdates(int, int);
     int Parent();
+    void MakeDlists();
+    int AppendCompressedFaces(QString mainfile, QString internalfile, QDataStream *out);
+    void MakeVBOs();
+    void ResetMatrix();
+
     int Index;
     QString Name;
     QChar Key;
     uchar Colour[3]; //r,g,b
-    QList <isosurface *> Isosurfaces;
+    QList <Isosurface *> Isosurfaces;
     QList <CompressedSlice *> compressedslices;
     unsigned char *AllSlicesCompressed;
     int AllSlicesSize;
@@ -69,7 +77,7 @@ public:
     int IslandRemoval;
     int Smoothing;
     int Triangles;
-    int Voxels;
+    int voxels;
     int Shininess;  //codes 0-3
     bool colour; //does it have colour data?
     QTreeWidgetItem *widgetitem;
@@ -77,41 +85,36 @@ public:
     QList <int> displaylists;
 
     //Newer VBO stuff
-    //QList <QOpenGLVertexArrayObject *> VBOs;
     QList <QOpenGLBuffer *> VertexBuffers;
     QList <QOpenGLBuffer *> ColourBuffers;
-    //QList <QOpenGLBuffer *> NormalBuffers;
     QList <int> VBOVertexCounts;
 
     double objectxmin, objectymin, objectzmin, objectxmax, objectymax, objectzmax;
     bool donebox;
-    QOpenGLBuffer BoundingBoxBuffer;
+    QOpenGLBuffer boundingBoxBuffer;
 
-    bool UsesVBOs;
+    bool usesVBOs;
 
     SPV *spv;
     float matrix[16];
     float defaultmatrix[16];
     bool gotdefaultmatrix;
-    void ResetMatrix();
-    QByteArray CompressedPolyData;
-    bool PolyDataCompressed;
+
+    QByteArray compressedPolyData;
+    bool polyDataCompressed;
     bool SurfaceMe;
     bool killme;
     double scale;
-    bool BuggedData;
-    vtkPolyData *pd;
-    void MakeDlists();
-    int AppendCompressedFaces(QString mainfile, QString internalfile, QDataStream *out);
+    bool buggedData;
+    vtkPolyData *polydata;
 
-    void MakeVBOs();
 private:
     void DeleteVTKObjects();
     void GetFinalPolyData();
     void MakePolyVerts(int slice, int VertexBase);
-    QString DoMatrixDXFoutput(int v,float x,float y, float z);
+    QString DoMatrixDXFoutput(int v, float x, float y, float z);
     int NextVertex;
-    vtkPolyData *PolyData; //Currently one object for whole thing
+    vtkPolyData *localPolyData; //Currently one object for whole thing
     vtkPoints *verts;
     vtkCellArray *cellarray;
     vtkIdTypeArray *actualarray;
@@ -126,12 +129,12 @@ private:
     vtkCallbackCommand *cberror;
     vtkPolyData *pdislands;
 
-    MyConnectivityFilter *islandfinder;
+    DataConnectivityFilter *islandfinder;
 
     QVector <float> normalx;
     QVector <float> normaly;
     QVector <float> normalz;
- };
+};
 
 extern QList <SVObject *> SVObjects;
 
