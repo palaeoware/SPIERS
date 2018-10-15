@@ -21,26 +21,24 @@ int main(int argc, char **argv)
     QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 #endif
 
-    QApplication app( argc, argv );
+    QApplication app(argc, argv);
 
     //Style program with our dark style
     QApplication::setStyle(new DarkStyleTheme);
 
     QPixmap splashPixmap(":/palaeoware_logo_square.png");
-    QSplashScreen splash(splashPixmap, Qt::WindowStaysOnTopHint);
-    splash.show();
-    splash.showMessage("<font><b>" + QString(PRODUCTNAME) + " v" + QString(UPDATEVERSION) + " </b></font>", Qt::AlignHCenter, Qt::white);
+    QSplashScreen *splash = new QSplashScreen(splashPixmap, Qt::WindowStaysOnTopHint);
+    splash->show();
+    splash->showMessage("<font><b>" + QString(PRODUCTNAME) + " v" + QString(UPDATEVERSION) + " </b></font>", Qt::AlignHCenter, Qt::white);
+    app.processEvents();
+    QTimer::singleShot(3000, splash, SLOT(close()));
 
-
-    QApplication::processEvents();
-
-    MainWindowImpl win;
-
-    NetModule n;
-
-    n.CheckForNew();
-
-    win.show();
     app.connect( &app, SIGNAL( lastWindowClosed() ), &app, SLOT( quit() ) );
+
+    NetModule netModule;
+    netModule.checkForNew();
+
+    MainWindowImpl mainWindow;
+    mainWindow.show();
     return app.exec();
 }
