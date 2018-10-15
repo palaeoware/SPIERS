@@ -57,24 +57,8 @@
         <file alias="icon_undock.png">resources/darkstyle/icon_undock.png</file>
         <file alias="icon_vline.png">resources/darkstyle/icon_vline.png</file>
         <file alias="icon_about_button.png">resources/darkstyle/icon_about_button.png</file>
-        <file alias="icon_genome_button.png">resources/darkstyle/icon_genome_button.png</file>
         <file alias="icon_log_button.png">resources/darkstyle/icon_log_button.png</file>
         <file alias="icon_settings_1_button.png">resources/darkstyle/icon_settings_1_button.png</file>
         <file alias="icon_settings_2_button.png">resources/darkstyle/icon_settings_2_button.png</file>
-        <file alias="icon_play_batch_button.png">resources/darkstyle/icon_play_batch_button.png</file>
-        <file alias="icon_play_batch_button_green.png">resources/darkstyle/icon_play_batch_button_green.png</file>
-        <file alias="icon_play_button.png">resources/darkstyle/icon_play_button.png</file>
-        <file alias="icon_play_button_green.png">resources/darkstyle/icon_play_button_green.png</file>
-        <file alias="icon_play_n_button.png">resources/darkstyle/icon_play_n_button.png</file>
-        <file alias="icon_play_n_button_green.png">resources/darkstyle/icon_play_n_button_green.png</file>
-        <file alias="icon_reset_button.png">resources/darkstyle/icon_reset_button.png</file>
-        <file alias="icon_reset_button_red.png">resources/darkstyle/icon_reset_button_red.png</file>
-        <file alias="icon_reset_known_genome_button.png">resources/darkstyle/icon_reset_known_genome_button.png</file>
-        <file alias="icon_reset_known_genome_button_red.png">resources/darkstyle/icon_reset_known_genome_button_red.png</file>
-        <file alias="icon_stop_button.png">resources/darkstyle/icon_stop_button.png</file>
-        <file alias="icon_stop_button_red.png">resources/darkstyle/icon_stop_button_red.png</file>
-        <file alias="icon_pause_button.png">resources/darkstyle/icon_pause_button.png</file>
-        <file alias="icon_pause_button_orange.png">resources/darkstyle/icon_pause_button_orange.png</file>
     </qresource>
-    <qresource prefix="/icons"/>
 </RCC>
