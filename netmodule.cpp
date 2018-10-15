@@ -14,22 +14,29 @@
 //First section is my code for checking the update status
 bool MacBodgeClickedNoForUpdateDownload;
 
+/**
+ * @brief NetModule::NetModule
+ */
 NetModule::NetModule(): QObject()
 {
-    CheckFinished = false;
-    //DownloadNeeded=false;
-    DownloadURL = "";
-    DoingCheck = false;
-    DownloadDone = false;
-    DownloadError = false;
-    ErrorText = "";
-    ProgressBar = nullptr;
-    ProgressDialog = nullptr;
+    checkFinished = false;
+    downloadURL = "";
+    doingCheck = false;
+    downloadDone = false;
+    downloadError = false;
+    errorText = "";
+    progressBar = nullptr;
+    progressDialog = nullptr;
 }
 
-void NetModule::CheckHash(QByteArray stlhash, QStringList *commlist)
+/**
+ * @brief NetModule::checkHash
+ * @param stlhash
+ * @param commlist
+ */
+void NetModule::checkHash(QByteArray stlhash, QStringList *commlist)
 {
-    DoingHash = true;
+    doingHash = true;
     i_comm = commlist;
 
     QString h1(stlhash.toHex());
@@ -43,71 +50,73 @@ void NetModule::CheckHash(QByteArray stlhash, QStringList *commlist)
     t << "http://www.spiers-software.org/" << stlhash.toHex() << ".txt";
     request.setUrl(QUrl(url));
 
-    request.setRawHeader("User-Agent", "SPIERS 2");
+    request.setRawHeader("User-Agent", "SPIERS");
     reply = manager->get(request);
 
     connect(reply, SIGNAL(readyRead()), this, SLOT(slotReadyRead()));
-    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)),
-            this, SLOT(slotError(QNetworkReply::NetworkError)));
+    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(slotError(QNetworkReply::NetworkError)));
 }
 
-void NetModule::CheckForNew()
+/**
+ * @brief NetModule::checkForNew
+ */
+void NetModule::checkForNew()
 {
     //return; //deactivate
     QNetworkRequest request;
-    DoingCheck = true;
+    doingCheck = true;
     manager = new QNetworkAccessManager(this);
 
-
 #ifdef __APPLE__
-    //QMessageBox::question(0,"SPIERS update","Mac Update",QMessageBox::No,QMessageBox::Yes);
     request.setUrl(QUrl("http://www.spiers-software.org/SPIERSstatus-mac.txt"));
 #endif
 
 #ifndef __APPLE__
-    //QMessageBox::question(0,"SPIERS update","A new version of SPIERS ",QMessageBox::No,QMessageBox::Yes);
     request.setUrl(QUrl("http://www.spiers-software.org/SPIERSstatus-win64.txt"));
 #endif
 
-    request.setRawHeader("User-Agent", "SPIERS 2");
+    request.setRawHeader("User-Agent", "SPIERS");
     reply = manager->get(request);
 
     connect(reply, SIGNAL(readyRead()), this, SLOT(slotReadyRead()));
-    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)),
-            this, SLOT(slotError(QNetworkReply::NetworkError)));
+    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(slotError(QNetworkReply::NetworkError)));
 }
 
-void NetModule::getUpdate(QString url, QString SaveFile)
+/**
+ * @brief NetModule::getUpdate
+ * @param url
+ * @param SaveFile
+ */
+void NetModule::getUpdate(QString url, QString saveFile)
 {
-    output.setFileName(SaveFile);
-    DoingCheck = false;
+    output.setFileName(saveFile);
+    doingCheck = false;
 
-    ProgressDialog = new QProgressDialog("Update downloading.", "Cancel", 0, 100);
-    ProgressDialog->setWindowModality(Qt::WindowModal);
-    ProgressDialog->setMinimumDuration(0);
+    progressDialog = new QProgressDialog("Update downloading.", "Cancel", 0, 100);
+    progressDialog->setWindowModality(Qt::WindowModal);
+    progressDialog->setMinimumDuration(0);
 
-    connect(ProgressDialog, SIGNAL(canceled()), this, SLOT(cancel()));
+    connect(progressDialog, SIGNAL(canceled()), this, SLOT(cancel()));
 
-    DownloadDone = false;
-    DownloadError = false;
-    ErrorText = "";
-    output.setFileName(SaveFile);
-    DoingCheck = false;
+    downloadDone = false;
+    downloadError = false;
+    errorText = "";
+    output.setFileName(saveFile);
+    doingCheck = false;
 
     if (!output.open(QIODevice::WriteOnly))
     {
-        DownloadError = true;
-        ErrorText = "Could not open file on local system";
+        downloadError = true;
+        errorText = "Could not open file on local system";
         return;
     }
 
     manager = new QNetworkAccessManager(this);
-    connect(manager, SIGNAL(finished(QNetworkReply *)),
-            this, SLOT(downloadFinished(QNetworkReply *)));
+    connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(downloadFinished(QNetworkReply *)));
     QNetworkRequest request;
 
     request.setUrl(QUrl(url));
-    request.setRawHeader("User-Agent", "SPIERS 2");
+    request.setRawHeader("User-Agent", "SPIERS");
     reply = manager->get(request);
 
     connect(reply, SIGNAL(readyRead()), this, SLOT(slotReadyRead()));
@@ -115,30 +124,35 @@ void NetModule::getUpdate(QString url, QString SaveFile)
     connect(reply, SIGNAL(downloadProgress (qint64, qint64 )), this, SLOT(progress(qint64, qint64 )));
 }
 
-void NetModule::doDownload(QString url, QString FileName, QProgressBar *pb)
+/**
+ * @brief NetModule::doDownload
+ * @param url
+ * @param FileName
+ * @param pb
+ */
+void NetModule::doDownload(QString url, QString fileName, QProgressBar *pb)
 {
-//    qDebug()<<"Donwloading "<<url<<"to"<<FileName;
-    DownloadDone = false;
-    DownloadError = false;
-    ErrorText = "";
-    ProgressBar = pb;
-    output.setFileName(FileName);
-    DoingCheck = false;
+    // qDebug()<<"Donwloading "<<url<<"to"<<FileName;
+    downloadDone = false;
+    downloadError = false;
+    errorText = "";
+    progressBar = pb;
+    output.setFileName(fileName);
+    doingCheck = false;
 
     if (!output.open(QIODevice::WriteOnly))
     {
-        DownloadError = true;
-        ErrorText = "Could not open file on local system";
+        downloadError = true;
+        errorText = "Could not open file on local system";
         return;
     }
 
     manager = new QNetworkAccessManager(this);
-    connect(manager, SIGNAL(finished(QNetworkReply *)),
-            this, SLOT(downloadFinished(QNetworkReply *)));
+    connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(downloadFinished(QNetworkReply *)));
     QNetworkRequest request;
 
     request.setUrl(QUrl(url));
-    request.setRawHeader("User-Agent", "SPIERS 2");
+    request.setRawHeader("User-Agent", "SPIERS");
     reply = manager->get(request);
 
     connect(reply, SIGNAL(readyRead()), this, SLOT(slotReadyRead()));
@@ -146,85 +160,99 @@ void NetModule::doDownload(QString url, QString FileName, QProgressBar *pb)
     connect(reply, SIGNAL(downloadProgress (qint64, qint64 )), this, SLOT(progress(qint64, qint64 )));
 }
 
+/**
+ * @brief NetModule::progress
+ * @param bytesReceived
+ * @param bytesTotal
+ */
 void NetModule::progress(qint64 bytesReceived, qint64 bytesTotal)
 {
-    int total = (int)((100 * bytesReceived) / (bytesTotal));
-    if (ProgressBar) ProgressBar->setValue(total);
-    if (ProgressDialog)
+    int total = static_cast<int>((100 * bytesReceived) / (bytesTotal));
+    if (progressBar) progressBar->setValue(total);
+    if (progressDialog)
     {
-        ProgressDialog->setValue(total);
+        progressDialog->setValue(total);
     }
-//    qDebug()<<"Set"<<total;
 }
 
+/**
+ * @brief NetModule::slotReadyRead
+ */
 void NetModule::slotReadyRead()
 {
-//    if (ProgressDialog) qDebug()<<"readyread..."<<ProgressDialog->value();
-    if (DoingCheck)
+    // if (progressDialog) qDebug()<<"readyread..."<<progressDialog->value();
+    if (doingCheck)
     {
-        CheckFinished = true;
+        checkFinished = true;
 
         //QByteArray b=reply->readAll();
-        SemanticVersion version_online = SemanticVersion::fromString(reply->readLine());
-        SemanticVersion version_current = SemanticVersion::fromString(UPDATEVERSION);
-        qDebug() << "Version Online: " << version_online.str() << "Version Current: " << version_current.str();
-        if (version_online > version_current)
+        SemanticVersion versionOnline = SemanticVersion::fromString(reply->readLine());
+        SemanticVersion versionCurrent = SemanticVersion::fromString(UPDATEVERSION);
+        qDebug() << "Version Online: " << versionOnline.str() << "Version Current: " << versionCurrent.str();
+
+        if (versionOnline > versionCurrent)
         {
-            //QMessageBox::information(0,"Update","Here3");
             MacBodgeClickedNoForUpdateDownload = true;
-            //DownloadNeeded=true;
-            DownloadURL = reply->readLine();
-            if (QMessageBox::question(nullptr, "SPIERS update",
-                                      "A new version of SPIERS is available.\nDo you want to download it?\n\nNote that after downloading this program will close before running the new installer.", QMessageBox::No,
-                                      QMessageBox::Yes) == QMessageBox::Yes)
+            downloadURL = reply->readLine();
+
+            QMessageBox *popupMessage = new QMessageBox;
+            popupMessage->setParent(nullptr);
+            popupMessage->setWindowTitle("SPIERS update");
+            popupMessage->setText("A new version of SPIERS is available.\nDo you want to download it?\n\nNote that after downloading this program will close before running the new installer.");
+            popupMessage->setStandardButtons(QMessageBox::Yes);
+            popupMessage->addButton(QMessageBox::No);
+            popupMessage->setDefaultButton(QMessageBox::No);
+            popupMessage->setWindowFlags(Qt::WindowStaysOnTopHint);
+            popupMessage->raise();
+            int popupMessageReturn = popupMessage->exec();
+
+            if (popupMessageReturn == QMessageBox::Yes)
             {
 #ifndef __APPLE__
-                NetModule n2;
+                NetModule netModule;
 
-                QString SaveFile = QDir::tempPath() + "SPIERSupdate.exe";
-//                    qDebug()<<SaveFile;
-                n2.getUpdate(DownloadURL, SaveFile);
+                QString saveFile = QDir::tempPath() + "SPIERSupdate.exe";
+                // qDebug()<<SaveFile;
+                netModule.getUpdate(downloadURL, saveFile);
                 do
                 {
                     qApp->processEvents();
                     //ProgressDialog->setWindowFlags(Qt::WindowStaysOnTopHint);
                     //n2.ProgressDialog->raise();
                 }
-                while (n2.DownloadDone == false);
+                while (netModule.downloadDone == false);
 
-//                    qDebug()<<n2.DownloadDone;
-//                    qDebug()<<n2.DownloadError;
+                //qDebug()<<n2.DownloadDone;
+                //qDebug()<<n2.DownloadError;
 
-                if (n2.DownloadError) return;
+                if (netModule.downloadError) return;
 
-                QFileInfo f(SaveFile);
-                if (f.size() < 1000000) //If < 1Mb definately something up
+                QFileInfo fileInfo(saveFile);
+                //If < 1Mb definately something up
+                if (fileInfo.size() < 1000000)
                 {
-                    QMessageBox::warning(0, "SPIERS update error",
+                    QMessageBox::warning(nullptr, "SPIERS update error",
                                          "File does not appear to have downloaded properly - this may be a virus-checker/firewall issue. Visit the SPIERS website (www.spiers-software.org) to manually download the latest version");
                     return;
                 }
                 //run the thing, and quit
+                QMessageBox::information(nullptr, "Update", "Updater downloaded - click OK to close this program and start the updater");
+                QProcess::startDetached(saveFile);
 
-                QMessageBox::information(0, "Update", "Updater downloaded - click OK to close this program and start the updater");
-                QProcess::startDetached(SaveFile);
                 //The openUrl method may work on PC, but this definately does, so stick with it
-
-
                 QCoreApplication::quit();
 #endif
 #ifdef __APPLE__
-                QMessageBox::information(0, "Update",
+                QMessageBox::information(nullptr, "Update",
                                          "Updater wil be downloaded via your web-browser. Once downloaded run it manually if it does not start automatically. Close all SPIERS applications before installing!");
-                QDesktopServices::openUrl(QUrl(DownloadURL, QUrl::TolerantMode));
+                QDesktopServices::openUrl(QUrl(downloadURL, QUrl::TolerantMode));
 #endif
             }
-            //qDebug()<<"Here";
         }
     }
-    else if (DoingHash)
+    else if (doingHash)
     {
-        CheckFinished = true;
+        checkFinished = true;
 
         QString readcopy = reply->readLine();
         if (readcopy.length() < 4) return;
@@ -254,47 +282,57 @@ void NetModule::slotReadyRead()
     //qDebug()<<"Here2";
 }
 
+/**
+ * @brief NetModule::cancel
+ */
 void NetModule::cancel()
 {
-//    qDebug()<<"In cancel"<<ProgressDialog->wasCanceled();
-//    qDebug()<<"And..."<<ProgressDialog->value();
-    DownloadError = true;
-    DownloadDone = true;
+    // qDebug()<<"In cancel"<<ProgressDialog->wasCanceled();
+    // qDebug()<<"And..."<<ProgressDialog->value();
+    downloadError = true;
+    downloadDone = true;
     output.close();
     reply->abort();
     reply->deleteLater();
 }
 
+/**
+ * @brief NetModule::slotError
+ * @param Error
+ */
 void NetModule::slotError(QNetworkReply::NetworkError Error)
 {
-    if (DownloadError) return;
+    if (downloadError) return;
     qDebug() << "Error reported by netmodule";
-    if (DoingCheck || DoingHash) CheckFinished = true;
+    if (doingCheck || doingHash) checkFinished = true;
 
     else
     {
         QString SError;
         QTextStream e(&SError);
         e << "Error code: " << Error;
-        ErrorText = SError;
-        DownloadError = true;
-        DownloadDone = true;
+        errorText = SError;
+        downloadError = true;
+        downloadDone = true;
         output.remove();
         reply->abort();
         reply->deleteLater();
-
     }
 }
 
+/**
+ * @brief NetModule::downloadFinished
+ * @param reply
+ */
 void NetModule::downloadFinished(QNetworkReply *reply)
 {
     qDebug() << "Download finished";
-    if (DownloadError) return;
-//    if (ProgressDialog) qDebug()<<"DoneFinished..."<<ProgressDialog->value();
+    if (downloadError) return;
+    // if (ProgressDialog) qDebug()<<"DoneFinished..."<<ProgressDialog->value();
     output.close();
-    DownloadDone = true;
+    downloadDone = true;
     reply->deleteLater();
-    if (ProgressDialog) ProgressDialog->hide();
-    DownloadError = false;
+    if (progressDialog) progressDialog->hide();
+    downloadError = false;
 }
 

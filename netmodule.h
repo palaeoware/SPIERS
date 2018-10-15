@@ -18,7 +18,9 @@
 
 #include <stdio.h>
 
-#define UPDATEVERSION "3.0.0-alpha"
+//#define UPDATEVERSION "3.0.0-alpha"
+#define UPDATEVERSION "1.0.0"
+
 
 extern bool MacBodgeClickedNoForUpdateDownload;
 
@@ -27,24 +29,23 @@ class NetModule : public QObject
     Q_OBJECT
 
 public:
-    bool CheckFinished;
-    bool DownloadNeeded;
-    bool DoingCheck;
-    bool DoingHash;
-    bool DownloadDone;
-    bool DownloadError;
+    bool checkFinished;
+    bool doingCheck;
+    bool doingHash;
+    bool downloadDone;
+    bool downloadError;
     QFile output;
-    QProgressBar *ProgressBar;
-    QProgressDialog *ProgressDialog;
+    QProgressBar *progressBar;
+    QProgressDialog *progressDialog;
     QStringList *i_comm;
-    QString ErrorText;
-    QString DownloadURL;
+    QString errorText;
+    QString downloadURL;
 
     NetModule();
-    void CheckForNew();
-    void CheckHash(QByteArray vaxmlhash, QStringList *commlist);
-    void doDownload(QString url, QString FileName, QProgressBar *pb);
-    void getUpdate(QString url, QString SaveFile);
+    void checkForNew();
+    void checkHash(QByteArray vaxmlhash, QStringList *commlist);
+    void doDownload(QString url, QString fileName, QProgressBar *pb);
+    void getUpdate(QString url, QString saveFile);
 
 private:
     QNetworkAccessManager *manager;
@@ -55,7 +56,7 @@ private slots:
     void downloadFinished(QNetworkReply *reply);
     void progress(qint64 bytesReceived, qint64 bytesTotal);
     void slotReadyRead();
-    void slotError(QNetworkReply::NetworkError Error);
+    void slotError(QNetworkReply::NetworkError error);
 };
 
 #endif // NETMODULE_H
