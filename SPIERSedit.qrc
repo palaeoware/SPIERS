@@ -60,5 +60,7 @@
         <file alias="icon_log_button.png">resources/darkstyle/icon_log_button.png</file>
         <file alias="icon_settings_1_button.png">resources/darkstyle/icon_settings_1_button.png</file>
         <file alias="icon_settings_2_button.png">resources/darkstyle/icon_settings_2_button.png</file>
+        <file alias="icon_eye_closed.png">resources/darkstyle/icon_eye_closed.png</file>
+        <file alias="icon_eye_open.png">resources/darkstyle/icon_eye_open.png</file>
     </qresource>
 </RCC>

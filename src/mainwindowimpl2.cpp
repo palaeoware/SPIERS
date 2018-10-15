@@ -83,8 +83,8 @@ void MainWindowImpl::RefreshOneMaskItem(QTreeWidgetItem *item, int i) //i is ind
 
     //now my write, show, lock widgets
     QLabel *show = new QLabel();
-    if (MasksSettings[i]->Show) show->setPixmap(QPixmap(":/icons/eye.bmp"));
-    else show->setPixmap(QPixmap(":/icons/eye_off.bmp"));
+    if (MasksSettings[i]->Show) show->setPixmap(QPixmap(":/darkstyle/icon_eye_open.png"));
+    else show->setPixmap(QPixmap(":/darkstyle/icon_eye_closed.png"));
     MasksTreeWidget->setItemWidget (item, 4, show);
 
     QLabel *lock = new QLabel();
@@ -195,8 +195,8 @@ void MainWindowImpl::RefreshOneSegmentItem(QTreeWidgetItem *item, int i) //i is 
 
     //now my write, show, lock widgets
     QLabel *write = new QLabel();
-    if (Segments[i]->Activated) write->setPixmap(QPixmap(":/icons/eye.bmp"));
-    else write->setPixmap(QPixmap(":/icons/eye_off.bmp"));
+    if (Segments[i]->Activated) write->setPixmap(QPixmap(":/darkstyle/icon_eye_open.png"));
+    else write->setPixmap(QPixmap(":/darkstyle/icon_eye_closed.png"));
     SegmentsTreeWidget->setItemWidget (item, 3, write);
 
     QLabel *lock = new QLabel();
@@ -327,8 +327,8 @@ void MainWindowImpl::RefreshOneOOItem(QTreeWidgetItem *item, int i) //i is index
     item->setText(3, ResampleSt);
 
     QLabel *show = new QLabel();
-    if (OutputObjects[i]->Show) show->setPixmap(QPixmap(":/icons/eye.bmp"));
-    else show->setPixmap(QPixmap(":/icons/eye_off.bmp"));
+    if (OutputObjects[i]->Show) show->setPixmap(QPixmap(":/darkstyle/icon_eye_open.png"));
+    else show->setPixmap(QPixmap(":/darkstyle/icon_eye_closed.png"));
     OOTreeWidget->setItemWidget (item, 4, show);
 
     show = new QLabel();
