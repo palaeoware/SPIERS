@@ -49,6 +49,7 @@ MainWindow::MainWindow(QWidget *parent)
     specificprogress = 0;
     ui->setupUi(this);
     MainWin = this; //set global pointer to this window
+    showMaximized();
 
     FilterKeys = true; //set to true to turn off interception of keys needed for type-in boxes
 
@@ -96,7 +97,7 @@ MainWindow::MainWindow(QWidget *parent)
     qDebug() << "[Where I'm I?] In MainWindow - Starting Timers";
     StartTimer = new QTimer(this);
     StartTimer->setSingleShot(true);
-    StartTimer->setInterval(0);//as soon as may be
+    StartTimer->setInterval(2000);// 2 sec after lauch to give NetModule and Splash time to do their thing
     QObject::connect(StartTimer, SIGNAL(timeout()), this, SLOT(StartTimer_fired()));
     StartTimer->start();
 
@@ -839,12 +840,12 @@ void MainWindow::RefreshOneItem(QTreeWidgetItem *item, int i)
     show->setAlignment(Qt::AlignCenter);
     if (SVObjects[i]->Visible)
     {
-        QPixmap p = QPixmap(":/darkstyle/icon_radiobutton_checked");
+        QPixmap p = QPixmap(":/darkstyle/icon_eye_open");
         show->setPixmap(p.scaled(18, 18, Qt::KeepAspectRatio));
     }
     else
     {
-        QPixmap p = QPixmap(":/darkstyle/icon_radiobutton_unchecked.png");
+        QPixmap p = QPixmap(":/darkstyle/icon_eye_closed.png");
         show->setPixmap(p.scaled(18, 18, Qt::KeepAspectRatio));
     }
     ui->treeWidget->setItemWidget(item, 1, show);
