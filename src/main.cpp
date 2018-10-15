@@ -43,14 +43,16 @@ int main(int argc, char **argv)
     QApplication::setStyle(new DarkStyleTheme);
 
     QPixmap splashPixmap(":/resources/palaeoware_logo_square.png");
-    QSplashScreen splash(splashPixmap, Qt::WindowStaysOnTopHint);
-    splash.show();
-    splash.showMessage("<font><b>" + QString(PRODUCTNAME) + " v" + QString(UPDATEVERSION) + " </b></font>", Qt::AlignHCenter, Qt::white);
-
+    QSplashScreen *splash = new QSplashScreen(splashPixmap, Qt::WindowStaysOnTopHint);
+    splash->show();
+    splash->showMessage("<font><b>" + QString(PRODUCTNAME) + " v" + QString(UPDATEVERSION) + " </b></font>", Qt::AlignHCenter, Qt::white);
     app.processEvents();
+    QTimer::singleShot(3000, splash, SLOT(close()));
+
+    app.connect( &app, SIGNAL( lastWindowClosed() ), &app, SLOT( quit() ) );
 
     NetModule n;
-    n.CheckForNew();
+    n.checkForNew();
 
     QStringList args = app.arguments();
 
@@ -60,9 +62,8 @@ int main(int argc, char **argv)
     }
     else openfile = "";
 
-    MainWindowImpl win;
-    win.show();
-    app.connect( &app, SIGNAL( lastWindowClosed() ), &app, SLOT( quit() ) );
+    MainWindowImpl mainWindow;
+    mainWindow.show();
     return app.exec();
 }
 #endif
