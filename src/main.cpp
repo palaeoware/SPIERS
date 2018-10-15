@@ -7,6 +7,8 @@
 #include <QTextStream>
 #include <QFile>
 #include <QStyle>
+#include <QSplashScreen>
+#include <QTimer>
 
 #include "darkstyletheme.h"
 #include "mainwindow.h"
@@ -112,6 +114,13 @@ int main(int argc, char *argv[])
     // Style program with our dark style
     QApplication::setStyle(new DarkStyleTheme);
 
+    QPixmap splashPixmap(":/resources/palaeoware_logo_square.png");
+    QSplashScreen *splash = new QSplashScreen(splashPixmap, Qt::WindowStaysOnTopHint);
+    splash->show();
+    splash->showMessage("<font><b>" + QString(PRODUCTNAME) + " v" + QString(UPDATEVERSION) + " </b></font>", Qt::AlignHCenter, Qt::white);
+    app.processEvents();
+    QTimer::singleShot(3000, splash, SLOT(close()));
+
     app.setQuitOnLastWindowClosed(true);
 
     // Set the fname global from argument
@@ -126,14 +135,12 @@ int main(int argc, char *argv[])
 
     // Check for any version updates
     NetModule netModule;
-    netModule.CheckForNew();
+    netModule.checkForNew();
 
+    // MainWindow with Event filter - deals with glitchy keyboard shortcuts
     MainWindow mainWindow;
-
-    // Event filter - deal with glitchy keyboard shortcuts
     app.installEventFilter(&mainWindow);
     mainWindow.show();
-
     return app.exec();
 }
 #endif
@@ -193,7 +200,7 @@ bool main::event(QEvent *event)
  */
 int main(int argc, char *argv[])
 {
-    MacBodgeClickedNoForUpdateDownload = false;
+    macClickedNoForUpdateDownload = false;
 
 
     if (argc == 2) if (QString(argv[1]).length() < 2) argc = 1; //this to cure weird mac crash

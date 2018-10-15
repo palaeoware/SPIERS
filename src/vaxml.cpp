@@ -1002,14 +1002,14 @@ bool VAXML::readVAXML(QString fname)
                 d.mkpath(fi.absolutePath());
 
 
-                NetModule n;
-                n.doDownload(o->url, fpath + "/" + o->file, MainWin->ui->ProgBarSpecific);
+                NetModule netModule;
+                netModule.doDownload(o->url, fpath + "/" + o->file, MainWin->ui->ProgBarSpecific);
                 do
                 {
                     qApp->processEvents();
                 }
-                while (n.DownloadDone == false && n.DownloadError == false);
-                if (n.DownloadError) return xmlError("Problem downloading referenced file '" + file.fileName() + "' from URL " + o->url);
+                while (netModule.downloadDone == false && netModule.downloadError == false);
+                if (netModule.downloadError) return xmlError("Problem downloading referenced file '" + file.fileName() + "' from URL " + o->url);
             }
 
         }
@@ -1091,10 +1091,10 @@ bool VAXML::readVAXML(QString fname)
     i_comments = comments;
     i_reference = reference;
 
-    NetModule n;
+    NetModule netModule;
     QCryptographicHash h1(QCryptographicHash::Md5);
     h1.addData(shasharray);
-    n.CheckHash(h1.result(), &i_comments);
+    netModule.checkHash(h1.result(), &i_comments);
 
     //store for messaging
     QString t(h1.result().toHex());

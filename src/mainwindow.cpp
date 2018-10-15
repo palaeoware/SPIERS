@@ -248,9 +248,9 @@ agin:
                     QString(PRODUCTNAME) + " files (*.spv *.sp2 *spvf *.xml *.vaxml)");
         FilterKeys = true;
 
-        if (MacBodgeClickedNoForUpdateDownload == true && fname.isNull())
+        if (macClickedNoForUpdateDownload == true && fname.isNull())
         {
-            MacBodgeClickedNoForUpdateDownload = false;
+            macClickedNoForUpdateDownload = false;
             goto agin;
         }
         if (fname.isNull()) QCoreApplication::quit(); //if nothing there, cancel
