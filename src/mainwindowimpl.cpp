@@ -193,17 +193,6 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     NextKey->setCurrentIndex(1);
 
     OutputRegroupMode = false;
-
-    MasksTreeWidget->header()->setSectionsMovable(false);
-    CurvesTreeWidget->header()->setSectionsMovable(false);
-    OOTreeWidget->header()->setSectionsMovable(false);
-    SegmentsTreeWidget->header()->setSectionsMovable(false);
-
-    MasksTreeWidget->header()->setSectionResizeMode(QHeaderView::Fixed);
-    CurvesTreeWidget->header()->setSectionResizeMode(QHeaderView::Fixed);
-    OOTreeWidget->header()->setSectionResizeMode(QHeaderView::Fixed);
-    SegmentsTreeWidget->header()->setSectionResizeMode(QHeaderView::Fixed);
-
     NoUpdateSelectionFlag = false;
     MasksMoveBack = false;
     MasksMoveForward = false;
@@ -245,9 +234,20 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
 
     CurvesTreeWidget->headerItem()->setText(0, "Curve Name");
     CurvesTreeWidget->headerItem()->setText(1, "Col.");
-    CurvesTreeWidget->headerItem()->setText(2, "");
+    CurvesTreeWidget->headerItem()->setText(2, "Mode");
     CurvesTreeWidget->headerItem()->setText(3, "Segment");
-    CurvesTreeWidget->headerItem()->setText(4, "Slices");
+    CurvesTreeWidget->headerItem()->setText(4, "Start");
+    CurvesTreeWidget->headerItem()->setText(5, "End");
+
+    MasksTreeWidget->header()->setSectionsMovable(false);
+    CurvesTreeWidget->header()->setSectionsMovable(false);
+    OOTreeWidget->header()->setSectionsMovable(false);
+    SegmentsTreeWidget->header()->setSectionsMovable(false);
+
+    MasksTreeWidget->header()->setSectionResizeMode(QHeaderView::Fixed);
+    CurvesTreeWidget->header()->setSectionResizeMode(QHeaderView::Fixed);
+    OOTreeWidget->header()->setSectionResizeMode(QHeaderView::Fixed);
+    SegmentsTreeWidget->header()->setSectionResizeMode(QHeaderView::Fixed);
 
     //now set up the range graphics scene
     //RangeGraphicsView=(QGraphicsView *) new mygraphicsview;

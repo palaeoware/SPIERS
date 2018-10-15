@@ -2719,6 +2719,9 @@ Interpreted Images:</string>
        <property name="columnCount">
         <number>6</number>
        </property>
+       <attribute name="headerMinimumSectionSize">
+        <number>28</number>
+       </attribute>
        <column>
         <property name="text">
          <string>Bnt.</string>
@@ -2893,7 +2896,7 @@ Interpreted Images:</string>
        </column>
        <column>
         <property name="text">
-         <string/>
+         <string>Mode</string>
         </property>
        </column>
        <column>
@@ -2903,7 +2906,12 @@ Interpreted Images:</string>
        </column>
        <column>
         <property name="text">
-         <string>Slices</string>
+         <string>Start Slice</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>End Slice</string>
         </property>
        </column>
       </widget>

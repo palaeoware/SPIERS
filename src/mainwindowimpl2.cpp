@@ -50,7 +50,7 @@ void MainWindowImpl::RefreshOneMaskItem(QTreeWidgetItem *item, int i) //i is ind
     painter.begin(&picture);           // paint in picture
     painter.setPen(QPen(Qt::NoPen));
     painter.setBrush(QBrush(QColor(MasksSettings[i]->BackColour[0], MasksSettings[i]->BackColour[1], MasksSettings[i]->BackColour[2])));
-    painter.drawRect(0, 0, 20, 20);    // draw a rect
+    painter.drawRect(0, 0, 28, 20);    // draw a rect
 
     painter.end();                     // painting done
     test->setPicture(picture);
@@ -66,7 +66,7 @@ void MainWindowImpl::RefreshOneMaskItem(QTreeWidgetItem *item, int i) //i is ind
 
 
     painter2.setBrush(QBrush(QColor(MasksSettings[i]->ForeColour[0], MasksSettings[i]->ForeColour[1], MasksSettings[i]->ForeColour[2])));
-    painter2.drawRect(0, 0, 20, 20);   // draw a rect
+    painter2.drawRect(0, 0, 28, 20);   // draw a rect
     painter2.end();                     // painting done
     test2->setPicture(picture2);
     test2->setAutoFillBackground(true);
@@ -570,11 +570,16 @@ void MainWindowImpl::RefreshOneCurveItem(QTreeWidgetItem *item, int i) //i is in
 
     //Grey out name if appropriate
     if (actionGrey_out_curves_not_no_current_slice->isChecked())
+    {
         if (Curves[i]->SplinePoints[CurrentFile]->Count == 0)
+        {
             item->setForeground(0, QBrush(QColor(Qt::gray)));
+        }
         else
+        {
             item->setForeground(0, QBrush(QColor(Qt::black)));
-
+        }
+    }
     //now my tristate widget
     QLabel *write = new QLabel();
     if (Curves[i]->Closed == false) write->setPixmap(QPixmap(":/icons/curve_open.bmp"));
@@ -582,11 +587,17 @@ void MainWindowImpl::RefreshOneCurveItem(QTreeWidgetItem *item, int i) //i is in
     else write->setPixmap(QPixmap(":/icons/curve_filled.bmp"));
     CurvesTreeWidget->setItemWidget (item, 2, write);
 
-    if (Curves[i]->Segment != 0) item->setText(3, Segments[(Curves[i]->Segment - 1)]->Name);
-    else item->setText(3, "[None]");
-
+    if (Curves[i]->Segment != 0)
+    {
+        item->setText(3, Segments[(Curves[i]->Segment - 1)]->Name);
+    }
+    else
+    {
+        item->setText(3, "[None]");
+    }
     //Now do first and last curve items
-    item->setText(4, "Not Used");
+    item->setText(4, "n/a");
+    item->setText(5, "n/a");
     QString str;
     QTextStream s(&str);
     int temp = -1;
@@ -595,17 +606,23 @@ void MainWindowImpl::RefreshOneCurveItem(QTreeWidgetItem *item, int i) //i is in
         if (Curves[i]->SplinePoints[j]->Count > 0)
         {
             s << j + 1;
+            item->setText(4, str);
             temp = j;
             break;
         }
     }
+
+    str = "";
     for (int j = FileCount - 1; j > 0; j--)
     {
         if (Curves[i]->SplinePoints[j]->Count > 0)
         {
-            if (temp != j) //if only one slice, just one number will do
-                s << "-" << j + 1;
-            item->setText(4, str); //should only get here if already found one the other way!
+            //if only one slice, just one number will do
+            if (temp != j)
+            {
+                s << j + 1;
+                item->setText(5, str);
+            }
             break;
         }
     }
