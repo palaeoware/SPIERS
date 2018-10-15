@@ -22,7 +22,7 @@
 #define UPDATEVERSION "1.0.0"
 
 
-extern bool MacBodgeClickedNoForUpdateDownload;
+extern bool macClickedNoForUpdateDownload;
 
 class NetModule : public QObject
 {

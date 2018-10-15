@@ -1,5 +1,3 @@
-//Does the inital check (not actually the download)
-
 #include "netmodule.h"
 #include "semanticversion.h"
 
@@ -11,8 +9,7 @@
 #include <QDesktopServices>
 #include <QUrl>
 
-//First section is my code for checking the update status
-bool MacBodgeClickedNoForUpdateDownload;
+bool macClickedNoForUpdateDownload;
 
 /**
  * @brief NetModule::NetModule
@@ -192,7 +189,7 @@ void NetModule::slotReadyRead()
 
         if (versionOnline > versionCurrent)
         {
-            MacBodgeClickedNoForUpdateDownload = true;
+            macClickedNoForUpdateDownload = true;
             downloadURL = reply->readLine();
 
             QMessageBox *popupMessage = new QMessageBox;
