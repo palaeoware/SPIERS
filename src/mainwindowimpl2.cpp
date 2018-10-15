@@ -50,7 +50,7 @@ void MainWindowImpl::RefreshOneMaskItem(QTreeWidgetItem *item, int i) //i is ind
     painter.begin(&picture);           // paint in picture
     painter.setPen(QPen(Qt::NoPen));
     painter.setBrush(QBrush(QColor(MasksSettings[i]->BackColour[0], MasksSettings[i]->BackColour[1], MasksSettings[i]->BackColour[2])));
-    painter.drawRect(0, 0, 10, 20);    // draw a rect
+    painter.drawRect(0, 0, 20, 20);    // draw a rect
 
     painter.end();                     // painting done
     test->setPicture(picture);
@@ -66,7 +66,7 @@ void MainWindowImpl::RefreshOneMaskItem(QTreeWidgetItem *item, int i) //i is ind
 
 
     painter2.setBrush(QBrush(QColor(MasksSettings[i]->ForeColour[0], MasksSettings[i]->ForeColour[1], MasksSettings[i]->ForeColour[2])));
-    painter2.drawRect(0, 0, 10, 20);   // draw a rect
+    painter2.drawRect(0, 0, 20, 20);   // draw a rect
     painter2.end();                     // painting done
     test2->setPicture(picture2);
     test2->setAutoFillBackground(true);

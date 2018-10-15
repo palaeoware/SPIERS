@@ -253,7 +253,7 @@
      <x>0</x>
      <y>0</y>
      <width>962</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -502,7 +502,7 @@
    <property name="minimumSize">
     <size>
      <width>180</width>
-     <height>422</height>
+     <height>428</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -1102,7 +1102,7 @@
    <property name="minimumSize">
     <size>
      <width>350</width>
-     <height>222</height>
+     <height>228</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -1710,7 +1710,7 @@
    <property name="minimumSize">
     <size>
      <width>350</width>
-     <height>247</height>
+     <height>253</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -2335,7 +2335,7 @@
    <property name="minimumSize">
     <size>
      <width>350</width>
-     <height>122</height>
+     <height>128</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -2393,7 +2393,7 @@
    <property name="minimumSize">
     <size>
      <width>350</width>
-     <height>122</height>
+     <height>128</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -2555,7 +2555,7 @@
    <property name="minimumSize">
     <size>
      <width>350</width>
-     <height>122</height>
+     <height>128</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -2649,7 +2649,7 @@ Interpreted Images:</string>
    <property name="minimumSize">
     <size>
      <width>350</width>
-     <height>122</height>
+     <height>128</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -2721,7 +2721,7 @@ Interpreted Images:</string>
        </property>
        <column>
         <property name="text">
-         <string/>
+         <string>Bnt.</string>
         </property>
        </column>
        <column>
@@ -2731,22 +2731,22 @@ Interpreted Images:</string>
        </column>
        <column>
         <property name="text">
-         <string/>
+         <string>Off Col.</string>
         </property>
        </column>
        <column>
         <property name="text">
-         <string/>
+         <string>On Col.</string>
         </property>
        </column>
        <column>
         <property name="text">
-         <string/>
+         <string>Show</string>
         </property>
        </column>
        <column>
         <property name="text">
-         <string/>
+         <string>Lock</string>
         </property>
        </column>
       </widget>
@@ -2823,7 +2823,7 @@ Interpreted Images:</string>
    <property name="minimumSize">
     <size>
      <width>350</width>
-     <height>122</height>
+     <height>128</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -2980,7 +2980,7 @@ Interpreted Images:</string>
    <property name="minimumSize">
     <size>
      <width>180</width>
-     <height>62</height>
+     <height>68</height>
     </size>
    </property>
    <property name="maximumSize">

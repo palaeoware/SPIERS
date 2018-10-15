@@ -220,12 +220,14 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     bodgeflag = false;
 
     //sort out mask headings issue
-    MasksTreeWidget->headerItem()->setText(0, "");
+    MasksTreeWidget->headerItem()->setText(0, "Btn.");
     MasksTreeWidget->headerItem()->setText(1, "Mask Name");
-    MasksTreeWidget->headerItem()->setText(2, "");
-    MasksTreeWidget->headerItem()->setText(3, "");
-    MasksTreeWidget->headerItem()->setText(4, "");
-    MasksTreeWidget->headerItem()->setText(5, "");
+    MasksTreeWidget->headerItem()->setText(2, "Col A");
+    MasksTreeWidget->setColumnWidth(2, 20);
+    MasksTreeWidget->headerItem()->setText(3, "Col B");
+    MasksTreeWidget->setColumnWidth(3, 20);
+    MasksTreeWidget->headerItem()->setText(4, "Show");
+    MasksTreeWidget->headerItem()->setText(5, "Lock");
     MasksTreeWidget->headerItem()->setText(6, "");
 
     SegmentsTreeWidget->headerItem()->setText(0, "");
@@ -242,7 +244,7 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     OOTreeWidget->headerItem()->setText(5, "Merge");
 
     CurvesTreeWidget->headerItem()->setText(0, "Curve Name");
-    CurvesTreeWidget->headerItem()->setText(1, "Col");
+    CurvesTreeWidget->headerItem()->setText(1, "Col.");
     CurvesTreeWidget->headerItem()->setText(2, "");
     CurvesTreeWidget->headerItem()->setText(3, "Segment");
     CurvesTreeWidget->headerItem()->setText(4, "Slices");
