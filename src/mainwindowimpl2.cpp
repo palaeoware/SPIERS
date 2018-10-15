@@ -83,13 +83,29 @@ void MainWindowImpl::RefreshOneMaskItem(QTreeWidgetItem *item, int i) //i is ind
 
     //now my write, show, lock widgets
     QLabel *show = new QLabel();
-    if (MasksSettings[i]->Show) show->setPixmap(QPixmap(":/darkstyle/icon_eye_open.png"));
-    else show->setPixmap(QPixmap(":/darkstyle/icon_eye_closed.png"));
+    if (MasksSettings[i]->Show)
+    {
+        QPixmap p = QPixmap(":/darkstyle/icon_eye_open.png");
+        show->setPixmap(p.scaled(18, 18, Qt::KeepAspectRatio));
+    }
+    else
+    {
+        QPixmap p = QPixmap(":/darkstyle/icon_eye_closed.png");
+        show->setPixmap(p.scaled(18, 18, Qt::KeepAspectRatio));
+    }
     MasksTreeWidget->setItemWidget (item, 4, show);
 
     QLabel *lock = new QLabel();
-    if (MasksSettings[i]->Lock) lock->setPixmap(QPixmap(":/icons/padlock.bmp"));
-    else lock->setPixmap(QPixmap(":/icons/padlock_off.bmp"));
+    if (MasksSettings[i]->Lock)
+    {
+        QPixmap p = QPixmap(":/darkstyle/icon_padlock_closed.png");
+        lock->setPixmap(p.scaled(14, 14, Qt::KeepAspectRatio));
+    }
+    else
+    {
+        QPixmap p = QPixmap(":/darkstyle/icon_padlock_open.png");
+        lock->setPixmap(p.scaled(14, 14, Qt::KeepAspectRatio));
+    }
     MasksTreeWidget->setItemWidget (item, 5, lock);
 }
 
@@ -195,13 +211,29 @@ void MainWindowImpl::RefreshOneSegmentItem(QTreeWidgetItem *item, int i) //i is 
 
     //now my write, show, lock widgets
     QLabel *write = new QLabel();
-    if (Segments[i]->Activated) write->setPixmap(QPixmap(":/darkstyle/icon_eye_open.png"));
-    else write->setPixmap(QPixmap(":/darkstyle/icon_eye_closed.png"));
+    if (Segments[i]->Activated)
+    {
+        QPixmap p = QPixmap(":/darkstyle/icon_eye_open.png");
+        write->setPixmap(p.scaled(18, 18, Qt::KeepAspectRatio));
+    }
+    else
+    {
+        QPixmap p = QPixmap(":/darkstyle/icon_eye_closed.png");
+        write->setPixmap(p.scaled(18, 18, Qt::KeepAspectRatio));
+    }
     SegmentsTreeWidget->setItemWidget (item, 3, write);
 
     QLabel *lock = new QLabel();
-    if (Segments[i]->Locked) lock->setPixmap(QPixmap(":/icons/padlock.bmp"));
-    else lock->setPixmap(QPixmap(":/icons/padlock_off.bmp"));
+    if (Segments[i]->Locked)
+    {
+        QPixmap p = QPixmap(":/darkstyle/icon_padlock_closed.png");
+        lock->setPixmap(p.scaled(14, 14, Qt::KeepAspectRatio));
+    }
+    else
+    {
+        QPixmap p = QPixmap(":/darkstyle/icon_padlock_open.png");
+        lock->setPixmap(p.scaled(14, 14, Qt::KeepAspectRatio));
+    }
     SegmentsTreeWidget->setItemWidget (item, 4, lock);
 }
 
@@ -327,8 +359,16 @@ void MainWindowImpl::RefreshOneOOItem(QTreeWidgetItem *item, int i) //i is index
     item->setText(3, ResampleSt);
 
     QLabel *show = new QLabel();
-    if (OutputObjects[i]->Show) show->setPixmap(QPixmap(":/darkstyle/icon_eye_open.png"));
-    else show->setPixmap(QPixmap(":/darkstyle/icon_eye_closed.png"));
+    if (OutputObjects[i]->Show)
+    {
+        QPixmap p = QPixmap(":/darkstyle/icon_eye_open");
+        show->setPixmap(p.scaled(18, 18, Qt::KeepAspectRatio));
+    }
+    else
+    {
+        QPixmap p = QPixmap(":/darkstyle/icon_eye_closed.png");
+        show->setPixmap(p.scaled(18, 18, Qt::KeepAspectRatio));
+    }
     OOTreeWidget->setItemWidget (item, 4, show);
 
     show = new QLabel();
