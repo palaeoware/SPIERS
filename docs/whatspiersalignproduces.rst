@@ -1,0 +1,6 @@
+.. _whatspiersalignproduces:
+
+What SPIERSalign Produces
+=========================
+
+After you first open a dataset with SPIERSalign it will create a file called settings.txt in the working directory. This file is intended for the program to use – while you can read it, you should not modify it. Settings.txt contains details of the files and the changes you have made to them, and is required until SPIERSalign has finished with the images. When the images have been cropped a new sub-directory will be created, into which the cropped images are placed. Their filenames remain unchanged. The settings text file and working (.xxx) images are retained until you compress the dataset. It is advisable to keep a backup copy of the dataset, and regularly backup the setting files. Currently SPIERSalign also constantly appends to a file log.txt stored in the same folder as settings.txt to provide information in the case of a crash. If this is getting large it can be deleted (in contrast to settings.txt – deleting the latter will wipe your dataset).
