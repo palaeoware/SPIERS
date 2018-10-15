@@ -40,5 +40,7 @@
         <file alias="icon_settings_2_button.png">resources/darkstyle/icon_settings_2_button.png</file>
         <file alias="icon_eye_closed.png">resources/darkstyle/icon_eye_closed.png</file>
         <file alias="icon_eye_open.png">resources/darkstyle/icon_eye_open.png</file>
+        <file alias="icon_padlock_closed_disabled.png">resources/darkstyle/icon_padlock_closed_disabled.png</file>
+        <file alias="icon_padlock_open_disabled.png">resources/darkstyle/icon_padlock_open_disabled.png</file>
     </qresource>
 </RCC>
