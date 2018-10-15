@@ -18,8 +18,8 @@
 
 #include <stdio.h>
 
-//#define UPDATEVERSION "3.0.0-alpha"
-#define UPDATEVERSION "1.0.0"
+#define UPDATEVERSION "3.0.0-alpha"
+//#define UPDATEVERSION "1.0.0" // for testing
 
 
 extern bool macClickedNoForUpdateDownload;
