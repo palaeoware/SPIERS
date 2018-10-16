@@ -1,20 +1,44 @@
-#include "scene.h"
+/**
+ * @file
+ * Scene
+ *
+ * All SPIERSview code is released under the GNU General Public License.
+ * See LICENSE.md files in the programme directory.
+ *
+ * All SPIERSview code is Copyright 2008-2018 by Russell J. Garwood, Mark D. Sutton,
+ * and Alan R.T. Spencer.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version. This program is distributed in the
+ * hope that it will be useful, but WITHOUT ANY WARRANTY.
+ */
+
 #include <math.h>
 #include <QGraphicsRectItem>
 #include <QDebug>
 #include <QPointF>
 #include <QGraphicsSceneMouseEvent>
-#include "mainwindowimpl.h"
 #include <QLabel>
 #include <QMessageBox>
 
+#include "scene.h"
+#include "mainwindowimpl.h"
 
+/**
+ * @brief CustomScene::CustomScene
+ */
 CustomScene::CustomScene() : QGraphicsScene()
 {
     selection = -1;
     return;
 }
 
+/**
+ * @brief CustomScene::mousePressEvent
+ * @param event
+ */
 void CustomScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (markersUp == 0 || markersLocked == 1 || setupFlag == 1)return;
@@ -92,17 +116,18 @@ void CustomScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 }
 
-
+/**
+ * @brief CustomScene::mouseMoveEvent
+ * @param event
+ */
 void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-
-
-//qDebug()<<flagUpSelection;
+    //qDebug()<<flagUpSelection;
     QPointF position = event->scenePos();
     int x = static_cast<int>(position.x());
     int y = static_cast<int>(position.y());
 
-//Update info box
+    //Update info box
     if (infoChecked == 1)showInfo(x, y);
 
     if (cropUp == 1)
@@ -122,7 +147,6 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         }
 
     }
-
 
     if (setupFlag == 1)
     {
@@ -1084,7 +1108,6 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
                 setupMi2.map(x, y, &mappedX2, &mappedY2);
             }
 
-
             theMainWindow->redrawJustAM();
         }
 
@@ -1149,12 +1172,12 @@ void CustomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         }
         theMainWindow->redrawJustDecorations();
     }
-
-
-
 }
 
-
+/**
+ * @brief CustomScene::mouseReleaseEvent
+ * @param event
+ */
 void CustomScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     Q_UNUSED(event);
@@ -1168,5 +1191,3 @@ void CustomScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     }
     QApplication::restoreOverrideCursor();
 }
-
-

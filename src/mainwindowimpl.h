@@ -1,3 +1,20 @@
+/**
+ * @file
+ * Header: Main Window
+ *
+ * All SPIERSview code is released under the GNU General Public License.
+ * See LICENSE.md files in the programme directory.
+ *
+ * All SPIERSview code is Copyright 2008-2018 by Russell J. Garwood, Mark D. Sutton,
+ * and Alan R.T. Spencer.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version. This program is distributed in the
+ * hope that it will be useful, but WITHOUT ANY WARRANTY.
+ */
+
 #ifndef MAINWINDOWIMPL_H
 #define MAINWINDOWIMPL_H
 
@@ -18,7 +35,7 @@ class MainWindowImpl : public QMainWindow, public Ui::MainWindow
 {
     Q_OBJECT
 public:
-    MainWindowImpl( QWidget *parent = 0, Qt::WindowFlags f = 0 );
+    MainWindowImpl( QWidget *parent = nullptr, Qt::WindowFlags f = nullptr );
     ~MainWindowImpl();
 
     void LogText(QString text);
@@ -28,7 +45,8 @@ public:
     void redrawJustAM();
     void on_actionLock_File_triggered(bool checked);
     void buildRecentFiles();
-    int width, height;
+    int width;
+    int height;
 
 private slots:
     void on_actionLoad_Settings_File_triggered();
@@ -122,6 +140,8 @@ private slots:
     void resizeCropH(int value);
     void clearList();
 
+    void on_actionOnline_User_Manual_triggered();
+
 private:
     void rotate (qreal rotateAngle);
     void resize(qreal sizeChange);
@@ -151,7 +171,9 @@ private:
     QPushButton *lockMarkers, *autoMarkers, *grid, *setupAlign;
     QString filesDirectoryString;
     int propogateImage, propogateStep, lockImage;
-    int redValue, greenValue, blueValue;
+    int redValue;
+    int greenValue;
+    int blueValue;
     int verbose;
 
 };

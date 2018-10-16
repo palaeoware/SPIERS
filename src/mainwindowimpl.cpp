@@ -1,3 +1,20 @@
+/**
+ * @file
+ * Main Window
+ *
+ * All SPIERSview code is released under the GNU General Public License.
+ * See LICENSE.md files in the programme directory.
+ *
+ * All SPIERSview code is Copyright 2008-2018 by Russell J. Garwood, Mark D. Sutton,
+ * and Alan R.T. Spencer.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version. This program is distributed in the
+ * hope that it will be useful, but WITHOUT ANY WARRANTY.
+ */
+
 #include <QAction>
 #include <QColor>
 #include <QCursor>
@@ -33,7 +50,7 @@
 #include "about.h"
 #include "globals.h"
 #include "mainwindowimpl.h"
-#include "version.h"
+#include "globals.h"
 #include "../SPIERScommon/netmodule.h"
 
 #define PI 3.14159265
@@ -45,7 +62,11 @@
 
 MainWindowImpl *theMainWindow;
 
-// Constructor
+/**
+ * @brief MainWindowImpl::MainWindowImpl
+ * @param parent
+ * @param f
+ */
 MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     : QMainWindow(parent, f)
 {
@@ -53,8 +74,6 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     setupUi(this);
     setWindowIcon(QIcon (":/alignicon.png"));
 
-    QString version;
-    version.sprintf("%d.%d.%d", MAJORVERSION, MINORVERSION, PATCHVERSION);
     setWindowTitle(QString(PRODUCTNAME) + " v" + QString(UPDATEVERSION) );
 
     showMaximized();
@@ -448,10 +467,41 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     actionEnlarge_Less->setShortcut(Qt::SHIFT + Qt::Key_BracketRight);
     QKeySequence sc("CTRL+SHIFT+0");
     actionRotate_Clockwise_More->setShortcut(sc);
-
 }
 
-//Reads values from the regsitry.
+/**
+ * @brief MainWindowImpl::~MainWindowImpl
+ */
+MainWindowImpl::~MainWindowImpl()
+{
+    if (currentImage != -1)
+    {
+        writeSuperGlobals();
+        actionSave_Backup->trigger();
+        int i = 0;
+
+        //Write to settings file
+        on_actionSave_triggered();
+
+        qDeleteAll(imageList.begin(), imageList.end());
+        imageList.clear();
+        linePointers.clear();
+        for (i = 0; i < markers.count(); i++)
+        {
+            delete markers[i];
+        }
+        //Should delete all child layouts etc.
+        delete markersDialogue;
+        delete cropDock;
+        delete info;
+    }
+}
+
+/**
+
+ * @brief readSuperGlobals
+ * Reads values from the regsitry.
+ */
 void readSuperGlobals()
 {
     //Clear recentfilelist just in case already exists
@@ -470,7 +520,10 @@ void readSuperGlobals()
     settings.endArray();
 }
 
-//Write values to registry - only called in destructor as recentfiles is stored while program runs
+/**
+ * @brief writeSuperGlobals
+ * Write values to registry - only called in destructor as recentfiles is stored while program runs
+ */
 void writeSuperGlobals()
 {
     //New settings to be written
@@ -489,7 +542,11 @@ void writeSuperGlobals()
     settings.endArray();
 }
 
-//Moves a file to the top of recentFileList
+/**
+ * @brief recentFile
+ * Moves a file to the top of recentFileList
+ * @param fname
+ */
 void recentFile(QString fname)
 {
     int n;
@@ -507,7 +564,11 @@ void recentFile(QString fname)
     theMainWindow->buildRecentFiles();
 }
 
-
+/**
+ * @brief showInfo
+ * @param x
+ * @param y
+ */
 void showInfo(int x, int y)
 {
     QString out;
@@ -539,8 +600,10 @@ void showInfo(int x, int y)
     label->setText(out);
 }
 
-
-//Rebuilds GUI recent file list, called when list is changed
+/**
+ * @brief MainWindowImpl::buildRecentFiles
+ * Rebuilds GUI recent file list, called when list is changed
+ */
 void MainWindowImpl::buildRecentFiles()
 {
 
@@ -580,7 +643,10 @@ void MainWindowImpl::buildRecentFiles()
 
 }
 
-//Clear RUF list
+/**
+ * @brief MainWindowImpl::clearList
+ * Clear RUF list
+ */
 void MainWindowImpl::clearList()
 {
     recentFileList.clear();
@@ -588,7 +654,10 @@ void MainWindowImpl::clearList()
     theMainWindow->buildRecentFiles();
 }
 
-//Open a file from the recently used files list slot
+/**
+ * @brief MainWindowImpl::openRecentFile
+ * Open a file from the recently used files list slot
+ */
 void MainWindowImpl::openRecentFile()
 {
     //Get pointer to the relevant action
@@ -599,7 +668,10 @@ void MainWindowImpl::openRecentFile()
     on_actionOpen_triggered();
 }
 
-//Select marker (selection changed) slot
+/**
+ * @brief MainWindowImpl::selectMarker
+ * Select marker (selection changed) slot
+ */
 void MainWindowImpl::selectMarker()
 {
     if (markersLocked == 1)return;
@@ -608,7 +680,11 @@ void MainWindowImpl::selectMarker()
     redrawJustDecorations();
 }
 
-//Change marker size slot
+/**
+ * @brief MainWindowImpl::changeMarkerSize
+ * Change marker size slot
+ * @param size
+ */
 void MainWindowImpl::changeMarkerSize(int size)
 {
     if (markersLocked == 1)return;
@@ -621,6 +697,9 @@ void MainWindowImpl::changeMarkerSize(int size)
     redrawJustDecorations();
 }
 
+/**
+ * @brief MainWindowImpl::markersLockToggled
+ */
 void MainWindowImpl::markersLockToggled()
 {
     if (lockMarkers->isChecked() == true)
@@ -652,6 +731,9 @@ void MainWindowImpl::markersLockToggled()
     }
 }
 
+/**
+ * @brief MainWindowImpl::autoMarkersToggled
+ */
 void MainWindowImpl::autoMarkersToggled()
 {
     if (autoMarkers->isChecked() == true)
@@ -703,13 +785,18 @@ void MainWindowImpl::autoMarkersToggled()
     }
 }
 
+/**
+ * @brief MainWindowImpl::okClicked
+ */
 void MainWindowImpl::okClicked()
 {
     grid->setChecked(false);
     autoMarkersGrid ();
 }
 
-
+/**
+ * @brief MainWindowImpl::setupAlignTriggered
+ */
 void MainWindowImpl::setupAlignTriggered()
 {
     if (setupAlign->isChecked() == true)
@@ -756,6 +843,9 @@ void MainWindowImpl::setupAlignTriggered()
     }
 }
 
+/**
+ * @brief MainWindowImpl::executeAlignTriggered
+ */
 void MainWindowImpl::executeAlignTriggered()
 {
     if (cropUp == 1)
@@ -769,12 +859,12 @@ void MainWindowImpl::executeAlignTriggered()
         return;
     }
 
-//Current image a+bx and next imabe a+bx for 2 edges on each....
+    //Current image a+bx and next imabe a+bx for 2 edges on each....
     double CIa1 = 0., CIa2 = 0., CIb1 = 0., CIb2 = 0.;
     double NIa1 = 0., NIa2 = 0., NIb1 = 0., NIb2 = 0.;
     int CI = currentImage;
 
-//Work out selection from list
+    //Work out selection from list
     int start = -1, end = -1;
     for (int i = 0; i < fileList->count(); i++)
     {
@@ -784,7 +874,7 @@ void MainWindowImpl::executeAlignTriggered()
             end = i;
         }
     }
-//Make sure selectionis valid
+    //Make sure selectionis valid
     if (start == -1 || end == -1)
     {
         QMessageBox::about(nullptr, "Auto-align error", "Please select - at minimum - a single slice to align");
@@ -796,7 +886,7 @@ void MainWindowImpl::executeAlignTriggered()
         return;
     }
 
-//Work out edges on currentImage - then for loop to compare rest to this.
+    //Work out edges on currentImage - then for loop to compare rest to this.
     redrawImage();
     QImage alignImage = pixMapPointer->pixmap().toImage();
     if (alignImage.isGrayscale() == true)alignImage = pixMapPointer->pixmap().toImage().convertToFormat(QImage::Format_RGB32);
@@ -805,7 +895,7 @@ void MainWindowImpl::executeAlignTriggered()
     int alignWidth = alignImage.width();
 
 
-///////Horizontal edge
+    //Horizontal edge
     int numberPoints = (autoEdgeOne->width()) / 5;
     int mappedI, mappedK, mappedJ;
     int warning = 0;
@@ -822,7 +912,7 @@ void MainWindowImpl::executeAlignTriggered()
     marker.setStyle(Qt::SolidLine);
     marker.setColor(colour);
 
-//Move along horizontal edge 5 at a time
+    //Move along horizontal edge 5 at a time
     for (int i = autoEdgeOne->left(); i < autoEdgeOne->right(); i = i + 5)
     {
         n++;
@@ -896,8 +986,8 @@ void MainWindowImpl::executeAlignTriggered()
 
     }
 
-//All points of maximum contrast based on RGB values stored in array --> do shit
-//Sort data (insertion sort)
+    //All points of maximum contrast based on RGB values stored in array --> do shit
+    //Sort data (insertion sort)
     int x, y, mark;
     for (int l = 1; l < numberPoints; l++)
     {
@@ -918,11 +1008,11 @@ void MainWindowImpl::executeAlignTriggered()
         }
     }
 
-//Tolerance = defined at top - percentage of points that we lop off top and bottom when creating a straight line. ATM this is 20.
+    //Tolerance = defined at top - percentage of points that we lop off top and bottom when creating a straight line. ATM this is 20.
     double startAt = ((static_cast<double>(TOLERANCE) / 100.) * (static_cast<double>(numberPoints)));
     double endAt = (numberPoints - ((static_cast<double>(TOLERANCE) / 100.) * static_cast<double>(numberPoints)));
 
-//Best fit line of these points (20%-80% middle of range, which is sorted horizontally)
+    //Best fit line of these points (20%-80% middle of range, which is sorted horizontally)
     double Sx = 0., Sy = 0., Sxx = 0., Sxy = 0., delta = 0.;
     int number = 0;
     for (int l = static_cast<int>(startAt); l < static_cast<int>(endAt); l++)
@@ -944,12 +1034,12 @@ void MainWindowImpl::executeAlignTriggered()
     double a = (Sxx * Sy - Sx * Sxy) / delta;
     double b = (static_cast<double>(number) * Sxy - Sx * Sy) / delta;
 
-//Everything else should be corrected according to this...
+    //Everything else should be corrected according to this...
     CIa1 = a;
     CIb1 = b;
 
-//Display lines to test
-//y=a+bx
+    //Display lines to test
+    //y=a+bx
     double x1, x2, y1, y2;
     x1 = alignWidth - (alignWidth / 4);
     y1 = a + (b * x1);
@@ -958,7 +1048,7 @@ void MainWindowImpl::executeAlignTriggered()
     QGraphicsLineItem *tempPointer(scene->addLine(x1, y1, x2, y2, marker));
     tempPointer->setZValue(1);
 
-////////Vertical edge...
+    //Vertical edge...
     numberPoints = (autoEdgeTwo->height()) / 5;
     warning = 0;
     n = -1;
@@ -1088,14 +1178,14 @@ void MainWindowImpl::executeAlignTriggered()
     CIa2 = a;
     CIb2 = b;
 
-//Work out corner/point at which line cross: x=(CIa1-CIa2)/(CIb2-CIb1);
+    //Work out corner/point at which line cross: x=(CIa1-CIa2)/(CIb2-CIb1);
     double CIcornerX, CIcornerY;
 
     CIcornerX = (CIa1 - CIa2) / (CIb2 - CIb1);
     CIcornerY = CIa1 + (CIb1 * CIcornerX);
 
-//Display lines to test
-//y=a+bx
+    //Display lines to test
+    //y=a+bx
     y1 = alignHeight - (alignHeight / 4);
     x1 = (y1 - a) / b;
     y2 = (alignHeight / 4);
@@ -1105,7 +1195,7 @@ void MainWindowImpl::executeAlignTriggered()
     QGraphicsItem *tempPointer6 = scene->addEllipse(CIcornerX, CIcornerY, 4., 4., marker);
     tempPointer6->setZValue(1);
 
-//Check that this has worked on control image. Not much use otherwise...
+    //Check that this has worked on control image. Not much use otherwise...
     if ((QMessageBox::question(nullptr, "Control edges found",
                                "Are the edges correctly marked on the image? This is the image all others will be aligned to. If the edges are incorrect cancel, and try another slice, or adjusting the setup boxes.",
                                QMessageBox::Ok, QMessageBox::Cancel)) == 4194304)
@@ -1114,7 +1204,7 @@ void MainWindowImpl::executeAlignTriggered()
         return;
     }
 
-//Create progress bar
+    //Create progress bar
     QProgressBar progress;
     progress.setRange (start, end);
     progress.setAlignment(Qt::AlignHCenter);
@@ -1490,6 +1580,9 @@ void MainWindowImpl::executeAlignTriggered()
     redrawImage();
 }//ends the function
 
+/**
+ * @brief MainWindowImpl::autoMarkersGrid
+ */
 void MainWindowImpl::autoMarkersGrid ()
 {
     if (!autoMarkers->isChecked())
@@ -1502,6 +1595,10 @@ void MainWindowImpl::autoMarkersGrid ()
 
 }
 
+/**
+ * @brief MainWindowImpl::aMTopLeftXChanged
+ * @param value
+ */
 void MainWindowImpl::aMTopLeftXChanged(int value)
 {
     if (value < 2 || aMTopLeftY->value() < 2)return;
@@ -1509,6 +1606,10 @@ void MainWindowImpl::aMTopLeftXChanged(int value)
     redrawJustAM();
 }
 
+/**
+ * @brief MainWindowImpl::aMTopLeftYChanged
+ * @param value
+ */
 void MainWindowImpl::aMTopLeftYChanged(int value)
 {
     if (value < 2 || aMTopLeftX->value() < 2)return;
@@ -1516,37 +1617,59 @@ void MainWindowImpl::aMTopLeftYChanged(int value)
     redrawJustAM();
 }
 
+/**
+ * @brief MainWindowImpl::aMWidthChanged
+ * @param value
+ */
 void MainWindowImpl::aMWidthChanged(int value)
 {
     gridOutline->setWidth(value);
     redrawJustAM();
 }
 
+/**
+ * @brief MainWindowImpl::aMHeightChanged
+ * @param value
+ */
 void MainWindowImpl::aMHeightChanged(int value)
 {
     gridOutline->setHeight(value);
     redrawJustAM();
 }
 
+/**
+ * @brief MainWindowImpl::aMThicknessChanged
+ * @param value
+ */
 void MainWindowImpl::aMThicknessChanged(int value)
 {
     Q_UNUSED(value);
     redrawJustAM();
 }
 
+/**
+ * @brief MainWindowImpl::aMHorizChanged
+ * @param value
+ */
 void MainWindowImpl::aMHorizChanged(int value)
 {
     Q_UNUSED(value);
     redrawJustAM();
 }
 
+/**
+ * @brief MainWindowImpl::aMVertChanged
+ * @param value
+ */
 void MainWindowImpl::aMVertChanged(int value)
 {
     Q_UNUSED(value);
     redrawJustAM();
 }
 
-
+/**
+ * @brief MainWindowImpl::autoMarkersAlign
+ */
 void MainWindowImpl::autoMarkersAlign()
 {
     if (aM.isIdentity() || autoMarkersUp == 0)return;
@@ -1630,12 +1753,12 @@ void MainWindowImpl::autoMarkersAlign()
     aM.reset();
 
     redrawImage();
-
-
-
 }
 
-//Add marker slot
+/**
+ * @brief MainWindowImpl::addMarkerSlot
+ * Add marker slot
+ */
 void MainWindowImpl::addMarkerSlot()
 {
     if (markersLocked == 1)return;
@@ -1649,7 +1772,10 @@ void MainWindowImpl::addMarkerSlot()
     redrawJustDecorations();
 }
 
-//Remove marker slot
+/**
+ * @brief MainWindowImpl::removeMarkerSlot
+ * Remove marker slot
+ */
 void MainWindowImpl::removeMarkerSlot()
 {
     if (markersLocked == 1)return;
@@ -1666,7 +1792,10 @@ void MainWindowImpl::removeMarkerSlot()
     redrawImage();
 }
 
-//Change marker shape slot
+/**
+ * @brief MainWindowImpl::changeShape
+ * Change marker shape slot
+ */
 void MainWindowImpl::changeShape()
 {
     if (markersLocked == 1)return;
@@ -1683,55 +1812,43 @@ void MainWindowImpl::changeShape()
     redrawImage();
 }
 
-//Red change slot
+/**
+ * @brief MainWindowImpl::changeRed
+ * Red change slot
+ * @param value
+ */
 void MainWindowImpl::changeRed(int value)
 {
     redValue = value;
     redrawImage();
 }
 
-//Green change slot
+/**
+ * @brief MainWindowImpl::changeGreen
+ * Green change slot
+ * @param value
+ */
 void MainWindowImpl::changeGreen(int value)
 {
     greenValue = value;
     redrawImage();
 }
 
-//Blue change slot
+/**
+ * @brief MainWindowImpl::changeBlue
+ * Blue change slot
+ * @param value
+ */
 void MainWindowImpl::changeBlue(int value)
 {
     blueValue = value;
     redrawImage();
 }
 
-
-//Destructor
-MainWindowImpl::~MainWindowImpl()
-{
-    if (currentImage != -1)
-    {
-        writeSuperGlobals();
-        actionSave_Backup->trigger();
-        int i = 0;
-
-        //Write to settings file
-        on_actionSave_triggered();
-
-        qDeleteAll(imageList.begin(), imageList.end());
-        imageList.clear();
-        linePointers.clear();
-        for (i = 0; i < markers.count(); i++)
-        {
-            delete markers[i];
-        }
-        //Should delete all child layouts etc.
-        delete markersDialogue;
-        delete cropDock;
-        delete info;
-    }
-}
-
-//Open files - set up program and enable menus
+/**
+ * @brief MainWindowImpl::on_actionOpen_triggered
+ * Open files - set up program and enable menus
+ */
 void MainWindowImpl::on_actionOpen_triggered()
 {
     int i, x, j = 0;
@@ -1810,9 +1927,7 @@ void MainWindowImpl::on_actionOpen_triggered()
 
         notes->clear();
 
-        QString version;
-        version.sprintf("%d.%d.%d", MAJORVERSION, MINORVERSION, PATCHVERSION);
-        this->setWindowTitle(QString(PRODUCTNAME) + " v" + version);
+        this->setWindowTitle(QString(PRODUCTNAME) + " v" + QString(UPDATEVERSION));
     }
     currentImage = 0;
 
@@ -2028,6 +2143,10 @@ void MainWindowImpl::on_actionOpen_triggered()
     actionAuto_Align->trigger();
 }
 
+/**
+ * @brief MainWindowImpl::LogText
+ * @param text
+ */
 void MainWindowImpl::LogText(QString text)
 {
     QString filename = filesDirectory.absolutePath() + "/log.txt";
@@ -2041,7 +2160,10 @@ void MainWindowImpl::LogText(QString text)
     log.close();
 }
 
-//Redraw Image
+/**
+ * @brief MainWindowImpl::redrawImage
+ * Redraw Image
+ */
 void  MainWindowImpl::redrawImage()
 {
     QString Outstring;
@@ -2084,10 +2206,7 @@ void  MainWindowImpl::redrawImage()
     LogText("*6\t");
 
     //Title bar
-
-    QString version;
-    version.sprintf("%d.%d.%d - ", MAJORVERSION, MINORVERSION, PATCHVERSION);
-    QString output = version + imageList[currentImage]->fileName;
+    QString output = QString(UPDATEVERSION) + imageList[currentImage]->fileName;
     QString output2;
     output2.sprintf(" - (%d/%d)", currentImage + 1, imageList.count());
     this->setWindowTitle(QString(PRODUCTNAME) + " v" + output + output2);
@@ -2114,7 +2233,10 @@ void  MainWindowImpl::redrawImage()
     LogText("...Done\n");
 }
 
-//Redraw crop area and markers
+/**
+ * @brief MainWindowImpl::redrawDecorations
+ * Redraw crop area and markers
+ */
 void  MainWindowImpl::redrawDecorations()
 {
     QBrush brush(Qt::NoBrush);
@@ -2236,7 +2358,10 @@ void  MainWindowImpl::redrawDecorations()
 
 }
 
-//Redraw Just markers
+/**
+ * @brief MainWindowImpl::redrawJustDecorations
+ * Redraw Just markers
+ */
 void  MainWindowImpl::redrawJustDecorations()
 {
     if (currentImage < 0)return;
@@ -2262,7 +2387,10 @@ void  MainWindowImpl::redrawJustDecorations()
     }
 }
 
-//Redraw just Auto markers
+/**
+ * @brief MainWindowImpl::redrawJustAM
+ * Redraw just Auto markers
+ */
 void  MainWindowImpl::redrawJustAM()
 {
     if (currentImage < 0)return;
@@ -2389,8 +2517,10 @@ void  MainWindowImpl::redrawJustAM()
     }
 }
 
-
-//Redraw just crop box
+/**
+ * @brief MainWindowImpl::redrawJustCropBox
+ * Redraw just crop box
+ */
 void  MainWindowImpl::redrawJustCropBox()
 {
     if (cropUp == 0)return;
@@ -2417,6 +2547,10 @@ void  MainWindowImpl::redrawJustCropBox()
     statusbar->showMessage(output + output2);
 }
 
+/**
+ * @brief MainWindowImpl::on_actionInfo_triggered
+ * @param checked
+ */
 void MainWindowImpl::on_actionInfo_triggered(bool checked)
 {
     if (checked == true)
@@ -2431,6 +2565,10 @@ void MainWindowImpl::on_actionInfo_triggered(bool checked)
     }
 }
 
+/**
+ * @brief MainWindowImpl::on_actionAuto_Align_triggered
+ * @param checked
+ */
 void MainWindowImpl::on_actionAuto_Align_triggered (bool checked)
 {
     if (checked == true)
@@ -2443,7 +2581,11 @@ void MainWindowImpl::on_actionAuto_Align_triggered (bool checked)
     }
 }
 
-//Setup markers
+/**
+ * @brief MainWindowImpl::on_actionAdd_Markers_triggered
+ * Setup markers
+ * @param checked
+ */
 void MainWindowImpl::on_actionAdd_Markers_triggered(bool checked)
 {
     if (checked == true)
@@ -2482,7 +2624,10 @@ void MainWindowImpl::on_actionAdd_Markers_triggered(bool checked)
     redrawImage();
 }
 
-// Select markers
+/**
+ * @brief MainWindowImpl::on_actionSelect_Marker_triggered
+ * Select markers
+ */
 void MainWindowImpl::on_actionSelect_Marker_triggered()
 {
     selectedMarker++;
@@ -2491,55 +2636,80 @@ void MainWindowImpl::on_actionSelect_Marker_triggered()
     redrawImage();
 }
 
-//Move selected markers
-
-
+/**
+ * @brief MainWindowImpl::on_actionMove_Marker_Left_triggered
+ * Move selected markers left
+ */
 void MainWindowImpl::on_actionMove_Marker_Left_triggered()
 {
     markers[selectedMarker]->markerRect->translate(-2., 0.);
     redrawImage();
 }
 
+/**
+ * @brief MainWindowImpl::on_actionMove_Marker_Right_triggered
+ * Move selected markers right
+ */
 void MainWindowImpl::on_actionMove_Marker_Right_triggered()
 {
     markers[selectedMarker]->markerRect->translate(2., 0.);
     redrawImage();
 }
 
+/**
+ * @brief MainWindowImpl::on_actionMove_Marker_Up_triggered
+ * Move selected markers up
+ */
 void MainWindowImpl::on_actionMove_Marker_Up_triggered()
 {
     markers[selectedMarker]->markerRect->translate(0., -2.);
     redrawImage();
 }
 
+/**
+ * @brief MainWindowImpl::on_actionMove_Marker_Down_triggered
+ * Move selected markers down
+ */
 void MainWindowImpl::on_actionMove_Marker_Down_triggered()
 {
     markers[selectedMarker]->markerRect->translate(0., 2.);
     redrawImage();
 }
 
-//Zoom In
+/**
+ * @brief MainWindowImpl::on_actionZoom_In_triggered
+ * Zoom In
+ */
 void MainWindowImpl::on_actionZoom_In_triggered()
 {
     currentScale += .1;
     redrawImage();
 }
 
-//Zoom out
+/**
+* @brief MainWindowImpl::on_actionZoom_Out_triggered
+* Zoom out
+*/
 void MainWindowImpl::on_actionZoom_Out_triggered()
 {
     if (currentScale > .2)currentScale -= .1;
     redrawImage();
 }
 
-//Zoom 100%
+/**
+ * @brief MainWindowImpl::on_actionZoom_100_triggered
+ * Zoom 100%
+ */
 void MainWindowImpl::on_actionZoom_100_triggered()
 {
     currentScale = 1.0;
     redrawImage();
 }
 
-//Zoom fit
+/**
+ * @brief MainWindowImpl::on_actionFit_Window_triggered
+ * Zoom fit
+ */
 void MainWindowImpl::on_actionFit_Window_triggered()
 {
     graphicsView->fitInView(pixMapPointer, Qt::KeepAspectRatio);
@@ -2549,41 +2719,66 @@ void MainWindowImpl::on_actionFit_Window_triggered()
     redrawImage();
 }
 
-//Rotate C/W
-
+/**
+ * @brief MainWindowImpl::on_actionRotate_Clockwise_More_triggered
+ * Rotate C/W - more
+ */
 void MainWindowImpl::on_actionRotate_Clockwise_More_triggered()
 {
 
     rotate(10.);
 }
 
+/**
+ * @brief MainWindowImpl::on_actionRotate_Clockwise_triggered
+ * Rotate C/W
+ */
 void MainWindowImpl::on_actionRotate_Clockwise_triggered()
 {
     rotate(1.);
 }
 
+/**
+ * @brief MainWindowImpl::on_actionRotate_Clockwise_Less_2_triggered
+ * Rotate C/W - less
+ */
 void MainWindowImpl::on_actionRotate_Clockwise_Less_2_triggered()
 {
     rotate(.05);
 }
 
-//Rotate A/CW
+/**
+ * @brief MainWindowImpl::on_actionRotate_Anticlockwise_More_triggered
+ * Rotate A/CW - more
+ */
 void MainWindowImpl::on_actionRotate_Anticlockwise_More_triggered()
 {
     rotate(-10);
 }
 
+/**
+ * @brief MainWindowImpl::on_actionRotate_Anticlockwise_triggered
+ * Rotate A/CW
+ */
 void MainWindowImpl::on_actionRotate_Anticlockwise_triggered()
 {
     rotate(-1.);
 }
 
+/**
+ * @brief MainWindowImpl::on_actionRotate_Anticlockwise_Less_triggered
+ * Rotate A/CW - less
+ */
 void MainWindowImpl::on_actionRotate_Anticlockwise_Less_triggered()
 {
     rotate(-.05);
 }
 
-////Rotate function
+/**
+ * @brief MainWindowImpl::rotate
+ * Rotate function
+ * @param rotateAngle
+ */
 void MainWindowImpl::rotate (qreal rotateAngle)
 {
     if (actionLock_File->isChecked() || currentImage == -1)return;
@@ -2649,42 +2844,66 @@ void MainWindowImpl::rotate (qreal rotateAngle)
 
     redrawImage();
 }
-////
 
-//Enlarge
+/**
+ * @brief MainWindowImpl::on_actionEnlarge_More_triggered
+ * Enlarge - more
+ */
 void MainWindowImpl::on_actionEnlarge_More_triggered()
 {
     resize(1.05);
 }
 
+/**
+ * @brief MainWindowImpl::on_actionEnlarge_triggered
+ * Enlarge
+ */
 void MainWindowImpl::on_actionEnlarge_triggered()
 {
     resize(1.01);
 }
 
+/**
+ * @brief MainWindowImpl::on_actionEnlarge_Less_triggered
+ * Enlarge - less
+ */
 void MainWindowImpl::on_actionEnlarge_Less_triggered()
 {
     resize(1.001);
 }
 
-//Shrink
-
+/**
+ * @brief MainWindowImpl::on_actionShrink_More_triggered
+ * Shrink - more
+ */
 void MainWindowImpl::on_actionShrink_More_triggered()
 {
     resize(0.95);
 }
 
+/**
+ * @brief MainWindowImpl::on_actionShrink_triggered
+ * Shrink
+ */
 void MainWindowImpl::on_actionShrink_triggered()
 {
     resize(0.99);
 }
 
+/**
+ * @brief MainWindowImpl::on_actionShrink_Less_triggered
+ * Shrink - less
+ */
 void MainWindowImpl::on_actionShrink_Less_triggered()
 {
     resize(0.999);
 }
 
-////Enlarge/Shrink Function
+/**
+ * @brief MainWindowImpl::resize
+ * Enlarge/Shrink Function
+ * @param sizeChange
+ */
 void MainWindowImpl::resize(qreal sizeChange)
 {
     if (actionLock_File->isChecked() || currentImage == -1)return;
@@ -2749,45 +2968,68 @@ void MainWindowImpl::resize(qreal sizeChange)
     if (imageList[currentImage]->format == 2)imageToDraw.save(savename, "PNG", 50);
     redrawImage();
 }
-////
 
-//Shift Right
-
+/**
+ * @brief MainWindowImpl::on_actionShift_Right_Less_triggered
+ * Shift Right - less
+ */
 void MainWindowImpl::on_actionShift_Right_Less_triggered()
 {
     if (imageList[currentImage]->m.m12() == 0.)rotate(.00001);
     lateralShift(.5);
 }
 
+/**
+ * @brief MainWindowImpl::on_actionShift_Right_triggered
+ * Shift Right
+ */
 void MainWindowImpl::on_actionShift_Right_triggered()
 {
     lateralShift(1.);
 }
 
+/**
+ * @brief MainWindowImpl::on_actionShift_Right_More_triggered
+ * Shift Right- less
+ */
 void MainWindowImpl::on_actionShift_Right_More_triggered()
 {
     lateralShift(10.);
 }
 
-//Shift Left
-
+/**
+ * @brief MainWindowImpl::on_actionShift_Left_less_triggered
+ * Shift Left - more
+ */
 void MainWindowImpl::on_actionShift_Left_less_triggered()
 {
     if (imageList[currentImage]->m.m12() == 0.)rotate(.00001);
     lateralShift(-.5);
 }
 
+/**
+ * @brief MainWindowImpl::on_actionShift_Left_triggered
+ * Shift Left
+ */
 void MainWindowImpl::on_actionShift_Left_triggered()
 {
     lateralShift(-1);
 }
 
+/**
+ * @brief MainWindowImpl::on_actionShift_Left_More_triggered
+ * Shift Left - less
+ */
 void MainWindowImpl::on_actionShift_Left_More_triggered()
 {
     lateralShift(-10);
 }
 
-////Lateral shift function
+/**
+ * @brief MainWindowImpl::lateralShift
+ * Lateral shift function
+ * @param shiftSize
+ */
 void MainWindowImpl::lateralShift(qreal shiftSize)
 {
     if (actionLock_File->isChecked() || currentImage == -1)return;
@@ -2818,41 +3060,65 @@ void MainWindowImpl::lateralShift(qreal shiftSize)
     redrawImage();
 }
 
-//Shift Up
-
+/**
+ * @brief MainWindowImpl::on_actionShift_Up_More_triggered
+ * Shift Up - more
+ */
 void MainWindowImpl::on_actionShift_Up_More_triggered()
 {
     verticalShift(-10.);
 }
 
+/**
+ * @brief MainWindowImpl::on_actionShift_Up_triggered
+ * Shift Up
+ */
 void MainWindowImpl::on_actionShift_Up_triggered()
 {
     verticalShift(-1.);
 }
 
+/**
+ * @brief MainWindowImpl::on_actionShift_Up_Less_triggered
+ * Shift Up - less
+ */
 void MainWindowImpl::on_actionShift_Up_Less_triggered()
 {
     verticalShift(-.5);
 }
 
-//Shift Down
-
+/**
+ * @brief MainWindowImpl::on_actionShift_Down_More_triggered
+ * Shift Down - more
+ */
 void MainWindowImpl::on_actionShift_Down_More_triggered()
 {
     verticalShift(10.);
 }
 
+/**
+ * @brief MainWindowImpl::on_actionShift_Down_triggered
+ * Shift Down
+ */
 void MainWindowImpl::on_actionShift_Down_triggered()
 {
     verticalShift(1.);
 }
 
+/**
+ * @brief MainWindowImpl::on_actionShift_Down_Less_triggered
+ * Shift Down - less
+ */
 void MainWindowImpl::on_actionShift_Down_Less_triggered()
 {
     verticalShift(.5);
 }
 
-////Vertical shift function
+/**
+ * @brief MainWindowImpl::verticalShift
+ * Vertical shift function
+ * @param shiftSize
+ */
 void MainWindowImpl::verticalShift(qreal shiftSize)
 {
     if (actionLock_File->isChecked() || currentImage == -1)return;
@@ -2879,12 +3145,14 @@ void MainWindowImpl::verticalShift(qreal shiftSize)
         propogateStep++;
     }
 
-
     redrawShift();
     redrawImage();
 }
 
-//Function to redraw the shifts for translation (both lateral and vertical need this code)
+/**
+ * @brief MainWindowImpl::redrawShift
+ * Function to redraw the shifts for translation (both lateral and vertical need this code)
+ */
 void MainWindowImpl::redrawShift()
 {
     QImage Shift(imageList[currentImage]->fileName);
@@ -2931,7 +3199,11 @@ void MainWindowImpl::redrawShift()
     if (imageList[currentImage]->format == 2)Shifted.save(savename, "PNG", 50);
 }
 
-//Set up to record changes in propogation mode
+/**
+ * @brief MainWindowImpl::on_actionPropogate_Mode_triggered
+ * Set up to record changes in propogation mode
+ * @param checked
+ */
 void MainWindowImpl::on_actionPropogate_Mode_triggered(bool checked)
 {
     if (checked == true)
@@ -2942,7 +3214,6 @@ void MainWindowImpl::on_actionPropogate_Mode_triggered(bool checked)
             actionPropogate_Mode->setChecked(false);
             return;
         }
-
 
         QMessageBox msgBox;
         msgBox.setText("Entering propagation mode");
@@ -3057,6 +3328,9 @@ void MainWindowImpl::on_actionPropogate_Mode_triggered(bool checked)
     showInfo(-1, -1);
 }
 
+/**
+ * @brief MainWindowImpl::on_actionApply_Propogation_triggered
+ */
 void MainWindowImpl::on_actionApply_Propogation_triggered()
 {
     //Setup progress bar
@@ -3320,8 +3594,11 @@ void MainWindowImpl::on_actionApply_Propogation_triggered()
     statusbar->removeWidget(&progress);
 }
 
-
-//Crop area setup:
+/**
+ * @brief MainWindowImpl::on_actionCreate_Crop_Area_triggered
+ * Crop area setup
+ * @param checked
+ */
 void MainWindowImpl::on_actionCreate_Crop_Area_triggered(bool checked)
 {
     if (checked == true)
@@ -3386,7 +3663,10 @@ void MainWindowImpl::on_actionCreate_Crop_Area_triggered(bool checked)
 
 }
 
-//Crop!
+/**
+ * @brief MainWindowImpl::on_actionCrop_triggered
+ * Crop!
+ */
 void MainWindowImpl::on_actionCrop_triggered()
 {
 
@@ -3433,7 +3713,6 @@ void MainWindowImpl::on_actionCrop_triggered()
             return;
         }
 
-
         int StartImage = currentImage;
 
         //Setup status & progress bar
@@ -3479,8 +3758,6 @@ void MainWindowImpl::on_actionCrop_triggered()
         currentImage = StartImage;
         redrawImage();
 
-
-
         actionCreate_Crop_Area->trigger();
         actionAdd_Markers->trigger();
 
@@ -3489,40 +3766,57 @@ void MainWindowImpl::on_actionCrop_triggered()
         statusbar->removeWidget(&progress);
 
         QMessageBox::warning(this, "Crop completed", "Cropped images placed in cut folder of current directory.", QMessageBox::Ok);
-
     }
 }
 
-//Slots to resize crop area from Spin boxes in crop dialogue
+/**
+ * @brief MainWindowImpl::resizeCropW
+ * Slot to resize crop area width from Spin boxes in crop dialogue
+ * @param value
+ */
 void MainWindowImpl::resizeCropW(int value)
 {
     cropArea->setWidth(value);
     redrawJustCropBox();
 }
 
+/**
+ * @brief MainWindowImpl::resizeCropH
+ * Slot to resize crop area hieght from Spin boxes in crop dialogue
+ * @param value
+ */
 void MainWindowImpl::resizeCropH(int value)
 {
     cropArea->setHeight(value);
     redrawJustCropBox();
 }
 
-
-//About
+/**
+ * @brief MainWindowImpl::on_actionAbout_triggered
+ * About dialogue
+ */
 void MainWindowImpl::on_actionAbout_triggered()
 {
     About adialogue;
     adialogue.exec();
 }
 
-//Lock file to changes - all done in the apply changes function
+/**
+ * @brief MainWindowImpl::on_actionLock_File_triggered
+ * Lock file to changes - all done in the apply changes function
+ * @param checked
+ */
 void MainWindowImpl::on_actionLock_File_triggered(bool checked)
 {
     // No code necessary - used by propogation and file locking modes.
     Q_UNUSED(checked);
-
 }
 
-//Lock forward
+/**
+ * @brief MainWindowImpl::on_actionLock_Forward_triggered
+ * Lock forward
+ * @param checked
+ */
 void MainWindowImpl::on_actionLock_Forward_triggered(bool checked)
 {
     if (checked == true)
@@ -3568,7 +3862,11 @@ void MainWindowImpl::on_actionLock_Forward_triggered(bool checked)
     showInfo(-1, -1);
 }
 
-//Lock back
+/**
+ * @brief MainWindowImpl::on_actionLock_Back_triggered
+ * Lock back
+ * @param checked
+ */
 void MainWindowImpl::on_actionLock_Back_triggered(bool checked)
 {
     if (checked == true)
@@ -3615,7 +3913,10 @@ void MainWindowImpl::on_actionLock_Back_triggered(bool checked)
     showInfo(-1, -1);
 }
 
-//Move on or back in file locking mode
+/**
+ * @brief MainWindowImpl::on_actionMove_Forward_Back_triggered
+ * Move on or back in file locking mode
+ */
 void MainWindowImpl::on_actionMove_Forward_Back_triggered()
 {
     if (actionLock_Forward->isChecked())
@@ -3646,7 +3947,11 @@ void MainWindowImpl::on_actionMove_Forward_Back_triggered()
     }
 }
 
-//Slider
+/**
+ * @brief MainWindowImpl::on_horizontalSlider_valueChanged
+ * Slider
+ * @param value
+ */
 void MainWindowImpl::on_horizontalSlider_valueChanged(int value)
 {
     QApplication::restoreOverrideCursor();
@@ -3656,7 +3961,10 @@ void MainWindowImpl::on_horizontalSlider_valueChanged(int value)
     redrawImage();
 }
 
-//Save settings file
+/**
+ * @brief MainWindowImpl::on_actionSave_triggered
+ * Save settings file
+ */
 void MainWindowImpl::on_actionSave_triggered()
 {
     int i;
@@ -3691,7 +3999,10 @@ void MainWindowImpl::on_actionSave_triggered()
     settings.close();
 }
 
-//Save backup settings file
+/**
+ * @brief MainWindowImpl::on_actionSave_Backup_triggered
+ * Save backup settings file
+ */
 void MainWindowImpl::on_actionSave_Backup_triggered()
 {
     QDateTime date;
@@ -3728,7 +4039,10 @@ void MainWindowImpl::on_actionSave_Backup_triggered()
     settings.close();
 }
 
-//Hide current image
+/**
+ * @brief MainWindowImpl::on_actionHide_Image_triggered
+ * Hide current image
+ */
 void MainWindowImpl::on_actionHide_Image_triggered()
 {
     if (currentImage == (imageList.count() - 1))
@@ -3746,21 +4060,30 @@ void MainWindowImpl::on_actionHide_Image_triggered()
     statusbar->showMessage("This image is hidden.");
 }
 
-//Unhide current image
+/**
+ * @brief MainWindowImpl::on_actionShow_Image_triggered
+ * Unhide current image
+ */
 void MainWindowImpl::on_actionShow_Image_triggered()
 {
     imageList[currentImage]->hidden = false;
     statusbar->showMessage("This image is no longer hidden.");
 }
 
-//Unhide all images
+/**
+ * @brief MainWindowImpl::on_actionShow_All_triggered
+ * Unhide all images
+ */
 void MainWindowImpl::on_actionShow_All_triggered()
 {
     for (int i = 0; i < imageList.count(); i++)imageList[i]->hidden = false;
     statusbar->showMessage("All images no longer hidden.");
 }
 
-//Advance ignoring hide
+/**
+ * @brief MainWindowImpl::on_actionAdvance_To_Hidden_triggered
+ * Advance ignoring hide
+ */
 void MainWindowImpl::on_actionAdvance_To_Hidden_triggered()
 {
     if (spinBox->isEnabled() == false)return;
@@ -3770,7 +4093,10 @@ void MainWindowImpl::on_actionAdvance_To_Hidden_triggered()
     if (actionLock_Back->isChecked() && currentImage == lockImage)actionLock_File->setChecked(true);
 }
 
-//Retreat ignoring hide
+/**
+ * @brief MainWindowImpl::on_actionRetreat_To_Hidden_triggered
+ * Retreat ignoring hide
+ */
 void MainWindowImpl::on_actionRetreat_To_Hidden_triggered()
 {
     if (spinBox->isEnabled() == false)return;
@@ -3780,7 +4106,10 @@ void MainWindowImpl::on_actionRetreat_To_Hidden_triggered()
     if (actionLock_Back->isChecked() && currentImage == (lockImage - 1))actionLock_File->setChecked(false);
 }
 
-//Next
+/**
+ * @brief MainWindowImpl::on_actionNext_Image_triggered
+ * Next
+ */
 void MainWindowImpl::on_actionNext_Image_triggered()
 {
     QApplication::restoreOverrideCursor();
@@ -3809,7 +4138,10 @@ void MainWindowImpl::on_actionNext_Image_triggered()
 
 }
 
-//Previous
+/**
+ * @brief MainWindowImpl::on_actionPrevious_Image_triggered
+ * Previous
+ */
 void MainWindowImpl::on_actionPrevious_Image_triggered()
 {
     QApplication::restoreOverrideCursor();
@@ -3834,10 +4166,11 @@ void MainWindowImpl::on_actionPrevious_Image_triggered()
         actionLock_File->setChecked(false);
         redrawImage();
     }
-
 }
 
-
+/**
+ * @brief MainWindowImpl::on_actionReset_Image_triggered
+ */
 void MainWindowImpl::on_actionReset_Image_triggered()
 {
     imageList[currentImage]->m.reset();
@@ -3850,6 +4183,9 @@ void MainWindowImpl::on_actionReset_Image_triggered()
     redrawImage();
 }
 
+/**
+ * @brief MainWindowImpl::on_actionReset_Scene_triggered
+ */
 void MainWindowImpl::on_actionReset_Scene_triggered()
 {
     QPixmap newimage;
@@ -3862,6 +4198,9 @@ void MainWindowImpl::on_actionReset_Scene_triggered()
     redrawImage();
 }
 
+/**
+ * @brief MainWindowImpl::on_actionSwap_Image_With_Next_triggered
+ */
 void MainWindowImpl::on_actionSwap_Image_With_Next_triggered()
 {
     int flag = 0;
@@ -3914,6 +4253,9 @@ void MainWindowImpl::on_actionSwap_Image_With_Next_triggered()
     redrawImage();
 }
 
+/**
+ * @brief MainWindowImpl::on_actionLoad_Settings_File_triggered
+ */
 void MainWindowImpl::on_actionLoad_Settings_File_triggered()
 {
     if (currentImage == -1)
@@ -4100,6 +4442,9 @@ void MainWindowImpl::on_actionLoad_Settings_File_triggered()
 
 }
 
+/**
+ * @brief MainWindowImpl::on_actionCompress_Dataset_triggered
+ */
 void MainWindowImpl::on_actionCompress_Dataset_triggered()
 {
     if (currentImage == -1)
@@ -4158,17 +4503,34 @@ void MainWindowImpl::on_actionCompress_Dataset_triggered()
     }
 }
 
+/**
+ * @brief MainWindowImpl::on_actionManual_triggered
+ */
 void MainWindowImpl::on_actionManual_triggered()
 {
     QDesktopServices::openUrl(QUrl("file:" + qApp->applicationDirPath() + "/SPIERSalign_Manual.pdf"));
 }
 
+/**
+ * @brief MainWindowImpl::on_actionBugIssueFeatureRequest_triggered
+ */
 void MainWindowImpl::on_actionBugIssueFeatureRequest_triggered()
 {
     QDesktopServices::openUrl(QUrl(QString(GITURL) + QString(GITREPOSITORY) + QString(GITISSUE)));
 }
 
+/**
+ * @brief MainWindowImpl::on_actionCode_on_GitHub_triggered
+ */
 void MainWindowImpl::on_actionCode_on_GitHub_triggered()
 {
     QDesktopServices::openUrl(QUrl(QString(GITURL) + QString(GITREPOSITORY)));
+}
+
+/**
+ * @brief MainWindowImpl::on_actionOnline_User_Manual_triggered
+ */
+void MainWindowImpl::on_actionOnline_User_Manual_triggered()
+{
+    QDesktopServices::openUrl(QUrl(QString(READTHEDOCS)));
 }

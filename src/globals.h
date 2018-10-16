@@ -1,3 +1,20 @@
+/**
+ * @file
+ * Header: Globals
+ *
+ * All SPIERSview code is released under the GNU General Public License.
+ * See LICENSE.md files in the programme directory.
+ *
+ * All SPIERSview code is Copyright 2008-2018 by Russell J. Garwood, Mark D. Sutton,
+ * and Alan R.T. Spencer.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version. This program is distributed in the
+ * hope that it will be useful, but WITHOUT ANY WARRANTY.
+ */
+
 #ifndef __GLOBALS_H__
 #define __GLOBALS_H__
 
@@ -13,6 +30,27 @@
 #include <QString>
 #include <QTransform>
 
+//Legal Stuff
+#define COPYRIGHT "Copyright © 2018 Mark D. Sutton, Russell J. Garwood, Alan R.T.Spencer"
+#define LICENCE "This program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under the conditions of the GPL v3  license"
+
+//Programme Name
+#define PRODUCTNAME "SPIERSalign"
+
+//Email
+#define EMAIL "palaeoware@gmail.com"
+
+//Github
+#define GITURL "https://github.com/"
+#define GITREPOSITORY "palaeoware/SPIERSalign"
+#define GITISSUE "/issues"
+
+//Readthedocs
+#define READTHEDOCS "https://spiersalign.readthedocs.io/en/latest/"
+
+/**
+ * @brief The ImageData class
+ */
 class ImageData
 {
 public:
@@ -23,6 +61,9 @@ public:
     int format;
 };
 
+/**
+ * @brief The PropogationData class
+ */
 class PropogationData
 {
 public:
@@ -30,6 +71,9 @@ public:
     qreal value;
 };
 
+/**
+ * @brief The MarkerData class
+ */
 class MarkerData
 {
 public:

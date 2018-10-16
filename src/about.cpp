@@ -2,10 +2,10 @@
  * @file
  * About Dialog
  *
- * All REvoSim code is released under the GNU General Public License.
+ * All SPIERSview code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All REvoSim code is Copyright 2008-2018 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERSview code is Copyright 2008-2018 by Russell J. Garwood, Mark D. Sutton,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,11 +16,15 @@
  */
 
 #include "about.h"
-#include "version.h"
+#include "globals.h"
 #include "mainwindowimpl.h"
 
 #include <QString>
 
+/**
+ * @brief About::About
+ * @param parent
+ */
 About::About(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::About)
@@ -41,7 +45,7 @@ About::About(QWidget *parent) :
     ui->textLabel_2->setWordWrap(true);
     ui->textLabel_2->setText("This  software is " + QString(PRODUCTNAME) +
                              ". It was coded by"
-                             " Russell Garwood (russell.garwood@gmail.com), with advice and assistance from Mark Sutton (m.sutton@imperial.ac.uk) and a GUI theme by  Alan R.T. Spencer (alan.spencer@imperial.ac.uk)"
+                             " Russell Garwood (russell.garwood@gmail.com), with advice and assistance from Mark Sutton (m.sutton@imperial.ac.uk) and additional code by Alan R.T. Spencer (alan.spencer@imperial.ac.uk)"
                              "<br><br>Reports are appreciated, and comments, suggestions, and feature requests are welcome.");
     ui->textLabel_2->setAlignment(Qt::AlignCenter);
 
@@ -67,11 +71,18 @@ About::About(QWidget *parent) :
     ui->buttonBox->setStandardButtons(QDialogButtonBox::Close);
 }
 
+/**
+ * @brief About::~About
+ */
 About::~About()
 {
     delete ui;
 }
 
+/**
+ * @brief About::returnLicense
+ * @return
+ */
 QString About::returnLicense()
 {
     QString license;

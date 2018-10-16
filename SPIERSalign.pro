@@ -27,10 +27,9 @@ HEADERS += src/mainwindowimpl.h \
     src/globals.h \
     src/scene.h \
     src/darkstyletheme.h \
-    src/version.h \
     src/about.h \
     ../SPIERScommon/netmodule.h \
-    ../SPIERScommon/semanticversion.h \
+    ../SPIERScommon/semanticglobals.h \
     ../SPIERScommon/prereleasecomponent.h
 
 SOURCES += src/mainwindowimpl.cpp \

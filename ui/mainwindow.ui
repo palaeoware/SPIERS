@@ -139,6 +139,7 @@
      <string>Help</string>
     </property>
     <addaction name="actionManual"/>
+    <addaction name="actionOnline_User_Manual"/>
     <addaction name="actionCode_on_GitHub"/>
     <addaction name="actionBugIssueFeatureRequest"/>
     <addaction name="separator"/>
@@ -935,8 +936,14 @@
    </property>
   </action>
   <action name="actionManual">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Manual</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
    </property>
   </action>
   <action name="actionBugIssueFeatureRequest">
@@ -947,6 +954,11 @@
   <action name="actionCode_on_GitHub">
    <property name="text">
     <string>Code on GitHub</string>
+   </property>
+  </action>
+  <action name="actionOnline_User_Manual">
+   <property name="text">
+    <string>Online User Manual</string>
    </property>
   </action>
  </widget>
