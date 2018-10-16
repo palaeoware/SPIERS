@@ -2778,11 +2778,15 @@ void MainWindowImpl::on_actionMaskCopy_selected_from_next_triggered() //from nex
 
         //do advance/back
         if (MasksMoveForward)
+        {
             if (CurrentFile == FileCount - 1) Message ("This is the last file - can't move forward!");
             else SliderPos->setValue(CurrentFile + 2);
+        }
         else if (MasksMoveBack)
+        {
             if (CurrentFile == 0) Message ("This is the first file - can't move back!");
             else SliderPos->setValue(CurrentFile);
+        }
 
         ResetUndo();
     }

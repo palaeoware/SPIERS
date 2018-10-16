@@ -17,7 +17,7 @@
 #include "settingsimpl.h"
 #include "backthread.h"
 #include "histogram.h"
-#include "version.h"
+#include "globals.h"
 
 #include <QColorDialog>
 #include <QFileDialog>
@@ -219,9 +219,7 @@ void MainWindowImpl::SetUpBrushEnabling()
 
 void MainWindowImpl::on_actionManual_triggered()
 {
-
-    QDesktopServices::openUrl(QUrl("file:" + qApp->applicationDirPath() + "/SPIERSedit_Manual.pdf", QUrl::TolerantMode));
-
+    QDesktopServices::openUrl(QUrl(QString(READTHEDOCS)));
 }
 
 
@@ -326,7 +324,7 @@ void MainWindowImpl::on_actionOutput_visible_image_set_triggered()
     int lastsep = qMax(FullFiles.at(0).lastIndexOf("\\"), FullFiles.at(0).lastIndexOf("/")); //this is last separator in path
     QString workingdir = FullFiles.at(0).left(lastsep);
 
-    QString targetdir = QFileDialog::getExistingDirectory(0, "Select output directory", workingdir);
+    QString targetdir = QFileDialog::getExistingDirectory(nullptr, "Select output directory", workingdir);
 
     //loop through all files
 

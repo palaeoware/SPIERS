@@ -59,7 +59,6 @@ HEADERS += src/display.h \
     src/keysafespinbox.h \
     src/mainview.h \
     src/darkstyletheme.h \
-    src/version.h \
     ../SPIERScommon/netmodule.h \
     ../SPIERScommon/semanticversion.h \
     ../SPIERScommon/prereleasecomponent.h

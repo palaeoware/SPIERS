@@ -18,6 +18,25 @@
 
 // internal version for file purposes - take as SPIERSedit 2.this
 #define SPIERS_VERSION 2
+
+//Legal Stuff
+#define COPYRIGHT "Copyright © 2018 Mark D. Sutton, Russell J. Garwood, Alan R.T.Spencer"
+#define LICENCE "This program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under the conditions of the GPL v3  license"
+
+//Programme Name
+#define PRODUCTNAME "SPIERS Edit"
+
+//Email
+#define EMAIL "palaeoware@gmail.com"
+
+//Github
+#define GITURL "https://github.com/"
+#define GITREPOSITORY "palaeoware/SPIERSedit"
+#define GITISSUE "/issues"
+
+//Readthedocs
+#define READTHEDOCS "https://spiersedit.readthedocs.io/en/latest/"
+
 extern QList<bool> FilesDirty; //for re-rendering.
 extern QString openfile;
 extern bool bodgeflag;

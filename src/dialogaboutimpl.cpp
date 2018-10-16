@@ -1,5 +1,7 @@
 #include "dialogaboutimpl.h"
 #include "mainwindowimpl.h"
+#include "globals.h"
+
 #include "../../SPIERScommon/netmodule.h"
 //
 
@@ -31,7 +33,7 @@ void DialogAboutImpl::on_pushButton_clicked()
 }
 
 */
-#include "version.h"
+
 #include <QString>
 
 DialogAboutImpl::DialogAboutImpl(QWidget *parent, Qt::WindowFlags f)
