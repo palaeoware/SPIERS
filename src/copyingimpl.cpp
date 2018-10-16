@@ -46,7 +46,7 @@ void CopyingImpl::closeEvent(QCloseEvent *event)
 {
     // in case close button hit
     if (copying)
-        event->ignore();
+        escapeFlag = true;
     else
         event->accept();
 }
