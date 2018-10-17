@@ -1,5 +1,23 @@
+/**
+ * @file
+ * Header: Globals
+ *
+ * All SPIERSedit code is released under the GNU General Public License.
+ * See LICENSE.md files in the programme directory.
+ *
+ * All SPIERSview code is Copyright 2008-2018 by Mark D. Sutton, Russell J. Garwood,
+ * and Alan R.T. Spencer.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version. This program is distributed in the
+ * hope that it will be useful, but WITHOUT ANY WARRANTY.
+ */
+
 #ifndef __GLOBALS_H__
 #define __GLOBALS_H__
+
 #include <QString>
 #include <QStringList>
 #include <QList>
@@ -13,18 +31,18 @@
 #include <QMutex>
 #include <QGraphicsRectItem>
 #include <QGraphicsTextItem>
-#include "mainwindowimpl.h"
 
+#include "mainwindowimpl.h"
 
 // internal version for file purposes - take as SPIERSedit 2.this
 #define SPIERS_VERSION 2
 
 //Legal Stuff
 #define COPYRIGHT "Copyright © 2018 Mark D. Sutton, Russell J. Garwood, Alan R.T.Spencer"
-#define LICENCE "This program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under the conditions of the GPL v3  license"
+#define LICENCE "This program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under the conditions of the GPL v3 license"
 
 //Programme Name
-#define PRODUCTNAME "SPIERS Edit"
+#define PRODUCTNAME "SPIERSedit"
 
 //Email
 #define EMAIL "palaeoware@gmail.com"
@@ -55,6 +73,10 @@ extern QMutex mutex;
 extern QList<double> Stretches;
 extern QList<double> FullStretches;
 extern bool ShowSlicePosition;
+
+/**
+ * @brief The Segment class
+ */
 class Segment
 {
 public:
@@ -92,6 +114,9 @@ public:
     QGraphicsTextItem *textitem;
 };
 
+/**
+ * @brief The Mask class
+ */
 class Mask
 {
 public:
@@ -107,6 +132,9 @@ public:
     int ListOrder; //position in display list
 };
 
+/**
+ * @brief The PointList class
+ */
 class PointList
 {
 public:
@@ -116,6 +144,9 @@ public:
     int Count;
 };
 
+/**
+ * @brief The Curve class
+ */
 class Curve
 {
 public:
@@ -126,11 +157,14 @@ public:
     bool Closed;
     bool Filled;
     int Segment; //This is segment +1, as '0' reserved for 'none'
-    QList <struct PointList *> SplinePoints; // list for each file
+    QList <class PointList *> SplinePoints; // list for each file
     int ListOrder; //position in display list
     QTreeWidgetItem *widgetitem;
 };
 
+/**
+ * @brief The OutputObject class
+ */
 class OutputObject
 {
 public:
@@ -170,12 +204,10 @@ extern int AutoSaveFrequency;
 extern bool NoUpdateSelectionFlag;
 extern bool escapeFlag;
 extern bool OutputRegroupMode;
-extern QList <struct Segment *> Segments;
-extern QList <struct Mask *> MasksSettings;
-extern QList <struct Curve *> Curves;
-extern QList <struct OutputObject *> OutputObjects;
-// place your code here
-
+extern QList <class Segment *> Segments;
+extern QList <class Mask *> MasksSettings;
+extern QList <class Curve *> Curves;
+extern QList <class OutputObject *> OutputObjects;
 extern bool CurveShapeLocked;
 extern QStringList Files;
 extern QStringList FullFiles;
@@ -201,7 +233,7 @@ extern int LastTrans;
 extern int CurrentSegment, CurrentRSegment;
 extern bool ThreshFlag, MasksFlag, SegsFlag;
 extern bool MoveFlag, ChangeFlag;
-extern QList <struct Segment *> Segments;
+extern QList <class Segment *> Segments;
 extern int MaxUsedMask, SelectedMask, SelectedRMask, SelectedCurve, CurveCount, OutputObjectsCount;
 extern int SampleArraySize;
 extern QByteArray SampleArray;
@@ -218,18 +250,23 @@ extern QString SettingsFileName, FileNotes;
 extern QString FullSettingsFileName;
 extern bool MasksDirty, LocksDirty, CurvesDirty; //for file writing
 extern bool MasksUndoDirty, LocksUndoDirty, CurvesUndoDirty; //for file writing
-
 extern bool HorribleBodgeFlagDontStoreUndo;
-//My 'superglobals' - written to registry or equivalent
+
+// 'superglobals' - written to registry or equivalent
 extern bool BackgroundCacheFilling;
 extern bool RenderCache;
 extern bool MenuHistSelectedOnly, MenuHistChecked, MenuInfoChecked, MenuGenChecked, MenuMasksChecked, MenuSegsChecked, MenuCurvesChecked, MenuOutputChecked, MenuToolboxChecked,
        MenuSliceSelectorChecked;
+
+/**
+ * @brief The RecentFiles struct
+ */
 struct RecentFiles
 {
     QString File;
     QString Notes;
 };
+
 extern QList<RecentFiles> RecentFileList;
 extern int CacheMem;
 extern int UndoMem;
@@ -238,13 +275,12 @@ extern int UndoTimerSetting;
 extern void WriteSuperGlobals();
 extern void ReadSuperGlobals();
 extern void RecentFile(QString fname);
-
 extern void ResetFilesDirty();
 
 extern QTabWidget *tabwidget;
-extern bool GreyImage; //flag for current colour image is actually a greyscale image
-//My macros for reading/writing RGB from arrays - these are endian sensitive and NOT portable (though easily tweaked)
+extern bool GreyImage; // flag for current colour image is actually a greyscale image
 
+// Macros for reading/writing RGB from arrays - these are endian sensitive and NOT portable (though easily tweaked)
 extern int randn(int n);
 
 #define ALPHA(pointer, offset) pointer[offset+3]

@@ -1,19 +1,40 @@
+/**
+ * @file
+ * Header: Copying Impl.
+ *
+ * All SPIERSedit code is released under the GNU General Public License.
+ * See LICENSE.md files in the programme directory.
+ *
+ * All SPIERSview code is Copyright 2008-2018 by Mark D. Sutton, Russell J. Garwood,
+ * and Alan R.T. Spencer.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version. This program is distributed in the
+ * hope that it will be useful, but WITHOUT ANY WARRANTY.
+ */
+
 #ifndef COPYINGIMPL_H
 #define COPYINGIMPL_H
-//
-#include "ui_Copying.h"
-#include "mainwindowimpl.h"
+
 #include <QDir>
 #include <QList>
 #include <QListWidget>
 
-//
+#include "ui_Copying.h"
+#include "mainwindowimpl.h"
+
 class OutputObject;
+
+/**
+ * @brief The CopyingImpl class
+ */
 class CopyingImpl : public QDialog, public Ui::Copying
 {
     Q_OBJECT
 public:
-    CopyingImpl( QWidget *parent = 0, Qt::WindowFlags f = 0 );
+    CopyingImpl( QWidget *parent = nullptr, Qt::WindowFlags f = nullptr );
     void Copy(QDir source, QDir dest);
     void MakeNewSegFiles(int snum);
     void DeleteSegments(QList <int> list);
@@ -36,8 +57,10 @@ public:
     void CompressAllSourceFiles(int level);
     void Apply3DBrush(int button);
     bool copying;
+
 protected:
     void closeEvent(QCloseEvent *event);
+
 private:
     bool AmIMerged(int n);
     void StupidBodgyFunction(QList <int> *tt, int parent);
@@ -49,13 +72,10 @@ private:
     QByteArray ExpandGrid(QByteArray *grid, int awidth, int aheight);
     QString CountMessage;
     int Count;
+
 private slots:
     void escape();
 
 };
+
 #endif
-
-
-
-
-

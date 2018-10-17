@@ -2,7 +2,7 @@
  * @file
  * Header: Dark Style Theme
  *
- * All REvoSim code is released under the GNU General Public License.
+ * All SPIERSedit code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
  * All REvoSim code is Copyright 2008-2018 by Mark D. Sutton, Russell J. Garwood,
