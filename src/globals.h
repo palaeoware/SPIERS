@@ -73,6 +73,11 @@ extern QMutex mutex;
 extern QList<double> Stretches;
 extern QList<double> FullStretches;
 extern bool ShowSlicePosition;
+extern bool temptestflag;
+
+extern QTreeWidgetItem *LastItemClicked;
+extern QTime LastTimeClicked;
+extern int LastColumnClicked;
 
 /**
  * @brief The Segment class

@@ -804,18 +804,12 @@ QString MainWindowImpl::TextForSliceSelectorBox(int i)
 
     //qDebug()<<"TTFSSB-"<<Fname;
     int lastsep = qMax(Fname.lastIndexOf("\\"), Fname.lastIndexOf("/")); //this is last separator in path
-    //qDebug()<<"in TTFSSB1a"<<i;
 
     QString sfname = Fname.mid(lastsep + 1);
-    //qDebug()<<"in TTFSSB1b"<<i;
 
     QString s = QString ("%1").arg(i + 1, chars, 10, QChar('0'));
-    //qDebug()<<"in TTFSSB1c"<<i;
 
-
-    //qDebug()<<"in TTFSSB2"<<Stretches[i]<<SlicePerMM;
-    QString pos = QString ("%1").arg((double)Stretches[i] * ((double)1 / SlicePerMM), 0, 'f', 3);
-
+    QString pos = QString ("%1").arg(static_cast<double>(Stretches[i]) * (1. / SlicePerMM), 0, 'f', 3);
 
     if (ShowSlicePosition)  s += " - " + pos + "mm";
     else s += " (" + sfname + ")";
@@ -865,9 +859,9 @@ void MainWindowImpl::SetUpGUIFromSettings()
 
     DontRedoZoom = true; //avoid cascades on updating controls
     double t2 = log10(CurrentZoom * 100); //t=(slider/500)+1
-    int slider = (t2 - 1) * 500;
-    CurrentZoom = (pow(10.0, ((double)(slider)) / 500 + 1)) / 100; //fix CurrentZoom to nearest correct value
-    ZoomSpinBox->setValue((int)(CurrentZoom * 100));
+    int slider = (static_cast<int>(t2) - 1) * 500;
+    CurrentZoom = (pow(10.0, (static_cast <double>(slider)) / 500 + 1)) / 100; //fix CurrentZoom to nearest correct value
+    ZoomSpinBox->setValue(static_cast<int>(CurrentZoom * 100));
     ZoomSlider->setValue(slider);
     DontRedoZoom = false;
 
@@ -1118,7 +1112,7 @@ void MainWindowImpl::on_SegmentAdd_pressed()
     CopyingImpl cop;
     cop.MakeNewSegFiles(SegmentCount);
 
-    GA.append(0);
+    GA.append(nullptr);
 
     mutex.lock();
     ClearCache();
@@ -1187,7 +1181,7 @@ void MainWindowImpl::SetUpGenerationToolbox(int s)
     GenInvert->setChecked(Segments[s]->LinInvert);
 
     SpinBoxSparsity->setValue(Segments[s]->PolySparse);
-    SpinBoxOrder->setValue((int)Segments[s]->PolyOrder);
+    SpinBoxOrder->setValue(static_cast<int>(Segments[s]->PolyOrder));
     SpinBoxRetries->setValue(Segments[s]->PolyRetries);
     SpinBoxConverge->setValue(Segments[s]->PolyConverge);
     SpinBoxContrast->setValue(Segments[s]->PolyContrast);
@@ -1469,7 +1463,7 @@ void MainWindowImpl::on_CurveDelete_pressed()
                 list.append(i);
             }
     }
-//        qDebug()<<"ist.count"<<list.count()<<"CurveCouunt"<<CurveCount;
+
     if (list.count() == CurveCount) SelectedCurve = -1;
     if (list.count() > 0)
     {
@@ -2085,7 +2079,7 @@ void MainWindowImpl::on_OOTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, in
                 if (ok && !item.isEmpty())
                 {
                     if (item == "[None]") OutputObjects[i]->Key = 0;
-                    else OutputObjects[i]->Key = (int) (item.toLatin1()[0]);
+                    else OutputObjects[i]->Key = static_cast<int>(item.toLatin1()[0]);
                 }
                 RefreshOneOOItem(OutputObjects[i]->widgetitem, i);
 
@@ -2133,6 +2127,7 @@ void MainWindowImpl::on_OOTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, in
 
 void MainWindowImpl::on_OOTreeWidget_expanded(QModelIndex index)
 {
+    Q_UNUSED(index);
     OOTreeWidget->resizeColumnToContents(0);
 }
 
@@ -2214,7 +2209,7 @@ void MainWindowImpl::on_OONew_clicked()
         t << OutputObjects.count();
     }
     o->Name = qname + name;
-    o->Key = (int) (NextKey->currentText().toLatin1()[0]);
+    o->Key = static_cast<int>(NextKey->currentText().toLatin1()[0]);
     if (o->Key == 91) o->Key = 0;
     o->Resample = OOResample->value();
     o->Parent = parent;
@@ -2290,7 +2285,7 @@ void MainWindowImpl::on_OOGroup_clicked()
                 }
 
         OutputObject *o = new OutputObject("Group");
-        o->Key = (int) (NextKey->currentText().toLatin1()[0]);
+        o->Key = static_cast<int>(NextKey->currentText().toLatin1()[0]);
         if (o->Key == 91) o->Key = 0;
         o->Resample = OOResample->value();
         o->IsGroup = true;
@@ -2746,11 +2741,15 @@ void MainWindowImpl::on_actionMaskCopy_selected_from_Previous_triggered()
         ResetUndo();
         //do advance/back
         if (MasksMoveForward)
+        {
             if (CurrentFile == FileCount - 1) Message ("This is the last file - can't move forward!");
             else SliderPos->setValue(CurrentFile + 2);
+        }
         else if (MasksMoveBack)
+        {
             if (CurrentFile == 0) Message ("This is the first file - can't move back!");
             else SliderPos->setValue(CurrentFile);
+        }
     }
 }
 
@@ -2761,11 +2760,15 @@ void MainWindowImpl::on_actionMaskCopy_all_from_previous_triggered() //from curr
     ResetUndo();
     //do advance/back
     if (MasksMoveForward)
+    {
         if (CurrentFile == FileCount - 1) Message ("This is the last file - can't move forward!");
         else SliderPos->setValue(CurrentFile + 2);
+    }
     else if (MasksMoveBack)
+    {
         if (CurrentFile == 0) Message ("This is the first file - can't move back!");
         else SliderPos->setValue(CurrentFile);
+    }
 }
 
 void MainWindowImpl::on_actionMaskCopy_selected_from_next_triggered() //from next actually
@@ -2806,12 +2809,15 @@ void MainWindowImpl::on_actionMaskCopy_all_from_next_triggered() //actually copy
 
                 //do advance/back
                 if (MasksMoveForward)
+                {
                     if (CurrentFile == FileCount - 1) Message ("This is the last file - can't move forward!");
                     else SliderPos->setValue(CurrentFile + 2);
+                }
                 else if (MasksMoveBack)
+                {
                     if (CurrentFile == 0) Message ("This is the first file - can't move back!");
                     else SliderPos->setValue(CurrentFile);
-
+                }
                 ResetUndo();
             }
 }
@@ -3088,7 +3094,7 @@ void MainWindowImpl::on_actionDistribute_over_range_triggered()
     int count = 0;
     for (int i = 0; i < SegmentCount; i++)
     {
-        if (Segments[i]->Activated && Segments[i]->widgetitem != 0)
+        if (Segments[i]->Activated && Segments[i]->widgetitem != nullptr)
             if (Segments[i]->widgetitem->isSelected()) count++;
     }
     if (count < 2) Message("Select as least two segments to distribute");
@@ -3169,8 +3175,8 @@ void MainWindowImpl::on_actionInterpolate_over_selected_slices_triggered()
                     {
                         double x = Curves[c]->SplinePoints[FirstFile]->X[j];
                         double y = Curves[c]->SplinePoints[FirstFile]->Y[j];
-                        double xinc = (Curves[c]->SplinePoints[LastFile]->X[j] - x) / (double)(LastFile - FirstFile);
-                        double yinc = (Curves[c]->SplinePoints[LastFile]->Y[j] - y) / (double)(LastFile - FirstFile);
+                        double xinc = (Curves[c]->SplinePoints[LastFile]->X[j] - x) / static_cast<double>(LastFile - FirstFile);
+                        double yinc = (Curves[c]->SplinePoints[LastFile]->Y[j] - y) / static_cast<double>(LastFile - FirstFile);
                         for (int i = FirstFile + 1; i < LastFile; i++)
                         {
                             x += xinc;

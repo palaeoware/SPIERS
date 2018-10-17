@@ -4,7 +4,7 @@
 #include <QEvent>
 #include <QWheelEvent>
 
-mainview::mainview(QObject *parent = 0) : QGraphicsView()
+mainview::mainview(QObject *parent = nullptr) : QGraphicsView()
 {
     Q_UNUSED(parent);
     return;

@@ -29,15 +29,18 @@ uchar ResampleForLoRes(int X, int Y, QByteArray *a)
         for (m = Y; m < lry; m++)
             for (o = 0; o < zr; o++)
                 if (a->at(o * max + m * fwidth + n))
-                    if (++c >= PixSens) return (uchar)255;
+                    if (++c >= PixSens) return static_cast<uchar>(255);
 
-    return (uchar) 0;
+    return static_cast<uchar>(0);
 }
 
 bool freached(int f, int to, int from)
 {
-    if (to == from) if (f == to) return true;
+    if (to == from)
+    {
+        if (f == to) return true;
         else return false;
+    }
     if (to >= from)
     {
         if (f <= to) return true;
@@ -157,7 +160,7 @@ void PopulateOutputArray (int *FullOutArrayCount, QByteArray *FullOutArray, int 
 
                                 if (seg != -1)
                                     if (UseSegs[seg]) //seg in list... is mask?
-                                        OutputArray[bigpos] = (char)255;
+                                        OutputArray[bigpos] = static_cast<char>(255);
 
                                 //no need to enter a 0 - array is initialised to 0
                             }
@@ -197,6 +200,7 @@ void PopulateOutputArray (int *FullOutArrayCount, QByteArray *FullOutArray, int 
                                 {
                                     if (Segments[s]->Activated)
                                     {
+                                        //RJG - have left a few of these old style cast due to the fact that these are pointers and don't necessarily need a static cast
                                         temp = (int)  * ((GA[s]->bits()) + (fheight - 1 - y) * fwidth4 + x);
                                         if (temp >= high)
                                         {
@@ -314,29 +318,21 @@ break2:
             int FAS = FullOutArray->size();
             FullOutArray->append(size);
             uchar *data = (uchar *)FullOutArray->data();
-            data[FAS] = (uchar)(outsize % 256);
+            data[FAS] = static_cast<uchar>(outsize % 256);
             outsize /= 256;
-            data[FAS + 1] = (uchar) (outsize % 256);
+            data[FAS + 1] = static_cast<uchar> (outsize % 256);
             outsize /= 256;
-            data[FAS + 2] = (uchar) (outsize % 256);
+            data[FAS + 2] = static_cast<uchar> (outsize % 256);
             outsize /= 256;
-            data[FAS + 3] = (uchar) outsize;
+            data[FAS + 3] = static_cast<uchar>(outsize);
 
             //QDataStream ds(FullOutArray, QIODevice::WriteOnly);
 
             //ds.setByteOrder(QDataStream::LittleEndian);
             //ds<<((int)(comp1.size()-4));
-            //qDebug()<<"Writing"<<((int)(comp1.size()-4));
             //ds<<(int)-1;
+
             FullOutArray->append(comp1.right(comp1.size() - 4));
-            //qDebug()<<"Done append. Fullarray now "<<FullOutArray->size()<<"comp1 size was "<<(comp1.size()-4);
-            /*qDebug()<<"Appending, FullOutArrayCount="<<*FullOutArrayCount;
-            if ((*FullOutArrayCount)==0)
-            {
-                //first time round
-                qDebug()<<"First time - fullarray size is:"<<FullOutArray->size();
-               for (int ii=0; ii<20; ii++) qDebug()<<((FullOutArray->data())[ii]);
-            }*/
 
             (*FullOutArrayCount)++;
         }
@@ -368,7 +364,8 @@ break2:
     QByteArray OutputArray; //my actual target array
     OutputArray.resize(awidth * aheight);
     max = (awidth * aheight) - 1; //downsampled
-
+            //qDebug()<<"Writing"<<((int)(comp1.size()-4));
+            //ds<<(int)-1;
     fmax = fwidth * fheight - 1;   //not downsampled
 
 

@@ -85,7 +85,7 @@ void CopyingImpl::MakeMergeObject(int *FullOutArrayCount, QByteArray *FullOutArr
                 //normal obj
                 //call function to make the array
                 PopulateOutputArray (FullOutArrayCount, FullOutArray, &Count, FirstOutputFile, LastOutputFile, i, awidth, aheight, label);
-                if (out != 0) PopulateTriangleList (i, FirstOutputFile, LastOutputFile, stretches, OutputObjects[i]->Resample, TrigArray, TrigCount);
+                if (out != nullptr) PopulateTriangleList (i, FirstOutputFile, LastOutputFile, stretches, OutputObjects[i]->Resample, TrigArray, TrigCount);
             }
         }
     }
@@ -185,13 +185,13 @@ void CopyingImpl::DoOutputRecursive(QList <int> *translationtable, int *nexttran
                 {
                     if (DoIHaveChildren(i))
                     {
-                        asize = (long long int)filesused  * (long long int)awidth * (long long int)aheight; //this is size of output buffer
+                        asize = static_cast<long long int>(filesused ) * static_cast<long long int>(awidth) * static_cast<long long int>(aheight); //this is size of output buffer
                         QByteArray FullOutArray; //initialised - yes, we need this!
                         int FullOutArrayCount = 0;
                         QVector <double> TrigArray;
                         int TrigCount = 0;
 
-                        if (out == 0) Count = 0;
+                        if (out == nullptr) Count = 0;
                         else Count = -1;
                         MakeMergeObject(&FullOutArrayCount, &FullOutArray, &TrigArray, &TrigCount, i, asize,  filesused,  awidth,  aheight,  out, stretches);
 
@@ -199,12 +199,11 @@ void CopyingImpl::DoOutputRecursive(QList <int> *translationtable, int *nexttran
                         (*translationtable)[(*nexttransentry)] = i;
                         (*translationtable2)[(*nexttransentry)++] = (*nexttransentry2)++;
 
-                        if (out == 0)
+                        if (out == nullptr)
                         {
                             QTextStream t(&CountMessage);
                             if (CountMessage.length() == 0) t << "Total voxels in volume: " << asize << "\n";
-                            t << OutputObjects[i]->Name << ": " << Count << " voxels (" << ((double)(((long long int)Count * (long long int) 100000) / asize )) / 1000 << "%)\n";
-
+                            t << OutputObjects[i]->Name << ": " << Count << " voxels (" << (static_cast<double>((static_cast<long long int>(Count) * static_cast<long long int>(100000)) / asize )) / 1000 << "%)\n";
                         }
                         else
                         {
@@ -233,7 +232,7 @@ void CopyingImpl::DoOutputRecursive(QList <int> *translationtable, int *nexttran
 
                 int FullOutArrayCount = 0;
                 //call function to make the array
-                if (out == 0) Count = 0;
+                if (out == nullptr) Count = 0;
                 else Count = -1;
                 //qDebug()<<"about to POA";
 
@@ -242,21 +241,21 @@ void CopyingImpl::DoOutputRecursive(QList <int> *translationtable, int *nexttran
                 //qDebug()<<"done POA\n";
                 QVector <double> TrigArray;
                 int TrigCount = 0;
-                if (out != 0)
+                if (out != nullptr)
                 {
                     PopulateTriangleList (i, FirstOutputFile, LastOutputFile, stretches, OutputObjects[i]->Resample, &TrigArray, &TrigCount);
                 }
 
-                if (out == 0)
+                if (out == nullptr)
                 {
                     QTextStream t(&CountMessage);
                     if (CountMessage.length() == 0) t << "Total voxels in volume: " << asize << "\n";
-                    t << OutputObjects[i]->Name << ": " << Count << " voxels (" << ((double)(((long long int)Count * (long long int) 100000) / asize )) / 1000 << "%)\n";
+                    t << OutputObjects[i]->Name << ": " << Count << " voxels (" << (static_cast<double>((static_cast<long long int>(Count) * static_cast<long long int>(100000)) / asize )) / 1000 << "%)\n";
                 }
                 else
                 {
                     WriteSPVData(FullOutArrayCount, FullOutArray, &TrigArray, TrigCount, out);
-//                  qDeleteAll(fullarray.begin(), fullarray.end()); fullarray.clear();
+                    //qDeleteAll(fullarray.begin(), fullarray.end()); fullarray.clear();
                 }
 
                 //do trans table entry
@@ -269,9 +268,7 @@ void CopyingImpl::DoOutputRecursive(QList <int> *translationtable, int *nexttran
 
 void CopyingImpl::GetOutputList(QList <OutputObject *> *outlist, QList <int> *translationtable, int *nexttransentry, QList <int> *translationtable2, int *nexttransentry2, int parent)
 {
-
     //Based on old DoOutputRecursive - loops round all objects building tables for output basically,
-
     QList <bool> usedflags;
     for (int i = 0; i < OutputObjectsCount; i++) usedflags.append(false);
     for (int kloop = 0; kloop < OutputObjectsCount; kloop++) //this can probably be an infinite loop - should normally get out in middle - but leave!
@@ -287,7 +284,7 @@ void CopyingImpl::GetOutputList(QList <OutputObject *> *outlist, QList <int> *tr
                 lowestindex = j;
             }
         }
-        if (lowestindex == -1) //didn't find any- get out
+        if (lowestindex == -1) //Didn't find any- get out
             return;
         int i = lowestindex;
         usedflags[i] = true;
@@ -435,8 +432,7 @@ void CopyingImpl::MeasureVols()
     QList <double> stretches;
     for (n = 0; n <= filesused + 1; n++) stretches.append(n);
 
-    DoOutputRecursive(&translationtable, &nexttransentry, &translationtable2, &nexttransentry2, -1,
-                      asize,  filesused,  awidth,  aheight,  (QDataStream *)0, &stretches);
+    DoOutputRecursive(&translationtable, &nexttransentry, &translationtable2, &nexttransentry2, -1, asize,  filesused,  awidth,  aheight,  (QDataStream *) nullptr, &stretches);
 
     LoadAllData(CurrentFile);
     copying = false;
@@ -485,7 +481,7 @@ void CopyingImpl::ExportSPV(int flag)  //0 for export, 1 for export and launch, 
     if (flag < 2)
     {
         outputfile = QFileDialog::getSaveFileName(
-                         0,
+                         nullptr,
                          "SPIERSview File Name",
                          "",
                          "SPIERSview files (*.spv)");
@@ -563,7 +559,7 @@ void CopyingImpl::ExportSPV(int flag)  //0 for export, 1 for export and launch, 
     out.setByteOrder(QDataStream::LittleEndian);
 
 
-    out << (double) -1; //start with -1 - historical reasons
+    out << static_cast<double>(-1); //start with -1 - historical reasons
     out << (int)5; //file version - 4 was last one from VB, 3 is last Mac one.
 
     out << PixPerMM / ((double)(XYDownsample * ColMonoScale));

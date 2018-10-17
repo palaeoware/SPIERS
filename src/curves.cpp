@@ -67,7 +67,7 @@ int CatmullRomSpline(double X, double v1, double v2, double v3, double v4)
     c3 = M31 * v1 + M32 * v2 + M33 * v3 + M34 * v4;
     c4 = M41 * v1 + M42 * v2 + M43 * v3 + M44 * v4;
 
-    return (int) qRound(((c4 * X + c3) * X + c2) * X + c1);
+    return static_cast<int>(qRound(((c4 * X + c3) * X + c2) * X + c1));
 }
 
 int limitx(int x)
@@ -79,7 +79,7 @@ int limitx(int x)
 
 double limitx(double x)
 {
-    if (x >= (double)fwidth) return (double)fwidth;
+    if (x >= static_cast<double>(fwidth)) return static_cast<double>(fwidth);
     if (x < 0) return 0;
     return x;
 }
@@ -93,7 +93,7 @@ int limity(int y)
 
 double limity(double y)
 {
-    if (y >= (double)fwidth) return (double)fwidth;
+    if (y >= static_cast<double>(fwidth)) return static_cast<double>(fwidth);
     if (y < 0) return 0;
     return y;
 }
@@ -107,8 +107,8 @@ void AddNode()
     if (SelectedCurve == -1 || CurrentMode != 2) return; //Not appropriate
 
     FilesDirty[CurrentFile] = true;
-    mx = (double)LastMouseX / (double)ColMonoScale;
-    my = (double)LastMouseY / (double)ColMonoScale;
+    mx = static_cast<double>(LastMouseX) / static_cast<double>(ColMonoScale);
+    my = static_cast<double>(LastMouseY) / static_cast<double>(ColMonoScale);
 
     if (Curves[SelectedCurve]->SplinePoints[CurrentFile * zsparsity]->Count == 0)
     {
@@ -143,12 +143,12 @@ void AddNode()
         {
             for (sm = 1; sm < 10; sm++)
             {
-                sm2 = (double)sm / 10;
+                sm2 = static_cast<double>(sm) / 10;
 
                 sx = CatmullRomSpline(sm2, p->X[WrapSpline(sn - 1, p->Count)], p->X[WrapSpline(sn, p->Count)], p->X[WrapSpline(sn + 1, p->Count)], p->X[WrapSpline(sn + 2, p->Count)]);
                 sy = CatmullRomSpline(sm2, p->Y[WrapSpline(sn - 1, p->Count)], p->Y[WrapSpline(sn, p->Count)], p->Y[WrapSpline(sn + 1, p->Count)], p->Y[WrapSpline(sn + 2, p->Count)]);
 
-                d = (int)((sx - mx) * (sx - mx) + (sy - my) * (sy - my));
+                d = static_cast<int>((sx - mx) * (sx - mx) + (sy - my) * (sy - my));
                 if (d < mind)
                 {
                     mind = d;
@@ -168,7 +168,7 @@ void AddNode()
                 sx = CatmullRomSpline(sm2, p->X[WrapSpline(sn - 1, p->Count)], p->X[WrapSpline(sn, p->Count)], p->X[WrapSpline(sn + 1, p->Count)], p->X[WrapSpline(sn + 2, p->Count)]);
                 sy = CatmullRomSpline(sm2, p->Y[WrapSpline(sn - 1, p->Count)], p->Y[WrapSpline(sn, p->Count)], p->Y[WrapSpline(sn + 1, p->Count)], p->Y[WrapSpline(sn + 2, p->Count)]);
 
-                d = (int)((sx - mx) * (sx - mx) + (sy - my) * (sy - my));
+                d = static_cast<int>((sx - mx) * (sx - mx) + (sy - my) * (sy - my));
                 if (d < mind)
                 {
                     mind = d;
@@ -187,7 +187,7 @@ void AddNode()
 void KillNode(MainWindowImpl *th)
 {
     //find node
-    int node = FindClosestNode((double)LastMouseX, (double)LastMouseY);
+    int node = FindClosestNode(static_cast<double>(LastMouseX), static_cast<double>(LastMouseY));
     FilesDirty[CurrentFile] = true;
 
     if (node >= 0)   //selected curve must be 0 or more for this to be the case
@@ -245,7 +245,7 @@ int FindClosestNode(double X, double Y)
 }
 
 
-void ScanlineFill(int c, int mycol, QImage *Thresh, struct PointList *LPointList)
+void ScanlineFill(int c, int mycol, QImage *Thresh, class PointList *LPointList)
 {
     //Direct conversion from VB
 
@@ -262,15 +262,15 @@ void ScanlineFill(int c, int mycol, QImage *Thresh, struct PointList *LPointList
     if (mycol == 1 || cv->Segment == 0)
     {
         //use spline colours
-        red = (uchar) (cv->Colour[0]);
-        g = (uchar) (cv->Colour[1]);
-        b = (uchar) (cv->Colour[2]);
+        red = static_cast<uchar> (cv->Colour[0]);
+        g = static_cast<uchar> (cv->Colour[1]);
+        b = static_cast<uchar> (cv->Colour[2]);
     }
     else if (mycol == 0)     //seg colours
     {
-        red = (Segments[(cv->Segment) - 1]->Colour[0]);
-        g = (Segments[(cv->Segment) - 1]->Colour[1]);
-        b = (uchar) (Segments[(cv->Segment) - 1]->Colour[2]);
+        red = static_cast<uchar>(Segments[(cv->Segment) - 1]->Colour[0]);
+        g = static_cast<uchar>(Segments[(cv->Segment) - 1]->Colour[1]);
+        b = static_cast<uchar>(Segments[(cv->Segment) - 1]->Colour[2]);
     }
 
     if (LPointList->Count == 0) return;
@@ -283,12 +283,10 @@ void ScanlineFill(int c, int mycol, QImage *Thresh, struct PointList *LPointList
     //all pixels in the line are then read through (starting at first on-point) and points plotted
     //turning on/off plotting as we go
 
-
     //put wrap around point in
     LPointList->X.append(LPointList->X[0]);
     LPointList->Y.append(LPointList->Y[0]);
     LPointList->Count++;
-
 
     for (n = 0; n < fheight; n++)
     {
@@ -361,21 +359,22 @@ void ScanlineFill(int c, int mycol, QImage *Thresh, struct PointList *LPointList
                         }
                         else     //mask colours
                         {
-                            Mask *M = MasksSettings[(quint8)Masks[(fheight - n - 1) * fwidth + m]];
-                            RED(data, apos) = (uchar) M->ForeColour[0];
-                            GREEN(data, apos) = (uchar) M->ForeColour[1];
-                            BLUE(data, apos) = (uchar) M->ForeColour[2];
+                            Mask *M = MasksSettings[static_cast<quint8>(Masks[(fheight - n - 1) * fwidth + m])];
+                            RED(data, apos) = static_cast<uchar>(M->ForeColour[0]);
+                            GREEN(data, apos) = static_cast<uchar>(M->ForeColour[1]);
+                            BLUE(data, apos) = static_cast<uchar>(M->ForeColour[2]);
                         }
                     }
                 }
             }
         }
 nextrow:
-        m = m; //just a dummy so goto works
+        int tempM = m;
+        m = tempM; //just a dummy so goto works
     }
 }
 
-void ScanlineFillOutput(int c, uchar *data, struct PointList *LPointList, QList <bool> *UseMasks, uchar setval)
+void ScanlineFillOutput(int c, uchar *data, class PointList *LPointList, QList <bool> *UseMasks, uchar setval)
 {
     Q_UNUSED(c);
     //qDebug()<<"In scanline - uchar is "<<setval;
@@ -454,12 +453,13 @@ void ScanlineFillOutput(int c, uchar *data, struct PointList *LPointList, QList 
                 if (fill)
                 {
                     if (m >= 0) //watch for 'off left' errors
-                        if ((*UseMasks)[(quint8)Masks[(fheight - 1 - n)*fwidth + m]]) data[n * fwidth + m] = setval;
+                        if ((*UseMasks)[static_cast<quint8>(Masks[(fheight - 1 - n)*fwidth + m])]) data[n * fwidth + m] = setval;
                 }
             }
         }
 nextrow:
-        m = m; //just a dummy so goto works
+        int tempM = m;
+        m = tempM; //just a dummy so goto works
     }
 }
 
@@ -476,7 +476,7 @@ void DrawCurveOutput(int c, int file, uchar *data, QList <bool> *UseMasks, bool 
 
     double d, d2, dist, sm2;
     int sn, sm, sx, sy;
-    struct PointList LPointList; //the list for filling
+    class PointList LPointList; //the list for filling
     file *= zsparsity;
 
     uchar setval;
@@ -523,8 +523,7 @@ void DrawCurveOutput(int c, int file, uchar *data, QList <bool> *UseMasks, bool 
                         LPointList.Y.append(sy);
                     }
                     if (sy >= 0 && sy < fheight && sx >= 0 && sx < fwidth)
-                        if ((*UseMasks)[(quint8)Masks[(fheight - 1 - sy)*fwidth + sx]]) data[sy * fwidth + sx] = setval;
-                    //setcval(data,sy*fwidth+sx,setval);
+                        if ((*UseMasks)[static_cast<quint8>(Masks[(fheight - 1 - sy)*fwidth + sx])]) data[sy * fwidth + sx] = setval;
                 }
             }
         }
@@ -547,14 +546,13 @@ void DrawCurveOutput(int c, int file, uchar *data, QList <bool> *UseMasks, bool 
                 dist = 1 / d;
                 for (sm = 1; sm <= d; sm++)
                 {
-                    sm2 = (double)sm * dist;
+                    sm2 = static_cast<double>(sm * dist);
 
                     sx = CatmullRomSpline(sm2, p->X[sn - 1], p->X[sn], p->X[sn + 1], p->X[sn + 2]);
                     sy = CatmullRomSpline(sm2, p->Y[sn - 1], p->Y[sn], p->Y[sn + 1], p->Y[sn + 2]);
 
                     if (sy >= 0 && sy < fheight && sx >= 0 && sx < fwidth)
-                        if ((*UseMasks)[(quint8)Masks[(fheight - 1 - sy)*fwidth + sx]]) data[sy * fwidth + sx] = setval;
-                    //setcval(data,sy*fwidth+sx,setval);
+                        if ((*UseMasks)[static_cast<quint8>(Masks[(fheight - 1 - sy)*fwidth + sx])]) data[sy * fwidth + sx] = setval;
                 }
             }
         }
@@ -571,7 +569,7 @@ void DrawCurve(int c, int mycol, int file, QImage *Thresh)
     double d, d2, dist, sm2;
     int sn, sm, sx, sy, apos;
     uchar *data;
-    struct PointList LPointList; //the list for filling
+    class PointList LPointList; //the list for filling
 
     if (Thresh->width() == 0) return; //can get here with empty QImage apparently
     data = Thresh->bits();
@@ -582,18 +580,16 @@ void DrawCurve(int c, int mycol, int file, QImage *Thresh)
     if (mycol == 1 || cv->Segment == 0)   //curve mode
     {
         //use spline colours
-        r = (uchar) (cv->Colour[0]);
-        g = (uchar) (cv->Colour[1]);
-        b = (uchar) (cv->Colour[2]);
+        r = static_cast<uchar>(cv->Colour[0]);
+        g = static_cast<uchar>(cv->Colour[1]);
+        b = static_cast<uchar>(cv->Colour[2]);
     }
     else if (mycol == 0)     //seg colours //seg mode or similar
     {
-        r = (Segments[(cv->Segment) - 1]->Colour[0]);
-        g = (Segments[(cv->Segment) - 1]->Colour[1]);
-        b = (uchar) (Segments[(cv->Segment) - 1]->Colour[2]);
+        r = static_cast<uchar>(Segments[(cv->Segment) - 1]->Colour[0]);
+        g = static_cast<uchar>(Segments[(cv->Segment) - 1]->Colour[1]);
+        b = static_cast<uchar>(Segments[(cv->Segment) - 1]->Colour[2]);
     }
-
-
 
     PointList *p;
 
@@ -663,10 +659,10 @@ void DrawCurve(int c, int mycol, int file, QImage *Thresh)
                             //}
                             //else //background - no seg over 128
                             //{
-                            Mask *M = MasksSettings[(quint8)Masks[(fheight - sy - 1) * fwidth + sx]];
-                            RED(data, apos) = (uchar) M->ForeColour[0];
-                            GREEN(data, apos) = (uchar) M->ForeColour[1];
-                            BLUE(data, apos) = (uchar) M->ForeColour[2];
+                            Mask *M = MasksSettings[static_cast<quint8>(Masks[(fheight - sy - 1) * fwidth + sx])];
+                            RED(data, apos) = static_cast<uchar>(M->ForeColour[0]);
+                            GREEN(data, apos) = static_cast<uchar>(M->ForeColour[1]);
+                            BLUE(data, apos) = static_cast<uchar>(M->ForeColour[2]);
                             //}
                         }
                     }
@@ -693,7 +689,7 @@ void DrawCurve(int c, int mycol, int file, QImage *Thresh)
                 dist = 1 / d;
                 for (sm = 1; sm <= d; sm++)
                 {
-                    sm2 = (double)sm * dist;
+                    sm2 = static_cast<double>(sm) * dist;
 
                     sx = CatmullRomSpline(sm2, p->X[sn - 1], p->X[sn], p->X[sn + 1], p->X[sn + 2]);
                     sy = CatmullRomSpline(sm2, p->Y[sn - 1], p->Y[sn], p->Y[sn + 1], p->Y[sn + 2]);
@@ -712,10 +708,10 @@ void DrawCurve(int c, int mycol, int file, QImage *Thresh)
                         }
                         else     //mask colours
                         {
-                            Mask *M = MasksSettings[(quint8)Masks[(fheight - sy - 1) * fwidth + sx]];
-                            RED(data, apos) = (uchar) M->ForeColour[0];
-                            GREEN(data, apos) = (uchar) M->ForeColour[1];
-                            BLUE(data, apos) = (uchar) M->ForeColour[2];
+                            Mask *M = MasksSettings[static_cast<quint8>(Masks[(fheight - sy - 1) * fwidth + sx])];
+                            RED(data, apos) = static_cast<uchar>(M->ForeColour[0]);
+                            GREEN(data, apos) = static_cast<uchar>(M->ForeColour[1]);
+                            BLUE(data, apos) = static_cast<uchar>(M->ForeColour[2]);
                         }
                     }
                 }
@@ -741,7 +737,7 @@ void DrawCurveMarkers(QGraphicsScene *scene)
     if (SelectedCurve < 0) return; //need a selected curve
 
 
-    double size = ((double) 10) / (CurrentZoom);
+    double size = 10. / (CurrentZoom);
     double size2 = size / 2.0;
 
     PointList *p = Curves[SelectedCurve]->SplinePoints[CurrentFile * zsparsity];
@@ -771,7 +767,7 @@ void DrawCurveMarkers(QGraphicsScene *scene)
                 QGraphicsRectItem *newitem = new QGraphicsRectItem((p->X[i])*ColMonoScale - size2, (p->Y[i])*ColMonoScale - size2, size, size);
                 newitem->setPen(mypen);
                 newitem->setZValue(2);
-                MarkerList.append((QGraphicsItem *) newitem);
+                MarkerList.append(static_cast<QGraphicsItem *>(newitem));
                 scene->addItem(newitem);
             }
             else if (i == p->Count - 1)
@@ -780,7 +776,7 @@ void DrawCurveMarkers(QGraphicsScene *scene)
                 QGraphicsRectItem *newitem = new QGraphicsRectItem((p->X[i])*ColMonoScale - size2, (p->Y[i])*ColMonoScale - size2, size, size);
                 newitem->setPen(redpen);
                 newitem->setZValue(2);
-                MarkerList.append((QGraphicsItem *) newitem);
+                MarkerList.append(static_cast<QGraphicsItem *>(newitem));
                 scene->addItem(newitem);
             }
             //always do a cross
@@ -799,8 +795,8 @@ void DrawCurveMarkers(QGraphicsScene *scene)
             newitem1->setZValue(2);
             newitem3->setZValue(2);
 
-            MarkerList.append((QGraphicsItem *) newitem1);
-            MarkerList.append((QGraphicsItem *) newitem3);
+            MarkerList.append(static_cast<QGraphicsItem *>(newitem1));
+            MarkerList.append(static_cast<QGraphicsItem *>(newitem3));
             scene->addItem(newitem1);
             scene->addItem(newitem3);
         }
@@ -812,7 +808,7 @@ void DrawCurveMarkers(QGraphicsScene *scene)
                 QGraphicsRectItem *newitem = new QGraphicsRectItem((p->X[i])*ColMonoScale - size2, (p->Y[i])*ColMonoScale - size2, size, size);
                 newitem->setPen(mypen);
                 newitem->setZValue(2);
-                MarkerList.append((QGraphicsItem *) newitem);
+                MarkerList.append(static_cast<QGraphicsItem *>(newitem));
                 scene->addItem(newitem);
             }
             else if (i == p->Count - 1)
@@ -821,7 +817,7 @@ void DrawCurveMarkers(QGraphicsScene *scene)
                 QGraphicsRectItem *newitem = new QGraphicsRectItem((p->X[i])*ColMonoScale - size2, (p->Y[i])*ColMonoScale - size2, size, size);
                 newitem->setPen(redpen);
                 newitem->setZValue(2);
-                MarkerList.append((QGraphicsItem *) newitem);
+                MarkerList.append(static_cast<QGraphicsItem *>(newitem));
                 scene->addItem(newitem);
             }
             else
@@ -831,7 +827,7 @@ void DrawCurveMarkers(QGraphicsScene *scene)
                 if (i == p->Count - 2) newitem->setPen(redpen);
                 else newitem->setPen(mypen);
                 newitem->setZValue(2);
-                MarkerList.append((QGraphicsItem *) newitem);
+                MarkerList.append(static_cast<QGraphicsItem *>(newitem));
                 scene->addItem(newitem);
             }
         }
@@ -885,7 +881,7 @@ void WorkOutNewNodes(int scurve, int filenum, double SplineLength, QList <double
     scaledown = XYDownsample;
     //work out X and Y for specified number of nodes along line
     //note fudge to get round issues from false rounding
-    DistIncrement = (SplineLength / (double)(NodesToUse - 1)) - 0.00000001;
+    DistIncrement = (SplineLength / static_cast<double>(NodesToUse - 1)) - 0.00000001;
     PointList *p = Curves[scurve]->SplinePoints[filenum * zsparsity];
 
     currentpos = 0;

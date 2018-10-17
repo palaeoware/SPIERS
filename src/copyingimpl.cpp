@@ -846,7 +846,9 @@ void CopyingImpl::Apply3DBrush(int button)
         qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
         WriteAllData(wfile);
         //attempt to load next file in sequence
-        if (Brush.PixelCount == 0) if (forwards)
+        if (Brush.PixelCount == 0)
+        {
+            if (forwards)
             {
                 forwards = false;    //switch direction - or stop!
                 wfile = CurrentFile - 1;
@@ -857,6 +859,7 @@ void CopyingImpl::Apply3DBrush(int button)
                 done = true;
                 goto past;
             }
+        }
 
         if (forwards) wfile++;
         else wfile--;

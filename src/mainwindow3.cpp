@@ -302,8 +302,8 @@ void MainWindowImpl::on_actionImport_Curves_as_CSV_triggered()
 
             for (int k = 0; k < Curves[i]->SplinePoints[j]->Count; k++)
             {
-                Curves[i]->SplinePoints[j]->X.append((items[pos++]).toFloat());
-                Curves[i]->SplinePoints[j]->Y.append((items[pos++]).toFloat());
+                Curves[i]->SplinePoints[j]->X.append((items[pos++]).toDouble());
+                Curves[i]->SplinePoints[j]->Y.append((items[pos++]).toDouble());
             }
         }
     }
