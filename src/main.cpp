@@ -9,6 +9,7 @@
 #include <QStyle>
 #include <QSplashScreen>
 #include <QTimer>
+#include <QDesktopWidget>
 
 #include "darkstyletheme.h"
 #include "mainwindow.h"
@@ -97,8 +98,6 @@ void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const Q
  */
 int main(int argc, char *argv[])
 {
-    QApplication app( argc, argv );
-
     // This has the app draw at HiDPI scaling on HiDPI displays, usually two pixels for every one logical pixel
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
@@ -107,6 +106,13 @@ int main(int argc, char *argv[])
 #if (QT_VERSION >= 0x050600)
     QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 #endif
+
+    QApplication app( argc, argv );
+
+    // Workout any scaling factors for High DPI screens
+    int ratio = QApplication::desktop()->devicePixelRatio();
+    applicationScaleX = ratio;
+    applicationScaleY = ratio;
 
     // Install the message handler to log to file
     qInstallMessageHandler(logMessageOutput);

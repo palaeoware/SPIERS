@@ -51,6 +51,9 @@ MainWindow::MainWindow(QWidget *parent)
     MainWin = this; //set global pointer to this window
     showMaximized();
 
+    // Detect if the screen is a High DIP monitor
+
+
     FilterKeys = true; //set to true to turn off interception of keys needed for type-in boxes
 
     //set up action group

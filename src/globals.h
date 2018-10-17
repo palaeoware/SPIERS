@@ -66,5 +66,7 @@ extern bool firstobject;
 extern int model_ktr;
 extern QString STLHash;
 extern QMatrix4x4 globalmatrix;
+extern double applicationScaleX;
+extern double applicationScaleY;
 
 #endif // GLOBALS_H

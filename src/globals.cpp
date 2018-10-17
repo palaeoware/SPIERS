@@ -24,3 +24,6 @@ QProgressBar *PB;
 QLabel *OL;
 int model_ktr;
 QOpenGLBuffer cubeBuffer;
+
+double applicationScaleX;
+double applicationScaleY;

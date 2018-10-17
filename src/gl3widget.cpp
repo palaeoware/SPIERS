@@ -10,6 +10,7 @@
 #include <QWheelEvent>
 #include <QVector4D>
 #include "rowmans.h"
+#include "globals.h"
 
 #define STEREO_SEPARATION_MODIFIER 15.0
 #define SHININESS 0.0
@@ -187,8 +188,8 @@ void GlWidget::resizeGL(int width, int height)
         height = 1;
     }
 
-    xdim = width;
-    ydim = height;
+    xdim = static_cast<int>(static_cast<double>(width) * applicationScaleX);
+    ydim = static_cast<int>(static_cast<double>(height) * applicationScaleY);
     DoPMatrix(xdim, ydim);
     glfunctions->glViewport(0, 0, xdim, ydim);
     //if (globalmatrix.isIdentity()) globalmatrix.scale(0.50);
