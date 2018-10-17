@@ -1142,7 +1142,7 @@ void MainWindowImpl::on_SegmentDelete_pressed()
     QList <int> list;
     for (int i = 0;  i < SegmentCount; i++)
     {
-        if ((Segments[i]->widgetitem) > 0)
+        if ((Segments[i]->widgetitem) != nullptr)
             if ((Segments[i]->widgetitem)->isSelected())
             {
                 list.append(i);
@@ -1463,7 +1463,7 @@ void MainWindowImpl::on_CurveDelete_pressed()
     QList <int> list;
     for (int i = 0;  i < CurveCount; i++)
     {
-        if ((Curves[i]->widgetitem) > 0)
+        if ((Curves[i]->widgetitem) != nullptr)
             if ((Curves[i]->widgetitem)->isSelected())
             {
                 list.append(i);
@@ -1560,7 +1560,7 @@ void MainWindowImpl::on_CurveMoveUp_pressed()
     {
         for (int i = 0;  i < CurveCount; i++)
         {
-            if ((Curves[i]->widgetitem) > 0)
+            if ((Curves[i]->widgetitem) != nullptr)
                 if ((Curves[i]->widgetitem)->isSelected())
                 {
                     //found selected
@@ -1606,7 +1606,7 @@ void MainWindowImpl::on_CurveMoveDown_pressed()
     {
         for (int i = 0;  i < CurveCount; i++)
         {
-            if ((Curves[i]->widgetitem) > 0)
+            if ((Curves[i]->widgetitem) != nullptr)
                 if ((Curves[i]->widgetitem)->isSelected())
                 {
                     //found selected
