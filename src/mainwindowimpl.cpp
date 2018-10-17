@@ -1546,7 +1546,7 @@ void MainWindowImpl::on_actionLock_Selected_Masks_triggered()
 {
     for (int i = 0;  i <= MaxUsedMask; i++)
     {
-        if ((MasksSettings[i]->widgetitem) > 0)
+        if ((MasksSettings[i]->widgetitem) != nullptr)
             if ((MasksSettings[i]->widgetitem)->isSelected())
             {
                 MasksSettings[i]->Lock = true;
@@ -1559,7 +1559,7 @@ void MainWindowImpl::on_actionUnlock_Selected_Masks_triggered()
 {
     for (int i = 0;  i <= MaxUsedMask; i++)
     {
-        if ((MasksSettings[i]->widgetitem) > 0)
+        if ((MasksSettings[i]->widgetitem) != nullptr)
             if ((MasksSettings[i]->widgetitem)->isSelected())
             {
                 MasksSettings[i]->Lock = false;
@@ -1572,7 +1572,7 @@ void MainWindowImpl::on_actionShow_Selected_Masks_triggered()
 {
     for (int i = 0;  i <= MaxUsedMask; i++)
     {
-        if ((MasksSettings[i]->widgetitem) > 0)
+        if ((MasksSettings[i]->widgetitem) != nullptr)
             if ((MasksSettings[i]->widgetitem)->isSelected())
             {
                 MasksSettings[i]->Show = true;
@@ -1586,7 +1586,7 @@ void MainWindowImpl::on_actionUnShow_Selected_Masks_triggered()
 {
     for (int i = 0;  i <= MaxUsedMask; i++)
     {
-        if ((MasksSettings[i]->widgetitem) > 0)
+        if ((MasksSettings[i]->widgetitem) != nullptr)
             if ((MasksSettings[i]->widgetitem)->isSelected())
             {
                 MasksSettings[i]->Show = false;
@@ -1600,7 +1600,7 @@ void MainWindowImpl::on_actionWrite_Selected_Masks_triggered()
 {
     for (int i = 0;  i <= MaxUsedMask; i++)
     {
-        if ((MasksSettings[i]->widgetitem) > 0)
+        if ((MasksSettings[i]->widgetitem) != nullptr)
             if ((MasksSettings[i]->widgetitem)->isSelected())
             {
                 MasksSettings[i]->Write = true;
@@ -1613,7 +1613,7 @@ void MainWindowImpl::on_actionUnWrite_Selected_Masks_triggered()
 {
     for (int i = 0;  i <= MaxUsedMask; i++)
     {
-        if ((MasksSettings[i]->widgetitem) > 0)
+        if ((MasksSettings[i]->widgetitem) != nullptr)
             if ((MasksSettings[i]->widgetitem)->isSelected())
             {
                 MasksSettings[i]->Write = false;
@@ -1632,7 +1632,7 @@ void MainWindowImpl::on_MaskMoveUp_pressed()
     {
         for (int i = 0;  i <= MaxUsedMask; i++)
         {
-            if ((MasksSettings[i]->widgetitem) > 0)
+            if ((MasksSettings[i]->widgetitem) != nullptr)
                 if ((MasksSettings[i]->widgetitem)->isSelected())
                 {
                     //found selected
@@ -1686,7 +1686,7 @@ void MainWindowImpl::on_MaskMoveDown_pressed()
     {
         for (int i = 0;  i <= MaxUsedMask; i++)
         {
-            if ((MasksSettings[i]->widgetitem) > 0)
+            if ((MasksSettings[i]->widgetitem) != nullptr)
                 if ((MasksSettings[i]->widgetitem)->isSelected())
                 {
                     //found selected
@@ -1765,7 +1765,7 @@ void MainWindowImpl::on_MaskDelete_pressed()
     QList <int> list;
     for (int i = 0;  i <= MaxUsedMask; i++)
     {
-        if ((MasksSettings[i]->widgetitem) > 0)
+        if ((MasksSettings[i]->widgetitem) != nullptr)
             if ((MasksSettings[i]->widgetitem)->isSelected())
             {
                 list.append(i);
@@ -1801,7 +1801,8 @@ void MainWindowImpl::on_actionLock_selected_segments_triggered()
 {
     for (int i = 0;  i < SegmentCount; i++)
     {
-        if ((Segments[i]->widgetitem) > 0) if ((Segments[i]->widgetitem)->isSelected())
+        if ((Segments[i]->widgetitem) != nullptr)
+            if ((Segments[i]->widgetitem)->isSelected())
             {
                 Segments[i]->Locked = true;
                 RefreshOneSegmentItem(Segments[i]->widgetitem, i);
@@ -1813,7 +1814,7 @@ void MainWindowImpl::on_actionUnlock_selected_segments_triggered()
 {
     for (int i = 0;  i < SegmentCount; i++)
     {
-        if ((Segments[i]->widgetitem) > 0) if ((Segments[i]->widgetitem)->isSelected())
+        if ((Segments[i]->widgetitem) != nullptr) if ((Segments[i]->widgetitem)->isSelected())
             {
                 Segments[i]->Locked = false;
                 RefreshOneSegmentItem(Segments[i]->widgetitem, i);
@@ -1825,7 +1826,7 @@ void MainWindowImpl::on_actionActivate_selected_segments_triggered()
 {
     for (int i = 0;  i < SegmentCount; i++)
     {
-        if ((Segments[i]->widgetitem) > 0) if ((Segments[i]->widgetitem)->isSelected())
+        if ((Segments[i]->widgetitem) != nullptr) if ((Segments[i]->widgetitem)->isSelected())
             {
                 Segments[i]->Activated = true;
                 RefreshOneSegmentItem(Segments[i]->widgetitem, i);
@@ -1839,7 +1840,7 @@ void MainWindowImpl::on_actionDeactivate_selected_segments_triggered()
 {
     for (int i = 0;  i < SegmentCount; i++)
     {
-        if ((Segments[i]->widgetitem) > 0) if ((Segments[i]->widgetitem)->isSelected())
+        if ((Segments[i]->widgetitem) != nullptr) if ((Segments[i]->widgetitem)->isSelected())
             {
                 Segments[i]->Activated = false;
                 RefreshOneSegmentItem(Segments[i]->widgetitem, i);
@@ -1861,7 +1862,7 @@ void MainWindowImpl::on_SegmentMoveUp_pressed()
     {
         for (int i = 0;  i < SegmentCount; i++)
         {
-            if ((Segments[i]->widgetitem) > 0)
+            if ((Segments[i]->widgetitem) != nullptr)
                 if ((Segments[i]->widgetitem)->isSelected())
                 {
                     //found selected
@@ -1908,7 +1909,7 @@ void MainWindowImpl::on_SegmentMoveDown_pressed()
     {
         for (int i = 0;  i < SegmentCount; i++)
         {
-            if ((Segments[i]->widgetitem) > 0)
+            if ((Segments[i]->widgetitem) != nullptr)
                 if ((Segments[i]->widgetitem)->isSelected())
                 {
                     //found selected

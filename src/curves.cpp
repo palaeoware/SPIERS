@@ -1001,8 +1001,11 @@ double GetStretch(int Index, QList <double> *stretches, int Smax)
 double GetZpos(int Index, QList <double> *stretches)
 {
     Index++;
-    if (Index >= (stretches->size() - 1)) if (Index == (stretches->size() - 1)) return (*stretches)[Index];
+    if (Index >= (stretches->size() - 1))
+    {
+        if (Index == (stretches->size() - 1)) return (*stretches)[Index];
         else return 0;
+    }
 
     return (((*stretches)[Index] + (*stretches)[Index + 1])) / 2;
 }
