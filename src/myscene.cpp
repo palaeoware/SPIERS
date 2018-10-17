@@ -144,8 +144,8 @@ void myscene::DoAction(int x, int y)
                     CurvesUndoDirty = true;
                     if (CurveShapeLocked)
                     {
-                        double offsetx = ((double)x / (double)ColMonoScale) - Curves[SelectedCurve]->SplinePoints[CurrentFile * zsparsity]->X[CurrentClosestNode];
-                        double offsety = ((double)y / (double)ColMonoScale) - Curves[SelectedCurve]->SplinePoints[CurrentFile * zsparsity]->Y[CurrentClosestNode];
+                        double offsetx = ((double)x / static_cast<double>(ColMonoScale)) - Curves[SelectedCurve]->SplinePoints[CurrentFile * zsparsity]->X[CurrentClosestNode];
+                        double offsety = ((double)y / static_cast<double>(ColMonoScale)) - Curves[SelectedCurve]->SplinePoints[CurrentFile * zsparsity]->Y[CurrentClosestNode];
                         for (int n = 0; n < Curves[SelectedCurve]->SplinePoints[CurrentFile * zsparsity]->Count; n++)
                         {
                             Curves[SelectedCurve]->SplinePoints[CurrentFile * zsparsity]->X[n] += offsetx;
@@ -154,8 +154,8 @@ void myscene::DoAction(int x, int y)
                     }
                     else
                     {
-                        Curves[SelectedCurve]->SplinePoints[CurrentFile * zsparsity]->X[CurrentClosestNode] = ((double)x / (double)ColMonoScale);
-                        Curves[SelectedCurve]->SplinePoints[CurrentFile * zsparsity]->Y[CurrentClosestNode] = ((double)y / (double)ColMonoScale);
+                        Curves[SelectedCurve]->SplinePoints[CurrentFile * zsparsity]->X[CurrentClosestNode] = ((double)x / static_cast<double>(ColMonoScale));
+                        Curves[SelectedCurve]->SplinePoints[CurrentFile * zsparsity]->Y[CurrentClosestNode] = ((double)y / static_cast<double>(ColMonoScale));
                     }
                 }
             }

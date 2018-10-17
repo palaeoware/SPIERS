@@ -60,15 +60,19 @@ void Brush_class::resize(int size, int shape, double o)
     TopLinesCount = 0;
     BottomLinesCount = 0;
 
-    if (shape == 0) { //square
+    if (shape == 0)   //square
+    {
         for (x = 0 - (size - 1); x < size; x++)
-            for (y = 0 - (size - 1); y < size; y++) {
-                if (x == (0 - (size - 1))) {
+            for (y = 0 - (size - 1); y < size; y++)
+            {
+                if (x == (0 - (size - 1)))
+                {
                     LeftLinesX << x;
                     LeftLinesY << y;
                     LeftLinesCount++;
                 }
-                if (x >= (size - 1)) {
+                if (x >= (size - 1))
+                {
                     RightLinesX << x;
                     RightLinesY << y;
                     RightLinesCount++;
@@ -79,7 +83,8 @@ void Brush_class::resize(int size, int shape, double o)
             }
 
         //now put in tops and bottoms
-        for (x = 0 - (size - 1); x < size; x++) {
+        for (x = 0 - (size - 1); x < size; x++)
+        {
             TopLinesX << x;
             TopLinesY << (0 - (size - 1));
             TopLinesCount++;
@@ -93,9 +98,12 @@ void Brush_class::resize(int size, int shape, double o)
         for (int i = 0; i < PixelCount; i++)
             Dist.append(qMax(qAbs(Xpos[i]), qAbs(Ypos[i])));
 
-    } else if (shape == 1) { //circle
+    }
+    else if (shape == 1)     //circle
+    {
         //do special cases
-        if (size == 2) {
+        if (size == 2)
+        {
             //cross
             LeftLinesX << -1;
             LeftLinesY << 0;
@@ -144,7 +152,9 @@ void Brush_class::resize(int size, int shape, double o)
             Xpos << 1;
             Ypos << 0;
             PixelCount = 5;
-        } else if (size == 3) {
+        }
+        else if (size == 3)
+        {
             //cross
             LeftLinesX << -1;
             LeftLinesY << -2;
@@ -222,7 +232,8 @@ void Brush_class::resize(int size, int shape, double o)
             Ypos << 0;
             Xpos << 2;
             Ypos << 1;
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 5; i++)
+            {
                 Xpos << 1;
                 Ypos << i - 2;
                 Xpos << 0;
@@ -233,14 +244,19 @@ void Brush_class::resize(int size, int shape, double o)
             PixelCount = 21;
         }
 
-        else {
-            for (y = 0 - (size - 1); y < size; y++) {
+        else
+        {
+            for (y = 0 - (size - 1); y < size; y++)
+            {
                 flag = false;
-                for (x = 0 - (size - 1); x < size; x++) {
+                for (x = 0 - (size - 1); x < size; x++)
+                {
                     //work out distance
                     d2 = y * y + x * x;
-                    if (d2 < d) { //inside
-                        if (!flag) { //first one
+                    if (d2 < d)   //inside
+                    {
+                        if (!flag)   //first one
+                        {
                             LeftLinesX << x;
                             LeftLinesY << y;
                             LeftLinesCount++;
@@ -249,7 +265,9 @@ void Brush_class::resize(int size, int shape, double o)
                         Xpos << x;
                         Ypos << y;
                         PixelCount++;
-                    } else if (flag) { //run off end - LAST pixel should be edge
+                    }
+                    else if (flag)     //run off end - LAST pixel should be edge
+                    {
                         flag = false;
                         RightLinesX << (x - 1);
                         RightLinesY << y;
@@ -257,7 +275,8 @@ void Brush_class::resize(int size, int shape, double o)
                     }
                 }
                 //if flag is still true need to set right still
-                if (flag)   {
+                if (flag)
+                {
                     RightLinesX << (x - 1);
                     RightLinesY << y;
                     RightLinesCount++;
@@ -267,19 +286,25 @@ void Brush_class::resize(int size, int shape, double o)
             }
 
             //run loop again other way round to do top and bottom
-            for (x = 0 - (size - 1); x < size; x++) {
+            for (x = 0 - (size - 1); x < size; x++)
+            {
                 flag = false;
-                for (y = 0 - (size - 1); y < size; y++) {
+                for (y = 0 - (size - 1); y < size; y++)
+                {
                     //work out distance
                     d2 = y * y + x * x;
-                    if (d2 < d) { //inside
-                        if (!flag) { //first one
+                    if (d2 < d)   //inside
+                    {
+                        if (!flag)   //first one
+                        {
                             TopLinesX << x;
                             TopLinesY << y;
                             TopLinesCount++;
                             flag = true;
                         }
-                    } else if (flag) { //run off end - LAST pixel should be edge
+                    }
+                    else if (flag)     //run off end - LAST pixel should be edge
+                    {
                         flag = false;
                         BottomLinesX << x;
                         BottomLinesY << (y - 1);
@@ -287,7 +312,8 @@ void Brush_class::resize(int size, int shape, double o)
                     }
                 }
                 //if flag is still true need to set right still
-                if (flag)   {
+                if (flag)
+                {
                     BottomLinesX << x;
                     BottomLinesY << (y - 1);
                     BottomLinesCount++;
@@ -300,31 +326,38 @@ void Brush_class::resize(int size, int shape, double o)
         //soft edge dist array
         Dist.clear();
         for (int i = 0; i < PixelCount; i++)
-            Dist.append(sqrt((double)(Xpos[i]*Xpos[i] + Ypos[i]*Ypos[i])));
+            Dist.append(sqrt(static_cast<double>(Xpos[i]*Xpos[i] + Ypos[i]*Ypos[i])));
 
-    } else if (shape == 2 || shape == 3) {
+    }
+    else if (shape == 2 || shape == 3)
+    {
         //3d shapes
         ThreeDBrushPixels(&Xpos, &Ypos, &PixelCount, o, shape);
 
         int max = qMax(qMax(Brush_Size, BrushY), BrushZ);
 
         //do vertical sweeps first
-        for (int x = 0 - max; x < max; x++) {
+        for (int x = 0 - max; x < max; x++)
+        {
             QList <int> TY;
             int i = -1;
             while ((i = Xpos.indexOf(x, i + 1)) != -1) TY.append(Ypos[i]);
 
-            if (TY.count()) {
+            if (TY.count())
+            {
                 qSort(TY); //now ordered
                 bool on = false;
                 int last = TY[0] - 2;
-                foreach (int y, TY) {
-                    if (y != last + 1) {
+                foreach (int y, TY)
+                {
+                    if (y != last + 1)
+                    {
                         //top line
                         TopLinesX << x;
                         TopLinesY << y;
                         TopLinesCount++;
-                        if (on) { //also need to close last one
+                        if (on)   //also need to close last one
+                        {
                             BottomLinesX << x;
                             BottomLinesY << last;
                             BottomLinesCount++;
@@ -341,22 +374,27 @@ void Brush_class::resize(int size, int shape, double o)
         }
 
         //Now horizontal
-        for (int y = 0 - max; y < max; y++) {
+        for (int y = 0 - max; y < max; y++)
+        {
             QList <int> TX;
             int i = -1;
             while ((i = Ypos.indexOf(y, i + 1)) != -1) TX.append(Xpos[i]);
 
-            if (TX.count()) {
+            if (TX.count())
+            {
                 qSort(TX); //now ordered
                 bool on = false;
                 int last = TX[0] - 2;
-                foreach (int x, TX) {
-                    if (x != last + 1) {
+                foreach (int x, TX)
+                {
+                    if (x != last + 1)
+                    {
                         //left line
                         LeftLinesX << x;
                         LeftLinesY << y;
                         LeftLinesCount++;
-                        if (on) { //also need to close last one
+                        if (on)   //also need to close last one
+                        {
                             RightLinesX << last;
                             RightLinesY << y;
                             RightLinesCount++;
@@ -377,7 +415,8 @@ void Brush_class::resize(int size, int shape, double o)
         for (int i = 0; i < PixelCount; i++)
             Dist.append(0); //might have to be a high number - but essentially we want to disable soft brushing
 
-    } else Error("Unknown shape in Resize Brush");
+    }
+    else Error("Unknown shape in Resize Brush");
 
 }
 
@@ -393,20 +432,24 @@ void Brush_class::ThreeDBrushPixels(QList <int> *X, QList <int> *Y, int *PointCo
 //                                        "Slices:", 0, -10000, 10000, 2, &ok);
     //for now assume it's a circle
     //qDebug()<<"offset is "<<offset;
-    double R = (double)Brush_Size * PixPerMM * (double)ColMonoScale;
+    double R = static_cast<double>(Brush_Size) * PixPerMM * static_cast<double>(ColMonoScale);
     double O = offset * (1.0 / (SlicePerMM));
     //O and R are in mm.
-    if (O < R) {
+    if (O < R)
+    {
         double LR = sqrt(R * R - O * O);
-        LR /= (PixPerMM * (double)ColMonoScale);
-        int s = (int) LR;
+        LR /= (PixPerMM * static_cast<double>(ColMonoScale));
+        int s = static_cast<int>(LR);
         double LR2 = LR * LR;
         //now fill circle with LR
-        for (int y = 0 - (s); y < s; y++) {
-            for (int x = 0 - (s); x < s; x++) {
+        for (int y = 0 - (s); y < s; y++)
+        {
+            for (int x = 0 - (s); x < s; x++)
+            {
                 //work out distance
                 double d2 = y * y + x * x;
-                if (d2 < LR2) { //inside
+                if (d2 < LR2)   //inside
+                {
                     *X << x;
                     *Y << y;
                 }
@@ -431,7 +474,7 @@ bool Brush_class::draw(int x, int y)
     int n;
     bool NoRecreateFlag = false;
     QPen MyPen;
-    qreal rcms = (qreal)ColMonoScale;
+    qreal rcms = static_cast<qreal>(ColMonoScale);
     qreal rx1, rx2, ry1, ry2;
     int lx, ly;
 
@@ -449,30 +492,37 @@ bool Brush_class::draw(int x, int y)
 
 
     //remove list
-    if (!NoRecreateFlag) {
+    if (!NoRecreateFlag)
+    {
         if (!RestartFlag) qDeleteAll(LineList.begin(), LineList.end());
         LineList.clear();
         //remove all line items from scene
-        if (!RestartFlag) foreach(temp, LineList) {
+        if (!RestartFlag) foreach (temp, LineList)
+            {
                 scene->removeItem(temp);
             }
     }
     RestartFlag = false;
 
     int counter = 0;
-    for (n = 0; n < LeftLinesCount; n++) {
+    for (n = 0; n < LeftLinesCount; n++)
+    {
         lx = LeftLinesX[n] + (x / ColMonoScale);
         ly = LeftLinesY[n] + (y / ColMonoScale);
 
-        if (lx >= 0 && lx < (fwidth) && ly >= 0 && ly < (fheight)) { //pixel is in range
-            rx1 = (qreal)lx * rcms;
+        if (lx >= 0 && lx < (fwidth) && ly >= 0 && ly < (fheight))   //pixel is in range
+        {
+            rx1 = static_cast<qreal>(lx) * rcms;
             rx2 = rx1;
-            ry1 = (qreal)ly * rcms;
-            ry2 = ((qreal)ly + 1) * rcms;
-            if (NoRecreateFlag) {
+            ry1 = static_cast<qreal>(ly) * rcms;
+            ry2 = (static_cast<qreal>(ly) + 1) * rcms;
+            if (NoRecreateFlag)
+            {
                 LineList[counter]->setLine (rx1, ry1, rx2, ry2);
                 LineList[counter++]->setVisible(true);
-            } else {
+            }
+            else
+            {
                 temp = scene->addLine( rx1, ry1, rx2, ry2, MyPen);
                 temp->setZValue(1);
                 LineList.append(temp);
@@ -480,19 +530,24 @@ bool Brush_class::draw(int x, int y)
         }
     }
 
-    for (n = 0; n < RightLinesCount; n++) {
+    for (n = 0; n < RightLinesCount; n++)
+    {
         lx = RightLinesX[n] + (x / ColMonoScale);
         ly = RightLinesY[n] + (y / ColMonoScale);
 
-        if (lx >= 0 && lx < (fwidth) && ly >= 0 && ly < (fheight)) { //pixel is in range
-            rx1 = ((qreal)lx + 1) * rcms;
+        if (lx >= 0 && lx < (fwidth) && ly >= 0 && ly < (fheight))   //pixel is in range
+        {
+            rx1 = (static_cast<qreal>(lx) + 1) * rcms;
             rx2 = rx1;
-            ry1 = (qreal)ly * rcms;
-            ry2 = ((qreal)ly + 1) * rcms;
-            if (NoRecreateFlag) {
+            ry1 = static_cast<qreal>(ly) * rcms;
+            ry2 = (static_cast<qreal>(ly) + 1) * rcms;
+            if (NoRecreateFlag)
+            {
                 LineList[counter]->setLine (rx1, ry1, rx2, ry2);
                 LineList[counter++]->setVisible(true);
-            } else {
+            }
+            else
+            {
                 temp = scene->addLine( rx1, ry1, rx2, ry2, MyPen);
                 temp->setZValue(1);
                 LineList.append(temp);
@@ -500,19 +555,24 @@ bool Brush_class::draw(int x, int y)
         }
     }
 
-    for (n = 0; n < BottomLinesCount; n++) {
+    for (n = 0; n < BottomLinesCount; n++)
+    {
         lx = BottomLinesX[n] + (x / ColMonoScale);
         ly = BottomLinesY[n] + (y / ColMonoScale);
 
-        if (lx >= 0 && lx < (fwidth) && ly >= 0 && ly < (fheight)) { //pixel is in range
-            rx1 = (qreal)lx * rcms;
-            rx2 = ((qreal)lx + 1) * rcms;
-            ry1 = ((qreal)ly + 1) * rcms;
+        if (lx >= 0 && lx < (fwidth) && ly >= 0 && ly < (fheight))   //pixel is in range
+        {
+            rx1 = static_cast<qreal>(lx) * rcms;
+            rx2 = (static_cast<qreal>(lx) + 1) * rcms;
+            ry1 = (static_cast<qreal>(ly) + 1) * rcms;
             ry2 = ry1;
-            if (NoRecreateFlag) {
+            if (NoRecreateFlag)
+            {
                 LineList[counter]->setLine (rx1, ry1, rx2, ry2);
                 LineList[counter++]->setVisible(true);
-            } else {
+            }
+            else
+            {
                 temp = scene->addLine( rx1, ry1, rx2, ry2, MyPen);
                 temp->setZValue(1);
                 LineList.append(temp);
@@ -520,19 +580,24 @@ bool Brush_class::draw(int x, int y)
         }
     }
 
-    for (n = 0; n < TopLinesCount; n++) {
+    for (n = 0; n < TopLinesCount; n++)
+    {
         lx = TopLinesX[n] + (x / ColMonoScale);
         ly = TopLinesY[n] + (y / ColMonoScale);
 
-        if (lx >= 0 && lx < (fwidth) && ly >= 0 && ly < (fheight)) { //pixel is in range
-            rx1 = (qreal)lx * rcms;
-            rx2 = ((qreal)lx + 1) * rcms;
-            ry1 = ((qreal)ly) * rcms;
+        if (lx >= 0 && lx < (fwidth) && ly >= 0 && ly < (fheight))   //pixel is in range
+        {
+            rx1 = static_cast<qreal>(lx) * rcms;
+            rx2 = (static_cast<qreal>(lx) + 1) * rcms;
+            ry1 = (static_cast<qreal>(ly)) * rcms;
             ry2 = ry1;
-            if (NoRecreateFlag) {
+            if (NoRecreateFlag)
+            {
                 LineList[counter]->setLine (rx1, ry1, rx2, ry2);
                 LineList[counter++]->setVisible(true);
-            } else {
+            }
+            else
+            {
                 temp = scene->addLine( rx1, ry1, rx2, ry2, MyPen);
                 temp->setZValue(1);
                 LineList.append(temp);
@@ -550,7 +615,7 @@ void Brush_class::brighten(int x, int y, int segment, int effect)
     int n;
     int soft_effect = 10 - mainwin->SpinSoft->value();
     //work out real values for this
-    int soft_start = (int)((double) soft_effect   * (double) Radius / 10.0);
+    int soft_start = static_cast<int>((static_cast<double>(soft_effect)   * static_cast<double>(Radius) / 10.0));
     //soft_start is distance out if pixels for softing to start
     uchar *data;
     int pos;
@@ -558,7 +623,7 @@ void Brush_class::brighten(int x, int y, int segment, int effect)
     int xoff, yoff;
     int ax, ay;
     int high, seg, temp;
-    double divisor = (double)Radius - (double)soft_start;
+    double divisor = static_cast<double>(Radius) - static_cast<double>(soft_start);
     int act_effect = effect; // won't get changed if no soft-brushing
 
     if (Segments[segment]->Locked) return;
@@ -567,34 +632,43 @@ void Brush_class::brighten(int x, int y, int segment, int effect)
     data = GA[segment]->bits();
     bool flag = false;
     for (n = 0; n < SegmentCount; n++) if (Segments[n]->Locked)flag = true;
-    for (n = 0; n < PixelCount; n++) {
+    for (n = 0; n < PixelCount; n++)
+    {
         ay = Ypos[n] + yoff;
         if (ay >= 0)
-            if (ay < fheight) {
+            if (ay < fheight)
+            {
                 ax = Xpos[n] + xoff;
                 if (ax >= 0)
-                    if (ax < fwidth) {
+                    if (ax < fwidth)
+                    {
                         pos = ay * fwidth + ax;
                         int pos4 = ay * fwidth4 + ax;
                         //work out distance
 
-                        if (soft_effect != 10) {
+                        if (soft_effect != 10)
+                        {
                             if (Dist[n] > soft_start) //Will be a soft_effect
-                                act_effect = (int)((double) effect * ((double)(divisor - (Dist[n] - soft_start))) / divisor);
+                                act_effect = static_cast<int>(static_cast<double>(effect) * (static_cast<double>(divisor - (Dist[n] - soft_start))) / divisor);
                             else
                                 act_effect = effect;
                         }
 
-                        if (dirty.at(pos) < qAbs(act_effect)) {
-                            if (flag) {
+                        if (dirty.at(pos) < qAbs(act_effect))
+                        {
+                            if (flag)
+                            {
                                 //this stuff checks for locked segments - can't do brightening if there's a locked segment assigned to here!
                                 high = 128;
                                 seg = -1;
                                 bool sflag = false;
-                                for (int i = 0; i < SegmentCount; i++) {
-                                    if (Segments[i]->Activated) {
+                                for (int i = 0; i < SegmentCount; i++)
+                                {
+                                    if (Segments[i]->Activated)
+                                    {
                                         temp = (int)  * ((GA[i]->bits()) + pos4);
-                                        if (temp >= high)  {
+                                        if (temp >= high)
+                                        {
                                             high = temp;
                                             seg = i;
                                             sflag = Segments[seg]->Locked;
@@ -602,20 +676,26 @@ void Brush_class::brighten(int x, int y, int segment, int effect)
                                     }
                                 }
                                 if (sflag) dirty[pos] = effect;
-                                else {
-                                    val = (int)data[pos4];
-                                    if (act_effect < 0) {
+                                else
+                                {
+                                    val = static_cast<int>(data[pos4]);
+                                    if (act_effect < 0)
+                                    {
                                         val += act_effect + dirty.at(pos);
                                         if (val < 0) val = 0;
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         val += act_effect - dirty.at(pos);
                                         if (val > 255) val = 255;
                                     }
-                                    data[pos4] = (uchar) val;
-                                    dirty[pos] = (uchar) qAbs(act_effect);
+                                    data[pos4] = static_cast<uchar>(val);
+                                    dirty[pos] = static_cast<uchar>(qAbs(act_effect));
                                 }
-                            } else {
-                                val = (int)data[pos4];
+                            }
+                            else
+                            {
+                                val = static_cast<int>(data[pos4]);
                                 if (act_effect < 0)
                                     val += act_effect + dirty.at(pos);
                                 else
@@ -650,13 +730,16 @@ void Brush_class::recalc(int x, int y, int segment)
     data = GA[segment]->bits();
     //bool flag=false; - don't do this exception for recalc
     //for (n=0; n<SegmentCount; n++) if (Segments[n]->Locked) flag=true;
-    for (n = 0; n < PixelCount; n++) {
+    for (n = 0; n < PixelCount; n++)
+    {
         ay = Ypos[n] + yoff;
         if (ay >= 0)
-            if (ay < fheight) {
+            if (ay < fheight)
+            {
                 ax = Xpos[n] + xoff;
                 if (ax >= 0)
-                    if (ax < fwidth) {
+                    if (ax < fwidth)
+                    {
                         pos = ay * fwidth + ax;
                         int pos4 = ay * fwidth4 + ax;
                         data[pos4] = GenPixel(ax, ay, segment);
@@ -678,19 +761,22 @@ void Brush_class::mask(int x, int y, int mask)
     int pos;
     int xoff, yoff;
     int ax, ay;
-    uchar m = (uchar) mask;
+    uchar m = static_cast<uchar>(mask);
     uchar tmp;
 
     xoff = x / ColMonoScale;
     yoff = y / ColMonoScale;
     data = (uchar *) Masks.data();
-    for (n = 0; n < PixelCount; n++) {
+    for (n = 0; n < PixelCount; n++)
+    {
         ay = Ypos[n] + yoff;
         if (ay >= 0)
-            if (ay < fheight) {
+            if (ay < fheight)
+            {
                 ax = Xpos[n] + xoff;
                 if (ax >= 0)
-                    if (ax < fwidth) {
+                    if (ax < fwidth)
+                    {
                         pos = ((fheight - ay - 1) * fwidth + ax);
                         tmp = data[pos];
                         if (tmp <= MaxUsedMask) if ((MasksSettings[(int)tmp]->Lock) == false) data[pos] = m;
@@ -715,13 +801,16 @@ void Brush_class::lock(int x, int y, int effect)
     yoff = y / ColMonoScale;
     data = (uchar *) Locks.data();
 
-    for (n = 0; n < PixelCount; n++) {
+    for (n = 0; n < PixelCount; n++)
+    {
         ay = Ypos[n] + yoff;
         if (ay >= 0)
-            if (ay < fheight) {
+            if (ay < fheight)
+            {
                 ax = Xpos[n] + xoff;
                 if (ax >= 0)
-                    if (ax < fwidth) {
+                    if (ax < fwidth)
+                    {
                         pos = ((fheight - ay - 1) * fwidth + ax) * 2;
                         if (effect) data[pos] = 255;
                         else data[pos] = 0;
@@ -755,44 +844,58 @@ void Brush_class::segment(int x, int y, int effect)
     if (effect) s = CurrentSegment;
     else s = CurrentRSegment;
 
-    for (i = 0; i < PixelCount; i++) {
+    for (i = 0; i < PixelCount; i++)
+    {
         ay = Ypos[i] + yoff;
         if (ay >= 0)
-            if (ay < fheight) {
+            if (ay < fheight)
+            {
                 ax = Xpos[i] + xoff;
                 if (ax >= 0)
-                    if (ax < fwidth) {
-                        if (SegmentBrushAppliesMasks) {
+                    if (ax < fwidth)
+                    {
+                        if (SegmentBrushAppliesMasks)
+                        {
                             pos = ((fheight - ay - 1) * fwidth + ax);
                             tmp = mdata[pos];
-                            if (tmp <= MaxUsedMask) if ((MasksSettings[(int)tmp]->Lock) == false) mdata[pos] = (uchar)m;
+                            if (tmp <= MaxUsedMask) if ((MasksSettings[static_cast<int>(tmp)]->Lock) == false) mdata[pos] = static_cast<uchar>(m);
                         }
                         //now do actual segmentation effect
 
-                        if (s == -2) { //delete mode
+                        if (s == -2)   //delete mode
+                        {
                             pos = (ay * fwidth4 + ax);
                             for (n = 0; n < SegmentCount; n++) if (!(Segments[n]->Locked))(data[n])[pos] = 0; // all segments blank
-                        } else { //not delete - normal segment mode
+                        }
+                        else     //not delete - normal segment mode
+                        {
                             pos = (ay * fwidth4 + ax);
                             max = 128;
                             smax = 0;
                             bool flag = false;
                             for (n = 0; n < SegmentCount; n++)
-                                if (Segments[n]->Activated) {
-                                    if ((data[n])[pos] >= max) {
+                                if (Segments[n]->Activated)
+                                {
+                                    if ((data[n])[pos] >= max)
+                                    {
                                         smax = n + 1;
                                         max = (data[n])[pos];
                                         flag = Segments[n]->Locked;
                                     }
                                 }
                             //max now has maximum, smax the segment (+1 - 0 means none), flag is true if our max seg is locked
-                            if (!flag) {
-                                if (!(Segments[s]->Locked)) {
-                                    if (smax == 0) {
-                                        (data[s])[pos] = (uchar)255;
-                                    } else {
-                                        for (n = 0; n < SegmentCount; n++) if ((data[n])[pos] == 255) if (!(Segments[n]->Locked)) (data[n])[pos] = (uchar)254; // all segments capped at 254
-                                        (data[s])[pos] = (uchar)255;
+                            if (!flag)
+                            {
+                                if (!(Segments[s]->Locked))
+                                {
+                                    if (smax == 0)
+                                    {
+                                        (data[s])[pos] = static_cast<uchar>(255);
+                                    }
+                                    else
+                                    {
+                                        for (n = 0; n < SegmentCount; n++) if ((data[n])[pos] == 255) if (!(Segments[n]->Locked)) (data[n])[pos] = static_cast<uchar>(254); // all segments capped at 254
+                                        (data[s])[pos] = static_cast<uchar>(255);
                                     }
                                 }
                             }
@@ -800,7 +903,8 @@ void Brush_class::segment(int x, int y, int effect)
                     }
             }
     }
-    foreach (Segment *s, Segments) {
+    foreach (Segment *s, Segments)
+    {
         s->Dirty = true;
         s->UndoDirty = true;
     }

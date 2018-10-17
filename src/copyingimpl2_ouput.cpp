@@ -432,7 +432,7 @@ void CopyingImpl::MeasureVols()
     QList <double> stretches;
     for (n = 0; n <= filesused + 1; n++) stretches.append(n);
 
-    DoOutputRecursive(&translationtable, &nexttransentry, &translationtable2, &nexttransentry2, -1, asize,  filesused,  awidth,  aheight,  (QDataStream *) nullptr, &stretches);
+    DoOutputRecursive(&translationtable, &nexttransentry, &translationtable2, &nexttransentry2, -1, asize,  filesused,  awidth,  aheight,  static_cast<QDataStream *>(nullptr), &stretches);
 
     LoadAllData(CurrentFile);
     copying = false;
@@ -560,9 +560,9 @@ void CopyingImpl::ExportSPV(int flag)  //0 for export, 1 for export and launch, 
 
 
     out << static_cast<double>(-1); //start with -1 - historical reasons
-    out << (int)5; //file version - 4 was last one from VB, 3 is last Mac one.
+    out << static_cast<int>(5); //file version - 4 was last one from VB, 3 is last Mac one.
 
-    out << PixPerMM / ((double)(XYDownsample * ColMonoScale));
+    out << PixPerMM / (static_cast<double>(XYDownsample * ColMonoScale));
     out << SlicePerMM; // ((double) ZDownsample);
     out << SkewDown << SkewLeft;
     out << awidth << aheight;
@@ -581,25 +581,24 @@ void CopyingImpl::ExportSPV(int flag)  //0 for export, 1 for export and launch, 
 
     //int nextkey=1;
     for (n = 0; n < translationtable1.count(); n++)
-        if (OutputObjects[translationtable1[n]]->Key != 0) OutKeys[(pos++ * 2)] = (char)OutputObjects[translationtable1[n]]->Key;
+        if (OutputObjects[translationtable1[n]]->Key != 0) OutKeys[(pos++ * 2)] = static_cast<char>(OutputObjects[translationtable1[n]]->Key);
         else  OutKeys[(pos++ * 2)] = 1;
-    for (n = 0; n < 402; n++) out << (quint8)(OutKeys[n]);
+    for (n = 0; n < 402; n++) out << static_cast<quint8>(OutKeys[n]);
 
     QByteArray OutColours(402 * 3, 0);
     for (int i = 0; i < 3; i++)
     {
         pos = 0;
         for (n = 0; n < translationtable1.count(); n++)
-            OutColours[(pos++ * 2 + 402 * i)] = (uchar) OutputObjects[translationtable1[n]]->Colour[i];
+            OutColours[(pos++ * 2 + 402 * i)] = static_cast<char>(OutputObjects[translationtable1[n]]->Colour[i]);
     }
 
-    for (n = 0; n < 402 * 3; n++) out << (quint8)OutColours[n];
+    for (n = 0; n < 402 * 3; n++) out << static_cast<quint8>(OutColours[n]);
 
     QByteArray OutResamples(402, 0);
     pos = 0;
-    for (n = 0; n < translationtable1.count(); n++)
-        OutResamples[(pos++ * 2)] = OutputObjects[translationtable1[n]]->Resample;
-    for (n = 0; n < 402; n++) out << (quint8)OutResamples[n];
+    for (n = 0; n < translationtable1.count(); n++)OutResamples[(pos++ * 2)] = OutputObjects[translationtable1[n]]->Resample;
+    for (n = 0; n < 402; n++) out << static_cast<quint8>(OutResamples[n]);
 
     //stretches
     //had a reverse here - I think it was superflous?
@@ -631,27 +630,26 @@ void CopyingImpl::ExportSPV(int flag)  //0 for export, 1 for export and launch, 
 
     //now output the SV footer
 
-    out << (int)10000;
+    out << static_cast<int>(10000);
     out << nexttransentry; //count of objects including groups
+    for (int i = 0; i < nexttransentry; i++)out << translationtable2[i];
     for (int i = 0; i < nexttransentry; i++)
-        out << translationtable2[i];
-    for (int i = 0; i < nexttransentry; i++)
-        if (OutputObjects[translationtable[i]]->Parent == -1) out << (int) -1;
+        if (OutputObjects[translationtable[i]]->Parent == -1) out << static_cast<int>(-1);
         else out << translationtable.indexOf(OutputObjects[translationtable[i]]->Parent);
     for (int i = 0; i < nexttransentry; i++)
-        if (OutputObjects[translationtable[i]]->IsGroup && OutputObjects[translationtable[i]]->Merge == false ) out << (uchar) 1;
-        else out << (uchar) 0;
+        if (OutputObjects[translationtable[i]]->IsGroup && OutputObjects[translationtable[i]]->Merge == false ) out << static_cast<uchar>(1);
+        else out << static_cast<uchar>(0);
 
     for (int i = 0; i < nexttransentry; i++)
         //these are the 'show groups' output - leave as per isgroup for now
-        if (OutputObjects[translationtable[i]]->IsGroup) out << (uchar) 1;
-        else out << (uchar) 0;
+        if (OutputObjects[translationtable[i]]->IsGroup) out << static_cast<uchar>(1);
+        else out << static_cast<uchar>(0);
 
     //keys
     //nextkey=1;
     for (int i = 0; i < nexttransentry; i++)
-        if (OutputObjects[translationtable[i]]->Key == 0) out << (uchar)1;
-        else out << (uchar) OutputObjects[translationtable[i]]->Key;
+        if (OutputObjects[translationtable[i]]->Key == 0) out << static_cast<uchar>(1);
+        else out << static_cast<uchar>(OutputObjects[translationtable[i]]->Key);
 
     //names
     //nextkey=1;
@@ -660,7 +658,7 @@ void CopyingImpl::ExportSPV(int flag)  //0 for export, 1 for export and launch, 
         QString s;
         if (OutputObjects[translationtable[i]]->Key != 0)
         {
-            s.append((uchar)OutputObjects[translationtable[i]]->Key);
+            s.append(static_cast<uchar>(OutputObjects[translationtable[i]]->Key));
             s += " - ";
         }
         s += OutputObjects[translationtable[i]]->Name;
@@ -813,7 +811,7 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
     //qDebug()<<"Here";
     if (flag < 2)
     {
-        outputfile = QFileDialog::getSaveFileName(0, "SPIERSview File Name", "", "SPIERSview files (*.spv)");
+        outputfile = QFileDialog::getSaveFileName(nullptr, "SPIERSview File Name", "", "SPIERSview files (*.spv)");
     }
     else //temp file
     {
@@ -876,11 +874,11 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
     out.setVersion(QDataStream::Qt_4_3);
     out.setByteOrder(QDataStream::LittleEndian);
 
-    out << (double) -1; //start with -1 - historical reasons
-    out << (int)1000; //file version
+    out << static_cast<double>(-1); //start with -1 - historical reasons
+    out << static_cast<int>(1000); //file version
     //- 5 was first QT one, 4 was last one from VB, 3 is last Mac one. 6 includes grid/flag support.
     //Now - 1000+ are exports from edit only
-    out << PixPerMM / ((double)(XYDownsample * ColMonoScale));
+    out << PixPerMM / (static_cast<double>(XYDownsample * ColMonoScale));
     out << SlicePerMM; // ((double) ZDownsample);
     out << SkewDown << SkewLeft;
     out << awidth << aheight;
@@ -892,9 +890,9 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
 
     //OK, translationtable1 now has a list in order of the objects which will be output
     for (n = 0; n < translationtable1.count(); n++)
-        if (OutputObjects[translationtable1[n]]->Key != 0) OutKeys[(pos++ * 2)] = (char)OutputObjects[translationtable1[n]]->Key;
+        if (OutputObjects[translationtable1[n]]->Key != 0) OutKeys[(pos++ * 2)] = static_cast<char>(OutputObjects[translationtable1[n]]->Key);
         else  OutKeys[(pos++ * 2)] = 1;
-    for (n = 0; n < 402; n++) out << (quint8)(OutKeys[n]);
+    for (n = 0; n < 402; n++) out << static_cast<quint8>(OutKeys[n]);
 
 
     QByteArray OutColours(402 * 3, 0);
@@ -902,16 +900,16 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
     {
         pos = 0;
         for (n = 0; n < translationtable1.count(); n++)
-            OutColours[(pos++ * 2 + 402 * i)] = (uchar) OutputObjects[translationtable1[n]]->Colour[i];
+            OutColours[(pos++ * 2 + 402 * i)] = static_cast<uchar>(OutputObjects[translationtable1[n]]->Colour[i]);
     }
-    for (n = 0; n < 402 * 3; n++) out << (quint8)OutColours[n];
+    for (n = 0; n < 402 * 3; n++) out << static_cast<quint8>(OutColours[n]);
     QByteArray OutResamples(402, 0);
     pos = 0;
     for (n = 0; n < translationtable1.count(); n++)
         OutResamples[(pos++ * 2)] = OutputObjects[translationtable1[n]]->Resample;
-    for (n = 0; n < 402; n++) out << (quint8)OutResamples[n];
-    //stretches
-    //had a reverse here - I think it was superflous?
+    for (n = 0; n < 402; n++) out << static_cast<quint8>(OutResamples[n]);
+//stretches
+//had a reverse here - I think it was superflous?
 
     for (n = 0; n <= (filesused + 1); n++)
         out << stretches2[n];
@@ -931,24 +929,24 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
     for (int i = 0; i < OutputObjectsCount; i++) translationtable.append(0);
     QList <int> translationtable2;
     for (int i = 0; i < OutputObjectsCount; i++) translationtable2.append(0);
-    //the next entries are next number available in SPV numbers
+//the next entries are next number available in SPV numbers
     int nexttransentry = 0, nexttransentry2 = 0;
 
     QList <OutputObject *> outlist;
 
     GetOutputList(&outlist, &translationtable, &nexttransentry, &translationtable2, &nexttransentry2, -1); //replaces old do out recursive.
-    //outlist is list of the items to be output. Note that some might be merged groups!
+//outlist is list of the items to be output. Note that some might be merged groups!
 
-    //OK, now we get onto the new code!
+//OK, now we get onto the new code!
 
-    //Reset PB to be based on the file count
+//Reset PB to be based on the file count
     progressBar->setMaximum(filesused);
-    //First, set up lists of compressed arrays that we will be generating
+//First, set up lists of compressed arrays that we will be generating
 
 
-    //Now code originally from Populate Output Array
+//Now code originally from Populate Output Array
 
-    //some initialisation
+//some initialisation
     int f, bigpos = 0, m, max, temp;
     Q_UNUSED(max);
     int seg, i;
@@ -956,11 +954,11 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
 
     OutputObject *Object;
 
-    //Some pointers into objects in classes for speed
+//Some pointers into objects in classes for speed
     QByteArray *temparray, *OutputArray;
     QList <bool> *UseMasks, *UseSegs;
 
-    //set up the arrays in the output objects appropriated. Will clear all these at end.
+//set up the arrays in the output objects appropriated. Will clear all these at end.
     foreach (Object, outlist)
     {
         if (Object->Merge) foreach (OutputObject * Object2, Object->MergeObjects) Object2->SetUpForRender();
@@ -1074,7 +1072,7 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
                                 for (int x = 0; x < fwidth; x++)
                                 {
                                     //work out segment - not in a function for speed
-                                    if (((*UseMasks)[(quint8)Masks[y * fwidth + x]]))
+                                    if (((*UseMasks)[static_cast<quint8>(Masks[y * fwidth + x])]))
                                     {
                                         int high = 128;
                                         seg = -1;
@@ -1093,7 +1091,7 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
                                         //segcounts[seg+1]++;
                                         if (seg != -1)
                                             if ((*UseSegs)[seg]) //seg in list?
-                                                (*OutputArray)[bigpos] = (char)255;
+                                                (*OutputArray)[bigpos] = static_cast<char>(255);
                                         //no need to enter a 0 - array is initialised to 0
                                     }
                                     bigpos++;
@@ -1122,7 +1120,7 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
                                 for (int x = 0; x < fwidth; x++)
                                     //work out segment - not in a function for speed
                                 {
-                                    if (((*UseMasks)[(quint8)Masks[y * fwidth + x]]))
+                                    if (((*UseMasks)[static_cast<quint8>(Masks[y * fwidth + x])]))
                                     {
                                         int high = 128;
                                         seg = -1;
@@ -1141,7 +1139,7 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
 
                                         if (seg != -1)
                                             if ((*UseSegs)[seg]) //seg in list... is mask?
-                                                (*temparray)[tpos] = (uchar) 255;
+                                                (*temparray)[tpos] = static_cast<uchar>(255);
                                         //no need to enter a 0 - array is initialised to 0
                                     }
                                     tpos++;
@@ -1166,17 +1164,11 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
 
                         ;
                     }
-
-
                     //copy the pointers back
                     Object->bigpos = bigpos;
                     Object->tpos = tpos;
-
-
                 }
-
                 FilesDirty[f + i] = false;
-
             }
 
             foreach (Object, outlist)
@@ -1268,7 +1260,7 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
     for (int j = 0; j < SegmentCount; j++) LoadGreyData(CurrentFile, j);
     LoadMasks(CurrentFile);
 
-    //Now write out all the data I've generated
+//Now write out all the data I've generated
 
     foreach (Object, outlist)
     {
@@ -1284,8 +1276,7 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
 
             if (carray->isEmpty())
             {
-                out << (int) -1;
-                //qDebug()<<"Outputting an empty slice"<<f;
+                out << static_cast<int>(-1);
             }
             else
             {
@@ -1302,32 +1293,32 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
             }
         }
         //and output any triangles - which there won't be
-        out << (int)0;
+        out << static_cast<int>(0);
 
     }
 
     //now output the SV footer
-    out << (int)10000;
+    out << static_cast<int>(10000);
     out << nexttransentry; //count of objects including groups
     for (int i = 0; i < nexttransentry; i++)
         out << translationtable2[i];
     for (int i = 0; i < nexttransentry; i++)
-        if (OutputObjects[translationtable[i]]->Parent == -1) out << (int) -1;
+        if (OutputObjects[translationtable[i]]->Parent == -1) out << static_cast<int>(-1);
         else out << translationtable.indexOf(OutputObjects[translationtable[i]]->Parent);
     for (int i = 0; i < nexttransentry; i++)
-        if (OutputObjects[translationtable[i]]->IsGroup && OutputObjects[translationtable[i]]->Merge == false ) out << (uchar) 1;
-        else out << (uchar) 0;
+        if (OutputObjects[translationtable[i]]->IsGroup && OutputObjects[translationtable[i]]->Merge == false ) out << static_cast<uchar>(1);
+        else out << static_cast<uchar>(0);
 
     for (int i = 0; i < nexttransentry; i++)
-        //these are the 'show groups' output - leave as per isgroup for now
-        if (OutputObjects[translationtable[i]]->IsGroup) out << (uchar) 1;
-        else out << (uchar) 0;
+//these are the 'show groups' output - leave as per isgroup for now
+        if (OutputObjects[translationtable[i]]->IsGroup) out << static_cast<uchar>(1);
+        else out << static_cast<uchar>(0);
 
     //keys
     //nextkey=1;
     for (int i = 0; i < nexttransentry; i++)
-        if (OutputObjects[translationtable[i]]->Key == 0) out << (uchar)1;
-        else out << (uchar) OutputObjects[translationtable[i]]->Key;
+        if (OutputObjects[translationtable[i]]->Key == 0) out << static_cast<uchar>(1);
+        else out << static_cast<uchar>(OutputObjects[translationtable[i]]->Key);
 
     //names
     //nextkey=1;
@@ -1336,7 +1327,7 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
         QString s;
         if (OutputObjects[translationtable[i]]->Key != 0)
         {
-            s.append((uchar)OutputObjects[translationtable[i]]->Key);
+            s.append(static_cast<uchar>(OutputObjects[translationtable[i]]->Key));
             s += " - ";
         }
         s += OutputObjects[translationtable[i]]->Name;

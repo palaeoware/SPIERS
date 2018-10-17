@@ -28,6 +28,7 @@ Functions (non-OO) relating to graphical manipulation
 #include "curves.h"
 #include "myscene.h"
 #include "brush.h"
+
 QGraphicsPixmapItem *MainImage;
 double LastZoom;
 
