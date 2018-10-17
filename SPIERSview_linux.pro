@@ -2,7 +2,7 @@ QT += network xml gui core opengl
 #Do not not to display warning messages for use of deprecated C++ functions by VTK.
 QMAKE_CXXFLAGS += -Wno-deprecated
 
-TARGET = SPIERSview2
+TARGET = SPIERSview64
 TEMPLATE = app
 RESOURCES = view.qrc
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
