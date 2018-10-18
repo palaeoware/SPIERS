@@ -102,6 +102,9 @@ int main(int argc, char *argv[])
     // This has the app draw at HiDPI scaling on HiDPI displays, usually two pixels for every one logical pixel
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
+    // Set to allow the OpenGL context (ie. the same threads) to be shared between normal and full screen mode
+    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+
     // This has QPixmap images use the @2x images when available
     // See this bug for more details on how to get this right: https://bugreports.qt.io/browse/QTBUG-44486#comment-327410
 #if (QT_VERSION >= 0x050600)

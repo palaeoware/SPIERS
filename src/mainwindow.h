@@ -2,13 +2,14 @@
 #define MAINWINDOW_H
 
 #include <QtWidgets/QMainWindow>
-//#include "SVGlwidget.h"
-#include "gl3widget.h"
 #include <QtWidgets/QLabel>
 #include <QTimer>
 #include <QtWidgets/QListWidgetItem>
 #include <QHBoxLayout>
 #include <QtWidgets/QShortcut>
+
+#include "gl3widget.h"
+#include "fullscreenwindow.h"
 
 class QTreeWidgetItem;
 
@@ -50,6 +51,7 @@ protected:
 private:
 
     bool mainWindowReady = false;
+    bool isGLFullScreen = false;
 
     int specificprogress;
     QString specificlabel;
@@ -59,13 +61,16 @@ private:
     void StripDownForVoxml();
     void closeEvent(QCloseEvent *event);
 
-    QLabel *scalelabel, *ktrlabel;
+    FullScreenWindow *fullScreenDialog;
 
-    QTimer *StartTimer; //bodgy timer to get open working
-    QTimer *SpinTimer; //bodgy timer to get open working
-    QTimer *PBtimer; //update to progress bar
+    QLabel *scalelabel;
+    QLabel *ktrlabel;
 
-    QTime *time; //used by spin timer
+    QTimer *StartTimer;
+    QTimer *SpinTimer;
+    QTimer *PBtimer;
+
+    QTime *time;
     void UnsetAllStereo();
     void DrawChildObjects(QList <bool> selflags, int parent);
     void RefreshOneItem(QTreeWidgetItem *item, int i);
@@ -85,7 +90,7 @@ private:
 
     void SetShininess(int s);
 private slots:
-
+    void closeFullScreen();
     void on_actionSet_Resampling_triggered();
     void on_actionZoom_In_triggered();
     void on_actionZoom_Out_triggered();
@@ -216,6 +221,7 @@ private slots:
     void on_actionIsland_Removal_Custom_triggered();
     void on_actionBounding_Box_triggered();
     void on_MultipleStepButton_pressed();
+    void on_actionFull_Screen_triggered();
 };
 
 extern MainWindow *MainWin;

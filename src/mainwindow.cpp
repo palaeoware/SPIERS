@@ -3852,3 +3852,38 @@ void MainWindow::updateScreenRatio()
 
     //qDebug() << "[SCREEN UPDATE] Current Screen = " << currentScreen << "Current Ratio = " << ratio;
 }
+
+/**
+ * @brief MainWindow::on_actionFull_Screen_triggered
+ */
+void MainWindow::on_actionFull_Screen_triggered()
+{
+    if (isGLFullScreen == false)
+    {
+        fullScreenDialog = new FullScreenWindow(this, gl3widget);
+        //fullScreenDialog->showFullScreen();
+        fullScreenDialog->show();
+
+        isGLFullScreen = true;
+
+        qDebug() << "Opening full screen mode";
+    }
+    else
+    {
+        closeFullScreen();
+    }
+}
+
+/**
+ * @brief MainWindow::closeFullScreen
+ */
+void MainWindow::closeFullScreen()
+{
+    gl3widget = fullScreenDialog->glwidget;
+    ui->frameVTK->layout()->addWidget(gl3widget);
+    fullScreenDialog->close();
+    gl3widget->update();
+    isGLFullScreen = false;
+
+    qDebug() << "Closing full screen mode";
+}
