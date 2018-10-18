@@ -9,6 +9,8 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QVector4D>
+#include <QGesture>
+
 #include "rowmans.h"
 #include "globals.h"
 
@@ -38,6 +40,14 @@ GlWidget::GlWidget(QWidget *parent)
     StereoSeparation = static_cast<float>(.04);
     setFocusPolicy(Qt::NoFocus);
     DefaultClipAngle = MainWin->ui->ClipAngle->value() / 10;
+
+    // Capture the following touch screen gestures
+    QList<Qt::GestureType> gestures;
+    gestures << Qt::PanGesture;
+    gestures << Qt::PinchGesture;
+    gestures << Qt::SwipeGesture;
+    grabGestures(gestures);
+
     //setAutoBufferSwap(true);
 
     //qDebug() << "Done init widget";
@@ -191,11 +201,15 @@ void GlWidget::resizeGL(int width, int height)
     {
         height = 1;
     }
+
     // Scale all x and y by the application screen ratio
     xdim = static_cast<int>(static_cast<double>(width) * applicationScaleX);
     ydim = static_cast<int>(static_cast<double>(height) * applicationScaleY);
+
     DoPMatrix(xdim, ydim);
+
     glfunctions->glViewport(0, 0, xdim, ydim);
+
     update();
 }
 
@@ -208,6 +222,7 @@ void GlWidget::DoPMatrix(int width, int height)
 {
     float asp = static_cast<float>(width) / static_cast<float>(height);
     float fudge = static_cast<float>(1300) / static_cast<float>(width);
+
     pMatrix.setToIdentity();
     if (MainWin->ui->actionOrthographic_View->isChecked())
         pMatrix.ortho((0 - ClipAngle / (10 * fudge)), ClipAngle / (10 * fudge), (0 - ClipAngle / (10 * fudge)) / asp, ClipAngle / (10 * fudge) / asp, ClipStart, ClipDepth);
@@ -1106,4 +1121,107 @@ void GlWidget::NewDefault()
         Ytrans = 0;
         Ztrans = 0;
     }
+}
+
+/**
+ * @brief GlWidget::event
+ * @param event
+ * @return
+ */
+bool GlWidget::event(QEvent *event)
+{
+    if (event->type() == QEvent::Gesture)
+        return gestureEvent(static_cast<QGestureEvent *>(event));
+    return QWidget::event(event);
+}
+
+/**
+ * @brief GlWidget::grabGestures
+ * @param gestures
+ */
+void GlWidget::grabGestures(const QList<Qt::GestureType> &gestures)
+{
+    foreach (Qt::GestureType gesture, gestures)
+        grabGesture(gesture);
+}
+
+/**
+ * @brief GlWidget::gestureEvent
+ * @param event
+ * @return
+ */
+bool GlWidget::gestureEvent(QGestureEvent *event)
+{
+    //qDebug() << "gestureEvent():" << event;
+
+    /*
+    if (QGesture *swipe = event->gesture(Qt::SwipeGesture))
+    {
+        swipeTriggered(static_cast<QSwipeGesture *>(swipe));
+    }
+    else if (QGesture *pan = event->gesture(Qt::PanGesture))
+    {
+        panTriggered(static_cast<QPanGesture *>(pan));
+    }
+    */
+
+    if (QGesture *pinch = event->gesture(Qt::PinchGesture))
+    {
+        //qDebug() << "Pinch detected...";
+        pinchTriggered(static_cast<QPinchGesture *>(pinch));
+    }
+    return true;
+}
+
+/**
+ * @brief GlWidget::pinchTriggered
+ * @param gesture
+ */
+void GlWidget::pinchTriggered(QPinchGesture *gesture)
+{
+    QPinchGesture::ChangeFlags changeFlags = gesture->changeFlags();
+    double currentStepScaleFactor = 0;
+
+    if (changeFlags & QPinchGesture::RotationAngleChanged)
+    {
+        double rotationDelta = gesture->lastRotationAngle() - gesture->rotationAngle();
+        Rotate(rotationDelta);
+        update();
+
+        //qDebug() << "pinchTriggered(): rotate by" << rotationDelta;
+    }
+
+    if (changeFlags & QPinchGesture::ScaleFactorChanged)
+    {
+        currentStepScaleFactor = gesture->totalScaleFactor();
+        int currentClipAngle = MainWin->ui->ClipAngle->value();
+        int maximumClipAngleAllowed = MainWin->ui->ClipAngle->maximum();
+        int minimumClipAngleAllowed = MainWin->ui->ClipAngle->minimum();
+        int newClipAngle = currentClipAngle;
+
+        if (currentStepScaleFactor > 0.0)
+        {
+            // Zoom in
+            newClipAngle = static_cast<int>(static_cast<double>(currentClipAngle) * (1 + ((currentStepScaleFactor - 1) / 20)));
+            if (newClipAngle > maximumClipAngleAllowed) newClipAngle = maximumClipAngleAllowed;
+            MainWin->ui->ClipAngle->setValue(newClipAngle);
+        }
+        else if (currentStepScaleFactor < 0.0)
+        {
+            // Zoom Out
+            newClipAngle = static_cast<int>(static_cast<double>(currentClipAngle) * (currentStepScaleFactor / 20));
+            if (newClipAngle < minimumClipAngleAllowed) newClipAngle = minimumClipAngleAllowed;
+            MainWin->ui->ClipAngle->setValue(newClipAngle);
+        }
+        SetClip(MainWin->ui->ClipStart->value(), MainWin->ui->ClipDepth->value(), MainWin->ui->ClipAngle->value());
+        update();
+
+        //qDebug() << "pinchTriggered(): zoom by" << gesture->scaleFactor() << "->" << currentStepScaleFactor << " Current Clip = " << currentClipAngle << " New Clip = " << newClipAngle;
+    }
+
+    if (gesture->state() == Qt::GestureFinished)
+    {
+        update();
+    }
+
 }
