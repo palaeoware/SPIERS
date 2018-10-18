@@ -26,6 +26,9 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    void resizeEvent(QResizeEvent *event);
+    void moveEvent(QMoveEvent *event);
+    void changeEvent( QEvent *event );
     void UpdateGL();
     void RefreshObjects();
     Ui::MainWindow *ui;
@@ -34,19 +37,19 @@ public:
     //SVGlWidget *widget;
     GlWidget *gl3widget;
     QHBoxLayout *gllayout;
-
     void RefreshInfo();
-    //void UpdateScaleEnabling();
-
-
     void setSamples(int i);
     void setSpecificProgress(int p);
     void setSpecificLabel(QString t);
+    void updateScreenRatio();
+
 public slots:
     void showSpecificProgress();
 protected:
     bool eventFilter(QObject *object, QEvent *event);
 private:
+
+    bool mainWindowReady = false;
 
     int specificprogress;
     QString specificlabel;

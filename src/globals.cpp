@@ -27,3 +27,5 @@ QOpenGLBuffer cubeBuffer;
 
 double applicationScaleX;
 double applicationScaleY;
+QScreen *currentScreen;
+QList<QScreen *> availableScreens;

@@ -68,5 +68,7 @@ extern QString STLHash;
 extern QMatrix4x4 globalmatrix;
 extern double applicationScaleX;
 extern double applicationScaleY;
+extern QScreen *currentScreen;
+extern QList<QScreen *> availableScreens;
 
 #endif // GLOBALS_H

@@ -63,10 +63,9 @@ void SPVreader::TransposeMatrix(float *m)
 void SPVreader::ProcessFile(QString filename)
 {
     //The old processfile stuff. This is the only external API function to the class
-
     //set the class-level globals
     FileName = filename;
-    qDebug() << "[Global] FileName = " << FileName;
+    //qDebug() << "[Global] FileName = " << FileName;
 
     //call internal version with messier interface
     InternalProcessFile(filename);
@@ -80,7 +79,7 @@ void SPVreader::ProcessFile(QString filename)
  */
 void SPVreader::FixUpData()
 {
-    qDebug() << "[Where I'm I?] In FixUpData";
+    //qDebug() << "[Where I'm I?] In FixUpData";
 
     //Fix any odd characters in keys
     for (int i = 0; i < SVObjects.count(); i++)
@@ -163,7 +162,7 @@ void SPVreader::WriteSPV(bool withpd)
         out << s->jDim;
         out << s->kDim;
         out << s->MirrorFlag;
-//        qDebug()<<"SPV "<<i<<"Mirror flag is "<<s->MirrorFlag;
+        // qDebug()<<"SPV "<<i<<"Mirror flag is "<<s->MirrorFlag;
         for (int i = 0; i < s->kDim + 1; i++)
             out << s->stretches[i];
 
@@ -198,9 +197,9 @@ void SPVreader::WriteSPV(bool withpd)
                 out << o->matrix[i];
             //and Transpose it back so we can keep using it
             TransposeMatrix(o->matrix);
-//            qDebug()<<"Object"<<i<<o->Name<<"Matrix is: ";
-//            for (int i=0; i<16; i++)
-//                qDebug()<<i<<":"<<o->matrix[i];
+            // qDebug()<<"Object"<<i<<o->Name<<"Matrix is: ";
+            // for (int i=0; i<16; i++)
+            // qDebug()<<i<<":"<<o->matrix[i];
 
             out << o->Index;
             out << o->scale;
@@ -327,7 +326,7 @@ void SPVreader::WriteSPV(bool withpd)
  */
 void SPVreader::ReadSPV6(QString Filename)
 {
-    qDebug() << "[Where I'm I?] In ReadSPV6 | filename = " << Filename;
+    // qDebug() << "[Where I'm I?] In ReadSPV6 | filename = " << Filename;
 
     int BaseIndex;
     //actually reads 6 and up
@@ -337,7 +336,7 @@ void SPVreader::ReadSPV6(QString Filename)
     QFile InputFile(Filename);
     if (InputFile.open(QIODevice::ReadOnly) == false)
     {
-        qDebug() << "[Where I'm I?] In ReadSPV6 | File Error = Fatal - Can't open SPV file for reading";
+        // qDebug() << "[Where I'm I?] In ReadSPV6 | File Error = Fatal - Can't open SPV file for reading";
         QMessageBox::warning(MainWin, "File Error", "Fatal - Can't open SPV file for reading");
         QCoreApplication::quit();
     }
@@ -346,7 +345,7 @@ void SPVreader::ReadSPV6(QString Filename)
     for (int i = 0; i < SVObjects.count(); i++) //non 0 for imports
         if (SVObjects[i]->Index > BaseIndex) BaseIndex = SVObjects[i]->Index;
 
-    qDebug() << "[Where I'm I?] In ReadSPV6 | BaseIndex = " << BaseIndex;
+    // qDebug() << "[Where I'm I?] In ReadSPV6 | BaseIndex = " << BaseIndex;
 
     BaseIndex++; //will now be first free index number
 
@@ -363,7 +362,7 @@ void SPVreader::ReadSPV6(QString Filename)
     in >> dummy; //will be -1
     in >> version;
 
-    qDebug() << "[Where I'm I?] In ReadSPV6 | Version = " << version;
+    // qDebug() << "[Where I'm I?] In ReadSPV6 | Version = " << version;
 
     int spvcount = 1;
     int totalobjcount;
@@ -381,7 +380,7 @@ void SPVreader::ReadSPV6(QString Filename)
         MainWin->ui->actionSave_Memory->setChecked(t);
     }
 
-    qDebug() << "[Where I'm I?] In ReadSPV6 | Reading file... | spvcount = " << spvcount;
+    // qDebug() << "[Where I'm I?] In ReadSPV6 | Reading file... | spvcount = " << spvcount;
 
     MainWin->setSpecificLabel("Reading file...");
     MainWin->setSpecificProgress(0);
@@ -429,7 +428,7 @@ void SPVreader::ReadSPV6(QString Filename)
         }
 
         in >> thisspv->MirrorFlag;
-        qDebug() << "Just mirror " << thisspv->MirrorFlag;
+        // qDebug() << "Just mirror " << thisspv->MirrorFlag;
 
         float Mat[16];
         if (version == 6) //matrix now
@@ -563,7 +562,7 @@ void SPVreader::ReadSPV6(QString Filename)
                     CompressedSlice *BlankSlice = new CompressedSlice(o, true);
                     (o->compressedslices).append(BlankSlice);
                     int ThisSlice = 1;
-                    qDebug() << "pieces" << pieces;
+                    //qDebug() << "pieces" << pieces;
                     for (int j = 0; j < pieces; j++)
                     {
 
@@ -642,7 +641,8 @@ void SPVreader::ReadSPV6(QString Filename)
         }
     }
 
-    qDebug() << "[Where I'm I?] In ReadSPV6 | Now the orphan objects - which can only be groups";
+    //qDebug() << "[Where I'm I?] In ReadSPV6 | Now the orphan objects - which can only be groups";
+
     //Now the orphan objects - which can only be groups
     if (version >= 8)
     {
@@ -665,20 +665,24 @@ void SPVreader::ReadSPV6(QString Filename)
 
     if (!(in.atEnd()))
     {
-        qDebug() << "[Where I'm I?] In ReadSPV6 | checking for InfoLists";
+        //qDebug() << "[Where I'm I?] In ReadSPV6 | checking for InfoLists";
 
         QString check;
         in >> check;
         if (check != "InfoLists")
-            qDebug() << "Error!";
+        {
+            // qDebug() << "Error!";
+        }
         else
+        {
             in >> i_comments >> i_reference >> i_author >> i_specimen >> i_provenance >> i_classification_name >> i_classification_rank >> i_title;
+        }
     }
 
     //Now scale stuff and a few interface things
     if (!(in.atEnd()))
     {
-        qDebug() << "[Where I'm I?] In ReadSPV6 | checking for scaleball data";
+        // qDebug() << "[Where I'm I?] In ReadSPV6 | checking for scaleball data";
 
         in >> ScaleBallColour[0];
         in >> ScaleBallColour[1];
@@ -725,13 +729,13 @@ void SPVreader::ReadSPV6(QString Filename)
             }
         }
 
-    qDebug() << "[Where I'm I?] In ReadSPV6 calling FixUpData();";
+    //qDebug() << "[Where I'm I?] In ReadSPV6 calling FixUpData();";
     FixUpData();
 
-    qDebug() << "[Where I'm I?] In ReadSPV6 calling RefreshObjects();";
+    //qDebug() << "[Where I'm I?] In ReadSPV6 calling RefreshObjects();";
     MainWin->RefreshObjects();
 
-    qDebug() << "[Where I'm I?] In ReadSPV6 calling RefreshInfo()";
+    //qDebug() << "[Where I'm I?] In ReadSPV6 calling RefreshInfo()";
     MainWin->RefreshInfo();
 
     int items = 0;
@@ -740,7 +744,7 @@ void SPVreader::ReadSPV6(QString Filename)
     int icount = 1;
 
     //Now do all the processing
-    qDebug() << "[Where I'm I?] In ReadSPV6 starting processing...";
+    //qDebug() << "[Where I'm I?] In ReadSPV6 starting processing...";
     for (int i = BaseIndex; i < SVObjects.count(); i++)
     {
         if (!(SVObjects[i]->IsGroup))
@@ -748,7 +752,7 @@ void SPVreader::ReadSPV6(QString Filename)
             QString status;
             QTextStream ts(&status);
 
-            qDebug() << "Processing...'" << SVObjects[i]->Name << "', " << icount << " of " << items;
+            //qDebug() << "Processing...'" << SVObjects[i]->Name << "', " << icount << " of " << items;
             ts << "Processing '" << SVObjects[i]->Name << "', " << icount << " of " << items;
 
             MainWin->ui->OutputLabelOverall->setText(status);
@@ -762,7 +766,7 @@ void SPVreader::ReadSPV6(QString Filename)
                 {
 
                     int size = SVObjects[i]->spv->size;
-                    if ((fullarray = (unsigned char *)malloc(size * SVObjects[i]->spv->kDim)) == nullptr)
+                    if ((fullarray = static_cast<unsigned char *>(malloc(static_cast<size_t>(size * SVObjects[i]->spv->kDim)))) == nullptr)
                     {
                         QMessageBox::warning((QWidget *)MainWin, "Memory Error", "Fatal Error - could not obtain enough memory to reconstruct volume.\nTry exporting from a newer version of SPIERSview");
                         QCoreApplication::quit();
@@ -778,8 +782,8 @@ void SPVreader::ReadSPV6(QString Filename)
                         endfullarray[z] = 0;
 
                     SVObjects[i]->spv->fullarray = fullarray;
-                    uLongf s = size * SVObjects[i]->spv->kDim;
-                    uncompress(fullarray, &s, SVObjects[i]->AllSlicesCompressed, SVObjects[i]->AllSlicesSize);
+                    uLongf s = static_cast<uLongf>(size * SVObjects[i]->spv->kDim);
+                    uncompress(fullarray, &s, SVObjects[i]->AllSlicesCompressed, static_cast<uLong>(SVObjects[i]->AllSlicesSize));
 
                     int count = 0;
                     for (int iii = 0; iii < size * SVObjects[i]->spv->kDim; iii++)
@@ -793,7 +797,7 @@ void SPVreader::ReadSPV6(QString Filename)
                     SVObjects[i]->spv->fullarray = nullptr;
                 }
 
-                qDebug() << "[Where I'm I?] In ReadSPV6 - calling MakePolyData()";
+                //qDebug() << "[Where I'm I?] In ReadSPV6 - calling MakePolyData()";
                 SVObjects[i]->MakePolyData();
             }
 
@@ -807,12 +811,12 @@ void SPVreader::ReadSPV6(QString Filename)
     for (int i = 0; i < SVObjects.count(); i++)
         ttrig += SVObjects[i]->Triangles;
 
-    qDebug() << "[Where I'm I?] In ReadSPV6 - Completed " << (ttrig / 1000);
+    //qDebug() << "[Where I'm I?] In ReadSPV6 - Completed " << (ttrig / 1000);
     QString status = QString("Completed %1").arg(ttrig / 1000);
     MainWin->ui->OutputLabelOverall->setText(status);
     MainWin->ui->ProgBarOverall->setValue(100);
 
-    qDebug() << "[Where I'm I?] In ReadSPV6 calling UpdateGL() at function end.";
+    //qDebug() << "[Where I'm I?] In ReadSPV6 calling UpdateGL() at function end.";
     MainWin->UpdateGL();
     //MainWin->UpdateScaleEnabling();
 }
@@ -838,7 +842,7 @@ bool SPVreader::is_sp2(char *fn)
  */
 void SPVreader::FileFailed(QString fname, bool write, int n)
 {
-    qDebug() << "[Where I'm I?] In FileFailed";
+    //qDebug() << "[Where I'm I?] In FileFailed";
 
     QString message;
     if (write)
@@ -847,7 +851,7 @@ void SPVreader::FileFailed(QString fname, bool write, int n)
         message = QString("Error code %1 - could not open file %2 - does it exist?").arg(n).arg(fname);
 
 
-    qDebug() << "[Where I'm I?] In FileFailed - something has gone wrong, exiting! | meesage = " << message;
+    //qDebug() << "[Where I'm I?] In FileFailed - something has gone wrong, exiting! | meesage = " << message;
     QMessageBox::warning(static_cast<QWidget *>(MainWin), "File Error", message);
 
     QCoreApplication::quit();
@@ -859,7 +863,7 @@ void SPVreader::FileFailed(QString fname, bool write, int n)
  */
 void SPVreader::InternalProcessFile(QString filename)
 {
-    qDebug() << "[Where I'm I?] In InternalProcessFile";
+    //qDebug() << "[Where I'm I?] In InternalProcessFile";
 
     QFileInfo fi(filename);
 
@@ -869,7 +873,7 @@ void SPVreader::InternalProcessFile(QString filename)
     IsSP2 = (fi.suffix() == "sp2");
     if (!IsSP2)
     {
-        qDebug() << "[Where I'm I?] In InternalProcessFile - about to call ProcessSPV with NON .sp2 file | filecount = 0 | matrix = nullptr";
+        //qDebug() << "[Where I'm I?] In InternalProcessFile - about to call ProcessSPV with NON .sp2 file | filecount = 0 | matrix = nullptr";
         ProcessSPV(filename, 0, nullptr);
         return;
     }
@@ -915,7 +919,7 @@ void SPVreader::InternalProcessFile(QString filename)
 
                 QString spvname = path + "/" + QString(namebuff);
 
-                qDebug() << "[Where I'm I?] In InternalProcessFile - about to call ProcessSPV with .sp2 file | filecount = " << filecount << " | matrix = " << matrix;
+                //qDebug() << "[Where I'm I?] In InternalProcessFile - about to call ProcessSPV with .sp2 file | filecount = " << filecount << " | matrix = " << matrix;
                 ProcessSPV(spvname, static_cast<unsigned int>(filecount), matrix);
             }
             filecount++;
@@ -962,7 +966,7 @@ void SPVreader::WriteWithEndian(FILE *file, unsigned char *pointer, int size, in
     for (n = 0; n < count; n++)
         invert_endian(&(pointer[size * n]), size);
 
-    fwrite(pointer, size * count, 1, file);
+    fwrite(pointer, static_cast<size_t>(size * count), 1, file);
 
     for (n = 0; n < count; n++)
         invert_endian(&(pointer[size * n]), size);
@@ -977,7 +981,9 @@ void SPVreader::WriteWithEndian(FILE *file, unsigned char *pointer, int size, in
  */
 int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMatrix = nullptr)
 {
-    qDebug() << "[Where I'm I?] In ProcessSPV | filename = " << filename << "; index = " << index << "; passedMatrix = " << PassedMatrix;
+    Q_UNUSED(index)
+
+    //qDebug() << "[Where I'm I?] In ProcessSPV | filename = " << filename << "; index = " << index << "; passedMatrix = " << PassedMatrix;
 
     double p1;
     double p2;
@@ -1014,7 +1020,7 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
 
     QFile f(filename);
     f.open(QIODevice::ReadOnly);
-    qDebug() << "File Handle = " << f.handle();
+    //qDebug() << "File Handle = " << f.handle();
     file = fdopen(f.handle(), "rb");
 
     if (file == nullptr)
@@ -1041,11 +1047,11 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
         invert_endian(reinterpret_cast<unsigned char *>(&p1), 8);
     }
 
-    qDebug() << "[Version] " << version;
+    //qDebug() << "[Version] " << version;
 
     if (version > 5 && version < 1000)
     {
-        qDebug() << "[Version] Reading NEW STYLE file";
+        //qDebug() << "[Version] Reading NEW STYLE file";
 
         //New style file
         fclose(file);
@@ -1054,7 +1060,7 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
     }
     else
     {
-        qDebug() << "[Version] Reading OLD STYLE file";
+        //qDebug() << "[Version] Reading OLD STYLE file";
 
         if (ReplaceIndex >= 0)
         {

@@ -10,6 +10,7 @@
 #include <QSplashScreen>
 #include <QTimer>
 #include <QDesktopWidget>
+#include <QScreen>
 
 #include "darkstyletheme.h"
 #include "mainwindow.h"
@@ -109,11 +110,6 @@ int main(int argc, char *argv[])
 
     QApplication app( argc, argv );
 
-    // Workout any scaling factors for High DPI screens
-    int ratio = QApplication::desktop()->devicePixelRatio();
-    applicationScaleX = ratio;
-    applicationScaleY = ratio;
-
     // Install the message handler to log to file
     qInstallMessageHandler(logMessageOutput);
 
@@ -147,6 +143,7 @@ int main(int argc, char *argv[])
     MainWindow mainWindow;
     app.installEventFilter(&mainWindow);
     mainWindow.show();
+
     return app.exec();
 }
 #endif

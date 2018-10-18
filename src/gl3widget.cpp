@@ -40,7 +40,7 @@ GlWidget::GlWidget(QWidget *parent)
     DefaultClipAngle = MainWin->ui->ClipAngle->value() / 10;
     //setAutoBufferSwap(true);
 
-    qDebug() << "Done init widget";
+    //qDebug() << "Done init widget";
 
     QSurfaceFormat f;
     f.setMajorVersion(2);
@@ -66,8 +66,8 @@ GlWidget::~GlWidget()
  */
 void GlWidget::initializeGL()
 {
-    qDebug() << "[Where I'm I?] In initializeGL";
-    qDebug() << this->context();
+    //qDebug() << "[Where I'm I?] In initializeGL";
+    //qDebug() << this->context();
 
     glfunctions = this->context()->functions();
     glfunctions->glEnable(GL_DEPTH_TEST);
@@ -182,17 +182,16 @@ void GlWidget::initializeGL()
  */
 void GlWidget::resizeGL(int width, int height)
 {
-    qDebug() << "in rgl";
+    //qDebug() << "in rgl";
     if (height == 0)
     {
         height = 1;
     }
-
+    // Scale all x and y by the application screen ratio
     xdim = static_cast<int>(static_cast<double>(width) * applicationScaleX);
     ydim = static_cast<int>(static_cast<double>(height) * applicationScaleY);
     DoPMatrix(xdim, ydim);
     glfunctions->glViewport(0, 0, xdim, ydim);
-    //if (globalmatrix.isIdentity()) globalmatrix.scale(0.50);
     update();
 }
 
@@ -222,7 +221,7 @@ void GlWidget::DoPMatrix(int width, int height)
  */
 void GlWidget::DrawLine(QMatrix4x4 vMatrix, QVector3D lPosition, float pos, bool major, bool horizontal)
 {
-    qDebug() << "[Where I'm I?] In DrawLine";
+    //qDebug() << "[Where I'm I?] In DrawLine";
 
     //vMatrix.translate(pos,0,-1);
     if (!horizontal) vMatrix.translate(pos, 0, -1);
@@ -261,14 +260,14 @@ void GlWidget::DrawLine(QMatrix4x4 vMatrix, QVector3D lPosition, float pos, bool
  */
 void GlWidget::RenderCharacter(GLfloat x, GLfloat y, GLfloat z, int charactercode, QMatrix4x4 vMatrix, QColor Colour)
 {
-    qDebug() << "[Where I'm I?] In RenderCharacter";
+    //qDebug() << "[Where I'm I?] In RenderCharacter";
 
     vMatrix.translate(x, y, z);
     vMatrix.rotate(180.0, 1.0, 0.0, 0.0);
     //float asp=(float)this->width()/(float)this->height();
     vMatrix.scale((ClipAngle / static_cast<float>(this->height())));
 
-    qDebug() << ClipAngle;
+    //qDebug() << ClipAngle;
     //vMatrix*=globalmatrix; //DON'T scale with globalmatrix
 
     lightingShaderProgram.setUniformValue("mvpMatrix", pMatrix * vMatrix);
@@ -300,7 +299,7 @@ void GlWidget::RenderCharacter(GLfloat x, GLfloat y, GLfloat z, int charactercod
  */
 void GlWidget::RenderNumber(GLfloat x, GLfloat y, GLfloat z, float number, int decimalplaces, bool mm, bool major, QMatrix4x4 vMatrix )
 {
-    qDebug() << "[Where I'm I?] In RenderNumber";
+    //qDebug() << "[Where I'm I?] In RenderNumber";
 
     QColor numcolour;
     if (major)
@@ -356,7 +355,7 @@ void GlWidget::RenderNumber(GLfloat x, GLfloat y, GLfloat z, float number, int d
  */
 void GlWidget::DrawScaleGrid(QMatrix4x4 vMatrix, QVector3D lPosition)
 {
-    qDebug() << "[Where I'm I?] In DrawScaleGrid";
+    //qDebug() << "[Where I'm I?] In DrawScaleGrid";
 
     lightingShaderProgram.bind();
     lightingShaderProgram.setUniformValue("lightPosition", lPosition);
@@ -433,7 +432,7 @@ void GlWidget::DrawScaleGrid(QMatrix4x4 vMatrix, QVector3D lPosition)
  */
 void GlWidget::DrawObjects(bool rightview, bool halfsize)
 {
-    qDebug() << "[Where I'm I?] In DrawObjects";
+    //qDebug() << "[Where I'm I?] In DrawObjects";
 
     QMatrix4x4 vMatrix; //view matrix
     vMatrix.setToIdentity();
@@ -532,7 +531,7 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
                                 SVObjects[i]->boundingBoxBuffer.release();
                                 glfunctions->glDrawArrays(GL_LINES, 0, 24);
                             }
-                            //else qDebug()<<"Not created";
+                            //else //qDebug()<<"Not created";
                         }
                         else
                         {
@@ -613,7 +612,7 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
  */
 void GlWidget::paintGL()
 {
-    qDebug() << "[Where I'm I?] In paintGL";
+    //qDebug() << "[Where I'm I?] In paintGL";
 
     glfunctions->glClearColor(static_cast<float>(back_red) / static_cast<float>(255), static_cast<float>(back_green) / static_cast<float>(255), static_cast<float>(back_blue) / static_cast<float>(255),
                               0.5f);
@@ -693,7 +692,7 @@ void GlWidget::SetStereoSeparation(float s)
  */
 void GlWidget::SetClip(int Start, int Depth, int Angle)
 {
-    qDebug() << "In SetClip ";
+    //qDebug() << "In SetClip ";
     ClipStart = static_cast<float>(Start + 1) / 50;
     ClipDepth = static_cast<float>(ClipStart) + static_cast<float>(0.005) + (static_cast<float>(Depth)) / static_cast<float>(100);
     ClipAngle = static_cast<float>(Angle) / 10;
@@ -1081,7 +1080,7 @@ void GlWidget::Translate(float x, float y, float z)
  */
 void GlWidget::Resize(float value)
 {
-    qDebug() << "In resize ";
+    //qDebug() << "In resize ";
     /*
         if (MainWin->ui->actionReposition_Scale_Ball->isChecked() || (vaxml_mode && MainWin->ui->actionShow_Ball_2->isChecked()))
        {
@@ -1171,7 +1170,7 @@ void GlWidget::ResetSize()
  */
 void GlWidget::ResetToDefault()
 {
-    qDebug() << "In rtd ";
+    //qDebug() << "In rtd ";
     for (int j = 0; j < SVObjects.count(); j++)
     {
         if (SVObjects[j]->gotdefaultmatrix)
@@ -1193,7 +1192,7 @@ void GlWidget::ResetToDefault()
  */
 void GlWidget::NewDefault()
 {
-    qDebug() << "In ND ";
+    //qDebug() << "In ND ";
     if (SVObjects.count() > 0) //if need to record default and not some spurious early call with no data
     {
         for (int j = 0; j < SVObjects.count(); j++)

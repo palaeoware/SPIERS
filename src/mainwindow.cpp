@@ -21,6 +21,8 @@
 #include <QDesktopServices>
 #include <QGLFormat>
 #include <QtWidgets/QShortcut>
+#include <QDesktopWidget>
+#include <QScreen>
 
 #include "mainwindow.h"
 #include "spv.h"
@@ -44,15 +46,15 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
-    qDebug() << "[Where I'm I?] In MainWindow";
+    //qDebug() << "[Where I'm I?] In MainWindow";
+
+    // Get available screen info and store
+    availableScreens = QApplication::screens();
 
     specificprogress = 0;
     ui->setupUi(this);
     MainWin = this; //set global pointer to this window
     showMaximized();
-
-    // Detect if the screen is a High DIP monitor
-
 
     FilterKeys = true; //set to true to turn off interception of keys needed for type-in boxes
 
@@ -97,7 +99,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     QObject::connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close())); //quit
 
-    qDebug() << "[Where I'm I?] In MainWindow - Starting Timers";
+    //qDebug() << "[Where I'm I?] In MainWindow - Starting Timers";
     StartTimer = new QTimer(this);
     StartTimer->setSingleShot(true);
     StartTimer->setInterval(2000);// 2 sec after lauch to give NetModule and Splash time to do their thing
@@ -192,6 +194,7 @@ MainWindow::MainWindow(QWidget *parent)
     ContainsNonPresurfaced = false;
 
     AnimOutputDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+    mainWindowReady = true;
 }
 
 /**
@@ -219,7 +222,7 @@ MainWindow::~MainWindow()
  */
 void MainWindow::UpdateGL()
 {
-    qDebug() << "[Where I'm I?] In UpdateGL";
+    //qDebug() << "[Where I'm I?] In UpdateGL";
 
     gl3widget->update();
 }
@@ -231,7 +234,7 @@ void MainWindow::UpdateGL()
  */
 void MainWindow::StartTimer_fired()
 {
-    qDebug() << "[Where I'm I?] In StartTimer_fired | fname = " << fname;
+    //qDebug() << "[Where I'm I?] In StartTimer_fired | fname = " << fname;
 
     //Some General initialisation
     NextActualDlist = 1;
@@ -241,7 +244,7 @@ void MainWindow::StartTimer_fired()
 
     if (fname == "") //no filename provided
     {
-        qDebug() << "[Where I'm I?] In StartTimer_fired - no fname provided... opening file dialog";
+        //qDebug() << "[Where I'm I?] In StartTimer_fired - no fname provided... opening file dialog";
 agin:
         FilterKeys = false;
 
@@ -260,11 +263,11 @@ agin:
         if (fname.isNull()) QCoreApplication::quit(); //if nothing there, cancel
     }
 
-    qDebug() << "[Where I'm I?] In StartTimer_fired - fname should now be set fname = " << fname;
+    //qDebug() << "[Where I'm I?] In StartTimer_fired - fname should now be set fname = " << fname;
 
     if (fname.right(3) == "xml") //catches xml or vaxml
     {
-        qDebug() << "[Where I'm I?] In StartTimer_fired - file is XML or VAXML";
+        //qDebug() << "[Where I'm I?] In StartTimer_fired - file is XML or VAXML";
 
         VAXML v;
         if (v.readVAXML(fname))
@@ -275,17 +278,17 @@ agin:
             RefreshObjects();
             StripDownForVoxml(); //reduce interface to view-only level
 
-            qDebug() << "[Where I'm I?] In StartTimer_fired - about to call RefreshInfo()";
+            //qDebug() << "[Where I'm I?] In StartTimer_fired - about to call RefreshInfo()";
             RefreshInfo();
 
-            qDebug() << "[Where I'm I?] In StartTimer_fired - about to call UpdateGL()";
+            //qDebug() << "[Where I'm I?] In StartTimer_fired - about to call UpdateGL()";
             UpdateGL();
         }
         else QCoreApplication::quit();
     }
     else if (fname.right(4) == "spvf") //finalised files
     {
-        qDebug() << "[Where I'm I?] In StartTimer_fired - file is SPVF";
+        //qDebug() << "[Where I'm I?] In StartTimer_fired - file is SPVF";
 
         VAXML v;
         if (v.readSPVF(fname))
@@ -296,27 +299,27 @@ agin:
             RefreshObjects();
             StripDownForVoxml(); //reduce interface to view-only level
 
-            qDebug() << "[Where I'm I?] In StartTimer_fired - about to call RefreshInfo()";
+            //qDebug() << "[Where I'm I?] In StartTimer_fired - about to call RefreshInfo()";
             RefreshInfo();
 
-            qDebug() << "[Where I'm I?] In StartTimer_fired - about to call UpdateGL()";
+            //qDebug() << "[Where I'm I?] In StartTimer_fired - about to call UpdateGL()";
             UpdateGL();
         }
         else QCoreApplication::quit();
     }
     else
     {
-        qDebug() << "[Where I'm I?] In StartTimer_fired - file is SPV OR SP2";
+        //qDebug() << "[Where I'm I?] In StartTimer_fired - file is SPV OR SP2";
 
         QString shortfname = QString(PRODUCTNAME) + " v" + QString(UPDATEVERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
         this->setWindowTitle(shortfname);
         SPVreader reader;
         reader.ProcessFile(fname);
 
-        qDebug() << "[Where I'm I?] In StartTimer_fired - about to call RefreshInfo()";
+        //qDebug() << "[Where I'm I?] In StartTimer_fired - about to call RefreshInfo()";
         RefreshInfo();
 
-        qDebug() << "[Where I'm I?] In StartTimer_fired - about to call UpdateGL()";
+        //qDebug() << "[Where I'm I?] In StartTimer_fired - about to call UpdateGL()";
         UpdateGL();
     }
 }
@@ -1907,7 +1910,7 @@ void MainWindow::EnableRenderCommands()
  */
 void MainWindow::DisableRenderCommands()
 {
-    qDebug() << "[Where I'm I?] In DisableRenderCommands";
+    //qDebug() << "[Where I'm I?] In DisableRenderCommands";
 
     ui->actionAuto_Resurface->setEnabled(false);
     ui->actionResurface_Now->setEnabled(false);
@@ -2306,7 +2309,7 @@ void MainWindow::on_actionSTL_triggered()
     for (int i = 0; i < SVObjects.count(); i++)
         if (!(SVObjects[i]->IsGroup)) objcount++;
 
-//    qDebug()<<fname;
+//    //qDebug()<<fname;
     //Now write the vaxml file - use current file name - do first to avoid finding problems after long STL export!
     VAXML v;
     if (v.writeVAXML(fname, false) == false)
@@ -2340,7 +2343,7 @@ void MainWindow::on_actionSTL_triggered()
             QFileInfo fi(fname);
 
             fname2 = fi.dir().absolutePath() + "/" + fi.baseName() + "_stl/" + fname2;
-            // qDebug()<<"Outputting"<<fname2<<fi.dir().absolutePath() + "/" + fi.baseName() + "_stl";
+            // //qDebug()<<"Outputting"<<fname2<<fi.dir().absolutePath() + "/" + fi.baseName() + "_stl";
             count += static_cast<long>(SVObjects[i]->WriteSTLfaces(fi.dir().absolutePath() + "/" + fi.baseName() + "_stl", fname2));
         }
 
@@ -3731,7 +3734,7 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
         //Now the object keys
         if ( kevent->modifiers() == Qt::NoModifier)
         {
-            qDebug() << "Key" << kevent->key();
+            //qDebug() << "Key" << kevent->key();
             if (kevent->key() >= Qt::Key_0 && kevent->key() <= Qt::Key_9) ActionKey(QChar(kevent->text().at(0)));
             if (kevent->key() >= Qt::Key_A && kevent->key() <= Qt::Key_Z) ActionKey(QChar(kevent->text().toUpper().at(0)));
             return true; //DO pass it through
@@ -3786,4 +3789,66 @@ void MainWindow::on_actionBugIssueFeatureRequest_triggered()
 void MainWindow::on_actionCode_on_GitHub_triggered()
 {
     QDesktopServices::openUrl(QUrl(QString(GITURL) + QString(GITREPOSITORY)));
+}
+
+/**
+ * @brief MainWindow::resizeEvent
+ * @param event
+ */
+void MainWindow::resizeEvent(QResizeEvent *event)
+{
+    Q_UNUSED(event)
+    updateScreenRatio();
+}
+
+/**
+ * @brief MainWindow::moveEvent
+ * @param event
+ */
+void MainWindow::moveEvent(QMoveEvent *event)
+{
+    Q_UNUSED(event)
+    updateScreenRatio();
+}
+
+/**
+ * @brief MainWindow::changeEvent
+ * @param event
+ */
+void MainWindow::changeEvent(QEvent *event)
+{
+    if (event->type() == QEvent::WindowStateChange)
+    {
+        QWindowStateChangeEvent *windowStateEvent = static_cast<QWindowStateChangeEvent *>(event);
+
+        if ( windowStateEvent->oldState() & Qt::WindowMinimized )
+        {
+            updateScreenRatio();
+        }
+        else if ( windowStateEvent->oldState() == Qt::WindowNoState && this->windowState() == Qt::WindowMaximized )
+        {
+            updateScreenRatio();
+        }
+    }
+}
+
+/**
+ * @brief MainWindow::updateScreenRatio
+ */
+void MainWindow::updateScreenRatio()
+{
+    //qDebug() << "[SCREEN UPDATE] Main Window has been resized.";
+
+    currentScreen = availableScreens.at(QApplication::desktop()->screenNumber(this));
+
+    double ratio = currentScreen->devicePixelRatio();
+    applicationScaleX = ratio;
+    applicationScaleY = ratio;
+
+    if (mainWindowReady)
+    {
+        gl3widget->adjustSize();
+    }
+
+    //qDebug() << "[SCREEN UPDATE] Current Screen = " << currentScreen << "Current Ratio = " << ratio;
 }
