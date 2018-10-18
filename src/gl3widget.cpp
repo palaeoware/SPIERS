@@ -103,16 +103,20 @@ void GlWidget::initializeGL()
         QVector<QVector3D> fontVertices;
         for (int i = 0; i < rowmans_size[charnumber] / 4; i++)
         {
-            fontVertices << QVector3D((static_cast<float>(rowmans[charnumber][i * 4])) / static_cast<float>(FONT_SCALE_FACTOR),
-                                      (static_cast<float>(rowmans[charnumber][i * 4 + 1])) / static_cast<float>(FONT_SCALE_FACTOR), 0.0)
-                         << QVector3D((static_cast<float>(rowmans[charnumber][i * 4 + 2])) / static_cast<float>(FONT_SCALE_FACTOR), (static_cast<float>(rowmans[charnumber][i * 4 + 3])) / static_cast<float>(FONT_SCALE_FACTOR),
-                                      0.0);
+            fontVertices << QVector3D(
+                             (static_cast<float>(rowmans[charnumber][i * 4])) / static_cast<float>(FONT_SCALE_FACTOR),
+                             (static_cast<float>(rowmans[charnumber][i * 4 + 1])) / static_cast<float>(FONT_SCALE_FACTOR),
+                             0.0)
+                         << QVector3D(
+                             (static_cast<float>(rowmans[charnumber][i * 4 + 2])) / static_cast<float>(FONT_SCALE_FACTOR),
+                             (static_cast<float>(rowmans[charnumber][i * 4 + 3])) / static_cast<float>(FONT_SCALE_FACTOR),
+                             0.0);
         }
 
         VBOcharacters[charnumber - 16].create();
         VBOcharacters[charnumber - 16].bind();
-        VBOcharacters[charnumber - 16].allocate(6 * sizeof(GLfloat) * (rowmans_size[charnumber] / 4));
-        VBOcharacters[charnumber - 16].write(0, fontVertices.constData(), 6 * sizeof(GLfloat) * (rowmans_size[charnumber] / 4));
+        VBOcharacters[charnumber - 16].allocate(6 * static_cast<int>(sizeof(GLfloat)) * (rowmans_size[charnumber] / 4));
+        VBOcharacters[charnumber - 16].write(0, fontVertices.constData(), 6 * static_cast<int>(sizeof(GLfloat)) * (rowmans_size[charnumber] / 4));
         VBOcharacters[charnumber - 16].release();
         CharacterWidths[charnumber - 16] = rowmans_width[charnumber];
         CharacterLineCounts[charnumber - 16] = rowmans_size[charnumber] / 2;
@@ -223,6 +227,8 @@ void GlWidget::DrawLine(QMatrix4x4 vMatrix, QVector3D lPosition, float pos, bool
 {
     //qDebug() << "[Where I'm I?] In DrawLine";
 
+    Q_UNUSED(lPosition)
+
     //vMatrix.translate(pos,0,-1);
     if (!horizontal) vMatrix.translate(pos, 0, -1);
     else vMatrix.translate(0, pos, -1);
@@ -264,11 +270,9 @@ void GlWidget::RenderCharacter(GLfloat x, GLfloat y, GLfloat z, int charactercod
 
     vMatrix.translate(x, y, z);
     vMatrix.rotate(180.0, 1.0, 0.0, 0.0);
-    //float asp=(float)this->width()/(float)this->height();
     vMatrix.scale((ClipAngle / static_cast<float>(this->height())));
 
     //qDebug() << ClipAngle;
-    //vMatrix*=globalmatrix; //DON'T scale with globalmatrix
 
     lightingShaderProgram.setUniformValue("mvpMatrix", pMatrix * vMatrix);
     lightingShaderProgram.setUniformValue("mvMatrix", vMatrix);
@@ -282,7 +286,7 @@ void GlWidget::RenderCharacter(GLfloat x, GLfloat y, GLfloat z, int charactercod
     lightingShaderProgram.enableAttributeArray("vertex");
     VBOcharacters[charactercode].release();
 
-    glfunctions->glDrawArrays(GL_LINES, 0, CharacterLineCounts[charactercode]);
+    glfunctions->glDrawArrays(GL_LINES, 0, static_cast<int>(CharacterLineCounts[charactercode]));
 }
 
 /**
@@ -343,7 +347,7 @@ void GlWidget::RenderNumber(GLfloat x, GLfloat y, GLfloat z, float number, int d
     for (int i = 0; i < characters.length(); i++)
     {
         RenderCharacter(x + off, y, z, characters[i], vMatrix, numcolour);
-        off += CharacterWidths[characters[i]] * (((0.9 / FONT_SCALE_FACTOR) * ClipAngle / static_cast<float>(this->height())));
+        off += static_cast<GLfloat>(CharacterWidths[characters[i]] * ((static_cast<float>(0.9 / FONT_SCALE_FACTOR) * ClipAngle / static_cast<float>(this->height()))));
     }
 
 }
@@ -359,42 +363,40 @@ void GlWidget::DrawScaleGrid(QMatrix4x4 vMatrix, QVector3D lPosition)
 
     lightingShaderProgram.bind();
     lightingShaderProgram.setUniformValue("lightPosition", lPosition);
-    lightingShaderProgram.setUniformValue("ambientReflection", (GLfloat)1.0);
-    lightingShaderProgram.setUniformValue("diffuseReflection", (GLfloat)1.0);
-    lightingShaderProgram.setUniformValue("specularReflection", (GLfloat) 1.0);
-    lightingShaderProgram.setUniformValue("shininess", (GLfloat) 1000.0);
+    lightingShaderProgram.setUniformValue("ambientReflection", static_cast<GLfloat>(1.0));
+    lightingShaderProgram.setUniformValue("diffuseReflection", static_cast<GLfloat>(1.0));
+    lightingShaderProgram.setUniformValue("specularReflection", static_cast<GLfloat>(1.0));
+    lightingShaderProgram.setUniformValue("shininess", static_cast<GLfloat>(1000.0));
 
     //draw occlusion thing
-
     lightingShaderProgram.setUniformValue("mvpMatrix", pMatrix * vMatrix);
     lightingShaderProgram.setUniformValue("mvMatrix", vMatrix);
     lightingShaderProgram.setUniformValue("normalMatrix", vMatrix.normalMatrix());
     lightingShaderProgram.setUniformValue("ambientColor", QColor(back_red, back_green, back_blue));
     lightingShaderProgram.setUniformValue("diffuseColor", QColor(0, 0.0, 0.0));
     lightingShaderProgram.setUniformValue("specularColor", QColor(0, 0.0, 0.0));
-    lightingShaderProgram.setUniformValue("alpha", (GLfloat)0.6);
+    lightingShaderProgram.setUniformValue("alpha", static_cast<GLfloat>(0.6));
 
     occBuffer.bind();
     lightingShaderProgram.setAttributeBuffer("vertex", GL_FLOAT, 0, 3, 0);
     lightingShaderProgram.enableAttributeArray("vertex");
-    lightingShaderProgram.setAttributeBuffer("normal", GL_FLOAT, 3 * numOccVertices * sizeof(GLfloat), 3, 0);
+    lightingShaderProgram.setAttributeBuffer("normal", GL_FLOAT, 3 * numOccVertices * static_cast<int>(sizeof(GLfloat)), 3, 0);
     lightingShaderProgram.enableAttributeArray("normal");
     occBuffer.release();
 
     glfunctions->glDrawArrays(GL_TRIANGLES, 0, numOccVertices);
 
-    lightingShaderProgram.setUniformValue("alpha", (GLfloat)1.0);
+    lightingShaderProgram.setUniformValue("alpha", static_cast<GLfloat>(1.0));
     glfunctions->glClear(GL_DEPTH_BUFFER_BIT);
 
-
-    float s = 1.0 / mm_per_unit;
+    float s = static_cast<float>(1.0) / static_cast<float>(mm_per_unit);
 
     //work out field of view (max of height and width)
-    float divider = (this->height() * globalrescale) / 30.0;
+    float divider = (this->height() * globalrescale) / static_cast<float>(30.0);
 
     //work out x field of view in mm
     double fov;
-    fov = ClipAngle / (divider * s);
+    fov = static_cast<double>(ClipAngle / (divider * s));
     //OK, work out correct scale in mm
     //Look at fov and find coarse level to use
     //fov 5mm - want coarse 1, fine 0.1
@@ -402,27 +404,49 @@ void GlWidget::DrawScaleGrid(QMatrix4x4 vMatrix, QVector3D lPosition)
     //fov .5mm - want coarse .1, fine .01 etc
     //work out coarse below
 
-    float coarse = pow((double)10.0, ((double)((int)(log10(fov) + .7)))); //double cast is to round it
+    float coarse = static_cast<float>(pow(static_cast<double>(10.0), (static_cast<double>(static_cast<int>(log10(fov) + .7))))); //double cast is to round it
     float fine = coarse / 10;
 
     //qDebug()<<"Coarse"<<coarse<<"Fine"<<fine;
 
-    for (int i = -10; i < 10; i++) DrawLine(vMatrix, lPosition, ((float)i)*s * coarse * globalrescale, true, false);
-    for (int i = -10; i < 10; i++) DrawLine(vMatrix, lPosition, ((float)i)*s * coarse * globalrescale, true, true);
-    for (int i = -100; i < 100; i++) if (i % 10 != 0) DrawLine(vMatrix, lPosition, ((float)i)*s * fine * globalrescale, false, false);
-    for (int i = -100; i < 100; i++) if (i % 10 != 0) DrawLine(vMatrix, lPosition, ((float)i)*s * fine * globalrescale, false, true);
+    for (int i = -10; i < 10; i++) DrawLine(vMatrix, lPosition, (static_cast<float>(i))*s * coarse * globalrescale, true, false);
+    for (int i = -10; i < 10; i++) DrawLine(vMatrix, lPosition, (static_cast<float>(i))*s * coarse * globalrescale, true, true);
+    for (int i = -100; i < 100; i++) if (i % 10 != 0) DrawLine(vMatrix, lPosition, (static_cast<float>(i))*s * fine * globalrescale, false, false);
+    for (int i = -100; i < 100; i++) if (i % 10 != 0) DrawLine(vMatrix, lPosition, (static_cast<float>(i))*s * fine * globalrescale, false, true);
 
     //and the values
-    int dp = 0 - (int)(log10(fov) + .7); //decimal places
+    int dp = 0 - static_cast<int>(log10(fov) + .7); //decimal places
     if (dp < 0) dp = 0;
     bool mm = true;
-    for (int i = -10; i < 10;
-            i++) RenderNumber((((10.0 / FONT_SCALE_FACTOR)*ClipAngle / (float)this->height())), ((float)i)*s * coarse - (((10.0 / FONT_SCALE_FACTOR)*ClipAngle / (float)this->height())), -.99, ((float)i * coarse),
-                                  dp, mm, true, vMatrix);
     for (int i = -10; i < 10; i++)
+    {
+        RenderNumber(
+            static_cast<GLfloat>((static_cast<float>(10.0 / FONT_SCALE_FACTOR)*static_cast<float>(ClipAngle) / static_cast<float>(this->height()))),
+            static_cast<GLfloat>(static_cast<float>(i))*s * coarse - ((static_cast<float>(10.0 / FONT_SCALE_FACTOR)*static_cast<float>(ClipAngle) / static_cast<float>(this->height()))),
+            static_cast<GLfloat>(-.99),
+            (static_cast<float>(i) * coarse),
+            dp,
+            mm,
+            true,
+            vMatrix
+        );
+    }
+    for (int i = -10; i < 10; i++)
+    {
         if (i != 0)
-            RenderNumber((float)i * s * coarse + (((10.0 / FONT_SCALE_FACTOR)*ClipAngle / (float)this->height())), 0 - (((10.0 / FONT_SCALE_FACTOR)*ClipAngle / (float)this->height())), -.99, ((float)i * coarse),
-                         dp, mm, true, vMatrix);
+        {
+            RenderNumber(
+                static_cast<GLfloat>(static_cast<float>(i) * s * coarse + ((static_cast<float>(10.0 / FONT_SCALE_FACTOR)*static_cast<float>(ClipAngle) / static_cast<float>(this->height())))),
+                static_cast<GLfloat>(0 - (((10.0 / FONT_SCALE_FACTOR)*static_cast<double>(ClipAngle) / static_cast<double>(this->height())))),
+                static_cast<GLfloat>(-.99),
+                (static_cast<float>(i) * coarse),
+                dp,
+                mm,
+                true,
+                vMatrix
+            );
+        }
+    }
 }
 
 /**
@@ -434,9 +458,10 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
 {
     //qDebug() << "[Where I'm I?] In DrawObjects";
 
+    Q_UNUSED(halfsize)
+
     QMatrix4x4 vMatrix; //view matrix
     vMatrix.setToIdentity();
-
 
     QVector3D cameraPosition = QVector3D(0, 0, campos);
     QVector3D rightcameraPosition = QVector3D(static_cast<float>(StereoSeparation) * static_cast<float>(STEREO_SEPARATION_MODIFIER) / static_cast<float>(campos), 0, campos);
@@ -614,8 +639,12 @@ void GlWidget::paintGL()
 {
     //qDebug() << "[Where I'm I?] In paintGL";
 
-    glfunctions->glClearColor(static_cast<float>(back_red) / static_cast<float>(255), static_cast<float>(back_green) / static_cast<float>(255), static_cast<float>(back_blue) / static_cast<float>(255),
-                              0.5f);
+    glfunctions->glClearColor(
+        static_cast<float>(back_red) / static_cast<float>(255),
+        static_cast<float>(back_green) / static_cast<float>(255),
+        static_cast<float>(back_blue) / static_cast<float>(255),
+        0.5f
+    );
     glfunctions->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     if (MainWin->ui->actionSplit_Stereo->isChecked())
@@ -705,20 +734,6 @@ void GlWidget::SetClip(int Start, int Depth, int Angle)
  */
 void GlWidget::Rotate(double angle)
 {
-    /*   if (MainWin->ui->actionReposition_Scale_Ball->isChecked())
-       {
-          QMatrix4x4 rotmatrix;
-          rotmatrix.setToIdentity();
-          rotmatrix.rotate(angle,0.0f, 0.0f, 1.0f);
-          if (!SP2_lock)
-          {
-            rotmatrix*=ScaleMatrix;
-            ScaleMatrix=rotmatrix;
-            FileDirty=true;
-          }
-          return;
-       }
-    */
     for (int i = 0; i < SVObjects.count(); i++)
     {
         bool f = false;
@@ -740,7 +755,6 @@ void GlWidget::Rotate(double angle)
             }
         }
     }
-
 }
 
 /**
@@ -749,7 +763,7 @@ void GlWidget::Rotate(double angle)
  */
 void GlWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    //qDebug() << "In mousemove ";
+    //qDebug() << "In Mouse Move Event";
     bool donesomething = false;
     bool rotmode = false;
     if (
@@ -781,23 +795,6 @@ void GlWidget::mouseMoveEvent(QMouseEvent *event)
         float yangle = (static_cast<float>(event->x() - LastMouseXpos)) / SENSITIVITY;
         float xangle = (static_cast<float>(event->y() - LastMouseYpos)) / SENSITIVITY;
 
-        //add 'em to matrix
-        /*         if (MainWin->ui->actionReposition_Scale_Ball->isChecked())
-                 {
-                     QMatrix4x4 rotmatrix;
-                     rotmatrix.setToIdentity();
-                     rotmatrix.rotate(xangle,1.0f, 0.0f, 0.0f);
-                     rotmatrix.rotate(yangle,0.0f, 1.0f, 0.0f);
-                     if (!SP2_lock)
-                     {
-                       rotmatrix *= ScaleMatrix;
-                       ScaleMatrix= rotmatrix;
-                        donesomething=true;
-                       FileDirty=true;
-                     }
-                 }
-                 else
-        */
         for (int i = 0; i < SVObjects.count(); i++)
         {
             bool f = false;
@@ -834,21 +831,6 @@ void GlWidget::mouseMoveEvent(QMouseEvent *event)
         float ObjXpos = (static_cast<float>(event->x() - LastMouseXpos)) / (SENSITIVITY * 100);
         float ObjYpos = 0 - (static_cast<float>(event->y() - LastMouseYpos)) / (SENSITIVITY * 100);
 
-        /*      if (MainWin->ui->actionReposition_Scale_Ball->isChecked())
-              {
-                     QMatrix4x4 rotmatrix;
-                     rotmatrix.setToIdentity();
-                     rotmatrix.translate(ObjXpos,ObjYpos,0.0f);
-                     if (!SP2_lock)
-                     {
-                       rotmatrix*=ScaleMatrix;
-                       ScaleMatrix=rotmatrix;
-                        donesomething=true;
-                       FileDirty=true;
-                     }
-             }
-              else
-        */
         for (int i = 0; i < SVObjects.count(); i++)
         {
             bool f = false;
@@ -900,20 +882,6 @@ void GlWidget::MoveAway(double dist)
  */
 void GlWidget::ZRotate(float angle)
 {
-    /*    if (MainWin->ui->actionReposition_Scale_Ball->isChecked())
-       {
-          QMatrix4x4 rotmatrix;
-          rotmatrix.setToIdentity();
-          rotmatrix.rotate(angle,0.0f, 0.0f, 1.0f);
-          if (!SP2_lock)
-          {
-            rotmatrix*=ScaleMatrix;
-            ScaleMatrix=rotmatrix;
-            FileDirty=true;
-          }
-          return;
-       }
-    */
     for (int i = 0; i < SVObjects.count(); i++)
     {
         bool f = false;
@@ -943,20 +911,6 @@ void GlWidget::ZRotate(float angle)
  */
 void GlWidget::YRotate(float angle)
 {
-    /*    if (MainWin->ui->actionReposition_Scale_Ball->isChecked())
-       {
-          QMatrix4x4 rotmatrix;
-          rotmatrix.setToIdentity();
-          rotmatrix.rotate(angle,0.0f, 1.0f, 0.0f);
-          if (!SP2_lock)
-          {
-            rotmatrix*=ScaleMatrix;
-            ScaleMatrix=rotmatrix;
-            FileDirty=true;
-          }
-          return;
-       }
-    */
     for (int i = 0; i < SVObjects.count(); i++)
     {
         bool f = false;
@@ -986,20 +940,6 @@ void GlWidget::YRotate(float angle)
  */
 void GlWidget::XRotate(float angle)
 {
-    /*   if (MainWin->ui->actionReposition_Scale_Ball->isChecked())
-      {
-         QMatrix4x4 rotmatrix;
-         rotmatrix.setToIdentity();
-         rotmatrix.rotate(angle,1.0f, 0.0f, 0.0f);
-         if (!SP2_lock)
-         {
-           rotmatrix*=ScaleMatrix;
-           ScaleMatrix=rotmatrix;
-           FileDirty=true;
-         }
-         return;
-      }
-    */
     for (int i = 0; i < SVObjects.count(); i++)
     {
         bool f = false;
@@ -1031,20 +971,6 @@ void GlWidget::XRotate(float angle)
  */
 void GlWidget::Translate(float x, float y, float z)
 {
-    /*    if (MainWin->ui->actionReposition_Scale_Ball->isChecked())
-       {
-          QMatrix4x4 rotmatrix;
-          rotmatrix.setToIdentity();
-          rotmatrix.translate(x/10.0,y/10.0,z/10.0);
-          if (!SP2_lock)
-          {
-            rotmatrix*=ScaleMatrix;
-            ScaleMatrix=rotmatrix;
-            FileDirty=true;
-          }
-          return;
-       }
-    */
     for (int i = 0; i < SVObjects.count(); i++)
     {
         bool f = false;
@@ -1071,7 +997,6 @@ void GlWidget::Translate(float x, float y, float z)
             }
         }
     }
-
 }
 
 /**
@@ -1081,21 +1006,6 @@ void GlWidget::Translate(float x, float y, float z)
 void GlWidget::Resize(float value)
 {
     //qDebug() << "In resize ";
-    /*
-        if (MainWin->ui->actionReposition_Scale_Ball->isChecked() || (vaxml_mode && MainWin->ui->actionShow_Ball_2->isChecked()))
-       {
-          QMatrix4x4 rotmatrix;
-          rotmatrix.setToIdentity();
-          rotmatrix.scale(value,value,value);
-          if (!SP2_lock)
-          {
-            rotmatrix*=ScaleMatrix;
-            ScaleMatrix=rotmatrix;
-            FileDirty=true;
-          }
-          return;
-       }
-    */
     for (int i = 0; i < SVObjects.count(); i++)
     {
         bool f = false;
@@ -1124,21 +1034,6 @@ void GlWidget::Resize(float value)
  */
 void GlWidget::ResetSize()
 {
-    /*    if (MainWin->ui->actionReposition_Scale_Ball->isChecked() || (vaxml_mode && MainWin->ui->actionShow_Ball_2->isChecked()))
-        {
-          QMatrix4x4 rotmatrix;
-          rotmatrix.setToIdentity();
-          rotmatrix.scale(1.0/(ScaleBallScale/globalrescale),1.0/(ScaleBallScale/globalrescale),1.0/(ScaleBallScale/globalrescale));
-          if (!SP2_lock)
-          {
-            rotmatrix*=ScaleMatrix;
-            ScaleMatrix=rotmatrix;
-            FileDirty=true;
-            ScaleBallScale=1.0/globalrescale;
-          }
-          return;
-        }
-    */
     for (int i = 0; i < SVObjects.count(); i++)
     {
         bool f = false;
@@ -1170,7 +1065,7 @@ void GlWidget::ResetSize()
  */
 void GlWidget::ResetToDefault()
 {
-    //qDebug() << "In rtd ";
+    //qDebug() << "In Reset to Default";
     for (int j = 0; j < SVObjects.count(); j++)
     {
         if (SVObjects[j]->gotdefaultmatrix)
@@ -1192,7 +1087,7 @@ void GlWidget::ResetToDefault()
  */
 void GlWidget::NewDefault()
 {
-    //qDebug() << "In ND ";
+    //qDebug() << "In New Default";
     if (SVObjects.count() > 0) //if need to record default and not some spurious early call with no data
     {
         for (int j = 0; j < SVObjects.count(); j++)

@@ -4,9 +4,13 @@
 #include <QOpenGLWidget>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLBuffer>
-//#include <QOpenGLFormat>
 #include <QOpenGLFunctions>
+
 #include "globals.h"
+
+extern float GlobalMatrix[16];
+extern float Default0Matrix[16];
+extern float DefaultClipAngle;
 
 class GlWidget : public QOpenGLWidget
 {

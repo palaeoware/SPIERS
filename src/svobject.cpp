@@ -203,7 +203,7 @@ static void ErrorHandler(vtkObject *, unsigned long, void *, void *progress)
  */
 void SVObject::DeleteVTKObjects()
 {
-    qDebug() << "[Where I'm I?] In DeleteVTKObjects";
+    //qDebug() << "[Where I'm I?] In DeleteVTKObjects";
 
     int cells = static_cast<int>(polydata->GetNumberOfCells());
 
@@ -229,8 +229,7 @@ void SVObject::GetFinalPolyData()
 
     if (IsGroup) return;
 
-
-    qDebug() << "[Where I'm I?] In GetFinalPolyData - this is not a group...";
+    //qDebug() << "[Where I'm I?] In GetFinalPolyData - this is not a group...";
 
     if (vaxml_mode == false)
     {
@@ -290,7 +289,7 @@ void SVObject::GetFinalPolyData()
                 qdecimator = vtkQuadricDecimation::New();
 
                 //            qDebug()<<(1.0-(double)Resample/100.0);
-                qdecimator->SetTargetReduction(1.0 - (double)Resample / 100.0);
+                qdecimator->SetTargetReduction(1.0 - static_cast<double>(Resample) / 100.0);
                 //            qdecimator->ScalarsAttributeOff();
                 //            qdecimator->VectorsAttributeOff();
                 //            qdecimator->NormalsAttributeOff();
@@ -525,7 +524,6 @@ void SVObject::MakeVBOs()
     normals.resize(3 * MAXDLISTSIZE);
 
     usesVBOs = true;
-    int dcount = 1; //old dlist count, will use for VBOs as well
 
     qDeleteAll(VertexBuffers);
     VertexBuffers.clear();
@@ -637,7 +635,6 @@ void SVObject::MakeVBOs()
     if (d[4] <  static_cast<double>(minz) || firstobject) minz = static_cast<float>(d[4]);
     if (d[5] >  static_cast<double>(maxz) || firstobject) maxz = static_cast<float>(d[5]);
 
-
     //count triangles for the record
     Triangles = static_cast<int>(polydata->GetNumberOfCells());
 
@@ -646,7 +643,6 @@ void SVObject::MakeVBOs()
 
     //Create a VBO object and append to the list
     int tcount = static_cast<int>(polydata->GetNumberOfCells());
-    int count = 0;
 
     vtkDataArray *scals = polydata->GetPointData()->GetScalars();
 
@@ -679,7 +675,11 @@ void SVObject::MakeVBOs()
                 if (colour) //if got per cell colour from a PLY
                 {
                     scals->GetTuple(tri[j], ctuple);
-                    colours[index] = QVector3D(static_cast<GLfloat>(ctuple[0] / 255.0), static_cast<GLfloat>(ctuple[1] / 255.0), static_cast<GLfloat>(ctuple[2] / 255.0));
+                    colours[index] = QVector3D(
+                                         static_cast<GLfloat>(ctuple[0] / 255.0),
+                                         static_cast<GLfloat>(ctuple[1] / 255.0),
+                                         static_cast<GLfloat>(ctuple[2] / 255.0)
+                                     );
                 }
 
                 normals[index] = QVector3D(
@@ -703,9 +703,9 @@ void SVObject::MakeVBOs()
         vbuffer->create();
         vbuffer->setUsagePattern(QOpenGLBuffer::StaticDraw );
         vbuffer->bind();
-        vbuffer->allocate(18 * sizethisvao * sizeof(GLfloat));
-        vbuffer->write(0, vertices.constData(), sizethisvao * 9 * sizeof(GLfloat));
-        vbuffer->write(sizethisvao * 9 * sizeof(GLfloat), normals.constData(), sizethisvao * 9 * sizeof(GLfloat));
+        vbuffer->allocate(18 * sizethisvao * static_cast<int>(sizeof(GLfloat)));
+        vbuffer->write(0, vertices.constData(), sizethisvao * 9 * static_cast<int>(sizeof(GLfloat)));
+        vbuffer->write(sizethisvao * 9 * static_cast<int>(sizeof(GLfloat)), normals.constData(), sizethisvao * 9 * static_cast<int>(sizeof(GLfloat)));
         VertexBuffers.append(vbuffer);
 
         if (colour)
@@ -714,8 +714,8 @@ void SVObject::MakeVBOs()
             cbuffer->create();
             cbuffer->setUsagePattern(QOpenGLBuffer::StaticDraw );
             cbuffer->bind();
-            cbuffer->allocate(9 * sizethisvao * sizeof(GLfloat));
-            cbuffer->write(0, colours.constData(), sizethisvao * 9 * sizeof(GLfloat));
+            cbuffer->allocate(9 * sizethisvao * static_cast<int>(sizeof(GLfloat)));
+            cbuffer->write(0, colours.constData(), sizethisvao * 9 * static_cast<int>(sizeof(GLfloat)));
             ColourBuffers.append(cbuffer);
         }
 
@@ -1159,9 +1159,9 @@ int SVObject::WriteSTLfaces(QDir stldir, QString fname)
             tri[j] = cell->GetPointId(static_cast<int>(j));
             polydata->GetPoint(tri[j], tuple);
 
-            float x1 = static_cast<float>(tuple[0] * M[0] + tuple[1] * M[4] + tuple[2] * M[8] + M[12]);
-            float y1 = static_cast<float>(tuple[0] * M[1] + tuple[1] * M[5] + tuple[2] * M[9] + M[13]);
-            float z1 = static_cast<float>(tuple[0] * M[2] + tuple[1] * M[6] + tuple[2] * M[10] + M[14]);
+            float x1 = static_cast<float>(tuple[0] * static_cast<double>(M[0]) + tuple[1] * static_cast<double>(M[4]) + tuple[2] * static_cast<double>(M[8]) + static_cast<double>(M[12]));
+            float y1 = static_cast<float>(tuple[0] * static_cast<double>(M[1]) + tuple[1] * static_cast<double>(M[5]) + tuple[2] * static_cast<double>(M[9]) + static_cast<double>(M[13]));
+            float z1 = static_cast<float>(tuple[0] * static_cast<double>(M[2]) + tuple[1] * static_cast<double>(M[6]) + tuple[2] * static_cast<double>(M[10]) + static_cast<double>(M[14]));
 
             stl << x1 << y1 << z1;
         }
@@ -1256,7 +1256,6 @@ void SVObject::MakePolyVerts(int slice, int VertexBase)
     float x, y, z, scale;
     float xpos, ypos, zpos;
     float k;
-    int ii;
     int zadd;
     int vertex;
     Isosurface *iso;
@@ -1266,30 +1265,30 @@ void SVObject::MakePolyVerts(int slice, int VertexBase)
     //Now into stripped down version of old MakeDlist
     zadd = 1;
     if (buggedData) zadd = 0; //a version 4 and up bugfix
-    scale = (float)(spv->iDim) / (float)SCALE;
-    xpos = (float)(spv->iDim) / ((float)(2 * scale));
-    ypos = (float)(spv->jDim) / (2 * scale);
-    zpos = (float)(spv->kDim) / (2 * scale);
-    k = (float)((spv->PixPerMM) / (float)(spv->SlicePerMM));
+    scale = static_cast<float>(spv->iDim) / static_cast<float>(SCALE);
+    xpos = static_cast<float>(spv->iDim) / (static_cast<float>(2 * scale));
+    ypos = static_cast<float>(spv->jDim) / (2 * scale);
+    zpos = static_cast<float>(spv->kDim) / (2 * scale);
+    k = static_cast<float>(spv->PixPerMM) / static_cast<float>(spv->SlicePerMM);
 
     //First - loop round vertices stretching as appropriate. THEN do triangles.
 
     //set up some variablees from SPV, as locals for speed (cut out a pointer ref)
-    float SkewLeft = spv->SkewLeft;
-    float SkewDown = spv->SkewDown;
+    float SkewLeft = static_cast<float>(spv->SkewLeft);
+    float SkewDown = static_cast<float>(spv->SkewDown);
     double *stretches = spv->stretches;
     bool MirrorFlag = spv->MirrorFlag;
     for (vertex = 0; vertex < (iso->nVertices); vertex++)
     {
-        x = ((float) iso->vertices[vertex * 3]) / 2;
-        y = ((float) iso->vertices[vertex * 3 + 1]) / 2;
+        x = static_cast<float>(iso->vertices[vertex * 3]) / 2;
+        y = static_cast<float>(iso->vertices[vertex * 3 + 1]) / 2;
         z1 = iso->vertices[vertex * 3 + 2];
         //qDebug()<<"Raw " <<x<<y<<z;
 
         if (z1 % 2 == 0)
-            z = (float)stretches[(z1 / 2) + zadd];
+            z = static_cast<float>(stretches[(z1 / 2) + zadd]);
         else
-            z = ((float)stretches[(z1 / 2) + zadd] + (float)stretches[(z1 / 2) + 1 + zadd]) / 2.0;
+            z = (static_cast<float>(stretches[(z1 / 2) + zadd]) + static_cast<float>(stretches[(z1 / 2) + 1 + zadd])) / static_cast<float>(2.0);
 
         z *= k;
         x += (z * SkewLeft);
@@ -1307,8 +1306,8 @@ void SVObject::MakePolyVerts(int slice, int VertexBase)
         z -= zpos;
         //qDebug()<<"Inserting " <<x<<y<<z;
         if (MirrorFlag)
-            verts->InsertPoint(vertex + VertexBase, x, 0 - y, z);
+            verts->InsertPoint(vertex + VertexBase, static_cast<double>(x), static_cast<double>(0 - y), static_cast<double>(z));
         else
-            verts->InsertPoint(vertex + VertexBase, x, y, z);
+            verts->InsertPoint(vertex + VertexBase, static_cast<double>(x), static_cast<double>(y), static_cast<double>(z));
     }
 }
