@@ -779,8 +779,19 @@ void GlWidget::Rotate(double angle)
 void GlWidget::mouseMoveEvent(QMouseEvent *event)
 {
     //qDebug() << "In Mouse Move Event";
+
+    // Make sure the mouse events only come from a real mouse and not something like a touchscreen
+    if ((event != nullptr) && (event->source() == Qt::MouseEventSource::MouseEventSynthesizedBySystem))
+    {
+        qDebug() << "Mouse Event from = " << event->source();
+        event->ignore();
+        return;
+    }
+
+    // I fwe have got this far we know this is a real mouse event...
     bool donesomething = false;
     bool rotmode = false;
+
     if (
         event->buttons() & Qt::RightButton
         || ((event->buttons() & Qt::LeftButton) && event->modifiers() == Qt::CTRL)
