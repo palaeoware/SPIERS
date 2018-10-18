@@ -43,9 +43,7 @@ GlWidget::GlWidget(QWidget *parent)
 
     // Capture the following touch screen gestures
     QList<Qt::GestureType> gestures;
-    gestures << Qt::PanGesture;
     gestures << Qt::PinchGesture;
-    gestures << Qt::SwipeGesture;
     grabGestures(gestures);
 
     //setAutoBufferSwap(true);
@@ -781,14 +779,14 @@ void GlWidget::mouseMoveEvent(QMouseEvent *event)
     //qDebug() << "In Mouse Move Event";
 
     // Make sure the mouse events only come from a real mouse and not something like a touchscreen
-    if ((event != nullptr) && (event->source() == Qt::MouseEventSource::MouseEventSynthesizedBySystem))
+    /*if ((event != nullptr) && (event->source() == Qt::MouseEventSource::MouseEventSynthesizedBySystem))
     {
-        qDebug() << "Mouse Event from = " << event->source();
+        //qDebug() << "Mouse Event from = " << event->source();
         event->ignore();
         return;
-    }
+    }*/
 
-    // I fwe have got this far we know this is a real mouse event...
+    // If we have got this far we know this is a real mouse event...
     bool donesomething = false;
     bool rotmode = false;
 
@@ -1165,20 +1163,8 @@ bool GlWidget::gestureEvent(QGestureEvent *event)
 {
     //qDebug() << "gestureEvent():" << event;
 
-    /*
-    if (QGesture *swipe = event->gesture(Qt::SwipeGesture))
-    {
-        swipeTriggered(static_cast<QSwipeGesture *>(swipe));
-    }
-    else if (QGesture *pan = event->gesture(Qt::PanGesture))
-    {
-        panTriggered(static_cast<QPanGesture *>(pan));
-    }
-    */
-
     if (QGesture *pinch = event->gesture(Qt::PinchGesture))
     {
-        //qDebug() << "Pinch detected...";
         pinchTriggered(static_cast<QPinchGesture *>(pinch));
     }
     return true;
