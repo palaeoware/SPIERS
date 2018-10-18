@@ -2,7 +2,7 @@ QT += network xml gui core opengl
 #Do not not to display warning messages for use of deprecated C++ functions by VTK.
 QMAKE_CXXFLAGS += -Wno-deprecated
 
-TARGET = SPIERSview2
+TARGET = SPIERSview64
 TEMPLATE = app
 RESOURCES = view.qrc
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -19,46 +19,51 @@ DISTFILES += \
 
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
-    src/SPIERSviewglobals.cpp \
+    src/darkstyletheme.cpp \
+    src/globals.cpp \
     src/spvreader.cpp \
     src/svobject.cpp \
     src/spv.cpp \
     src/compressedslice.cpp \
-    src/mc.cpp \
-    src/myconnectivityfilter.cpp \
+    src/marchingcubes.cpp \
+    src/dataconnectivityfilter.cpp \
     src/movetogroup.cpp \
-    src/voxml.cpp \
+    src/vaxml.cpp \
     src/quickhelpbox.cpp \
     src/aboutdialog.cpp \
     src/gl3widget.cpp \
-    src/darkstyletheme.cpp \
     ../SPIERScommon/netmodule.cpp \
     ../SPIERScommon/semanticversion.cpp \
-    ../SPIERScommon/prereleasecomponent.cpp
-
+    ../SPIERScommon/prereleasecomponent.cpp \
+    src/vaxmlgroup.cpp \
+    src/vaxmlobject.cpp \
+    src/isosurface.cpp \
+    src/scalarfieldlayer.cpp
 
 HEADERS += src/mainwindow.h \
-    src/SPIERSviewglobals.h \
+    src/darkstyletheme.h \
+    src/globals.h \
     src/spvreader.h \
     src/svobject.h \
     src/spv.h \
     src/compressedslice.h \
-    src/mc.h \
-    src/myconnectivityfilter.h \
+    src/marchingcubes.h \
+    src/dataconnectivityfilter.h \
     src/movetogroup.h \
-    src/voxml.h \
+    src/vaxml.h \
     src/quickhelpbox.h \
-    ../SPIERScommon/netmodule.h \
     src/aboutdialog.h \
     src/glvbo.h \
     src/gl3widget.h \
     src/rowmans.h \
     src/main.h \
-    src/darkstyletheme.h \
-    src/version.h \
-   ../SPIERScommon/netmodule.h \
+    ../SPIERScommon/netmodule.h \
     ../SPIERScommon/semanticversion.h \
-    ../SPIERScommon/prereleasecomponent.h
+    ../SPIERScommon/prereleasecomponent.h \
+    src/vaxmlgroup.h \
+    src/vaxmlobject.h \
+    src/isosurface.h \
+    src/scalarfieldlayer.h
 
 FORMS += ui/mainwindow.ui \
     ui/movetogroup.ui \
