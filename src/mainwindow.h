@@ -89,8 +89,8 @@ private:
     QString TransConvert(float trans);
 
     void SetShininess(int s);
+
 private slots:
-    void closeFullScreen();
     void on_actionSet_Resampling_triggered();
     void on_actionZoom_In_triggered();
     void on_actionZoom_Out_triggered();

@@ -10,9 +10,6 @@ class FullScreenWindow : public QDialog
 public:
     FullScreenWindow(QWidget *parent, GlWidget *gl3widget);
     GlWidget *glwidget;
-
-private:
-    void keyPressEvent(QKeyEvent *event);
 };
 
 #endif // FULLSCREENWINDOW_H
