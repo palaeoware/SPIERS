@@ -40,8 +40,8 @@ SOURCES += src/main.cpp \
     src/vaxmlgroup.cpp \
     src/vaxmlobject.cpp \
     src/isosurface.cpp \
-    src/scalarfieldlayer.cpp
-
+    src/scalarfieldlayer.cpp \
+    src/fullscreenwindow.cpp
 
 HEADERS += src/mainwindow.h \
     src/darkstyletheme.h \
@@ -66,7 +66,8 @@ HEADERS += src/mainwindow.h \
     src/vaxmlgroup.h \
     src/vaxmlobject.h \
     src/isosurface.h \
-    src/scalarfieldlayer.h
+    src/scalarfieldlayer.h \
+    src/fullscreenwindow.h
 
 LIBS += -L$$PWD/../../../../msys64/mingw64/lib \
 # VTK - Libary

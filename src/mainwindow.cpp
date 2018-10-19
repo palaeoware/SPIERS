@@ -3508,14 +3508,14 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
             ui->actionSave_Image_and_Apply_Step->activate(QAction::Trigger);
             return true;
         }
-        if (kevent->key() ==  Qt::Key_O  && kevent->modifiers() == Qt::ControlModifier && ui->actionShow_All->isEnabled())
-        {
-            ui->actionShow_All->activate(QAction::Trigger);
-            return true;
-        }
         if (kevent->key() ==  Qt::Key_H  && kevent->modifiers() == Qt::ControlModifier && ui->actionHide_All->isEnabled())
         {
             ui->actionHide_All->activate(QAction::Trigger);
+            return true;
+        }
+        if (kevent->key() ==  Qt::Key_H  && kevent->modifiers() == Qt::ShiftModifier && ui->actionShow_All->isEnabled())
+        {
+            ui->actionShow_All->activate(QAction::Trigger);
             return true;
         }
         if (kevent->key() ==  Qt::Key_I  && kevent->modifiers() == Qt::ControlModifier && ui->actionInvert_Show->isEnabled())
@@ -3668,8 +3668,6 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
             ui->actionReset_to_default_position->activate(QAction::Trigger);
             return true;
         }
-
-        //More complex ones - same code works fine
         if (kevent->key() ==  Qt::Key_A  && kevent->modifiers() == Qt::ControlModifier && ui->actionAnaglyph_Stereo->isEnabled())
         {
             ui->actionAnaglyph_Stereo->activate(QAction::Trigger);
@@ -3678,6 +3676,21 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
         if (kevent->key() ==  Qt::Key_S  && kevent->modifiers() == Qt::ControlModifier && ui->actionSplit_Stereo->isEnabled())
         {
             ui->actionSplit_Stereo->activate(QAction::Trigger);
+            return true;
+        }
+        if (kevent->key() ==  Qt::Key_P  && kevent->modifiers() == Qt::ControlModifier && ui->actionNo_Stereo->isEnabled())
+        {
+            ui->actionNo_Stereo->activate(QAction::Trigger);
+            return true;
+        }
+        if (kevent->key() ==  Qt::Key_O  && kevent->modifiers() == Qt::ControlModifier && ui->actionOrthographic_View->isEnabled())
+        {
+            ui->actionOrthographic_View->activate(QAction::Trigger);
+            return true;
+        }
+        if (kevent->key() ==  Qt::Key_Q  && kevent->modifiers() == Qt::ControlModifier && ui->actionQuadBuffer_Stereo->isEnabled())
+        {
+            ui->actionQuadBuffer_Stereo->activate(QAction::Trigger);
             return true;
         }
         if (kevent->key() ==  Qt::Key_M  && kevent->modifiers() == Qt::ControlModifier && ui->actionMute_Colours->isEnabled())
@@ -3728,6 +3741,11 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
         if (kevent->key() ==  Qt::Key_F7  && kevent->modifiers() == Qt::NoModifier && ui->actionAnimation_Panel->isEnabled())
         {
             ui->actionAnimation_Panel->activate(QAction::Trigger);
+            return true;
+        }
+        if (kevent->key() ==  Qt::Key_F && kevent->modifiers() == Qt::ControlModifier)
+        {
+            on_actionFull_Screen_triggered();
             return true;
         }
 
@@ -3851,4 +3869,31 @@ void MainWindow::updateScreenRatio()
     }
 
     //qDebug() << "[SCREEN UPDATE] Current Screen = " << currentScreen << "Current Ratio = " << ratio;
+}
+
+/**
+ * @brief MainWindow::on_actionFull_Screen_triggered
+ */
+void MainWindow::on_actionFull_Screen_triggered()
+{
+    if (isGLFullScreen == false)
+    {
+        fullScreenDialog = new FullScreenWindow(this, gl3widget);
+        fullScreenDialog->showFullScreen();
+        //fullScreenDialog->show();
+
+        isGLFullScreen = true;
+
+        //qDebug() << "[Full Screen Mode] Opening full screen mode";
+    }
+    else
+    {
+        gl3widget = fullScreenDialog->glwidget;
+        ui->frameVTK->layout()->addWidget(gl3widget);
+        fullScreenDialog->close();
+        gl3widget->update();
+        isGLFullScreen = false;
+
+        //qDebug() << "[Full Screen Mode] Closing full screen mode";
+    }
 }
