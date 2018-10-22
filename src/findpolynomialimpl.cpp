@@ -401,7 +401,7 @@ void findpolynomialImpl::find()
                                 if (Locks[invertedpos*2])
 				{
                                     //found a pixel
-                    if 	(MasksSettings[(quint8)Masks[invertedpos]]->Show) //don't include hidden masks
+                    if 	(MasksSettings[static_cast<quint8>(Masks[invertedpos])]->Show) //don't include hidden masks
 					{	
 						int r=0,g=0,b=0;
 						

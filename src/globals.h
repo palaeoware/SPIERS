@@ -75,6 +75,10 @@ extern QList<double> FullStretches;
 extern bool ShowSlicePosition;
 extern bool temptestflag;
 
+extern QGraphicsPixmapItem *MainImage;
+extern double LastZoom;
+extern double CurrentPolyContrast;
+
 extern QTreeWidgetItem *LastItemClicked;
 extern QTime LastTimeClicked;
 extern int LastColumnClicked;

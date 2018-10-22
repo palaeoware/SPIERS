@@ -31,8 +31,6 @@ Functions (non-OO) relating to graphical manipulation
 
 QGraphicsPixmapItem *MainImage;
 double LastZoom;
-
-
 double CurrentPolyContrast;
 
 //add these to scene at some point!
@@ -125,20 +123,20 @@ QImage GenerateThresh()
             for (x = 0; x < fwidth; x++)
             {
                 invertedpos = (fheight - 1 - y) * fwidth + x;
-                if (!(MasksSettings[(quint8)Masks[invertedpos]]->Show))
+                if (!(MasksSettings[static_cast<quint8>(Masks[invertedpos])]->Show))
                 {
                     m = n * 4;
                     if (maskmode)
                     {
-                        RED(data, m) = (uchar) (MasksSettings[(quint8)Masks[invertedpos]]->BackColour[0]);
-                        GREEN(data, m) = (uchar) (MasksSettings[(quint8)Masks[invertedpos]]->BackColour[1]);
-                        BLUE(data, m) = (uchar) (MasksSettings[(quint8)Masks[invertedpos]]->BackColour[2]);
+                        RED(data, m) = static_cast<uchar>(MasksSettings[static_cast<quint8>(Masks[invertedpos])]->BackColour[0]);
+                        GREEN(data, m) = static_cast<uchar>(MasksSettings[static_cast<quint8>(Masks[invertedpos])]->BackColour[1]);
+                        BLUE(data, m) = static_cast<uchar>(MasksSettings[static_cast<quint8>(Masks[invertedpos])]->BackColour[2]);
                     }
                     else
                     {
-                        RED(data, m) = (uchar)0;
-                        GREEN(data, m) = (uchar)0;
-                        BLUE(data, m) = (uchar)0;
+                        RED(data, m) = static_cast<uchar>(0);
+                        GREEN(data, m) = static_cast<uchar>(0);
+                        BLUE(data, m) = static_cast<uchar>(0);
                     }
                 }
                 else
@@ -152,30 +150,30 @@ QImage GenerateThresh()
                             //qDebug()<<"Drawinglock";
                             if (seg >= 0)
                             {
-                                RED(data, m) = (uchar)((Segments[seg]->Colour[0]) / 3);
-                                GREEN(data, m) = (uchar)((Segments[seg]->Colour[1]) / 3);
-                                BLUE(data, m) = (uchar)((Segments[seg]->Colour[2]));
+                                RED(data, m) = static_cast<uchar>((Segments[seg]->Colour[0]) / 3);
+                                GREEN(data, m) = static_cast<uchar>((Segments[seg]->Colour[1]) / 3);
+                                BLUE(data, m) = static_cast<uchar>((Segments[seg]->Colour[2]));
                             }
                             else     //'background - no seg over 128
                             {
-                                RED(data, m) = (uchar)0;
-                                GREEN(data, m) = (uchar)0;
-                                BLUE(data, m) = (uchar)100;
+                                RED(data, m) = static_cast<uchar>(0);
+                                GREEN(data, m) = static_cast<uchar>(0);
+                                BLUE(data, m) = static_cast<uchar>(100);
                             }
                         }
                         else
                         {
                             if (seg >= 0)
                             {
-                                RED(data, m) = (uchar)(Segments[seg]->Colour[0]);
-                                GREEN(data, m) = (uchar)(Segments[seg]->Colour[1]);
-                                BLUE(data, m) = (uchar)(Segments[seg]->Colour[2]);
+                                RED(data, m) = static_cast<uchar>(Segments[seg]->Colour[0]);
+                                GREEN(data, m) = static_cast<uchar>(Segments[seg]->Colour[1]);
+                                BLUE(data, m) = static_cast<uchar>(Segments[seg]->Colour[2]);
                             }
                             else     //background - no seg over 128
                             {
-                                RED(data, m) = (uchar)0;
-                                GREEN(data, m) = (uchar)0;
-                                BLUE(data, m) = (uchar)0;
+                                RED(data, m) = static_cast<uchar>(0);
+                                GREEN(data, m) = static_cast<uchar>(0);
+                                BLUE(data, m) = static_cast<uchar>(0);
                             }
                         }
                     }
@@ -185,30 +183,30 @@ QImage GenerateThresh()
                         {
                             if (seg >= 0)
                             {
-                                RED(data, m) = (uchar)((Segments[seg]->Colour[0]) / 2  + (MasksSettings[(quint8)Masks[invertedpos]]->ForeColour[0] / 2));
-                                GREEN(data, m) = (uchar)((Segments[seg]->Colour[1]) / 2  + (MasksSettings[(quint8)Masks[invertedpos]]->ForeColour[1] / 2));
-                                BLUE(data, m) = (uchar)((Segments[seg]->Colour[2]) / 2  + (MasksSettings[(quint8)Masks[invertedpos]]->ForeColour[2] / 2));
+                                RED(data, m) = static_cast<uchar>((Segments[seg]->Colour[0]) / 2  + (MasksSettings[static_cast<quint8>(Masks[invertedpos])]->ForeColour[0] / 2));
+                                GREEN(data, m) = static_cast<uchar>((Segments[seg]->Colour[1]) / 2  + (MasksSettings[static_cast<quint8>(Masks[invertedpos])]->ForeColour[1] / 2));
+                                BLUE(data, m) = static_cast<uchar>((Segments[seg]->Colour[2]) / 2  + (MasksSettings[static_cast<quint8>(Masks[invertedpos])]->ForeColour[2] / 2));
                             }
                             else     //background - no seg over 128
                             {
-                                RED(data, m) = (uchar) (MasksSettings[(quint8)Masks[invertedpos]]->BackColour[0]);
-                                GREEN(data, m) = (uchar) (MasksSettings[(quint8)Masks[invertedpos]]->BackColour[1]);
-                                BLUE(data, m) = (uchar) (MasksSettings[(quint8)Masks[invertedpos]]->BackColour[2]);
+                                RED(data, m) = static_cast<uchar>(MasksSettings[static_cast<quint8>(Masks[invertedpos])]->BackColour[0]);
+                                GREEN(data, m) = static_cast<uchar>(MasksSettings[static_cast<quint8>(Masks[invertedpos])]->BackColour[1]);
+                                BLUE(data, m) = static_cast<uchar>(MasksSettings[static_cast<quint8>(Masks[invertedpos])]->BackColour[2]);
                             }
                         }
                         else
                         {
                             if (seg >= 0)
                             {
-                                RED(data, m) = (uchar)(MasksSettings[(quint8)Masks[invertedpos]]->ForeColour[0]);
-                                GREEN(data, m) = (uchar)(MasksSettings[(quint8)Masks[invertedpos]]->ForeColour[1]);
-                                BLUE(data, m) = (uchar)(MasksSettings[(quint8)Masks[invertedpos]]->ForeColour[2]);
+                                RED(data, m) = static_cast<uchar>(MasksSettings[static_cast<quint8>(Masks[invertedpos])]->ForeColour[0]);
+                                GREEN(data, m) = static_cast<uchar>(MasksSettings[static_cast<quint8>(Masks[invertedpos])]->ForeColour[1]);
+                                BLUE(data, m) = static_cast<uchar>(MasksSettings[static_cast<quint8>(Masks[invertedpos])]->ForeColour[2]);
                             }
                             else     //background - no seg over 128
                             {
-                                RED(data, m) = (uchar) (MasksSettings[(quint8)Masks[invertedpos]]->BackColour[0]);
-                                GREEN(data, m) = (uchar) (MasksSettings[(quint8)Masks[invertedpos]]->BackColour[1]);
-                                BLUE(data, m) = (uchar) (MasksSettings[(quint8)Masks[invertedpos]]->BackColour[2]);
+                                RED(data, m) = static_cast<uchar>(MasksSettings[static_cast<quint8>(Masks[invertedpos])]->BackColour[0]);
+                                GREEN(data, m) = static_cast<uchar>(MasksSettings[static_cast<quint8>(Masks[invertedpos])]->BackColour[1]);
+                                BLUE(data, m) = static_cast<uchar>(MasksSettings[static_cast<quint8>(Masks[invertedpos])]->BackColour[2]);
                             }
                         }
                     }
@@ -218,15 +216,15 @@ QImage GenerateThresh()
                         {
                             if (seg >= 0)
                             {
-                                RED(data, m) = (uchar)((Segments[seg]->Colour[0]) / 2  + (MasksSettings[(quint8)Masks[invertedpos]]->ForeColour[0] / 2));
-                                GREEN(data, m) = (uchar)((Segments[seg]->Colour[1]) / 2  + (MasksSettings[(quint8)Masks[invertedpos]]->ForeColour[1] / 2));
-                                BLUE(data, m) = (uchar)((Segments[seg]->Colour[2]) / 2  + (MasksSettings[(quint8)Masks[invertedpos]]->ForeColour[2] / 2));
+                                RED(data, m) = static_cast<uchar>((Segments[seg]->Colour[0]) / 2  + (MasksSettings[static_cast<quint8>(Masks[invertedpos])]->ForeColour[0] / 2));
+                                GREEN(data, m) = static_cast<uchar>((Segments[seg]->Colour[1]) / 2  + (MasksSettings[static_cast<quint8>(Masks[invertedpos])]->ForeColour[1] / 2));
+                                BLUE(data, m) = static_cast<uchar>((Segments[seg]->Colour[2]) / 2  + (MasksSettings[static_cast<quint8>(Masks[invertedpos])]->ForeColour[2] / 2));
                             }
                             else     //background - no seg over 128
                             {
-                                RED(data, m) = (uchar) (MasksSettings[(quint8)Masks[invertedpos]]->BackColour[0]);
-                                GREEN(data, m) = (uchar) (MasksSettings[(quint8)Masks[invertedpos]]->BackColour[1]);
-                                BLUE(data, m) = (uchar) (MasksSettings[(quint8)Masks[invertedpos]]->BackColour[2]);
+                                RED(data, m) = static_cast<uchar>(MasksSettings[static_cast<quint8>(Masks[invertedpos])]->BackColour[0]);
+                                GREEN(data, m) = static_cast<uchar>(MasksSettings[static_cast<quint8>(Masks[invertedpos])]->BackColour[1]);
+                                BLUE(data, m) = static_cast<uchar>(MasksSettings[static_cast<quint8>(Masks[invertedpos])]->BackColour[2]);
                             }
                         }
                         else
@@ -234,15 +232,15 @@ QImage GenerateThresh()
                             //This one is 'normal'
                             if (seg >= 0)
                             {
-                                RED(data, m) = (uchar)(Segments[seg]->Colour[0]);
-                                GREEN(data, m) = (uchar)(Segments[seg]->Colour[1]);
-                                BLUE(data, m) = (uchar)(Segments[seg]->Colour[2]);
+                                RED(data, m) = static_cast<uchar>(Segments[seg]->Colour[0]);
+                                GREEN(data, m) = static_cast<uchar>(Segments[seg]->Colour[1]);
+                                BLUE(data, m) = static_cast<uchar>(Segments[seg]->Colour[2]);
                             }
                             else     //background - no seg over 128
                             {
-                                RED(data, m) = (uchar)0;
-                                GREEN(data, m) = (uchar)0;
-                                BLUE(data, m) = (uchar)0;
+                                RED(data, m) = static_cast<uchar>(0);
+                                GREEN(data, m) = static_cast<uchar>(0);
+                                BLUE(data, m) = static_cast<uchar>(0);
                             }
                         }
                     }
@@ -289,7 +287,7 @@ void InitImage(QGraphicsView *gv)
     GA.clear();
 
     if (Active) ClearCache();
-    for (i = 0; i < SegmentCount; i++) GA.append(0); //sets up segment arrays
+    for (i = 0; i < SegmentCount; i++) GA.append(nullptr); //sets up segment arrays
 
     //also set up dirty array
 
@@ -330,14 +328,14 @@ void AlterImage(QImage *myimage)
     if (minval >= maxval)  minval = maxval - 1;
 
 
-    addon = (double)255 / ((double)(maxval - minval));
+    addon = static_cast<double>(255.) / (static_cast<double>(maxval - minval));
 
-    subtract = (double) minval;
+    subtract = static_cast<double>(minval);
 
 
-    Transf = (((double)Trans)) / (double)15;
+    Transf = static_cast<double>(Trans) / static_cast<double>(15);
 
-    Transf2 = (((double)(15 - Trans))) / (double)15;
+    Transf2 = static_cast<double>(15 - Trans) / static_cast<double>(15);
 
     Thresh = GenerateThresh(); //get threshold image generated and returned
 
@@ -361,38 +359,38 @@ void AlterImage(QImage *myimage)
                 c2 = 4 * ((i / ColMonoScale) * fwidth + j / ColMonoScale);
                 c = 4 * (i * cwidth + j);
 
-                Col = (((double) colpointer[i * cwidth4 + j]) - subtract) * addon;
+                Col = ((static_cast<double>(colpointer[i * cwidth4 + j])) - subtract) * addon;
                 if (Col > 255) Col = 255;
                 if (Col < 0) Col = 0;
                 Col *= Transf;
                 if (j < tcwidth) //deal with edge effects
-                    Col2 = (double) RED(threshpointer, c2); //threshold array
+                    Col2 = static_cast<double>(RED(threshpointer, c2)); //threshold array
                 else
                     Col2 = 0;
                 Col2 = Col + Col2 * Transf2;
                 if (Col2 > 255) Col2 = 255;
                 if (Col2 < 0) Col2 = 0;
-                RED(outpointer, c) = (uchar) Col2;
+                RED(outpointer, c) = static_cast<uchar>(Col2);
 
                 if (j < tcwidth) //deal with edge effects
-                    Col2 = (double) GREEN(threshpointer, c2); //threshold array
+                    Col2 = static_cast<double>(GREEN(threshpointer, c2)); //threshold array
                 else
                     Col2 = 0;
                 Col2 = Col + Col2 * Transf2;
                 if (Col2 > 255) Col2 = 255;
                 if (Col2 < 0) Col2 = 0;
-                GREEN(outpointer, c) = (uchar) Col2;
+                GREEN(outpointer, c) = static_cast<uchar>(Col2);
 
                 if (j < tcwidth)   //deal with edge effects
                 {
-                    Col2 = (double) BLUE(threshpointer, c2);   //threshold array
+                    Col2 = static_cast<double>(BLUE(threshpointer, c2));   //threshold array
                 }
                 else
                     Col2 = 0;
                 Col2 = Col + Col2 * Transf2;
                 if (Col2 > 255) Col2 = 255;
                 if (Col2 < 0) Col2 = 0;
-                BLUE(outpointer, c) = (uchar) Col2;
+                BLUE(outpointer, c) = static_cast<uchar>(Col2);
 
                 ALPHA(outpointer, c) = 255;
             }
@@ -403,13 +401,13 @@ void AlterImage(QImage *myimage)
             for (j = 0; j < cwidth; j++)
             {
                 c = 4 * (i * cwidth + j);
-                Col = (((double) colpointer[i * cwidth4 + j]) - subtract) * addon;
+                Col = ((static_cast<double>(colpointer[i * cwidth4 + j])) - subtract) * addon;
                 Col *= Transf;
                 if (Col > 255) Col = 255;
                 if (Col < 0) Col = 0;
-                RED(outpointer, c) = (uchar) Col;
-                GREEN(outpointer, c) = (uchar) Col;
-                BLUE(outpointer, c) = (uchar) Col;
+                RED(outpointer, c) = static_cast<uchar>(Col);
+                GREEN(outpointer, c) = static_cast<uchar>(Col);
+                BLUE(outpointer, c) = static_cast<uchar>(Col);
                 ALPHA(outpointer, c) = 255;
             }
     }
@@ -421,43 +419,43 @@ void AlterImage(QImage *myimage)
             {
                 c2 = 4 * ((i / ColMonoScale) * fwidth + j / ColMonoScale);
                 c = (i * cwidth + j) * 4;
-                Col = (((double) RED(colpointer, c)) - subtract) * addon;
+                Col = ((static_cast<double>(RED(colpointer, c))) - subtract) * addon;
                 if (Col > 255) Col = 255;
                 if (Col < 0) Col = 0;
                 if (j < tcwidth) //deal with edge effects
-                    Col2 = (double) RED(threshpointer, c2); //threshold array
+                    Col2 = static_cast<double>(RED(threshpointer, c2)); //threshold array
                 else
                     Col2 = 0;
                 Col = Col * Transf + Col2 * Transf2;
                 if (Col > 255) Col = 255;
                 if (Col < 0) Col = 0;
-                RED(outpointer, c) = (uchar) Col;
+                RED(outpointer, c) = static_cast<uchar>(Col);
 
-                Col = (((double) GREEN(colpointer, c)) - subtract) * addon;
+                Col = ((static_cast<double>(GREEN(colpointer, c))) - subtract) * addon;
                 if (Col > 255) Col = 255;
                 if (Col < 0) Col = 0;
                 if (j < tcwidth) //deal with edge effects
-                    Col2 = (double) GREEN(threshpointer, c2); //threshold array
+                    Col2 = static_cast<double>(GREEN(threshpointer, c2)); //threshold array
                 else
                     Col2 = 0;
                 Col = Col * Transf + Col2 * Transf2;
                 if (Col > 255) Col = 255;
                 if (Col < 0) Col = 0;
-                GREEN(outpointer, c) = (uchar) Col;
+                GREEN(outpointer, c) = static_cast<uchar>(Col);
 
-                Col = (((double) BLUE(colpointer, c)) - subtract) * addon;
+                Col = ((static_cast<double>(BLUE(colpointer, c))) - subtract) * addon;
                 if (Col > 255) Col = 255;
                 if (Col < 0) Col = 0;
                 if (j < tcwidth)   //deal with edge effects
                 {
-                    Col2 = (double) BLUE(threshpointer, c2);   //threshold array
+                    Col2 = static_cast<double>(BLUE(threshpointer, c2));   //threshold array
                 }
                 else
                     Col2 = 0;
                 Col = Col * Transf + Col2 * Transf2;
                 if (Col > 255) Col = 255;
                 if (Col < 0) Col = 0;
-                BLUE(outpointer, c) = (uchar) Col;
+                BLUE(outpointer, c) = static_cast<uchar>(Col);
 
                 ALPHA(outpointer, c) = 255;
 
@@ -468,29 +466,29 @@ void AlterImage(QImage *myimage)
             for (j = 0; j < cwidth; j++)
             {
                 c = (i * cwidth + j) * 4;
-                Col = (((double) RED(colpointer, c)) - subtract) * addon;
+                Col = ((static_cast<double>(RED(colpointer, c))) - subtract) * addon;
                 if (Col > 255) Col = 255;
                 if (Col < 0) Col = 0;
                 Col = Col * Transf;
                 if (Col > 255) Col = 255;
                 if (Col < 0) Col = 0;
-                RED(outpointer, c) = (uchar) Col;
+                RED(outpointer, c) = static_cast<uchar>(Col);
 
-                Col = (((double) GREEN(colpointer, c)) - subtract) * addon;
+                Col = ((static_cast<double>(GREEN(colpointer, c))) - subtract) * addon;
                 if (Col > 255) Col = 255;
                 if (Col < 0) Col = 0;
                 Col = Col * Transf;
                 if (Col > 255) Col = 255;
                 if (Col < 0) Col = 0;
-                GREEN(outpointer, c) = (uchar) Col;
+                GREEN(outpointer, c) = static_cast<uchar>(Col);
 
-                Col = (((double) BLUE(colpointer, c)) - subtract) * addon;
+                Col = ((static_cast<double>(BLUE(colpointer, c))) - subtract) * addon;
                 if (Col > 255) Col = 255;
                 if (Col < 0) Col = 0;
                 Col = Col * Transf;
                 if (Col > 255) Col = 255;
                 if (Col < 0) Col = 0;
-                BLUE(outpointer, c) = (uchar) Col;
+                BLUE(outpointer, c) = static_cast<uchar>(Col);
 
                 ALPHA(outpointer, c) = 255;
 
@@ -529,7 +527,7 @@ void ShowImage(QGraphicsView *gv)
 
     DrawCurveMarkers(gv->scene());
 
-    MainWindowImpl *mw = (MainWindowImpl *) gv->parent()->parent();
+    MainWindowImpl *mw = static_cast<MainWindowImpl *>(gv->parent()->parent());
     if (GreyImage)
     {
         mw->LinearRedSpinBox->setVisible(false);
@@ -565,8 +563,8 @@ QByteArray DoMaskLocking()
         for (int y = 0; y < fheight; y++)
         {
             int hpos = (fheight - y - 1) * fwidth + x;
-            if (Locks[hpos * 2]) newlocks[fwidth * y + x] = (uchar) 255;
-            if (HiddenMasksLockedForGeneration) if (!MasksSettings[(quint8)Masks[hpos]]->Show) newlocks[fwidth * y + x] = 255;
+            if (Locks[hpos * 2]) newlocks[fwidth * y + x] = static_cast<uchar>(255);
+            if (HiddenMasksLockedForGeneration) if (!MasksSettings[static_cast<quint8>(Masks[hpos])]->Show) newlocks[fwidth * y + x] = 255;
         }
     return newlocks;
 }
@@ -596,7 +594,7 @@ void MakeLinearGreyScale(int seg, int fnum, bool flag = false)
         for (int h = 0; h < fheight; h++)
             for (int w = 0; w < fwidth; w++)
             {
-                if (!(NewLocks[(fwidth * h + w)])) *(data + (fwidth4 * h + w)) = (uchar) 255 - GreyScalePixel(w, h, r, g, b, glob);
+                if (!(NewLocks[(fwidth * h + w)])) *(data + (fwidth4 * h + w)) = static_cast<uchar>(255) - GreyScalePixel(w, h, r, g, b, glob);
             }
     }
     else
@@ -645,10 +643,10 @@ void MakeRangeGreyScale(int seg, int fnum, bool flag = false)
     int t = Segments[seg]->RangeTop;
 
     //work out centers and gradients
-    double c = (double) b + (((double) t - (double)  b) / 2.0);
+    double c = static_cast<double>(b) + ((static_cast<double>(t) - static_cast<double>(b)) / 2.0);
     double g;
     if (b == t) g = 500;
-    else g = (127.0) / (((double)(t - b)) / 2.0);
+    else g = (127.0) / ((static_cast<double>(t - b)) / 2.0);
 
     //ignore invert for range
     for (int h = 0; h < fheight; h++)
@@ -670,9 +668,9 @@ double CalcPoly(unsigned char r, unsigned char g, unsigned char b, Segment *seg)
 
     double redp, greenp, bluep; //will be the powers - mult up each time!
 
-    redp = red = (double)r;
-    greenp = green = (double)g;
-    bluep = blue = (double)b;
+    redp = red = static_cast<double>(r);
+    greenp = green = static_cast<double>(g);
+    bluep = blue = static_cast<double>(b);
 
     result = seg->PolyKall; //start with constant
 
@@ -706,7 +704,7 @@ uchar PolyPixel(int w, int h, int s)
         for (int n = w; n < (w + ColMonoScale); n++)
             for (int m = h; m < (h + ColMonoScale); m++)
             {
-                rtot += (int)data[n + m * cwidth4];
+                rtot += static_cast<int>(data[n + m * cwidth4]);
             }
         rtot /= (ColMonoScale * ColMonoScale);
         gtot = rtot;
@@ -718,9 +716,9 @@ uchar PolyPixel(int w, int h, int s)
             for (int m = h; m < (h + ColMonoScale); m++)
             {
                 int p = 4 * (n + m * cwidth);
-                rtot += (int)RED(data, p);
-                gtot += (int)GREEN(data, p);
-                btot += (int)BLUE(data, p);
+                rtot += static_cast<int>(RED(data, p));
+                gtot += static_cast<int>(GREEN(data, p));
+                btot += static_cast<int>(BLUE(data, p));
             }
         rtot /=  (ColMonoScale * ColMonoScale);
         gtot /=  (ColMonoScale * ColMonoScale);
@@ -728,11 +726,11 @@ uchar PolyPixel(int w, int h, int s)
     }
 
     //have my average RGB values  - work out function!
-    int temp = (int) (128 + CalcPoly((uchar)rtot, (uchar)gtot, (uchar)btot, seg) * CurrentPolyContrast);
+    int temp = static_cast<int>(128 + CalcPoly(static_cast<uchar>(rtot), static_cast<uchar>(gtot), static_cast<uchar>(btot), seg) * CurrentPolyContrast);
 
     if (temp < 0) return 0;
     if (temp > 255) return 255;
-    return (uchar) temp;
+    return static_cast<uchar>(temp);
 }
 
 uchar RangePixel(int w, int h, int bot, int top, double cen, double gra, int seg)
@@ -751,7 +749,7 @@ uchar RangePixel(int w, int h, int bot, int top, double cen, double gra, int seg
         for (int n = w; n < (w + ColMonoScale); n++)
             for (int m = h; m < (h + ColMonoScale); m++)
             {
-                rtot += (int)data[n + m * cwidth4];
+                rtot += static_cast<int>(data[n + m * cwidth4]);
             }
         rtot /= (ColMonoScale * ColMonoScale);
         r = rtot;
@@ -762,9 +760,9 @@ uchar RangePixel(int w, int h, int bot, int top, double cen, double gra, int seg
             for (int m = h; m < (h + ColMonoScale); m++)
             {
                 int p = 4 * (n + m * cwidth);
-                rtot += (int)RED(data, p);
-                gtot += (int)GREEN(data, p);
-                btot += (int)BLUE(data, p);
+                rtot += static_cast<int>(RED(data, p));
+                gtot += static_cast<int>(GREEN(data, p));
+                btot += static_cast<int>(BLUE(data, p));
             }
         rtot /=  (ColMonoScale * ColMonoScale);
         gtot /=  (ColMonoScale * ColMonoScale);
@@ -783,16 +781,16 @@ uchar RangePixel(int w, int h, int bot, int top, double cen, double gra, int seg
     }
     else
     {
-        double val = 255.0 - gra * qAbs((double)r - cen);
+        double val = 255.0 - gra * qAbs(static_cast<double>(r) - cen);
         if (val < 0) return 0;
-        else return (uchar) (val + .5);
+        else return static_cast<uchar>(val + .5);
     }
 }
 
 
 void MakePolyGreyScale(int seg, int fnum, bool flag = false)
 {
-    CurrentPolyContrast = pow((double)2, Segments[seg]->PolyContrast) / Segments[seg]->PolyScale;
+    CurrentPolyContrast = pow(static_cast<double>(2), Segments[seg]->PolyContrast) / Segments[seg]->PolyScale;
 
     //load data for file - can and should assume existing data is safe
     if (!flag) LoadAllData(fnum);
@@ -809,7 +807,7 @@ void MakePolyGreyScale(int seg, int fnum, bool flag = false)
         for (int h = 0; h < fheight; h++)
             for (int w = 0; w < fwidth; w++)
             {
-                if (!(NewLocks[(fwidth * h + w)])) *(data + (fwidth4 * h + w)) = (uchar) 255 - PolyPixel(w, h, seg);
+                if (!(NewLocks[(fwidth * h + w)])) *(data + (fwidth4 * h + w)) = static_cast<uchar>(255) - PolyPixel(w, h, seg);
             }
     }
     else
@@ -827,7 +825,7 @@ void MakePolyGreyScale(int seg, int fnum, bool flag = false)
 
 uchar GenPixel(int x, int y, int s)
 {
-    CurrentPolyContrast = pow((double)2, Segments[s]->PolyContrast) / Segments[s]->PolyScale;
+    CurrentPolyContrast = pow(static_cast<double>(2), Segments[s]->PolyContrast) / Segments[s]->PolyScale;
     //generate a pixel using whatever method
     if (tabwidget->currentIndex() == 0)
     {
@@ -850,10 +848,10 @@ uchar GenPixel(int x, int y, int s)
         int b = Segments[s]->RangeBase;
         int t = Segments[s]->RangeTop;
         //work out centers and gradients
-        double c = (double) b + (((double) t - (double)  b) / 2.0);
+        double c = static_cast<double>(b) + ((static_cast<double>(t) - static_cast<double>(b)) / 2.0);
         double g;
         if (b == t) g = 500;
-        else g = (127.0) / (((double)(t - b)) / 2.0);
+        else g = (127.0) / ((static_cast<double>(t - b)) / 2.0);
         uchar t2 = RangePixel(x, y, b, t, c, g, s);
         return t2;
     }
@@ -873,7 +871,7 @@ uchar GreyScalePixel(int w, int h, int r, int g, int b, int glob)
         for (int n = w; n < (w + ColMonoScale); n++)
             for (int m = h; m < (h + ColMonoScale); m++)
             {
-                rtot += (int)data[n + m * cwidth4] * (glob - 1) / 50;
+                rtot += static_cast<int>(data[n + m * cwidth4]) * (glob - 1) / 50;
             }
         temp = rtot / (ColMonoScale * ColMonoScale);
     }
@@ -883,14 +881,14 @@ uchar GreyScalePixel(int w, int h, int r, int g, int b, int glob)
             for (int m = h; m < (h + ColMonoScale); m++)
             {
                 int p = 4 * (n + m * cwidth);
-                rtot += (int)RED(data, p) * r;
-                rtot += (int)GREEN(data, p) * g;
-                rtot += (int)BLUE(data, p) * b;
+                rtot += static_cast<int>(RED(data, p)) * r;
+                rtot += static_cast<int>(GREEN(data, p)) * g;
+                rtot += static_cast<int>(BLUE(data, p)) * b;
             }
         rtot *= glob;
         temp = rtot / (ColMonoScale * ColMonoScale * 10000);
     }
     if (temp < 0) return 0;
     if (temp > 255) return 255;
-    return (uchar) temp;
+    return static_cast<uchar>(temp);
 }
