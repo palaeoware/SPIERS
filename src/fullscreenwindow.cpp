@@ -26,11 +26,4 @@ FullScreenWindow::FullScreenWindow(QWidget *parent, GlWidget *gl3widget)
     fullScreenLayout->addWidget(glwidget);
     setLayout(fullScreenLayout);
     glwidget->update();
-
-#ifdef __linux__
-    setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
-    show();
-#else
-    showFullScreen();
-#endif
 }

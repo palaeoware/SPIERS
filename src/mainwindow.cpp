@@ -3881,6 +3881,12 @@ void MainWindow::on_actionFull_Screen_triggered()
         fullScreenDialog = new FullScreenWindow(this, gl3widget);
         isGLFullScreen = true;
 
+#ifdef __linux__
+        fullScreenDialog->setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
+        fullScreenDialog->show();
+#else
+        fullScreenDialog->showFullScreen();
+#endif
         //qDebug() << "[Full Screen Mode] Opening full screen mode";
     }
     else
