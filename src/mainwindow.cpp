@@ -3876,23 +3876,17 @@ void MainWindow::updateScreenRatio()
  */
 void MainWindow::on_actionFull_Screen_triggered()
 {
-
-#ifdef __linux__
-    QMessageBox::warning(this, "Apologies", "Full screen doesn't currently work on Linux due to limitations of the QWidget::showFullScreen() call. Sorry about that.");
-    return;
-    //fullScreenDialog->setWindowFlags( Qt::X11BypassWindowManagerHint);
-    // fullScreenDialog->setWindowFlags(Qt::X11BypassWindowManagerHint | Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
-    //fullScreenDialog->showMaximized();
-    //fullScreenDialog->setWindowState(Qt::WindowFullScreen);
-    //fullScreenDialog->show();
-#else
     if (isGLFullScreen == false)
     {
         fullScreenDialog = new FullScreenWindow(this, gl3widget);
-
-        fullScreenDialog->showFullScreen();
         isGLFullScreen = true;
 
+#ifdef __linux__
+        fullScreenDialog->setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
+        fullScreenDialog->show();
+#else
+        fullScreenDialog->showFullScreen();
+#endif
         //qDebug() << "[Full Screen Mode] Opening full screen mode";
     }
     else
@@ -3905,5 +3899,4 @@ void MainWindow::on_actionFull_Screen_triggered()
 
         //qDebug() << "[Full Screen Mode] Closing full screen mode";
     }
-#endif
 }
