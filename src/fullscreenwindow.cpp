@@ -1,7 +1,9 @@
 #include <QHBoxLayout>
 #include <QApplication>
+#include <QDesktopWidget>
 #include <QDebug>
 #include <QShortcut>
+#include <QScreen>
 
 #include "fullscreenwindow.h"
 #include "globals.h"
@@ -11,21 +13,24 @@ FullScreenWindow::FullScreenWindow(QWidget *parent, GlWidget *gl3widget)
 {
     glwidget = gl3widget;
 
-    // Included gere for testing in a windowed mode
-    /*
-    int nWidth = 1200;
-    int nHeight = 800;
+#ifdef __linux__
+    currentScreen = availableScreens.at(QApplication::desktop()->screenNumber(this));
     if (parent != nullptr)
-        setGeometry(parent->x() + parent->width() / 2 - nWidth / 2,
-                    parent->y() + parent->height() / 2 - nHeight / 2,
-                    nWidth, nHeight);
+        setGeometry(currentScreen->geometry());
     else
-        resize(nWidth, nHeight);
-    */
+        resize(currentScreen->geometry().width(), currentScreen->geometry().height());
+#endif
 
     QHBoxLayout *fullScreenLayout = new QHBoxLayout(this);
     fullScreenLayout->setContentsMargins(0, 0, 0, 0);
     fullScreenLayout->addWidget(glwidget);
     setLayout(fullScreenLayout);
     glwidget->update();
+
+#ifdef __linux__
+    setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
+    show();
+#else
+    showFullScreen();
+#endif
 }
