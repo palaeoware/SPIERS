@@ -35,9 +35,7 @@
 
 #include <stdio.h>
 
-#define UPDATEVERSION "3.0.0-alpha"
-//#define UPDATEVERSION "1.0.0" // for testing
-
+#define UPDATEVERSION "3.0.0-rc.1"
 
 extern bool macClickedNoForUpdateDownload;
 
