@@ -28,7 +28,7 @@ author = 'Mark Sutton, Russell Garwood, Alan R.T. Spencer'
 # The short X.Y version
 version = '3.0.0'
 # The full version, including alpha/beta/rc tags
-release = '3.0.0-alpha'
+release = '3.0.0-rc.1'
 
 
 # -- General configuration ---------------------------------------------------
