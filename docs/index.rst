@@ -24,6 +24,9 @@ w:https://github.com/palaeoware.
 Relevant references
 -------------------
 
+Sutton, M.D., Garwood, R.J., Siveter, D.J. & Siveter, D.J. 2012. Spiers and VAXML;
+A software toolkit for tomographic visualisation, and a format for virtual specimen
+interchange. Palaeontologia Electronica 15(2): 15.2.5T
 
 Table of Contents
 =================
