@@ -61,7 +61,7 @@ void NetModule::checkHash(QByteArray stlhash, QStringList *commlist)
 
     QString url;
     QTextStream t(&url);
-    t << "http://www.spiers-software.org/" << stlhash.toHex() << ".txt";
+    t << "https://www.spiers-software.org/" << stlhash.toHex() << ".txt";
     request.setUrl(QUrl(url));
 
     request.setRawHeader("User-Agent", "SPIERS");
@@ -82,11 +82,11 @@ void NetModule::checkForNew()
     manager = new QNetworkAccessManager(this);
 
 #ifdef __APPLE__
-    request.setUrl(QUrl("http://www.spiers-software.org/SPIERSstatus-mac.txt"));
+    request.setUrl(QUrl("https://www.spiers-software.org/SPIERSstatus-mac.txt"));
 #endif
 
 #ifndef __APPLE__
-    request.setUrl(QUrl("http://www.spiers-software.org/SPIERSstatus-win64.txt"));
+    request.setUrl(QUrl("https://www.spiers-software.org/SPIERSstatus-win64.txt"));
 #endif
 
     request.setRawHeader("User-Agent", "SPIERS");

@@ -90,7 +90,7 @@ SemanticVersion SemanticVersion::fromString(QString str)
 
     if (!match.hasMatch())
     {
-        qDebug() << "Invalide version:" << str;
+        qDebug() << "Invalide version:" << str << "Regex Pattern = " << regexPattern;
         throw;
     }
 
