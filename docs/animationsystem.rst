@@ -6,7 +6,12 @@ Animation System
 SPIERSview incorporates a simple system for generating sequences of
 images that can be converted (via third-party software) into video-file
 animations. The commands for this system are found on the *Animation
-menu*, and settings are modified in the Animation Panel.
+menu*, and settings are modified in the Animation Panel (Fig. 5).
+
+.. figure:: _static/figure_5.png
+    :align: center
+	
+    Figure 5. Default anatomy of the SPIERSview animation pannel
 
 SPIERS view animations are generated step-by-step by the user – each
 step rotations and/or zooms to the model are performed, and optionally

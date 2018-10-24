@@ -42,16 +42,16 @@ and right arrow keys (hold shift down to make rotate faster), or by
 holding the shift-key down while dragging with the right mouse button.
 It is also possible to ‘lock’ the viewer into rotate mode by ticking the
 *rotate lock* command (Ctrl-R) on the Mode menu (this is primarily
-useful on single-button OSX systems).
+useful on single-button OSX systems). Also see "Touch screens" below.
 
-The *Simple* *Autospin* command (Ctrl-U) on the Animation menu sets the
+The *Simple Autospin* command (Ctrl-U) on the Animation menu sets the
 model spinning around the y-axis (up/down on the screen) until the
 command is selected a second time. More advanced spins and animation
 exports are covered in the Animation System section (below).
 
 The *Zoom slider* (see Fig. 1) is used to zoom the view; the Page Up and
 Page Down keys also perform the same function, as does the mouse-wheel
-(if present).
+(if present). Also see "Touch screens" below.
 
 The *Move closer* and *Move further* commands ([ and ] keys) on the View
 menu are used to move the camera closer to or away from the model; this
@@ -60,6 +60,16 @@ the model is so close to the camera that perspective distortions are
 unacceptable. Hold shift down ({ and } keys) for larger moves closer or
 away. Note that in Orthographic mode there will be no visible effect of
 moving the model backwards or forwards in this way.
+
+Touch screen support
+--------------------
+
+Modern computers with touch screens should be compatible with SPIERSview for basic object moving,
+roatating, and zooming. The model can be moved by one finger dragging, and 
+rotated around around the z-axis (the viewing direction) using two finger rotation.
+Rotated in three dimensions can be achieved by toggling the *rotate lock* command (Ctrl-R),
+or by holding down Crlt while one finger dragging. Zooming in/out can be achieved
+by using the two finger pinch-to-zoom gesture.
 
 Object visibility
 -----------------
@@ -77,12 +87,12 @@ case they can only have their visibility toggled with the ‘eye’ icon. If
 a group is hidden then all objects or groups within it, irrespective of
 their visibility setting, are not visible.
 
-The objects menu has *Show All* and *Hide All* commands which can be
+The objects menu has *Show All* (Shift+H) and *Hide All* (Ctrl+H) commands which can be
 used to set the visibility of all objects either on or off. An *Invert
-Show* command also exists, which hides all currently shown objects, and
+Show* (Crtl+I) command also exists, which hides all currently shown objects, and
 vice versa.
 
-Note that transparency (see below) can be used as an alternative to
+Note that transparency (see section on transparency later on) can be used as an alternative to
 simply hiding objects in some situations.
 
 Stereoscopic 3D viewing
@@ -91,12 +101,12 @@ Stereoscopic 3D viewing
 SPIERSview can run in several 3D display modes (top five options in the
 Mode menu). These are:
 
-*Orthographic:* Orthographic rendering without perspective effects
+*Orthographic (Ctrl-O)*: Orthographic rendering without perspective effects
 (distant objects will not appear any smaller than close ones). This is
 mode is useful for measuring specimens, in conjunction with the scale
 grid.
 
-*Perspective:* Normal display without any form of stereoscopic 3D, but
+*Perspective (Ctrl-P)*: Normal display without any form of stereoscopic 3D, but
 with perspective rendering (distant objects will appear smaller). This
 is the default.
 
@@ -117,7 +127,7 @@ focus on each image. Screen captures (see below) in this mode can be
 used to generate printed stereo-pairs for viewing with a magnifying
 stereoscope.
 
-*QuadBuffer Stereo*: This mode sends the left and right eye images
+*QuadBuffer Stereo (Ctrl-Q)*: This mode sends the left and right eye images
 separately to the OpenGL rendering system where they can be interpreted
 by dedicated 3D display hardware. Most 3D display systems can handle
 OpenGl QuadBuffer input, and hence SPIERSview should be able to use this
@@ -130,6 +140,17 @@ strength of the stereoscopic effect) is too high or too low in some
 situations. Stereo-separation can be set to one of five preset
 strengths, accessed through the View menu or using the keyboard
 shortcuts Alt+1 (very low) through Alt+5 (very high).
+
+Full Screen Mode
+----------------
+
+SPIERSview can run in a full screen (Crtl+F) mode where the 3D view is maximised to
+the maxiumum monitor height and width. Under Windows a frameless and undecorated
+window is produced. While under Linux a minimal framed and decorated window is used. 
+When in full screen mode use (Crtl+F) to toggle back to normal mode.
+
+Note that under full screen mode only the 3D view is displayed, all other pannels and menus
+are not shown. However, all shortcut key combinations will still work.
 
 Background Colour
 -----------------

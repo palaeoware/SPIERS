@@ -14,9 +14,11 @@ large amount of onboard RAM.
 *Linux*: [tba]
 
 *Windows*: Windows 7 or higher is recommended, and **a 64-bit version of
-the operating system is required**.
+the operating system is required**. SPIERSview has been tested on Windows 10.
 
-*Mac* *OSX:* OSX 10.5 or higher is required. SPIERSview makes use of the
+*Mac OSX:* This version of SPIERSview does not yet support Mac OS. Please see 
+www.spiers-software.org to download v2.14 which is supported. SPIERS v2.14 requires: 
+OSX 10.5 or higher is required. SPIERSview makes use of the
 right mouse-button; on single-button Mac OSX systems use the
 control-click combination to simulate right-clicking.
 

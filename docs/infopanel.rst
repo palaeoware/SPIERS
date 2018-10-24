@@ -17,6 +17,11 @@ the exception being Title which can have at most one. Classification
 also differs in that items consist of two parts, a rank (e.g. Genus) and
 a name (e.g. *Homo*), which are input separately.
 
+.. figure:: _static/figure_4.png
+    :align: center
+	
+    Figure 4. Default anatomy of the SPIERSview info pannel
+
 The upper window of the the Info panel, is known as the *Info items*
 window. It lists these categories, and if any contain data, these are
 listed subsidiary to the category as items (you will need to expand the

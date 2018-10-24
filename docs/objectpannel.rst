@@ -31,6 +31,11 @@ the group they are currently in. You can also move an object into an
 existing group with the *Move To Group* command (Ctrl-G) on the
 *Objects* menu.
 
+.. figure:: _static/figure_2.png
+    :align: center
+	
+    Figure 2. Default anatomy of a SPIERSview object pannel
+
 Turning visibility off for a group does not alter the individual
 visibiity settings of contained objects (or groups), but overrides them
 so they are all hidden. In Figure 2 for instance, all objects in the
@@ -52,9 +57,9 @@ Object properties
 
 Objects listed in the object panel have seven properties detailed in
 columns to the right of the name (see Fig. 2; not all columns are
-visible at default panel size). The name (1:sup:`st` column), visibility
-(2:sup:`nd` column), shortcut key (3:sup:`rd` column) and display colour
-(4:sup:`th` column) are all modified simply by double-clicking. Note
+visible at default panel size). The name (1st column), visibility
+(2nd column), shortcut key (3rd column) and display colour
+(4th column) are all modified simply by double-clicking. Note
 that display colour has no effect for VAXML/PLY datasets where the
 imported object has surface colour. The properties in the right hand
 five columns (Fidelity, Transparency, Island Reduction, Smoothing and

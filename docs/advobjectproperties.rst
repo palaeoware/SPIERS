@@ -129,8 +129,3 @@ several settings before triggering a resurface. Alternatively, an
 *Auto-Resurface* mode is provided (*Mode* Menu, Shift-F5), turned off by
 default; with this mode enabled resurfacing is triggered after every
 change to smoothing, island removal or fidelity.
-
-.. figure:: _static/figure_2.png
-    :align: center
-	
-    Figure 2. Objects and Pieces panels.

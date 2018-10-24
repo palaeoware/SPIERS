@@ -16,6 +16,11 @@ judgements all portion of the model beyond the plane of the grid are
 partially greyed-out. Two menu commands are provided on the *Scale* menu
 to change grid colours.
 
+.. figure:: _static/figure_6.png
+    :align: center
+	
+    Figure 6. The scale grid
+
 Note that as of version 2.20 the older ‘Scale Ball’ system has been
 removed.
 
