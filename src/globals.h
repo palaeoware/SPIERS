@@ -74,6 +74,7 @@ extern QList<double> Stretches;
 extern QList<double> FullStretches;
 extern bool ShowSlicePosition;
 extern bool temptestflag;
+extern int Counter;
 
 extern QGraphicsPixmapItem *MainImage;
 extern double LastZoom;

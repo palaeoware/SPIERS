@@ -26,8 +26,8 @@ QList <Cache *> Caches;
 
 CacheGreyData::CacheGreyData()
 {
-    Data = 0;
-    CompressedData = 0;
+    Data = nullptr;
+    CompressedData = nullptr;
 }
 
 CacheGreyData::~CacheGreyData()
@@ -52,11 +52,11 @@ Cache::~Cache()
 Cache::Cache()
 {
     Filenum = -1;
-    ColData = 0;
-    Locks = 0;
-    Masks = 0;
+    ColData = nullptr;
+    Locks = nullptr;
+    Masks = nullptr;
     GreyData.clear();
-    ColDataCompressed = 0;
+    ColDataCompressed = nullptr;
     for (int i = 0; i < SegmentCount; i++)
         GreyData.append (new CacheGreyData); //create all my segment data structures
 }
@@ -84,10 +84,10 @@ void Cache::CalcMySize()
 
 void Cache::Blank(int fnum)
 {
-    if (ColData != 0) delete ColData;
-    if (ColDataCompressed != 0) delete ColDataCompressed;
-    if (Locks != 0) delete Locks;
-    if (Masks != 0) delete Masks;
+    if (ColData != nullptr) delete ColData;
+    if (ColDataCompressed != nullptr) delete ColDataCompressed;
+    if (Locks != nullptr) delete Locks;
+    if (Masks != nullptr) delete Masks;
     qDeleteAll(GreyData.begin(), GreyData.end()); //all internal deletion handled by destructor
 
     GreyData.clear();
@@ -95,10 +95,10 @@ void Cache::Blank(int fnum)
     for (int i = 0; i < SegmentCount; i++)
         GreyData.append (new CacheGreyData); //create all my segment data structures
     //recreate new GDs
-    ColData = 0;
-    Locks = 0;
-    Masks = 0;
-    ColDataCompressed = 0;
+    ColData = nullptr;
+    Locks = nullptr;
+    Masks = nullptr;
+    ColDataCompressed = nullptr;
     Filenum = fnum;
     LastUsed = QDateTime::currentDateTime();
     Size = 0;
@@ -164,9 +164,9 @@ int GetCacheIndex(int fnum)
     //if not, let's create a new entry if space, or use oldest otherwise
     long long int SizeTotal = 0;
     for (int j = 0; j < Caches.count(); j++)
-        SizeTotal += (long long int) Caches[j]->Size;
+        SizeTotal += static_cast<long long int>(Caches[j]->Size);
 
-    if (SizeTotal < ((long long int)CacheMem * (long long int)(1024 * 1024)))
+    if (SizeTotal < (static_cast<long long int>(CacheMem) * static_cast<long long int>(1024 * 1024)))
     {
         Caches.append(new Cache);
         Caches[Caches.count() - 1]->Blank(fnum);
@@ -200,7 +200,6 @@ int GetCacheIndex(int fnum)
 
 int Counter;
 int Errors;
-
 
 void LoadAllData(int fnum)
 //Load all info for currentfile into arrays
@@ -270,7 +269,7 @@ void LoadColourData(int fnum)
         //Use cache copy
         if (CacheCompressionLevel > 0)
         {
-            if (Caches[i]->ColDataCompressed != 0)
+            if (Caches[i]->ColDataCompressed != nullptr)
             {
                 ColArray.loadFromData(*(Caches[i]->ColDataCompressed));
             }
@@ -278,7 +277,7 @@ void LoadColourData(int fnum)
         }
         else
         {
-            if (Caches[i]->ColData != 0)
+            if (Caches[i]->ColData != nullptr)
             {
                 ColArray = *(Caches[i]->ColData);
             }
@@ -319,13 +318,13 @@ past:  //so can get here with a valid cache entry but no colour file
             //store data
             if (CacheCompressionLevel == 0) //no compression -stash data
             {
-                if (Caches[newcache]->ColData == 0) Caches[newcache]->ColData = new QImage(Data); //if existing will be correct!
+                if (Caches[newcache]->ColData == nullptr) Caches[newcache]->ColData = new QImage(Data); //if existing will be correct!
                 if (Caches[newcache]->ColDataCompressed) delete Caches[newcache]->ColDataCompressed;
             }
             else
             {
                 if (Caches[newcache]->ColData) delete Caches[newcache]->ColData; //delete any full sized version
-                if (Caches[newcache]->ColDataCompressed == 0)
+                if (Caches[newcache]->ColDataCompressed == nullptr)
                 {
                     Caches[newcache]->ColDataCompressed = new QByteArray;
                     QBuffer buffer(Caches[newcache]->ColDataCompressed);
@@ -383,7 +382,7 @@ void LoadGreyData(int fnum, int seg)
 {
     //qDebug()<<"In LGD, file"<<fnum<<"seg"<<seg<<"GA count"<<GA.count();
 
-    while (GA.count() <= seg) GA.append((QImage *)0); //put in a blank if we don't have enough!
+    while (GA.count() <= seg) GA.append(static_cast<QImage *>(nullptr)); //put in a blank if we don't have enough!
     //qDebug()<<"In LGD, file"<<fnum<<"seg"<<seg<<"GA count"<<GA.count();
     //check cache
     mutex.lock();
@@ -399,7 +398,7 @@ void LoadGreyData(int fnum, int seg)
             //qDebug()<<"PNG";
             if (Caches[i]->GreyData[seg]->CompressedData)
             {
-                if (GA[seg] == 0) GA[seg] = new QImage;
+                if (GA[seg] == nullptr) GA[seg] = new QImage;
                 GA[seg]->loadFromData(*(Caches[i]->GreyData[seg]->CompressedData));
                 mutex.unlock();
                 //qDebug()<<"ret from PNG";
@@ -411,7 +410,7 @@ void LoadGreyData(int fnum, int seg)
             //qDebug()<<"uncom";
             if (Caches[i]->GreyData[seg]->Data) //there IS data
             {
-                if (GA[seg] == 0) GA[seg] = new QImage;
+                if (GA[seg] == nullptr) GA[seg] = new QImage;
                 GA[seg] = Caches[i]->GreyData[seg]->Data;
                 mutex.unlock();
                 //qDebug()<<"Got cached copy, returning";
@@ -729,7 +728,7 @@ void SaveGreyData(int fnum, int seg)
     if (CacheCompressionLevel == 0)
     {
         //if nothing stored, set to the GA array (if changed setting maybe)
-        if (Caches[newcache]->GreyData[seg]->Data == 0)
+        if (Caches[newcache]->GreyData[seg]->Data == nullptr)
         {
             Caches[newcache]->GreyData[seg]->Data = GA[seg];
         }
@@ -761,7 +760,7 @@ void LoadMasks(int fnum)
     if (i >= 0)
     {
         //Use cache copy
-        if (Caches[i]->Masks != 0) //i.e. if there is a cached maskre enough entries
+        if (Caches[i]->Masks != nullptr) //i.e. if there is a cached maskre enough entries
         {
 
             if (CacheCompressionLevel > 0)
@@ -817,7 +816,7 @@ past:  //so can get here with a valid cache entry but no grey file
 
         //Store a copy in cache
         int newcache = GetCacheIndex(fnum); //gets index (may be new) for this to be cached in
-        if (newcache != -1) if (Caches[newcache]->Masks != 0) delete  Caches[newcache]->Masks; //delete any old one
+        if (newcache != -1) if (Caches[newcache]->Masks != nullptr) delete  Caches[newcache]->Masks; //delete any old one
 
 
         //OK, compression scheme here - if I LOADED a compressed file, store in ram with this level (whatever it is)
@@ -872,13 +871,13 @@ void SaveMasks(int fnum)
     if (FileCompressionLevel > 0)
     {
         *OutData = qCompress(Masks, FileCompressionLevel);
-        file.write(OutData->data(), (qint64)OutData->size());
+        file.write(OutData->data(), static_cast<qint64>(OutData->size()));
     }
-    else file.write(Masks.data(), (qint64)Masks.size());
+    else file.write(Masks.data(), static_cast<qint64>(Masks.size()));
 
     //and insert into cache
     int newcache = GetCacheIndex(fnum); //gets index (may be new) for this to be cached in
-    if (newcache != -1) if (Caches[newcache]->Masks != 0) delete  Caches[newcache]->Masks; //delete any old one
+    if (newcache != -1) if (Caches[newcache]->Masks != nullptr) delete  Caches[newcache]->Masks; //delete any old one
 
     //OK, work out what to do with compression
     if (CacheCompressionLevel == 0)
@@ -922,9 +921,9 @@ void SimpleSaveLocks(int fnum, QByteArray array)
     if (FileCompressionLevel > 0)
     {
         *OutData = qCompress(array, FileCompressionLevel);
-        file.write(OutData->data(), (qint64)OutData->size());
+        file.write(OutData->data(), static_cast<qint64>(OutData->size()));
     }
-    else file.write(array.data(), (qint64)array.size());
+    else file.write(array.data(), static_cast<qint64>(array.size()));
     delete OutData;
 }
 
@@ -951,11 +950,11 @@ void SimpleSaveMasks(int fnum, QByteArray array)
 
         *OutData = qCompress(array, FileCompressionLevel);
 
-        file.write(OutData->data(), (qint64)OutData->size());
+        file.write(OutData->data(), static_cast<qint64>(OutData->size()));
     }
     else
     {
-        file.write(array.data(), (qint64)array.size());
+        file.write(array.data(), static_cast<qint64>(array.size()));
     }
     delete OutData;
 }
@@ -1037,7 +1036,7 @@ void LoadLocks(int fnum)
     if (i >= 0)
     {
         //Use cache copy
-        if (Caches[i]->Locks != 0) //i.e. if there is a cached maskre enough entries
+        if (Caches[i]->Locks != nullptr) //i.e. if there is a cached maskre enough entries
         {
             if (CacheCompressionLevel > 0)
             {
@@ -1099,7 +1098,7 @@ past:  //so can get here with a valid cache entry but no grey file
             //qDebug()<<"H3-storing";
             //Store a copy in cache
             int newcache = GetCacheIndex(fnum); //gets index (may be new) for this to be cached in
-            if (newcache != -1) if (Caches[newcache]->Locks != 0) delete  Caches[newcache]->Locks; //delete any old one
+            if (newcache != -1) if (Caches[newcache]->Locks != nullptr) delete  Caches[newcache]->Locks; //delete any old one
 
             //OK, compression scheme here - if I LOADED a compressed file, store in ram with this level (whatever it is)
             //Otherwise store the uncompressed version
@@ -1165,16 +1164,16 @@ void SaveLocks(int fnum)
     if (FileCompressionLevel > 0)
     {
         *OutData = qCompress(Locks, FileCompressionLevel);
-        file.write(OutData->data(), (qint64)OutData->size());
+        file.write(OutData->data(), static_cast<qint64>(OutData->size()));
     }
     else
-        file.write(Locks.data(), (qint64)Locks.size());
+        file.write(Locks.data(), static_cast<qint64>(Locks.size()));
 
     if (!RenderCache)
     {
         //Store a copy in cache
         int newcache = GetCacheIndex(fnum); //gets index (may be new) for this to be cached in
-        if (newcache != -1) if (Caches[newcache]->Locks != 0) delete  Caches[newcache]->Locks; //delete any old one
+        if (newcache != -1) if (Caches[newcache]->Locks != nullptr) delete  Caches[newcache]->Locks; //delete any old one
         //OK, work out what to do with compression
         if (CacheCompressionLevel == 0)
         {
@@ -1250,7 +1249,8 @@ void ApplyDefaultSettings()
     CurrentSegment = 0;
     CurrentRSegment = -2;
     Brush_Size = 5;
-    BrushY = Brush_Size, BrushZ = Brush_Size;
+    BrushY = Brush_Size;
+    BrushZ = Brush_Size;
     BrightUp = 10;
     BrightDown = 10;
     BrightSoft = 0;
@@ -1324,7 +1324,7 @@ int GetShort(QDataStream *in)
         qDebug() << "getshort" << in->status();
         Errors++;
     }
-    return (int) val;
+    return static_cast<int>(val);
 }
 
 int GetInt(QDataStream *in)
@@ -1423,28 +1423,11 @@ QString GetString(QDataStream *in)
     else
         //oops, we've read into next string
     {
-        int pos = in->device()->pos();
+        qint64 pos = in->device()->pos();
         in->device()->seek(pos - 1);
         text = text.left(text.size() - 2);
     }
 
-
-    /* //Old Version
-    qint8 a=99, b;
-    QChar c;
-    QString text="";
-
-
-    do //should read until we have a double terminator
-    {
-        b=a; //keep last one
-        c = (QChar) a;
-        *in >> a; Counter++;
-        if (a>=32) text.append(a);
-    }
-    while (a!=0 || b>=32);
-
-    */
     if (in->status())
     {
         qDebug() << "getstring" << in->status();
@@ -1670,7 +1653,7 @@ void GetSettingsMinus6(QDataStream *in)
     for (n = 0; n < 8; n++)
     {
         dtemp = GetDouble(in);
-        if (n < SegmentCount) Segments[n]->PolyOrder = (int)dtemp;
+        if (n < SegmentCount) Segments[n]->PolyOrder = static_cast<int>(dtemp);
     }
     for (n = 0; n < 8; n++)
     {
@@ -1977,14 +1960,14 @@ void DumpSettings()
     //Message("HERE");
     //First header - standard text, v number, then SettingsFileName (might not be same as current filename - so store!)
     qDebug() << QString("SPIERSedit settings file");
-    qDebug() << (int)SPIERS_VERSION;
+    qDebug() << static_cast<int>(SPIERS_VERSION);
     qDebug() << SettingsFileName;
 
     //Do all the simple stuff first
     qDebug() << FileNotes;
     qDebug() << FileCount << CurrentFile << cwidth << cheight;
     qDebug() << fwidth << fheight;
-    qDebug() << (int)CurrentZoom << ColMonoScale << Trans;
+    qDebug() << static_cast<int>(CurrentZoom) << ColMonoScale << Trans;
     qDebug() << CMin << CMax;
     qDebug() << HiddenMasksLockedForGeneration;
     qDebug() << SegmentBrushAppliesMasks;
@@ -2004,7 +1987,7 @@ void DumpSettings()
     foreach (QString str, Files) qDebug() << str;
 
     //It seems there ARE no segments - just reading masks -
-    foreach (struct Segment *seg, Segments)
+    foreach (class Segment *seg, Segments)
     {
         qDebug() << seg->Name;
         //qDebug()<<"HERE";
@@ -2022,7 +2005,7 @@ void DumpSettings()
         //for(n=0; n<10; n++) qDebug()<<seg->PolyBlueConsts[n];
     }
 
-    foreach (struct Mask *m, MasksSettings)
+    foreach (class Mask *m, MasksSettings)
     {
         qDebug() << m->Name;
         qDebug() << m->ForeColour[0] << m->ForeColour[1] << m->ForeColour[2]; //r,g,b
@@ -2030,7 +2013,7 @@ void DumpSettings()
         qDebug() << m->Show << m->Write << m->Contrast << m->Lock;
     }
 
-    foreach (struct Curve *c, Curves)
+    foreach (class Curve *c, Curves)
     {
         qDebug() << c->Name;
         qDebug() << c->Colour[0] << c->Colour[1] << c->Colour[2]; //r,g,b
@@ -2039,7 +2022,7 @@ void DumpSettings()
         //for (n=0; n<c->SplineCount; n++) qDebug()<<c->SplineY[n];
     }
 
-    foreach (struct OutputObject *o, OutputObjects)
+    foreach (class OutputObject *o, OutputObjects)
     {
         qDebug() << o->Name;
         qDebug() << o->Resample;
@@ -2077,7 +2060,7 @@ void WriteSettings()
 
     //First header - standard text, v number, then SettingsFileName (might not be same as current filename - so store!)
     out << QString("SPIERSedit settings file");
-    out << (int)SPIERS_VERSION;
+    out << static_cast<int>(SPIERS_VERSION);
     out << SettingsFileName;
 
     //Do all the simple stuff first
@@ -2087,7 +2070,7 @@ void WriteSettings()
 
     out << CurrentFile << cwidth << cheight;
     out << fwidth << fheight;
-    out << (int)CurrentZoom << ColMonoScale << Trans;
+    out << static_cast<int>(CurrentZoom) << ColMonoScale << Trans;
     out << CMin << CMax;
     out << HiddenMasksLockedForGeneration;
     out << SegmentBrushAppliesMasks;
@@ -2108,13 +2091,13 @@ void WriteSettings()
 
     foreach (QString str, FullFiles) out << str;
 
-    foreach (struct Segment *seg, Segments)
+    foreach (class Segment *seg, Segments)
     {
         out << seg->Name;
         out << seg->Colour[0] << seg->Colour[1] << seg->Colour[2]; //r,g,b
         out << seg->LinPercent[0] << seg->LinPercent[1] << seg->LinPercent[2]; //r,g,b
         out << seg->LinGlobal << seg->LinInvert << seg->NeighbourBright << seg->NeighbourSparse;
-        out << seg->NeighbourSingle << seg->PolyKall << (double)seg->PolyOrder << seg->PolySparse;
+        out << seg->NeighbourSingle << seg->PolyKall << static_cast<double>(seg->PolyOrder) << seg->PolySparse;
         out << seg->PolyRetries << seg->PolyConverge << seg->PolyScale << seg->PolyContrast;
         out << seg->RangeBase << seg->RangeTop << seg->RangeGradient << seg->RangeCenter;
         for (n = 0; n < 10; n++) out << seg->PolyRedConsts[n];
@@ -2125,7 +2108,7 @@ void WriteSettings()
         out << seg->Activated;
     }
 
-    foreach (struct Mask *m, MasksSettings)
+    foreach (class Mask *m, MasksSettings)
     {
         out << m->Name;
         out << m->ForeColour[0] << m->ForeColour[1] << m->ForeColour[2]; //r,g,b
@@ -2134,7 +2117,7 @@ void WriteSettings()
         out << m->ListOrder;
     }
 
-    foreach (struct Curve *c, Curves)
+    foreach (class Curve *c, Curves)
     {
         out << c->Name;
         out << c->Colour[0] << c->Colour[1] << c->Colour[2]; //r,g,b
@@ -2152,7 +2135,7 @@ void WriteSettings()
         }
     }
 
-    foreach (struct OutputObject *o, OutputObjects)
+    foreach (class OutputObject *o, OutputObjects)
     {
         out << o->Name;
         out << o->Resample;
