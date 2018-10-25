@@ -12,6 +12,9 @@ DESTDIR \
     += \
     bin
 
+# Load the SPIERS version number
+include(../version.pri)
+
 FORMS += ui/import.ui \
     ui/mainwindow.ui \
     ui/Copying.ui \

@@ -12,7 +12,12 @@ CONFIG += qt \
     release \
     warn_on
 
-DESTDIR = bin
+# Load the SPIERS version number
+include(../version.pri)
+
+DESTDIR \
+    += \
+    bin
 
 OBJECTS_DIR = build
 
