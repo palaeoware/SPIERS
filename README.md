@@ -1,4 +1,4 @@
-# SPIERS Align
+# SPIERS Software
 
 Coded by:
 
