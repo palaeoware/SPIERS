@@ -1,0 +1,2330 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1071</width>
+    <height>1081</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>SPIERSview</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_3">
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QLabel" name="ZoomLabel">
+          <property name="text">
+           <string>Zoom</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSlider" name="ClipAngle">
+          <property name="minimumSize">
+           <size>
+            <width>24</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>24</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>1000</number>
+          </property>
+          <property name="pageStep">
+           <number>0</number>
+          </property>
+          <property name="value">
+           <number>500</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="invertedAppearance">
+           <bool>true</bool>
+          </property>
+          <property name="tickPosition">
+           <enum>QSlider::TicksBothSides</enum>
+          </property>
+          <property name="tickInterval">
+           <number>50</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QFrame" name="frameVTK">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1071</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuSPIERSview">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionResurface_Now"/>
+    <addaction name="separator"/>
+    <addaction name="actionImport_SPV"/>
+    <addaction name="actionImport_Replacement"/>
+    <addaction name="actionRemove_Piece"/>
+    <addaction name="separator"/>
+    <addaction name="actionSave_Changes"/>
+    <addaction name="actionSave_As"/>
+    <addaction name="actionSave_Presurfaced"/>
+    <addaction name="separator"/>
+    <addaction name="actionSave_Finalised_As"/>
+    <addaction name="actionSTL"/>
+    <addaction name="actionDXF"/>
+    <addaction name="actionExport_Hidden_Objects"/>
+    <addaction name="separator"/>
+    <addaction name="actionScreen_Capture"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuMode">
+    <property name="title">
+     <string>Mode</string>
+    </property>
+    <addaction name="actionOrthographic_View"/>
+    <addaction name="actionNo_Stereo"/>
+    <addaction name="actionAnaglyph_Stereo"/>
+    <addaction name="actionSplit_Stereo"/>
+    <addaction name="actionQuadBuffer_Stereo"/>
+    <addaction name="separator"/>
+    <addaction name="actionMute_Colours"/>
+    <addaction name="separator"/>
+    <addaction name="actionBounding_Box"/>
+    <addaction name="separator"/>
+    <addaction name="actionRotate_Lock"/>
+    <addaction name="actionAuto_Resurface"/>
+    <addaction name="actionReposition_Selected"/>
+   </widget>
+   <widget class="QMenu" name="menuObjects">
+    <property name="title">
+     <string>Objects</string>
+    </property>
+    <widget class="QMenu" name="menuSmoothing">
+     <property name="title">
+      <string>Smoothing</string>
+     </property>
+     <addaction name="actionOff"/>
+     <addaction name="actionVery_Weak"/>
+     <addaction name="actionWeak"/>
+     <addaction name="actionMedium_2"/>
+     <addaction name="actionStrongish"/>
+     <addaction name="actionStrong"/>
+     <addaction name="actionStrongest"/>
+     <addaction name="separator"/>
+     <addaction name="actionSmoothing_Custom"/>
+    </widget>
+    <widget class="QMenu" name="menuIsland_Removal">
+     <property name="title">
+      <string>Island Removal</string>
+     </property>
+     <addaction name="actionOff_2"/>
+     <addaction name="actionRemove_Tiny"/>
+     <addaction name="actionRemove_Small"/>
+     <addaction name="actionRemove_Medium"/>
+     <addaction name="actionRemove_Large"/>
+     <addaction name="actionRemove_All"/>
+     <addaction name="actionIsland_Removal_Custom"/>
+    </widget>
+    <widget class="QMenu" name="menuTransparency_2">
+     <property name="title">
+      <string>Transparency</string>
+     </property>
+     <addaction name="actionOpaque_2"/>
+     <addaction name="action75_Opaque_2"/>
+     <addaction name="action62_Opaque"/>
+     <addaction name="action50_Opaque"/>
+     <addaction name="action25_Opaque"/>
+     <addaction name="separator"/>
+     <addaction name="actionTransparency_Custom"/>
+    </widget>
+    <widget class="QMenu" name="menuShininess">
+     <property name="title">
+      <string>Shininess</string>
+     </property>
+     <addaction name="actionMatte"/>
+     <addaction name="actionSlightly_Shiny"/>
+     <addaction name="actionFairly_Shiny"/>
+     <addaction name="actionShiny"/>
+     <addaction name="separator"/>
+     <addaction name="actionShininessCustom"/>
+    </widget>
+    <addaction name="actionShow_All"/>
+    <addaction name="actionHide_All"/>
+    <addaction name="actionInvert_Show"/>
+    <addaction name="actionSelect_All"/>
+    <addaction name="actionSelect_None"/>
+    <addaction name="separator"/>
+    <addaction name="actionGroup"/>
+    <addaction name="actionUngroup"/>
+    <addaction name="actionMove_to_group"/>
+    <addaction name="action_Move_Up"/>
+    <addaction name="actionMove_Down"/>
+    <addaction name="separator"/>
+    <addaction name="menuTransparency_2"/>
+    <addaction name="menuShininess"/>
+    <addaction name="separator"/>
+    <addaction name="actionSet_Resampling"/>
+    <addaction name="actionQuadric_Fidelity_Reduction"/>
+    <addaction name="menuSmoothing"/>
+    <addaction name="menuIsland_Removal"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionManual"/>
+    <addaction name="actionCode_on_GitHub"/>
+    <addaction name="actionBugIssueFeatureRequest"/>
+    <addaction name="actionQuick_Guide"/>
+    <addaction name="separator"/>
+    <addaction name="actionAbout"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="actionFull_Screen"/>
+    <addaction name="separator"/>
+    <addaction name="actionZoom_In"/>
+    <addaction name="actionZoom_Out"/>
+    <addaction name="actionRotate_Clockwise"/>
+    <addaction name="actionRotate_Anticlockwise"/>
+    <addaction name="actionLarge_Rotate_Clockwise"/>
+    <addaction name="actionLarge_Rotate_Anticlockwise"/>
+    <addaction name="actionMove_towards_viewer"/>
+    <addaction name="actionMove_away_from_viewer"/>
+    <addaction name="actionLarge_Move_Closer"/>
+    <addaction name="actionLarge_Move_Away"/>
+    <addaction name="separator"/>
+    <addaction name="actionInvert_Mouse_Wheel"/>
+    <addaction name="separator"/>
+    <addaction name="actionVery_Low"/>
+    <addaction name="actionLow"/>
+    <addaction name="actionMedium"/>
+    <addaction name="actionHigh"/>
+    <addaction name="actionVery_High"/>
+    <addaction name="separator"/>
+    <addaction name="actionAANone"/>
+    <addaction name="action2x"/>
+    <addaction name="action4x"/>
+    <addaction name="action8x"/>
+    <addaction name="action16x"/>
+    <addaction name="separator"/>
+    <addaction name="actionBackground_Colour"/>
+    <addaction name="separator"/>
+    <addaction name="actionReset_to_default_position"/>
+    <addaction name="actionSet_new_default_position"/>
+   </widget>
+   <widget class="QMenu" name="menuScale">
+    <property name="title">
+     <string>Scale</string>
+    </property>
+    <addaction name="actionShow_Scale_Grid"/>
+    <addaction name="actionScale_Grid_Colour"/>
+    <addaction name="actionMinor_Grid_Colour"/>
+    <addaction name="separator"/>
+    <addaction name="actionShow_Ball_2"/>
+    <addaction name="actionReposition_Scale_Ball"/>
+    <addaction name="actionSet_Scale_Ball_Size"/>
+    <addaction name="actionReset_Ball_to_Center"/>
+    <addaction name="actionChange_Ball_Colour"/>
+    <addaction name="separator"/>
+    <addaction name="actionIncrease_Size"/>
+    <addaction name="actionDecrease_Size"/>
+    <addaction name="actionReset_Size"/>
+    <addaction name="actionRescale_by"/>
+   </widget>
+   <widget class="QMenu" name="menuAnimation">
+    <property name="title">
+     <string>Animation</string>
+    </property>
+    <widget class="QMenu" name="menuSet_Image_Output_Format">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="title">
+      <string>Set Image Output Format</string>
+     </property>
+     <addaction name="actionBitmap_BMP"/>
+     <addaction name="actionJPEG_High_Quality_JPG"/>
+     <addaction name="actionJPEG_Medium_Quality_JPG"/>
+     <addaction name="actionJPEG_Low_Quality_JPG"/>
+     <addaction name="actionPortable_Network_Graphic_PNG"/>
+     <addaction name="actionTagged_Image_File_Format_TIFF"/>
+    </widget>
+    <addaction name="actionApply_Step"/>
+    <addaction name="actionSave_Image_and_Apply_Step"/>
+    <addaction name="actionApply_Steps"/>
+    <addaction name="actionApply_Multiple_Steps_Saving_Images"/>
+    <addaction name="separator"/>
+    <addaction name="actionSet_Image_Folder"/>
+    <addaction name="menuSet_Image_Output_Format"/>
+    <addaction name="actionRescale_Output"/>
+    <addaction name="separator"/>
+    <addaction name="actionAuto_Spin"/>
+   </widget>
+   <widget class="QMenu" name="menuWindow">
+    <property name="title">
+     <string>Window</string>
+    </property>
+    <addaction name="actionAnimation_Panel"/>
+    <addaction name="actionClip_Controls"/>
+    <addaction name="actionInfo"/>
+    <addaction name="actionPieces_Panel"/>
+    <addaction name="actionProgress_Bars"/>
+    <addaction name="actionObject_Panel"/>
+   </widget>
+   <addaction name="menuSPIERSview"/>
+   <addaction name="menuAnimation"/>
+   <addaction name="menuMode"/>
+   <addaction name="menuObjects"/>
+   <addaction name="menuScale"/>
+   <addaction name="menuView"/>
+   <addaction name="menuWindow"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QDockWidget" name="dockWidget">
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="windowTitle">
+    <string>Objects (F1)</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <property name="leftMargin">
+      <number>2</number>
+     </property>
+     <property name="topMargin">
+      <number>2</number>
+     </property>
+     <property name="rightMargin">
+      <number>2</number>
+     </property>
+     <property name="bottomMargin">
+      <number>2</number>
+     </property>
+     <item>
+      <widget class="QTreeWidget" name="treeWidget">
+       <property name="selectionMode">
+        <enum>QAbstractItemView::ExtendedSelection</enum>
+       </property>
+       <column>
+        <property name="text">
+         <string notr="true">Object</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Show</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Key</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Col</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Fidelity</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Trans</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Island Removal</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Smoothing</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Shininess</string>
+        </property>
+       </column>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockWidgetPieces">
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="windowTitle">
+    <string>Pieces (F2)</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QVBoxLayout" name="verticalLayout_4">
+     <item>
+      <widget class="QListWidget" name="PiecesList"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="InfoDock">
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="windowTitle">
+    <string>Info (F4)</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_3">
+    <layout class="QVBoxLayout" name="verticalLayout_8">
+     <item>
+      <widget class="QTreeWidget" name="infoTreeWidget">
+       <column>
+        <property name="text">
+         <string>Info Items</string>
+        </property>
+       </column>
+       <item>
+        <property name="text">
+         <string>Title</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Classification</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Authors</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>References</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Specimen</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Provenance</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Comments</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="infoText">
+       <property name="tabChangesFocus">
+        <bool>true</bool>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+       <property name="textInteractionFlags">
+        <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="ProgressDock">
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::BottomDockWidgetArea|Qt::TopDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>Progress (F3)</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_4">
+    <layout class="QHBoxLayout" name="horizontalLayout_6">
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_10">
+       <item>
+        <widget class="QLabel" name="OutputLabelOverall">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="OutputLabelSpecific">
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_9">
+       <item>
+        <widget class="QProgressBar" name="ProgBarOverall">
+         <property name="value">
+          <number>0</number>
+         </property>
+         <property name="textVisible">
+          <bool>true</bool>
+         </property>
+         <property name="invertedAppearance">
+          <bool>false</bool>
+         </property>
+         <property name="textDirection">
+          <enum>QProgressBar::TopToBottom</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QProgressBar" name="ProgBarSpecific">
+         <property name="value">
+          <number>0</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+    <zorder></zorder>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="ClipDock">
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="windowTitle">
+    <string>Clipping (F6)</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_5">
+    <layout class="QHBoxLayout" name="horizontalLayout_7">
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Start</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QSlider" name="ClipStart">
+           <property name="maximum">
+            <number>1000</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="tickPosition">
+            <enum>QSlider::TicksBothSides</enum>
+           </property>
+           <property name="tickInterval">
+            <number>50</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_6">
+       <item>
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>Depth</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QSlider" name="ClipDepth">
+           <property name="maximum">
+            <number>1000</number>
+           </property>
+           <property name="value">
+            <number>1000</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="tickPosition">
+            <enum>QSlider::TicksBothSides</enum>
+           </property>
+           <property name="tickInterval">
+            <number>50</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_7">
+       <item>
+        <widget class="QLabel" name="label_7">
+         <property name="text">
+          <string>Distance</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_5">
+         <item>
+          <widget class="QSlider" name="ZoomSlider">
+           <property name="maximum">
+            <number>1000</number>
+           </property>
+           <property name="value">
+            <number>500</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="tickPosition">
+            <enum>QSlider::TicksBothSides</enum>
+           </property>
+           <property name="tickInterval">
+            <number>50</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="AnimDock">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>333</width>
+     <height>289</height>
+    </size>
+   </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="windowTitle">
+    <string>Animation (F7)</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_6">
+    <layout class="QVBoxLayout" name="verticalLayout_11">
+     <item>
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_9">
+         <property name="text">
+          <string>Rotate around</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>X</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>Y</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>Z</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_10">
+         <property name="text">
+          <string>axis (degrees)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QDoubleSpinBox" name="SpinXInc"/>
+       </item>
+       <item row="1" column="2">
+        <widget class="QDoubleSpinBox" name="SpinYInc"/>
+       </item>
+       <item row="1" column="3">
+        <widget class="QDoubleSpinBox" name="SpinZInc"/>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_19">
+         <property name="text">
+          <string>Axis</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="label_20">
+         <property name="text">
+          <string>X</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLabel" name="label_21">
+         <property name="text">
+          <string>Y</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QLabel" name="label_22">
+         <property name="text">
+          <string>Z</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_23">
+         <property name="text">
+          <string>Translation</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QDoubleSpinBox" name="XTrans">
+         <property name="minimum">
+          <double>-99.989999999999995</double>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QDoubleSpinBox" name="YTrans">
+         <property name="minimum">
+          <double>-99.989999999999995</double>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QDoubleSpinBox" name="ZTrans">
+         <property name="minimum">
+          <double>-99.989999999999995</double>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <spacer name="verticalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QLabel" name="label_11">
+         <property name="text">
+          <string>Zoom</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="AnimSpinZoom">
+         <property name="minimum">
+          <number>-100</number>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="value">
+          <number>0</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Next File#</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="AnimSpinFileNum">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="maximum">
+          <number>99999</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_8">
+       <item>
+        <widget class="QLabel" name="label_8">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Filename stub:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="AnimFilenameStub">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_9">
+       <item>
+        <widget class="QLabel" name="label_12">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Rescale to width:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="AnimRescaleX">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="suffix">
+          <string> px</string>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>2048</number>
+         </property>
+         <property name="value">
+          <number>640</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_13">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Height: </string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="LabelAnimHeight">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>---- px</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <spacer name="verticalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_10">
+       <item>
+        <widget class="QPushButton" name="SingleStepButton">
+         <property name="text">
+          <string>Step</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="MultipleStepButton">
+         <property name="text">
+          <string>Steps...</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="CheckSave">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>Save Images</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <action name="actionSave_Changes">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Save Changes</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+X</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionSTL">
+   <property name="text">
+    <string>Export VAXML/STL...</string>
+   </property>
+  </action>
+  <action name="actionDXF">
+   <property name="text">
+    <string>Export DXF...</string>
+   </property>
+  </action>
+  <action name="actionAnaglyph_Stereo">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Anaglyph Stereo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+A</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionSplit_Stereo">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Split Stereo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionMute_Colours">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Mute Colours</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+M</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionAuto_Spin">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Simple Autospin</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+U</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionRotate_Lock">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Rotate Lock</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionObject_Panel">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Object Panel</string>
+   </property>
+   <property name="shortcut">
+    <string>F1</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionFilters_Panel">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Filters Panel</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About...</string>
+   </property>
+  </action>
+  <action name="actionShow_All">
+   <property name="text">
+    <string>Show All</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+H</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+   <property name="visible">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="actionHide_All">
+   <property name="text">
+    <string>Hide All</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+H</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionInvert_Show">
+   <property name="text">
+    <string>Invert Show</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionGroup">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Group</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+G</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionUngroup">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Ungroup</string>
+   </property>
+  </action>
+  <action name="actionMove_to_group">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Move to Group</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="action_Move_Up">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Move Up</string>
+   </property>
+   <property name="shortcut">
+    <string>F12</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionMove_Down">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Move Down</string>
+   </property>
+   <property name="shortcut">
+    <string>F11</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionSet_Colour">
+   <property name="text">
+    <string>Set Colour...</string>
+   </property>
+  </action>
+  <action name="actionReset_Colour">
+   <property name="text">
+    <string>Reset Colour</string>
+   </property>
+  </action>
+  <action name="actionOpaque_2">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Transparency: Off</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+1</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="action75_Opaque_2">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Transparency: Low</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+2</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="action50_Opaque">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Transparency: Medium</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+4</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="action25_Opaque">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Transparency: High</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+5</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionZoom_In">
+   <property name="text">
+    <string>Zoom In</string>
+   </property>
+   <property name="shortcut">
+    <string>PgUp</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionZoom_Out">
+   <property name="text">
+    <string>Zoom Out</string>
+   </property>
+   <property name="shortcut">
+    <string>PgDown</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionReset_View">
+   <property name="text">
+    <string>Reset View</string>
+   </property>
+  </action>
+  <action name="actionRotate_Clockwise">
+   <property name="text">
+    <string>Rotate Clockwise</string>
+   </property>
+   <property name="shortcut">
+    <string>Right</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionRotate_Anticlockwise">
+   <property name="text">
+    <string>Rotate Anticlockwise</string>
+   </property>
+   <property name="shortcut">
+    <string>Left</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionScreen_Capture">
+   <property name="text">
+    <string>Screen Capture...</string>
+   </property>
+  </action>
+  <action name="actionVery_Low">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Stereo Separation: Very Low</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+1</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionLow">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Stereo Separation: Low</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+2</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionMedium">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Stereo Separation: Medium</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+3</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionHigh">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Stereo Separation: High</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+4</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionVery_High">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Stereo Separation: Very High</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+5</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionSet_Resampling">
+   <property name="text">
+    <string>Set Fidelity...</string>
+   </property>
+  </action>
+  <action name="actionOff">
+   <property name="text">
+    <string>Smoothing: Off</string>
+   </property>
+  </action>
+  <action name="actionVery_Weak">
+   <property name="text">
+    <string>Smoothing: Very Weak</string>
+   </property>
+  </action>
+  <action name="actionWeak">
+   <property name="text">
+    <string>Smoothing: Weak</string>
+   </property>
+  </action>
+  <action name="actionMedium_2">
+   <property name="text">
+    <string>Smoothing: Medium</string>
+   </property>
+  </action>
+  <action name="actionStrongish">
+   <property name="text">
+    <string>Smoothing: Strongish</string>
+   </property>
+  </action>
+  <action name="actionStrong">
+   <property name="text">
+    <string>Smoothing: Strong</string>
+   </property>
+  </action>
+  <action name="actionStrongest">
+   <property name="text">
+    <string>Smoothing: Strongest</string>
+   </property>
+  </action>
+  <action name="actionRemove_Tiny">
+   <property name="text">
+    <string>Island Removal: Tiny</string>
+   </property>
+  </action>
+  <action name="actionRemove_Small">
+   <property name="text">
+    <string>Island Removal: Small</string>
+   </property>
+  </action>
+  <action name="actionRemove_Medium">
+   <property name="text">
+    <string>Island Removal: Medium</string>
+   </property>
+  </action>
+  <action name="actionRemove_Large">
+   <property name="text">
+    <string>Island Removal: Large</string>
+   </property>
+  </action>
+  <action name="actionRemove_All">
+   <property name="text">
+    <string>Island Removal:  All</string>
+   </property>
+  </action>
+  <action name="actionOff_2">
+   <property name="text">
+    <string>Island Removal: Off</string>
+   </property>
+  </action>
+  <action name="actionAuto_Resurface">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Auto-Resurface</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+F5</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionResurface_Now">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Resurface Now</string>
+   </property>
+   <property name="shortcut">
+    <string>F5</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionProgress_Bars">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Progress Panel</string>
+   </property>
+   <property name="shortcut">
+    <string>F3</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+   <property name="visible">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="actionSave_Presurfaced">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Save Presurfaced As...</string>
+   </property>
+  </action>
+  <action name="actionSave_As">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Save Compact As...</string>
+   </property>
+  </action>
+  <action name="actionImport_SPV">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Import Piece...</string>
+   </property>
+  </action>
+  <action name="actionSave_Memory">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Save Memory</string>
+   </property>
+  </action>
+  <action name="actionReposition_Selected">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Reposition Selected</string>
+   </property>
+  </action>
+  <action name="actionPieces_Panel">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Pieces Panel</string>
+   </property>
+   <property name="shortcut">
+    <string>F2</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionSelect_All">
+   <property name="text">
+    <string>Select All Objects</string>
+   </property>
+  </action>
+  <action name="actionSelect_None">
+   <property name="text">
+    <string>Deselect All Objects</string>
+   </property>
+  </action>
+  <action name="actionImport_Replacement">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Replace Piece...</string>
+   </property>
+  </action>
+  <action name="actionIncrease_Size">
+   <property name="text">
+    <string>Increase Size</string>
+   </property>
+   <property name="shortcut">
+    <string>+</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionDecrease_Size">
+   <property name="text">
+    <string>Decrease Size</string>
+   </property>
+   <property name="shortcut">
+    <string>_</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionReset_Size">
+   <property name="text">
+    <string>Reset Size</string>
+   </property>
+  </action>
+  <action name="actionAANone">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Antialiasing: None</string>
+   </property>
+  </action>
+  <action name="action2x">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Antialiasing: 2x</string>
+   </property>
+  </action>
+  <action name="action4x">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Antialiasing: 4x</string>
+   </property>
+  </action>
+  <action name="action8x">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Antialiasing: 8x</string>
+   </property>
+  </action>
+  <action name="action16x">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Antialiasing: 16x</string>
+   </property>
+  </action>
+  <action name="actionClip_Controls">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Clipping Panel</string>
+   </property>
+   <property name="shortcut">
+    <string>F6</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="action62_Opaque">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Transparency: Lowish</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+3</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionRemove_Piece">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Remove Piece</string>
+   </property>
+  </action>
+  <action name="actionRescale_by">
+   <property name="text">
+    <string>Rescale by...</string>
+   </property>
+  </action>
+  <action name="actionQuadBuffer_Stereo">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>QuadBuffer Stereo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionNo_Stereo">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Perspective</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="actionInfo">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Info Panel</string>
+   </property>
+   <property name="shortcut">
+    <string>F4</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionIsometric">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Isometric</string>
+   </property>
+  </action>
+  <action name="actionShow_Ball">
+   <property name="text">
+    <string>No Scale Object</string>
+   </property>
+  </action>
+  <action name="actionShow_Ball_2">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show Scale Ball</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionShow_Bar">
+   <property name="text">
+    <string>Show Bar</string>
+   </property>
+  </action>
+  <action name="actionReposition_Scale_Ball">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Reposition Scale Ball</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionSet_Scale_Ball_Size">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Set Ball to Size...</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionReset_Ball_to_Center">
+   <property name="text">
+    <string>Reset Ball to Center</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionChange_Ball_Colour">
+   <property name="text">
+    <string>Change Ball Colour...</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionExport_VAXML">
+   <property name="text">
+    <string>Export VAXML...</string>
+   </property>
+  </action>
+  <action name="actionSave_Finalised_As">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Export Finalised...</string>
+   </property>
+  </action>
+  <action name="actionQuadric_Fidelity_Reduction">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Quadric Fidelity Reduction</string>
+   </property>
+  </action>
+  <action name="actionExport_Hidden_Objects">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Export Hidden Objects</string>
+   </property>
+  </action>
+  <action name="actionBackground_Colour">
+   <property name="text">
+    <string>Background Colour...</string>
+   </property>
+  </action>
+  <action name="actionManual">
+   <property name="text">
+    <string>Manual</string>
+   </property>
+  </action>
+  <action name="actionQuick_Guide">
+   <property name="text">
+    <string>Quick Guide...</string>
+   </property>
+  </action>
+  <action name="actionShow_Scale_Grid">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show Scale Grid</string>
+   </property>
+  </action>
+  <action name="actionMove_towards_viewer">
+   <property name="text">
+    <string>Move Closer</string>
+   </property>
+   <property name="shortcut">
+    <string>[</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionMove_away_from_viewer">
+   <property name="text">
+    <string>Move Away</string>
+   </property>
+   <property name="shortcut">
+    <string>]</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionOrthographic_View">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Orthographic</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionLarge_Move_Closer">
+   <property name="text">
+    <string>Large Move Closer</string>
+   </property>
+   <property name="shortcut">
+    <string>{</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionLarge_Move_Away">
+   <property name="text">
+    <string>Large Move Away</string>
+   </property>
+   <property name="shortcut">
+    <string>}</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionLarge_Rotate_Clockwise">
+   <property name="text">
+    <string>Large Rotate Clockwise</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+Right</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionLarge_Rotate_Anticlockwise">
+   <property name="text">
+    <string>Large Rotate Anticlockwise</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+Left</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionScale_Grid_Colour">
+   <property name="text">
+    <string>Major Grid Colour...</string>
+   </property>
+  </action>
+  <action name="actionMinor_Grid_Colour">
+   <property name="text">
+    <string>Minor Grid Colour...</string>
+   </property>
+  </action>
+  <action name="actionAnimation_Panel">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Animation Panel</string>
+   </property>
+   <property name="shortcut">
+    <string>F7</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionApply_Step">
+   <property name="text">
+    <string>Apply Single Step</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+   <property name="visible">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="actionSave_Image_and_Apply_Step">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Apply Single Step Saving Image</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+N</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionSet_Image_Folder">
+   <property name="text">
+    <string>Set Image Output Folder...</string>
+   </property>
+  </action>
+  <action name="actionRescale_Output">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Rescale Output</string>
+   </property>
+  </action>
+  <action name="actionApply_Steps">
+   <property name="text">
+    <string>Apply Multiple Steps...</string>
+   </property>
+  </action>
+  <action name="actionApply_Multiple_Steps_Saving_Images">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Apply Multiple Steps Saving Images...</string>
+   </property>
+  </action>
+  <action name="actionBitmap_BMP">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Bitmap (BMP)</string>
+   </property>
+  </action>
+  <action name="actionJPEG_High_Quality_JPG">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>JPEG - High Quality (JPG)</string>
+   </property>
+  </action>
+  <action name="actionJPEG_Medium_Quality_JPG">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>JPEG - Medium Quality (JPG)</string>
+   </property>
+   <property name="toolTip">
+    <string>JPEG - Medium Quality (JPG)</string>
+   </property>
+  </action>
+  <action name="actionJPEG_Low_Quality_JPG">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>JPEG - Low Quality (JPG)</string>
+   </property>
+  </action>
+  <action name="actionPortable_Network_Graphic_PNG">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Portable Network Graphic (PNG)</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WindowShortcut</enum>
+   </property>
+  </action>
+  <action name="actionTagged_Image_File_Format_TIFF">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Tagged Image File Format (TIFF)</string>
+   </property>
+  </action>
+  <action name="actionReset_to_default_position">
+   <property name="text">
+    <string>Reset to default position</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+R</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionSet_new_default_position">
+   <property name="text">
+    <string>Set new default position</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+D</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionInvert_Mouse_Wheel">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Invert Mouse Wheel</string>
+   </property>
+  </action>
+  <action name="actionMatte">
+   <property name="text">
+    <string>Shininess: Off</string>
+   </property>
+  </action>
+  <action name="actionSlightly_Shiny">
+   <property name="text">
+    <string>Shininess: Less</string>
+   </property>
+  </action>
+  <action name="actionFairly_Shiny">
+   <property name="text">
+    <string>Shininess: Default</string>
+   </property>
+  </action>
+  <action name="actionShiny">
+   <property name="text">
+    <string>Shininess: Full</string>
+   </property>
+  </action>
+  <action name="actionShininessCustom">
+   <property name="text">
+    <string>Shininess: Custom...</string>
+   </property>
+  </action>
+  <action name="actionIsland_Removal_Custom">
+   <property name="text">
+    <string>Island Removal: Custom</string>
+   </property>
+  </action>
+  <action name="actionSmoothing_Custom">
+   <property name="text">
+    <string>Smoothing: Custom</string>
+   </property>
+  </action>
+  <action name="actionTransparency_Custom">
+   <property name="text">
+    <string>Transparency: Custom...</string>
+   </property>
+  </action>
+  <action name="actionBounding_Box">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Bounding Box Mode</string>
+   </property>
+  </action>
+  <action name="actionCode_on_GitHub">
+   <property name="text">
+    <string>Code on GitHub</string>
+   </property>
+  </action>
+  <action name="actionBugIssueFeatureRequest">
+   <property name="text">
+    <string>Report Bug/Issue/Feature Request</string>
+   </property>
+  </action>
+  <action name="actionFull_Screen">
+   <property name="text">
+    <string>Full Screen</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WindowShortcut</enum>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>
