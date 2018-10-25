@@ -1984,7 +1984,7 @@
   </action>
   <action name="actionManual">
    <property name="text">
-    <string>Manual</string>
+    <string>Online Manual</string>
    </property>
   </action>
   <action name="actionQuick_Guide">

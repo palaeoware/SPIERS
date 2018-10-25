@@ -73,7 +73,7 @@
      <x>0</x>
      <y>0</y>
      <width>598</width>
-     <height>21</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuDsvdsvdasv">
@@ -139,7 +139,6 @@
      <string>Help</string>
     </property>
     <addaction name="actionManual"/>
-    <addaction name="actionOnline_User_Manual"/>
     <addaction name="actionCode_on_GitHub"/>
     <addaction name="actionBugIssueFeatureRequest"/>
     <addaction name="separator"/>
@@ -937,13 +936,13 @@
   </action>
   <action name="actionManual">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
-    <string>Manual</string>
+    <string>Online Manual</string>
    </property>
    <property name="visible">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
   </action>
   <action name="actionBugIssueFeatureRequest">
@@ -956,9 +955,9 @@
     <string>Code on GitHub</string>
    </property>
   </action>
-  <action name="actionOnline_User_Manual">
+  <action name="action_Manual">
    <property name="text">
-    <string>Online User Manual</string>
+    <string>Online Manual</string>
    </property>
   </action>
  </widget>
