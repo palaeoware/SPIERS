@@ -1,0 +1,70 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resources/gplv3-127x51.png</file>
+        <file>resources/Built_with_Qt_RGB_logo.png</file>
+        <file>resources/palaeoware_logo_square.png</file>
+    </qresource>
+    <qresource prefix="/icons">
+        <file alias="Active.bmp">resources/icons/Active.bmp</file>
+        <file alias="bulb.bmp">resources/icons/bulb.bmp</file>
+        <file alias="circle.bmp">resources/icons/circle.bmp</file>
+        <file alias="Curves.bmp">resources/icons/Curves.bmp</file>
+        <file alias="curve_closed.bmp">resources/icons/curve_closed.bmp</file>
+        <file alias="curve_filled.bmp">resources/icons/curve_filled.bmp</file>
+        <file alias="curve_open.bmp">resources/icons/curve_open.bmp</file>
+        <file alias="disk.bmp">resources/icons/disk.bmp</file>
+        <file alias="disk_off.bmp">resources/icons/disk_off.bmp</file>
+        <file alias="eye.bmp">resources/icons/eye.bmp</file>
+        <file alias="eye_off.bmp">resources/icons/eye_off.bmp</file>
+        <file alias="Inactive.bmp">resources/icons/Inactive.bmp</file>
+        <file alias="Lock.bmp">resources/icons/Lock.bmp</file>
+        <file alias="Masks.bmp">resources/icons/Masks.bmp</file>
+        <file alias="merged.bmp">resources/icons/merged.bmp</file>
+        <file alias="not_merged.bmp">resources/icons/not_merged.bmp</file>
+        <file alias="padlock.bmp">resources/icons/padlock.bmp</file>
+        <file alias="padlock_off.bmp">resources/icons/padlock_off.bmp</file>
+        <file alias="ProgramIcon.bmp">resources/icons/ProgramIcon.bmp</file>
+        <file alias="Recalc.bmp">resources/icons/Recalc.bmp</file>
+        <file alias="redo.bmp">resources/icons/redo.bmp</file>
+        <file alias="segment.bmp">resources/icons/segment.bmp</file>
+        <file alias="square.bmp">resources/icons/square.bmp</file>
+        <file alias="TODO.bmp">resources/icons/TODO.bmp</file>
+        <file alias="undo.bmp">resources/icons/undo.bmp</file>
+    </qresource>
+    <qresource prefix="/darkstyle">
+        <file alias="stylesheet_dark.qss">resources/darkstyle/stylesheet_dark.qss</file>
+        <file alias="icon_branch_closed.png">resources/darkstyle/icon_branch_closed.png</file>
+        <file alias="icon_branch_end.png">resources/darkstyle/icon_branch_end.png</file>
+        <file alias="icon_branch_more.png">resources/darkstyle/icon_branch_more.png</file>
+        <file alias="icon_branch_open.png">resources/darkstyle/icon_branch_open.png</file>
+        <file alias="icon_checkbox_checked.png">resources/darkstyle/icon_checkbox_checked.png</file>
+        <file alias="icon_checkbox_checked_disabled.png">resources/darkstyle/icon_checkbox_checked_disabled.png</file>
+        <file alias="icon_checkbox_checked_pressed.png">resources/darkstyle/icon_checkbox_checked_pressed.png</file>
+        <file alias="icon_checkbox_indeterminate.png">resources/darkstyle/icon_checkbox_indeterminate.png</file>
+        <file alias="icon_checkbox_indeterminate_disabled.png">resources/darkstyle/icon_checkbox_indeterminate_disabled.png</file>
+        <file alias="icon_checkbox_indeterminate_pressed.png">resources/darkstyle/icon_checkbox_indeterminate_pressed.png</file>
+        <file alias="icon_checkbox_unchecked.png">resources/darkstyle/icon_checkbox_unchecked.png</file>
+        <file alias="icon_checkbox_unchecked_disabled.png">resources/darkstyle/icon_checkbox_unchecked_disabled.png</file>
+        <file alias="icon_checkbox_unchecked_pressed.png">resources/darkstyle/icon_checkbox_unchecked_pressed.png</file>
+        <file alias="icon_close.png">resources/darkstyle/icon_close.png</file>
+        <file alias="icon_radiobutton_checked.png">resources/darkstyle/icon_radiobutton_checked.png</file>
+        <file alias="icon_radiobutton_checked_disabled.png">resources/darkstyle/icon_radiobutton_checked_disabled.png</file>
+        <file alias="icon_radiobutton_pressed.png">resources/darkstyle/icon_radiobutton_checked_pressed.png</file>
+        <file alias="icon_radiobutton_unchecked.png">resources/darkstyle/icon_radiobutton_unchecked.png</file>
+        <file alias="icon_radiobutton_disabled.png">resources/darkstyle/icon_radiobutton_unchecked_disabled.png</file>
+        <file alias="icon_radiobutton_unchecked_pressed.png">resources/darkstyle/icon_radiobutton_unchecked_pressed.png</file>
+        <file alias="icon_restore.png">resources/darkstyle/icon_restore.png</file>
+        <file alias="icon_undock.png">resources/darkstyle/icon_undock.png</file>
+        <file alias="icon_vline.png">resources/darkstyle/icon_vline.png</file>
+        <file alias="icon_about_button.png">resources/darkstyle/icon_about_button.png</file>
+        <file alias="icon_log_button.png">resources/darkstyle/icon_log_button.png</file>
+        <file alias="icon_settings_1_button.png">resources/darkstyle/icon_settings_1_button.png</file>
+        <file alias="icon_settings_2_button.png">resources/darkstyle/icon_settings_2_button.png</file>
+        <file alias="icon_eye_closed.png">resources/darkstyle/icon_eye_closed.png</file>
+        <file alias="icon_eye_open.png">resources/darkstyle/icon_eye_open.png</file>
+        <file alias="icon_padlock_closed.png">resources/darkstyle/icon_padlock_closed.png</file>
+        <file alias="icon_padlock_open.png">resources/darkstyle/icon_padlock_open.png</file>
+        <file alias="icon_padlock_closed_disabled.png">resources/darkstyle/icon_padlock_closed_disabled.png</file>
+        <file alias="icon_padlock_open_disabled.png">resources/darkstyle/icon_padlock_open_disabled.png</file>
+    </qresource>
+</RCC>

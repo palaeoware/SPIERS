@@ -1,0 +1,34 @@
+<ui version="4.0" >
+ <class>findpolynomial</class>
+ <widget class="QDialog" name="findpolynomial" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>235</width>
+    <height>164</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Find Polynomial</string>
+  </property>
+  <layout class="QVBoxLayout" >
+   <item>
+    <widget class="QLabel" name="label" >
+     <property name="text" >
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="pushButton" >
+     <property name="text" >
+      <string>Stop Search</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

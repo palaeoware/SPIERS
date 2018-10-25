@@ -1,0 +1,30 @@
+<ui version="4.0" >
+ <class>SelectSegment</class>
+ <widget class="QDialog" name="SelectSegment" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>204</width>
+    <height>69</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Segment for Curve</string>
+  </property>
+  <layout class="QVBoxLayout" >
+   <item>
+    <widget class="QComboBox" name="comboBox" />
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox" >
+     <property name="standardButtons" >
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
