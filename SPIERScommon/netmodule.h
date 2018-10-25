@@ -35,8 +35,6 @@
 
 #include <stdio.h>
 
-#define UPDATEVERSION "3.0.0-rc.1"
-
 extern bool macClickedNoForUpdateDownload;
 
 class NetModule : public QObject

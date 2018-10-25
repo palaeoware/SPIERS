@@ -272,7 +272,7 @@ agin:
         VAXML v;
         if (v.readVAXML(fname))
         {
-            QString shortfname = QString(PRODUCTNAME) + " v" + QString(UPDATEVERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
+            QString shortfname = QString(PRODUCTNAME) + " v" + QString(SOFTWARE_VERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
             this->setWindowTitle(shortfname);
             EnableRenderCommands();
             RefreshObjects();
@@ -293,7 +293,7 @@ agin:
         VAXML v;
         if (v.readSPVF(fname))
         {
-            QString shortfname = QString(PRODUCTNAME) + " v" + QString(UPDATEVERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
+            QString shortfname = QString(PRODUCTNAME) + " v" + QString(SOFTWARE_VERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
             this->setWindowTitle(shortfname);
             EnableRenderCommands();
             RefreshObjects();
@@ -311,7 +311,7 @@ agin:
     {
         //qDebug() << "[Where I'm I?] In StartTimer_fired - file is SPV OR SP2";
 
-        QString shortfname = QString(PRODUCTNAME) + " v" + QString(UPDATEVERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
+        QString shortfname = QString(PRODUCTNAME) + " v" + QString(SOFTWARE_VERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
         this->setWindowTitle(shortfname);
         SPVreader reader;
         reader.ProcessFile(fname);
@@ -1027,7 +1027,7 @@ void MainWindow::RefreshInfo()
         setWindowTitle(QString(PRODUCTNAME) + ": " + i_title[0]);
     else
     {
-        QString shortfname = QString(PRODUCTNAME) + " v" + QString(UPDATEVERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
+        QString shortfname = QString(PRODUCTNAME) + " v" + QString(SOFTWARE_VERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
         setWindowTitle(shortfname);
     }
     ui->infoTreeWidget->clear();

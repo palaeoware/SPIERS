@@ -201,7 +201,7 @@ void NetModule::slotReadyRead()
 
         //QByteArray b=reply->readAll();
         SemanticVersion versionOnline = SemanticVersion::fromString(reply->readLine());
-        SemanticVersion versionCurrent = SemanticVersion::fromString(UPDATEVERSION);
+        SemanticVersion versionCurrent = SemanticVersion::fromString(SOFTWARE_VERSION);
         qDebug() << "Version Online: " << versionOnline.str() << "Version Current: " << versionCurrent.str();
 
         if (versionOnline > versionCurrent)

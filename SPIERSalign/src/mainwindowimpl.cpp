@@ -74,7 +74,7 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     setupUi(this);
     setWindowIcon(QIcon (":/alignicon.png"));
 
-    setWindowTitle(QString(PRODUCTNAME) + " v" + QString(UPDATEVERSION) );
+    setWindowTitle(QString(PRODUCTNAME) + " v" + QString(SOFTWARE_VERSION) );
 
     showMaximized();
 
@@ -1927,7 +1927,7 @@ void MainWindowImpl::on_actionOpen_triggered()
 
         notes->clear();
 
-        this->setWindowTitle(QString(PRODUCTNAME) + " v" + QString(UPDATEVERSION));
+        this->setWindowTitle(QString(PRODUCTNAME) + " v" + QString(SOFTWARE_VERSION));
     }
     currentImage = 0;
 
@@ -2206,7 +2206,7 @@ void  MainWindowImpl::redrawImage()
     LogText("*6\t");
 
     //Title bar
-    QString output = QString(UPDATEVERSION) + imageList[currentImage]->fileName;
+    QString output = QString(SOFTWARE_VERSION) + imageList[currentImage]->fileName;
     QString output2;
     output2.sprintf(" - (%d/%d)", currentImage + 1, imageList.count());
     this->setWindowTitle(QString(PRODUCTNAME) + " v" + output + output2);

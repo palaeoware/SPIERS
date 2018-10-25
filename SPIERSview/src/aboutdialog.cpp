@@ -17,12 +17,12 @@ aboutdialog::aboutdialog(QWidget *parent) :
     m_ui->header->setPixmap(picture_1);
     m_ui->header->setAlignment(Qt::AlignCenter);
 
-    m_ui->textLabel_1->setText(QString(PRODUCTNAME) + " v" + QString(UPDATEVERSION));
+    m_ui->textLabel_1->setText(QString(PRODUCTNAME) + " v" + QString(SOFTWARE_VERSION));
     m_ui->textLabel_1->setObjectName("aboutTextLabel1");
     m_ui->textLabel_1->setAlignment(Qt::AlignCenter);
 
     m_ui->textLabel_2->setWordWrap(true);
-    m_ui->textLabel_2->setText("This  software is " + QString(PRODUCTNAME) + " v" + QString(UPDATEVERSION) +
+    m_ui->textLabel_2->setText("This  software is " + QString(PRODUCTNAME) + " v" + QString(SOFTWARE_VERSION) +
                                ". It was coded by"
                                " Mark Sutton (m.sutton@imperial.ac.uk). With additional code by Alan R.T. Spencer (alan.spencer@imperial.ac.uk) and Russell Garwood (russell.garwood@gmail.com)."
                                "<br><br>Reports are appreciated, and comments, suggestions, and feature requests are welcome.");

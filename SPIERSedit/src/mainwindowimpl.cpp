@@ -268,7 +268,7 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
 
     // Makes sure you can see tab labels when docked with decent size font
     mainwin->setTabPosition(Qt::LeftDockWidgetArea, QTabWidget::West);
-    mainwin->setWindowTitle("SPIERSEdit - Version " + QString(UPDATEVERSION) + " - No files loaded");
+    mainwin->setWindowTitle("SPIERSEdit - Version " + QString(SOFTWARE_VERSION) + " - No files loaded");
 
     pausetimers = false;
 

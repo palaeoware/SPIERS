@@ -17,7 +17,7 @@
     html+="type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\"";
         html+="font-family:'Arial'; font-size:8.25pt; font-weight:400; font-style:normal;\">";
         QString v;
-        v.sprintf("%3.2f",UPDATEVERSION);
+        v.sprintf("%3.2f",SOFTWARE_VERSION);
         html+="<center><h2>SPIERSedit " + v + "</h2></center>";
         html+="<p>This is freely distributed software - see licence.txt for details.</p>";
         html+="<p>Please contact m.sutton@ic.ac.uk with bug reports or suggestions.</p>";
