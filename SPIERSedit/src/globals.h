@@ -49,11 +49,11 @@
 
 //Github
 #define GITURL "https://github.com/"
-#define GITREPOSITORY "palaeoware/SPIERSedit"
+#define GITREPOSITORY "palaeoware/SPIERS"
 #define GITISSUE "/issues"
 
 //Readthedocs
-#define READTHEDOCS "https://spiersedit.readthedocs.io/en/latest/"
+#define READTHEDOCS "https://spiersedit.readthedocs.io/"
 
 extern QList<bool> FilesDirty; //for re-rendering.
 extern QString openfile;

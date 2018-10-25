@@ -42,11 +42,11 @@
 
 //Github
 #define GITURL "https://github.com/"
-#define GITREPOSITORY "palaeoware/SPIERSalign"
+#define GITREPOSITORY "palaeoware/SPIERS"
 #define GITISSUE "/issues"
 
 //Readthedocs
-#define READTHEDOCS "https://spiersalign.readthedocs.io/en/latest/"
+#define READTHEDOCS "https://spiersalign.readthedocs.io/"
 
 /**
  * @brief The ImageData class

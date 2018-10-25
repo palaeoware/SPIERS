@@ -22,8 +22,10 @@ class MainWindow;
 
 //Github
 #define GITURL "https://github.com/"
-#define GITREPOSITORY "palaeoware/SPIERSview"
+#define GITREPOSITORY "palaeoware/SPIERS"
 #define GITISSUE "/issues"
+
+#define READTHEDOCS "https://spiersview.readthedocs.io/"
 
 //SPIERSview Defines
 #define GRIDSIZE 32
