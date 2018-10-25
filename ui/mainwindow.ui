@@ -1,0 +1,1000 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>598</width>
+    <height>544</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>SPIERSalign</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout">
+    <item>
+     <widget class="QGraphicsView" name="graphicsView"/>
+    </item>
+    <item>
+     <widget class="QFrame" name="frame">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <layout class="QHBoxLayout">
+       <item>
+        <widget class="QSlider" name="horizontalSlider">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="tickPosition">
+          <enum>QSlider::TicksBothSides</enum>
+         </property>
+         <property name="tickInterval">
+          <number>10</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="spinBox">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>598</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuDsvdsvdasv">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <widget class="QMenu" name="menuOpen_RecentFile">
+     <property name="title">
+      <string>Open Recent</string>
+     </property>
+     <addaction name="separator"/>
+     <addaction name="separator"/>
+    </widget>
+    <addaction name="actionOpen"/>
+    <addaction name="menuOpen_RecentFile"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionSave_Backup"/>
+    <addaction name="actionLoad_Settings_File"/>
+    <addaction name="actionCompress_Dataset"/>
+    <addaction name="actionConstant_autosave"/>
+   </widget>
+   <widget class="QMenu" name="menuTransform">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="title">
+     <string>Transform</string>
+    </property>
+    <addaction name="actionRotate_Clockwise"/>
+    <addaction name="actionRotate_Anticlockwise"/>
+    <addaction name="actionRotate_Clockwise_More"/>
+    <addaction name="actionRotate_Anticlockwise_More"/>
+    <addaction name="actionRotate_Clockwise_Less_2"/>
+    <addaction name="actionRotate_Anticlockwise_Less"/>
+    <addaction name="separator"/>
+    <addaction name="actionEnlarge"/>
+    <addaction name="actionShrink"/>
+    <addaction name="actionEnlarge_More"/>
+    <addaction name="actionShrink_More"/>
+    <addaction name="actionEnlarge_Less"/>
+    <addaction name="actionShrink_Less"/>
+    <addaction name="separator"/>
+    <addaction name="actionShift_Left_More"/>
+    <addaction name="actionShift_Left"/>
+    <addaction name="actionShift_Left_less"/>
+    <addaction name="actionShift_Right_More"/>
+    <addaction name="actionShift_Right"/>
+    <addaction name="actionShift_Right_Less"/>
+    <addaction name="actionShift_Up_More"/>
+    <addaction name="actionShift_Up"/>
+    <addaction name="actionShift_Up_Less"/>
+    <addaction name="actionShift_Down_More"/>
+    <addaction name="actionShift_Down"/>
+    <addaction name="actionShift_Down_Less"/>
+    <addaction name="separator"/>
+    <addaction name="actionReset_Image"/>
+    <addaction name="actionReset_Scene"/>
+    <addaction name="separator"/>
+    <addaction name="actionSwap_Image_With_Next"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionManual"/>
+    <addaction name="actionOnline_User_Manual"/>
+    <addaction name="actionCode_on_GitHub"/>
+    <addaction name="actionBugIssueFeatureRequest"/>
+    <addaction name="separator"/>
+    <addaction name="actionAbout"/>
+   </widget>
+   <widget class="QMenu" name="menuNavigate">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="title">
+     <string>Navigate</string>
+    </property>
+    <addaction name="actionNext_Image"/>
+    <addaction name="actionPrevious_Image"/>
+    <addaction name="separator"/>
+    <addaction name="actionHide_Image"/>
+    <addaction name="actionShow_Image"/>
+    <addaction name="actionShow_All"/>
+    <addaction name="actionAdvance_To_Hidden"/>
+    <addaction name="actionRetreat_To_Hidden"/>
+   </widget>
+   <widget class="QMenu" name="menuMagnification">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="title">
+     <string>Zoom</string>
+    </property>
+    <addaction name="actionZoom_In"/>
+    <addaction name="actionZoom_Out"/>
+    <addaction name="actionZoom_100"/>
+    <addaction name="actionFit_Window"/>
+   </widget>
+   <widget class="QMenu" name="menuLocking_Propagation">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="title">
+     <string>Locking/Propagation</string>
+    </property>
+    <addaction name="actionPropogate_Mode"/>
+    <addaction name="actionApply_Propogation"/>
+    <addaction name="separator"/>
+    <addaction name="actionLock_Forward"/>
+    <addaction name="actionLock_Back"/>
+    <addaction name="actionLock_File"/>
+    <addaction name="actionMove_Forward_Back"/>
+   </widget>
+   <widget class="QMenu" name="menuWindows">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="title">
+     <string>Windows</string>
+    </property>
+    <addaction name="actionAdd_Markers"/>
+    <addaction name="actionCreate_Crop_Area"/>
+    <addaction name="actionAuto_Align"/>
+    <addaction name="actionInfo"/>
+   </widget>
+   <addaction name="menuDsvdsvdasv"/>
+   <addaction name="menuNavigate"/>
+   <addaction name="menuLocking_Propagation"/>
+   <addaction name="menuTransform"/>
+   <addaction name="menuMagnification"/>
+   <addaction name="menuWindows"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionOpen">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Open ...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About...</string>
+   </property>
+  </action>
+  <action name="actionNext_Image">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Next Image</string>
+   </property>
+   <property name="shortcut">
+    <string>.</string>
+   </property>
+  </action>
+  <action name="actionPrevious_Image">
+   <property name="text">
+    <string>Previous Image</string>
+   </property>
+   <property name="shortcut">
+    <string>,</string>
+   </property>
+  </action>
+  <action name="actionZoom_In">
+   <property name="text">
+    <string>Zoom In</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+=</string>
+   </property>
+  </action>
+  <action name="actionZoom_Out">
+   <property name="text">
+    <string>Zoom Out</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+-</string>
+   </property>
+  </action>
+  <action name="actionZoom_100">
+   <property name="text">
+    <string>Zoom 100%</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionFit_Window">
+   <property name="text">
+    <string>Fit Window</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+R</string>
+   </property>
+  </action>
+  <action name="actionRotate_Clockwise">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Rotate Clockwise</string>
+   </property>
+   <property name="shortcut">
+    <string>0</string>
+   </property>
+  </action>
+  <action name="actionRotate_Anticlockwise">
+   <property name="text">
+    <string>Rotate Anticlockwise</string>
+   </property>
+   <property name="shortcut">
+    <string>1</string>
+   </property>
+  </action>
+  <action name="actionRotate_Clockwise_More">
+   <property name="text">
+    <string>Big Clockwise Rotate</string>
+   </property>
+  </action>
+  <action name="actionRotate_Anticlockwise_More">
+   <property name="text">
+    <string>Big Anticlockwise Rotate</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+1</string>
+   </property>
+  </action>
+  <action name="actionRotate_Clockwise_Less">
+   <property name="text">
+    <string>Rotate Clockwise Less</string>
+   </property>
+   <property name="shortcut">
+    <string>9</string>
+   </property>
+  </action>
+  <action name="actionRotate_Anticlockwise_Less">
+   <property name="text">
+    <string>Small Anticlockwise Rotate</string>
+   </property>
+  </action>
+  <action name="actionShift_Left">
+   <property name="text">
+    <string>Shift Left</string>
+   </property>
+   <property name="shortcut">
+    <string>Left</string>
+   </property>
+  </action>
+  <action name="actionShift_Right">
+   <property name="text">
+    <string>Shift Right</string>
+   </property>
+   <property name="shortcut">
+    <string>Right</string>
+   </property>
+  </action>
+  <action name="actionEnlarge">
+   <property name="text">
+    <string>Enlarge</string>
+   </property>
+   <property name="shortcut">
+    <string>]</string>
+   </property>
+  </action>
+  <action name="actionShrink">
+   <property name="text">
+    <string>Shrink</string>
+   </property>
+   <property name="shortcut">
+    <string>[</string>
+   </property>
+  </action>
+  <action name="actionEnlarge_More">
+   <property name="text">
+    <string>Big Enlarge</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+]</string>
+   </property>
+  </action>
+  <action name="actionShrink_More">
+   <property name="text">
+    <string>Big Shrink</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+[</string>
+   </property>
+  </action>
+  <action name="actionEnlarge_Less">
+   <property name="text">
+    <string>Small Enlarge</string>
+   </property>
+  </action>
+  <action name="actionShrink_Less">
+   <property name="text">
+    <string>Small Shrink</string>
+   </property>
+  </action>
+  <action name="actionMarker_Setup">
+   <property name="text">
+    <string>Marker Setup</string>
+   </property>
+  </action>
+  <action name="actionCreate_Crop_Area">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Crop</string>
+   </property>
+   <property name="shortcut">
+    <string>F2</string>
+   </property>
+  </action>
+  <action name="actionMove_Right">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Crop Area Right Margin: Move Right</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+Right</string>
+   </property>
+  </action>
+  <action name="actionMove_Left">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Crop Area Left Margin: Move Left</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+Left</string>
+   </property>
+  </action>
+  <action name="actionMove_Up">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Crop Area Top Margin: Move Up</string>
+   </property>
+  </action>
+  <action name="actionMove_Down">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Crop Area Bottom Margin: Move Down</string>
+   </property>
+  </action>
+  <action name="actionShift_Left_More">
+   <property name="text">
+    <string>Big Left Shift</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Left</string>
+   </property>
+  </action>
+  <action name="actionShift_Left_less">
+   <property name="text">
+    <string>Small Left Shift</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+Left</string>
+   </property>
+  </action>
+  <action name="actionShift_Right_More">
+   <property name="text">
+    <string>Big Right Shift</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Right</string>
+   </property>
+  </action>
+  <action name="actionShift_Right_Less">
+   <property name="text">
+    <string>Small Right Shift</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+Right</string>
+   </property>
+  </action>
+  <action name="actionMove_Up_More">
+   <property name="text">
+    <string>Move Up More</string>
+   </property>
+  </action>
+  <action name="actionMove_Up_2">
+   <property name="text">
+    <string>Move Up</string>
+   </property>
+  </action>
+  <action name="actionMove_Up_Less">
+   <property name="text">
+    <string>Move Up Less</string>
+   </property>
+  </action>
+  <action name="actionMove_Down_More">
+   <property name="text">
+    <string>Move Down More</string>
+   </property>
+  </action>
+  <action name="actionMove_Down_2">
+   <property name="text">
+    <string>Move Down </string>
+   </property>
+  </action>
+  <action name="actionMove_Down_Less">
+   <property name="text">
+    <string>Move Down Less</string>
+   </property>
+  </action>
+  <action name="actionShift_Up_More">
+   <property name="text">
+    <string>Big Upward Shift</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Up</string>
+   </property>
+  </action>
+  <action name="actionShift_Up">
+   <property name="text">
+    <string>Shift Up</string>
+   </property>
+  </action>
+  <action name="actionShift_Up_Less">
+   <property name="text">
+    <string>Small Upward Shift</string>
+   </property>
+  </action>
+  <action name="actionShift_Down_More">
+   <property name="text">
+    <string>Big Downward Shift</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Down</string>
+   </property>
+  </action>
+  <action name="actionShift_Down">
+   <property name="text">
+    <string>Shift Down</string>
+   </property>
+  </action>
+  <action name="actionShift_Down_Lee">
+   <property name="text">
+    <string>Shift Down Lee</string>
+   </property>
+  </action>
+  <action name="actionShift_Down_Less">
+   <property name="text">
+    <string>Small Downward Shift</string>
+   </property>
+  </action>
+  <action name="actionAdd_marker">
+   <property name="text">
+    <string>Add marker</string>
+   </property>
+  </action>
+  <action name="actionAdd_Markers">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Markers</string>
+   </property>
+   <property name="shortcut">
+    <string>F1</string>
+   </property>
+  </action>
+  <action name="actionSelect_Marker">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Select Marker</string>
+   </property>
+   <property name="shortcut">
+    <string>\</string>
+   </property>
+  </action>
+  <action name="actionMove_Marker_Left">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Move Marker Left</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Left</string>
+   </property>
+  </action>
+  <action name="actionMove_Marker_Right">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Move Marker Right</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Right</string>
+   </property>
+  </action>
+  <action name="actionMove_Marker_Up">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Move Marker Up</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Up</string>
+   </property>
+  </action>
+  <action name="actionMove_Marker_Down">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Move Marker Down</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Down</string>
+   </property>
+  </action>
+  <action name="actionShrink_Right">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Crop Area Right Margin: Move Left</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+Left</string>
+   </property>
+  </action>
+  <action name="actionShrink_Left">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Crop Area Left Margin: Move Right</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+Right</string>
+   </property>
+  </action>
+  <action name="actionShrink_Up">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Crop Area Top Margin: Move Down</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+Down</string>
+   </property>
+  </action>
+  <action name="actionShrink_Down">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Crop Area Bottom Margin: Move Up</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+Up</string>
+   </property>
+  </action>
+  <action name="actionCrop">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Crop</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+X</string>
+   </property>
+  </action>
+  <action name="actionPropogate_Mode">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Propagate mode</string>
+   </property>
+  </action>
+  <action name="actionApply_Propogation">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Apply propagation</string>
+   </property>
+  </action>
+  <action name="actionLock_File">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Lock File</string>
+   </property>
+  </action>
+  <action name="actionLock_Forward">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Lock Forward</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+.</string>
+   </property>
+  </action>
+  <action name="actionLock_Back">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Lock Back</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+,</string>
+   </property>
+  </action>
+  <action name="actionMove_Forward_Back">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Move Forward/Back</string>
+   </property>
+   <property name="shortcut">
+    <string>#</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionSave_Backup">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Save Backup</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
+   </property>
+  </action>
+  <action name="actionHide_Image">
+   <property name="text">
+    <string>Hide Image</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+-</string>
+   </property>
+  </action>
+  <action name="actionShow_Image">
+   <property name="text">
+    <string>Unhide Image</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+=</string>
+   </property>
+  </action>
+  <action name="actionShow_All">
+   <property name="text">
+    <string>Unhide All</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+=</string>
+   </property>
+  </action>
+  <action name="actionAdvance_To_Hidden">
+   <property name="text">
+    <string>Advance To Hidden</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+.</string>
+   </property>
+  </action>
+  <action name="actionRetreat_To_Hidden">
+   <property name="text">
+    <string>Retreat To Hidden</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+,</string>
+   </property>
+  </action>
+  <action name="actionReset_Image">
+   <property name="text">
+    <string>Reset Image</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Z</string>
+   </property>
+  </action>
+  <action name="actionReset_Scene">
+   <property name="text">
+    <string>Reset Scroll Bars Around Current Image</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+Z</string>
+   </property>
+  </action>
+  <action name="actionRotate_Clockwise_Less_2">
+   <property name="text">
+    <string>Small Clockwise Rotate</string>
+   </property>
+  </action>
+  <action name="actionOpen_Recent">
+   <property name="text">
+    <string>Open Recent</string>
+   </property>
+  </action>
+  <action name="actionMore">
+   <property name="text">
+    <string>More</string>
+   </property>
+  </action>
+  <action name="actionSwap_Image_With_Next">
+   <property name="text">
+    <string>Swap Image With Next</string>
+   </property>
+  </action>
+  <action name="actionOpen_Recent_2">
+   <property name="text">
+    <string>Open Recent</string>
+   </property>
+  </action>
+  <action name="menuOpen_Recent">
+   <property name="text">
+    <string>Open Recent</string>
+   </property>
+  </action>
+  <action name="actionOoen_Recent">
+   <property name="text">
+    <string>Ooen Recent</string>
+   </property>
+  </action>
+  <action name="actionOpen_Recent_3">
+   <property name="text">
+    <string>Open Recent</string>
+   </property>
+  </action>
+  <action name="actionOpen_Recent_4">
+   <property name="text">
+    <string>Open Recent</string>
+   </property>
+  </action>
+  <action name="actionMore_2">
+   <property name="text">
+    <string>More</string>
+   </property>
+  </action>
+  <action name="actionLoad_Settings_File">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Load Settings File</string>
+   </property>
+  </action>
+  <action name="actionCompress_Dataset">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Compress Dataset</string>
+   </property>
+  </action>
+  <action name="actionClear_List">
+   <property name="text">
+    <string>Clear List</string>
+   </property>
+  </action>
+  <action name="actionClear_List_2">
+   <property name="text">
+    <string>Clear List</string>
+   </property>
+  </action>
+  <action name="actionInfo">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Info</string>
+   </property>
+   <property name="shortcut">
+    <string>F9</string>
+   </property>
+  </action>
+  <action name="actionAuto_Markers">
+   <property name="text">
+    <string>Auto Markers</string>
+   </property>
+   <property name="shortcut">
+    <string>F2</string>
+   </property>
+  </action>
+  <action name="actionAuto_Align">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Auto align</string>
+   </property>
+   <property name="shortcut">
+    <string>F3</string>
+   </property>
+  </action>
+  <action name="actionConstant_autosave">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Constant autosave</string>
+   </property>
+  </action>
+  <action name="actionManual">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Manual</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionBugIssueFeatureRequest">
+   <property name="text">
+    <string>Report Bug/Issue/Feature Request</string>
+   </property>
+  </action>
+  <action name="actionCode_on_GitHub">
+   <property name="text">
+    <string>Code on GitHub</string>
+   </property>
+  </action>
+  <action name="actionOnline_User_Manual">
+   <property name="text">
+    <string>Online User Manual</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>horizontalSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>340</x>
+     <y>491</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>490</x>
+     <y>491</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>horizontalSlider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>485</x>
+     <y>481</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>429</x>
+     <y>479</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
