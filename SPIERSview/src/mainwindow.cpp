@@ -3181,8 +3181,7 @@ void MainWindow::on_actionBackground_Colour_triggered()
  */
 void MainWindow::on_actionManual_triggered()
 {
-    //qDebug()<<qApp->applicationDirPath() + "/SPIERSview_Manual.pdf";
-    QDesktopServices::openUrl(QUrl("file:" + qApp->applicationDirPath() + "/SPIERSview_Manual.pdf", QUrl::TolerantMode));
+    QDesktopServices::openUrl(QUrl(QString(READTHEDOCS)));
 }
 
 /**

@@ -140,8 +140,6 @@ private slots:
     void resizeCropH(int value);
     void clearList();
 
-    void on_actionOnline_User_Manual_triggered();
-
 private:
     void rotate (qreal rotateAngle);
     void resize(qreal sizeChange);

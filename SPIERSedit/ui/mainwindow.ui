@@ -253,7 +253,7 @@
      <x>0</x>
      <y>0</y>
      <width>962</width>
-     <height>21</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -4109,7 +4109,7 @@ Interpreted Images:</string>
   </action>
   <action name="actionManual">
    <property name="text">
-    <string>Manual</string>
+    <string>Online Manual</string>
    </property>
   </action>
   <action name="actionGrey_out_curves_not_no_current_slice">

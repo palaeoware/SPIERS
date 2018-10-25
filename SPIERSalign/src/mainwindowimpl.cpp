@@ -4508,7 +4508,7 @@ void MainWindowImpl::on_actionCompress_Dataset_triggered()
  */
 void MainWindowImpl::on_actionManual_triggered()
 {
-    QDesktopServices::openUrl(QUrl("file:" + qApp->applicationDirPath() + "/SPIERSalign_Manual.pdf"));
+    QDesktopServices::openUrl(QUrl(QString(READTHEDOCS)));
 }
 
 /**
@@ -4525,12 +4525,4 @@ void MainWindowImpl::on_actionBugIssueFeatureRequest_triggered()
 void MainWindowImpl::on_actionCode_on_GitHub_triggered()
 {
     QDesktopServices::openUrl(QUrl(QString(GITURL) + QString(GITREPOSITORY)));
-}
-
-/**
- * @brief MainWindowImpl::on_actionOnline_User_Manual_triggered
- */
-void MainWindowImpl::on_actionOnline_User_Manual_triggered()
-{
-    QDesktopServices::openUrl(QUrl(QString(READTHEDOCS)));
 }
