@@ -12,6 +12,10 @@ CONFIG += qt \
     release \
     warn_on
 
+RESOURCES += align.qrc
+
+UI_DIR = build
+
 # Load the SPIERS version number
 include(../version.pri)
 
@@ -19,11 +23,15 @@ DESTDIR \
     += \
     bin
 
-OBJECTS_DIR = build
+RC_FILE += resources/icon.rc
+
+DISTFILES += \
+    LICENSE.md \
+    .astylerc
 
 MOC_DIR = build
 
-UI_DIR = build
+OBJECTS_DIR = build
 
 FORMS += ui/mainwindow.ui \
     ui/about.ui
@@ -47,10 +55,3 @@ SOURCES += src/mainwindowimpl.cpp \
     ../SPIERScommon/semanticversion.cpp \
     ../SPIERScommon/prereleasecomponent.cpp
 
-RESOURCES += align.qrc
-
-RC_FILE += resources/icon.rc
-
-DISTFILES += \
-    LICENSE.md \
-    .astylerc

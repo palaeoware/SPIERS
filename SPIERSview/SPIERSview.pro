@@ -2,6 +2,10 @@
 # SPIERSview
 #------------------------------------------------------------------------------------------------
 
+TARGET = SPIERSview64
+
+TEMPLATE = app
+
 QT += network xml gui core opengl
 
 # Allow debug in release
@@ -9,9 +13,9 @@ QT += network xml gui core opengl
 #QMAKE_CFLAGS_RELEASE += -g
 #QMAKE_LFLAGS_RELEASE =
 
-TARGET = SPIERSview64
-
-TEMPLATE = app
+CONFIG += qt \
+    release \
+    warn_on
 
 RESOURCES = view.qrc
 
@@ -19,8 +23,20 @@ DESTDIR \
     += \
     bin
 	
+UI_DIR += ui
+
 # Load the SPIERS version number
 include(../version.pri)
+
+RC_FILE = resources/icon.rc
+
+DISTFILES += \
+    LICENSE.md \
+    .astylerc
+
+MOC_DIR += build
+
+OBJECTS_DIR += build
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -116,6 +132,7 @@ win32 {
 
 # Unix/Linux common build here
 unix {
+        #Libraries from VTK package (e.g. sudo apt-get install libvtk7-qt-dev).
 	INCLUDEPATH +=/usr/include/vtk-7.1/
 	LIBS += -L/usr/include/vtk-7.1/ \
 	-lvtkCommonExecutionModel-7.1 \
@@ -197,7 +214,7 @@ unix {
 		-lz \
 }
 
-# MacOS common build here (not current tested or supported)
+# MacOS common build here (not currently tested or supported)
 macx {
 	LIBS += -L/Users/{user}/VTK-bin/lib/vtk-5.2 \
     -lvtkRendering \
@@ -274,15 +291,3 @@ FORMS += ui/mainwindow.ui \
     ui/movetogroup.ui \
     ui/quickhelpbox.ui \
     ui/aboutdialog.ui
-
-UI_DIR += ui
-
-MOC_DIR += build
-
-OBJECTS_DIR += build
-
-RC_FILE = resources/icon.rc
-
-DISTFILES += \
-    LICENSE.md \
-    .astylerc

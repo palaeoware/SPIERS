@@ -4,16 +4,38 @@
 
 TARGET = SPIERSedit64
 
+TEMPLATE = app
+
+QT += core \
+    gui \
+    network \
+    widgets
+
 CONFIG += warn_on \
     qt \
     thread \
+
+RESOURCES = SPIERSedit.qrc
+
+UI_DIR += ui
+
+# Load the SPIERS version number
+include(../version.pri)
 
 DESTDIR \
     += \
     bin
 
-# Load the SPIERS version number
-include(../version.pri)
+RC_FILE = resources/icon.rc
+ICON = resources/icon.icns
+
+DISTFILES += \
+    LICENSE.md \
+    .astylerc
+
+MOC_DIR += build
+
+OBJECTS_DIR += build
 
 FORMS += ui/import.ui \
     ui/mainwindow.ui \
@@ -66,15 +88,6 @@ HEADERS += src/display.h \
     ../SPIERScommon/semanticversion.h \
     ../SPIERScommon/prereleasecomponent.h
 
-MOC_DIR += build
-
-OBJECTS_DIR += build
-
-QT += core \
-    gui \
-    network \
-    widgets
-
 SOURCES += src/display.cpp \
     src/brush.cpp \
     src/curves.cpp \
@@ -113,17 +126,3 @@ SOURCES += src/display.cpp \
     ../SPIERScommon/netmodule.cpp \
     ../SPIERScommon/semanticversion.cpp \
     ../SPIERScommon/prereleasecomponent.cpp
-
-UI_DIR += ui
-
-TEMPLATE = app
-
-RESOURCES = SPIERSedit.qrc
-
-ICON = resources/icon.icns
-
-RC_FILE = resources/icon.rc
-
-DISTFILES += \
-    LICENSE.md \
-    .astylerc
