@@ -608,7 +608,7 @@ void SPVreader::ReadSPV6(QString Filename)
                             }
                             else
                             {
-                                o->compressedslices[ThisSlice]->Merge(newslice, "c:/test.bmp");
+                                o->compressedslices[ThisSlice]->merge(newslice, QString(TESTDUMPLOCATION) + "test.bmp");
                                 delete newslice;
                                 //qDebug() << "h2";
                             }
@@ -1251,18 +1251,18 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
                     else
                     {
                         QString fname;
-                        fname = QString("C:/Documents and Settings/mdsutton/Desktop/Test/cdump_%1_%2_a")
+                        fname = QString(QString(TESTDUMPLOCATION) + "cdump_%1_%2_a")
                                 .arg(p, 3, 10, QChar('0')).arg(SlicePointer, 3, 10, QChar('0'));
-                        thisobj->compressedslices[SlicePointer]->Dump(fname);
-                        fname = QString("C:/Documents and Settings/mdsutton/Desktop/Test/cdump_%1_%2_b")
+                        thisobj->compressedslices[SlicePointer]->dump(fname);
+                        fname = QString(QString(TESTDUMPLOCATION) + "cdump_%1_%2_b")
                                 .arg(p, 3, 10, QChar('0')).arg(SlicePointer, 3, 10, QChar('0'));
-                        s->Dump(fname);
-                        fname = QString("C:/Documents and Settings/mdsutton/Desktop/Test/cdump_%1_%2_d")
+                        s->dump(fname);
+                        fname = QString(QString(TESTDUMPLOCATION) + "cdump_%1_%2_d")
                                 .arg(p, 3, 10, QChar('0')).arg(SlicePointer, 3, 10, QChar('0'));
-                        thisobj->compressedslices[SlicePointer]->Merge(s, fname);
-                        fname = QString("C:/Documents and Settings/mdsutton/Desktop/Test/cdump_%1_%2_c")
+                        thisobj->compressedslices[SlicePointer]->merge(s, fname);
+                        fname = QString(QString(TESTDUMPLOCATION) + "cdump_%1_%2_c")
                                 .arg(p, 3, 10, QChar('0')).arg(SlicePointer, 3, 10, QChar('0'));
-                        thisobj->compressedslices[SlicePointer]->Dump(fname);
+                        thisobj->compressedslices[SlicePointer]->dump(fname);
                         delete s;
                     }
                     SlicePointer++;

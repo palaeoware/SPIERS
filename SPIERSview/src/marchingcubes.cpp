@@ -400,7 +400,7 @@ void MarchingCubes::surfaceChunked()
     for (int ii = 0; ii < 4; ii++)
     {
         if (kDim > ii && object->compressedslices[ii]->empty == false) //no need to copy pointers from backup - not yet touched
-            object->compressedslices[ii]->GetFullData(slicebuffers[ii + 2]);
+            object->compressedslices[ii]->getFullData(slicebuffers[ii + 2]);
         else //blank them
         {
             slicebuffers[ii + 2] = blankpointer;
@@ -484,7 +484,7 @@ void MarchingCubes::surfaceChunked()
         if (empty[5] == false)
         {
             slicebuffers[5] = slicebuffers_copy[5]; //put in data pointer
-            object->compressedslices[k + 3]->GetFullData((slicebuffers[5]));
+            object->compressedslices[k + 3]->getFullData((slicebuffers[5]));
         }
         else slicebuffers[5] = blankpointer;
         //qDebug()<<"Slice"<<k+3<<"is"<<empty[5];

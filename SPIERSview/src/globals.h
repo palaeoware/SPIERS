@@ -27,6 +27,9 @@ class MainWindow;
 
 #define READTHEDOCS "https://spiersview.readthedocs.io/"
 
+// Test file location
+#define TESTDUMPLOCATION "C:/Documents and Settings/mdsutton/Desktop/Test/"
+
 //SPIERSview Defines
 #define GRIDSIZE 32
 #define SCALE 2
