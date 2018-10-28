@@ -25,7 +25,6 @@
  */
 SPVreader::SPVreader()
 {
-    //Constructor does nothing
     ReplaceIndex = -1;
 }
 
@@ -124,10 +123,11 @@ void WriteFinalised()
  * @brief SPVreader::WriteSPV
  * @param withpd
  */
-void SPVreader::WriteSPV(bool withpd)
+void SPVreader::WriteSPV(bool withPolydata)
 {
+    bool tempbool;
+
     // Write new version of SPV out
-    //qDebug()<<"File is"<<fname;
     QFile OutputFile(fname);
     if (OutputFile.open(QIODevice::WriteOnly) == false)
     {
@@ -139,16 +139,23 @@ void SPVreader::WriteSPV(bool withpd)
     out.setByteOrder(QDataStream::LittleEndian);
     out.setVersion(QDataStream::Qt_4_4);
 
-    out << static_cast<double>(-1); //my initial 'not a v1 bodge
-    out << static_cast<int>(VERSION);
+    // SPV v1 files do not have a versioning system.
+    // All versions >= 2 start with a -1 followed by the real
+    // version number.
+    out << static_cast<double>(-1);
+    out << static_cast<int>(SPVFILEVERSION);
 
+    // Total count of objects (for progress bar)
     int c = 0;
     out << SPVs.count();
-    for (int i = 0; i < SPVs.count(); i++) c += SPVs[i]->ComponentObjects.count();
-    out << c; //NEW - total count of objects (for progress bar)
+    for (int i = 0; i < SPVs.count(); i++)
+        c += SPVs[i]->ComponentObjects.count();
+    out << c;
+
+    // Save memory is checked
     out << mainWindow->ui->actionSave_Memory->isChecked();
 
-    //some global settings... maybe just matrix for now
+    // Some global settings... maybe just matrix for now
     for (int i = 0; i < SPVs.count(); i++) //NEW - do each SPV
     {
         SPV *s = SPVs[i];
@@ -162,7 +169,7 @@ void SPVreader::WriteSPV(bool withpd)
         out << s->jDim;
         out << s->kDim;
         out << s->MirrorFlag;
-        // qDebug()<<"SPV "<<i<<"Mirror flag is "<<s->MirrorFlag;
+
         for (int i = 0; i < s->kDim + 1; i++)
             out << s->stretches[i];
 
@@ -176,30 +183,33 @@ void SPVreader::WriteSPV(bool withpd)
             out << o->Colour[0];
             out << o->Colour[1];
             out << o->Colour[2];
-            if (o->Transparency < 0) out << static_cast<int>(0);
-            else out << o->Transparency; //bodge for backward compatibility
+            if (o->Transparency < 0)
+                out << static_cast<int>(0);
+            else
+                out << o->Transparency; //bodge for backward compatibility
             out << o->IsGroup;
             out << o->InGroup;
             out << o->Position;
             out << o->Visible;
             out << o->Resample;
-            if (o->IslandRemoval < 0) out << static_cast<int>(0);
-            else out << o->IslandRemoval; //bodge for backward compatibility
-            if (o->Smoothing < 0) out << static_cast<int>(0);
-            else out << o->Smoothing; //bodge for backward compatibility
+            if (o->IslandRemoval < 0)
+                out << static_cast<int>(0);
+            else
+                out << o->IslandRemoval; //bodge for backward compatibility
+            if (o->Smoothing < 0)
+                out << static_cast<int>(0);
+            else
+                out << o->Smoothing; //bodge for backward compatibility
 
             if (o->buggedData) out << o->ResampleType - 10000;
             else out << o->ResampleType;
 
-            //transpose it to write
+            // Write martix - transpose it to write
             TransposeMatrix(o->matrix);
             for (int i = 0; i < 16; i++)
                 out << o->matrix[i];
-            //and Transpose it back so we can keep using it
+            // ... and Transpose it back so we can keep using it
             TransposeMatrix(o->matrix);
-            // qDebug()<<"Object"<<i<<o->Name<<"Matrix is: ";
-            // for (int i=0; i<16; i++)
-            // qDebug()<<i<<":"<<o->matrix[i];
 
             out << o->Index;
             out << o->scale;
@@ -249,8 +259,8 @@ void SPVreader::WriteSPV(bool withpd)
                     }
                 }
                 //and now optionally write the polydata object too
-                out << withpd;
-                if (withpd) o->WritePD(&OutputFile);
+                out << withPolydata;
+                if (withPolydata) o->WritePD(&OutputFile);
             }
         }
 
@@ -267,7 +277,7 @@ void SPVreader::WriteSPV(bool withpd)
             AllObs.removeAt(p);
         }
 
-    //AllObs should now just list orphan groups
+    // AllObs should now just list orphan groups
     out << AllObs.count();
     for (int i = 0; i < AllObs.count(); i++)
     {
@@ -280,31 +290,41 @@ void SPVreader::WriteSPV(bool withpd)
         out << o->Visible;
         out << o->Index;
     }
-    out << QString("InfoLists");
-    out << infoComments << infoReference << infoAuthor << infoSpecimen << infoProvenance << infoClassificationName << infoClassificationRank << infoTitle;
-    //finally tag on the info lists. No need for a new version for this
 
-    //Now scale stuff and a few interface things
+    // Info lists
+    out << QString("InfoLists");
+    out << infoComments;
+    out << infoReference;
+    out << infoAuthor;
+    out << infoSpecimen;
+    out << infoProvenance;
+    out << infoClassificationName;
+    out << infoClassificationRank;
+    out << infoTitle;
+
+    // Scale ball color and matrix - this is no longer needed as scale ball has been removed
     out << scaleBallColour[0];
     out << scaleBallColour[1];
     out << scaleBallColour[2];
     out << scaleBallScale; //resize applied to ball - for scale calc
     for (int i = 0; i < 16; i++) out << scaleMatrix[i];
 
-    bool tempbool;
+    // Is Quadric fedelity checked?
     tempbool = mainWindow->ui->actionQuadric_Fidelity_Reduction->isChecked();
     out << tempbool;
+
+    // Is Scale ball shown? - this is no longer needed as scale ball has been removed
     tempbool = mainWindow->ui->actionShow_Ball_2->isChecked();
     out << tempbool;
 
-    //background colour
+    // Background colour
     out << colorBackgroundRed << colorBackgroundGreen << colorBackgroundBlue;
 
-    //grid colour
+    // Grid colour
     out << colorGridRed << colorGridGreen << colorGridBlue;
     out << colorGridMinorRed << colorGridMinorGreen << colorGridMinorBlue;
 
-    //This tagged on the end to keep some sort of file compatibility
+    // This tagged on the end to keep some sort of file compatibility
     for (int i = 0; i < SPVs.count(); i++) //NEW - do each SPV
     {
         SPV *s = SPVs[i];
@@ -317,6 +337,8 @@ void SPVreader::WriteSPV(bool withpd)
             out << o->Smoothing; //these might now be <0
         }
     }
+
+    // Show saved message
     mainWindow->ui->statusBar->showMessage("Save Complete");
 }
 
@@ -608,7 +630,7 @@ void SPVreader::ReadSPV6(QString Filename)
                             }
                             else
                             {
-                                o->compressedslices[ThisSlice]->merge(newslice, QString(TESTDUMPLOCATION) + "test.bmp");
+                                o->compressedslices[ThisSlice]->merge(newslice, QString(TEST_DUMP_LOCATION) + "test.bmp");
                                 delete newslice;
                                 //qDebug() << "h2";
                             }
@@ -1251,16 +1273,16 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
                     else
                     {
                         QString fname;
-                        fname = QString(QString(TESTDUMPLOCATION) + "cdump_%1_%2_a")
+                        fname = QString(QString(TEST_DUMP_LOCATION) + "cdump_%1_%2_a")
                                 .arg(p, 3, 10, QChar('0')).arg(SlicePointer, 3, 10, QChar('0'));
                         thisobj->compressedslices[SlicePointer]->dump(fname);
-                        fname = QString(QString(TESTDUMPLOCATION) + "cdump_%1_%2_b")
+                        fname = QString(QString(TEST_DUMP_LOCATION) + "cdump_%1_%2_b")
                                 .arg(p, 3, 10, QChar('0')).arg(SlicePointer, 3, 10, QChar('0'));
                         s->dump(fname);
-                        fname = QString(QString(TESTDUMPLOCATION) + "cdump_%1_%2_d")
+                        fname = QString(QString(TEST_DUMP_LOCATION) + "cdump_%1_%2_d")
                                 .arg(p, 3, 10, QChar('0')).arg(SlicePointer, 3, 10, QChar('0'));
                         thisobj->compressedslices[SlicePointer]->merge(s, fname);
-                        fname = QString(QString(TESTDUMPLOCATION) + "cdump_%1_%2_c")
+                        fname = QString(QString(TEST_DUMP_LOCATION) + "cdump_%1_%2_c")
                                 .arg(p, 3, 10, QChar('0')).arg(SlicePointer, 3, 10, QChar('0'));
                         thisobj->compressedslices[SlicePointer]->dump(fname);
                         delete s;

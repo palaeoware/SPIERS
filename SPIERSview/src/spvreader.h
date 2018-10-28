@@ -29,7 +29,7 @@ private:
     void invert_endian(unsigned char *data, int count);
 
     int ReplaceIndex;
-    void WriteSPV(bool withpd);
+    void WriteSPV(bool withPolydata);
     void ReadSPV6(QString Filename);
 };
 

@@ -37,7 +37,7 @@ class MainWindow;
 #define SENSITIVITY 5
 #define SPINTIMERINTERVAL 10
 #define SPINRATE .02
-#define VERSION 10
+#define SPVFILEVERSION 10
 #define GL_MAJOR 2
 #define GL_MINOR 1
 
