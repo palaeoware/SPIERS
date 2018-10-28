@@ -274,7 +274,6 @@ HEADERS += src/mainwindow.h \
     src/vaxml.h \
     src/quickhelpbox.h \
     src/aboutdialog.h \
-    src/glvbo.h \
     src/gl3widget.h \
     src/rowmans.h \
     src/main.h \
