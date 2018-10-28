@@ -33,6 +33,7 @@
 #include "aboutdialog.h"
 #include "globals.h"
 #include "spvreader.h"
+#include "spvwriter.h"
 #include "../SPIERScommon/netmodule.h"
 #include <vtkProperty2D.h>
 #include "movetogroup.h"
@@ -2084,12 +2085,16 @@ void MainWindow::on_actionSave_Changes_triggered()
     if (!containsPresurfaced && containsNonPresurfaced) flag = false;
     if (containsPresurfaced && containsNonPresurfaced)
     {
-        if (QMessageBox::question(this, "Ambiguous save", "This file contains items with both presurfaced and compact data. Proceeding will save as compact - is this OK?",
-                                  QMessageBox::Yes | QMessageBox::No) != QMessageBox::Yes) return;
+        if (QMessageBox::question(
+                    this,
+                    "Ambiguous save",
+                    "This file contains items with both presurfaced and compact data. Proceeding will save as compact - is this OK?",
+                    QMessageBox::Yes | QMessageBox::No
+                ) != QMessageBox::Yes) return;
     }
 
-    SPVreader r;
-    r.WriteFile(flag);
+    SPVWriter w;
+    w.writeFile(flag);
     isFileDirty = false;
 }
 
@@ -2098,25 +2103,28 @@ void MainWindow::on_actionSave_Changes_triggered()
  */
 void MainWindow::on_actionSave_As_triggered()
 {
-    //First - check no pre v5 files in here
-
     QString cpath;
     cpath = fname;
     cpath = fname.left(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")));
 
     FilterKeys = false;
 
-    QString f = QFileDialog::getSaveFileName(this, tr("Save File (Compact Mode)"),
-                                             cpath,
-                                             tr("SPV files (*.spv)"));
+    QString f = QFileDialog::getSaveFileName(
+                    this,
+                    tr("Save File (Compact Mode)"),
+                    cpath,
+                    tr("SPV files (*.spv)")
+                );
     FilterKeys = true;
 
     if (f.isEmpty()) return;
     fname = f;
     QString shortfname = "SPIERSview - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
     this->setWindowTitle(shortfname);
-    SPVreader r;
-    r.WriteFile(false);
+
+    SPVWriter w;
+    w.writeFile(false);
+
     isFileDirty = false;
 }
 
@@ -2128,11 +2136,14 @@ void MainWindow::on_actionSave_Presurfaced_triggered()
     QString cpath;
     cpath = fname;
     cpath = fname.left(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")));
-    FilterKeys = false;
 
-    QString f = QFileDialog::getSaveFileName(this, tr("Save File (Presurfaced Mode)"),
-                                             cpath,
-                                             tr("SPV files (*.spv)"));
+    FilterKeys = false;
+    QString f = QFileDialog::getSaveFileName(
+                    this,
+                    tr("Save File (Presurfaced Mode)"),
+                    cpath,
+                    tr("SPV files (*.spv)")
+                );
     FilterKeys = true;
 
     if (f.isEmpty()) return;
@@ -2140,8 +2151,9 @@ void MainWindow::on_actionSave_Presurfaced_triggered()
     QString shortfname = "SPIERSview - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
     this->setWindowTitle(shortfname);
 
-    SPVreader r;
-    r.WriteFile(true); //with polydata structures tagged on
+    SPVWriter w;
+    w.writeFile(true); //with polydata structures tagged on
+
     containsPresurfaced = true;
     containsNonPresurfaced = false;
     isFileDirty = false;

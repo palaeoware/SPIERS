@@ -13,11 +13,10 @@ class SPVreader
 public:
     SPVreader();
     void ProcessFile(QString filename);
-    void WriteFile(bool);
-    void WriteFinalised();
     int ProcessFileReplacement(QString filename, int SPVindex);
-    void TransposeMatrix(float *m);
 private:
+
+    int ReplaceIndex;
     QString FileName;
 
     void FixUpData();
@@ -25,11 +24,6 @@ private:
     bool is_sp2(char *fn);
     void FileFailed(QString fname, bool write, int n);
     int ProcessSPV(QString filename, unsigned int index, float *PassedMatrix);
-    void WriteWithEndian(FILE *file, unsigned char *pointer, int size, int count);
-    void invert_endian(unsigned char *data, int count);
-
-    int ReplaceIndex;
-    void WriteSPV(bool withPolydata);
     void ReadSPV6(QString Filename);
 };
 
