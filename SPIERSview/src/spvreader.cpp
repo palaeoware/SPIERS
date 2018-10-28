@@ -630,7 +630,7 @@ void SPVreader::ReadSPV6(QString Filename)
                             }
                             else
                             {
-                                o->compressedslices[ThisSlice]->merge(newslice, QString(TEST_DUMP_LOCATION) + "test.bmp");
+                                o->compressedslices[ThisSlice]->merge(newslice, QString(TESTDUMPLOCATION) + "test.bmp");
                                 delete newslice;
                                 //qDebug() << "h2";
                             }
@@ -1273,16 +1273,16 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
                     else
                     {
                         QString fname;
-                        fname = QString(QString(TEST_DUMP_LOCATION) + "cdump_%1_%2_a")
+                        fname = QString(QString(TESTDUMPLOCATION) + "cdump_%1_%2_a")
                                 .arg(p, 3, 10, QChar('0')).arg(SlicePointer, 3, 10, QChar('0'));
                         thisobj->compressedslices[SlicePointer]->dump(fname);
-                        fname = QString(QString(TEST_DUMP_LOCATION) + "cdump_%1_%2_b")
+                        fname = QString(QString(TESTDUMPLOCATION) + "cdump_%1_%2_b")
                                 .arg(p, 3, 10, QChar('0')).arg(SlicePointer, 3, 10, QChar('0'));
                         s->dump(fname);
-                        fname = QString(QString(TEST_DUMP_LOCATION) + "cdump_%1_%2_d")
+                        fname = QString(QString(TESTDUMPLOCATION) + "cdump_%1_%2_d")
                                 .arg(p, 3, 10, QChar('0')).arg(SlicePointer, 3, 10, QChar('0'));
                         thisobj->compressedslices[SlicePointer]->merge(s, fname);
-                        fname = QString(QString(TEST_DUMP_LOCATION) + "cdump_%1_%2_c")
+                        fname = QString(QString(TESTDUMPLOCATION) + "cdump_%1_%2_c")
                                 .arg(p, 3, 10, QChar('0')).arg(SlicePointer, 3, 10, QChar('0'));
                         thisobj->compressedslices[SlicePointer]->dump(fname);
                         delete s;
