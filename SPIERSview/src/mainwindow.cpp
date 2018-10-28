@@ -3198,32 +3198,45 @@ void MainWindow::wheelEvent(QWheelEvent *event)
 
 /**
  * @brief MainWindow::on_actionScale_Grid_Colour_triggered
+ * Updates the major grid line color using a QColorDialog.
  */
 void MainWindow::on_actionScale_Grid_Colour_triggered()
 {
     FilterKeys = false;
-
-    QColor newcolour = QColorDialog::getColor(QColor(colorGridRed, colorGridGreen, colorGridBlue));
+    QColor newColor = QColorDialog::getColor(QColor(colorGridRed, colorGridGreen, colorGridBlue));
     FilterKeys = true;
-    colorGridRed = newcolour.red();
-    colorGridGreen = newcolour.green();
-    colorGridBlue = newcolour.blue();
-    isFileDirty = true;
+
+    // Only update if color is valid; this won't be valid if Cancel has been pressed.
+    if (newColor.isValid())
+    {
+        colorGridRed = newColor.red();
+        colorGridGreen = newColor.green();
+        colorGridBlue = newColor.blue();
+        isFileDirty = true;
+    }
+
     UpdateGL();
 }
 
 /**
  * @brief MainWindow::on_actionMinor_Grid_Colour_triggered
+ * Updates the minor grid line color using a QColorDialog.
  */
 void MainWindow::on_actionMinor_Grid_Colour_triggered()
 {
     FilterKeys = false;
-    QColor newcolour = QColorDialog::getColor(QColor(colorGridMinorRed, colorGridMinorGreen, colorGridMinorBlue));
+    QColor newColor = QColorDialog::getColor(QColor(colorGridMinorRed, colorGridMinorGreen, colorGridMinorBlue));
     FilterKeys = true;
-    colorGridMinorRed = newcolour.red();
-    colorGridMinorGreen = newcolour.green();
-    colorGridMinorBlue = newcolour.blue();
-    isFileDirty = true;
+
+    // Only update if color is valid; this won't be valid if Cancel has been pressed.
+    if (newColor.isValid())
+    {
+        colorGridMinorRed = newColor.red();
+        colorGridMinorGreen = newColor.green();
+        colorGridMinorBlue = newColor.blue();
+        isFileDirty = true;
+    }
+
     UpdateGL();
 }
 
