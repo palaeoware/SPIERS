@@ -80,7 +80,7 @@ SVObject::SVObject(int index)
  */
 SVObject::~SVObject()
 {
-    MainWin->gl3widget->makeCurrent();
+    mainWindow->gl3widget->makeCurrent();
     localPolyData->Delete();
     verts ->Delete();
     actualarray->Delete();
@@ -138,7 +138,7 @@ void SVObject::ResetMatrix()
  */
 void SVObject::DoUpdates()
 {
-    if (MainWin->ui->actionAuto_Resurface->isChecked())
+    if (mainWindow->ui->actionAuto_Resurface->isChecked())
         MakeDlists();
     else
         Dirty = true;
@@ -159,11 +159,11 @@ void SVObject::ForceUpdates(int thisobj, int totalobj)
 
         QString status;
         status.sprintf("Reprocessing %d of %d", thisobj + 1, totalobj);
-        MainWin->ui->OutputLabelOverall->setText(status);
+        mainWindow->ui->OutputLabelOverall->setText(status);
         if (totalobj == 0)
-            MainWin->ui->ProgBarOverall->setValue(100);
+            mainWindow->ui->ProgBarOverall->setValue(100);
         else
-            MainWin->ui->ProgBarOverall->setValue((thisobj * 100) / totalobj);
+            mainWindow->ui->ProgBarOverall->setValue((thisobj * 100) / totalobj);
 
     }
 
@@ -183,7 +183,7 @@ static void ProgressHandler(vtkObject *, unsigned long, void *, void *progress)
     double *amount = static_cast<double *>(progress);
     int iamount = static_cast<int>((*amount) * 100.0);
     //qDebug() << "[ProgressHandler] " << iamount << "%";
-    MainWin->setSpecificProgress(iamount);
+    mainWindow->setSpecificProgress(iamount);
     qApp->processEvents();
 }
 
@@ -195,7 +195,7 @@ static void ErrorHandler(vtkObject *, unsigned long, void *, void *progress)
 {
     Q_UNUSED(progress)
 
-    QMessageBox::critical(MainWin, "Error", "Fatal VTK error: This is likely an 'out of memory' issue - if however you see this message when working with small objects please ttact the software author");
+    QMessageBox::critical(mainWindow, "Error", "Fatal VTK error: This is likely an 'out of memory' issue - if however you see this message when working with small objects please ttact the software author");
 }
 
 /**
@@ -231,14 +231,14 @@ void SVObject::GetFinalPolyData()
 
     //qDebug() << "[Where I'm I?] In GetFinalPolyData - this is not a group...";
 
-    if (vaxml_mode == false)
+    if (isVaxmlMode == false)
     {
         if (polyDataCompressed) UnCompressPolyData();
 
         //First put it through the decimator if applicable
         vtkPolyDataAlgorithm *dout = nullptr;
 
-        if (MainWin->ui->actionQuadric_Fidelity_Reduction->isChecked())
+        if (mainWindow->ui->actionQuadric_Fidelity_Reduction->isChecked())
             ResampleType = 1;
         else
             ResampleType = 0;
@@ -256,7 +256,7 @@ void SVObject::GetFinalPolyData()
         {
             if (ResampleType == 0)
             {
-                MainWin->setSpecificLabel("Simplifying Object");
+                mainWindow->setSpecificLabel("Simplifying Object");
                 //qDebug() << "[Simplifying Object] Start - Type 0";
                 qApp->processEvents();
 
@@ -282,7 +282,7 @@ void SVObject::GetFinalPolyData()
 
             if (ResampleType == 1) //quadric
             {
-                MainWin->setSpecificLabel("Simplifying Object with Quadric algoritim");
+                mainWindow->setSpecificLabel("Simplifying Object with Quadric algoritim");
                 //qDebug() << "[Simplifying Object] Start - Type 1 (Quadric)";
                 qApp->processEvents();
 
@@ -315,7 +315,7 @@ void SVObject::GetFinalPolyData()
 
         if (IslandRemoval != 0)
         {
-            MainWin->setSpecificLabel("Finding Islands");
+            mainWindow->setSpecificLabel("Finding Islands");
             //qDebug() << "[Finding Islands] Start";
             qApp->processEvents();
 
@@ -357,7 +357,7 @@ void SVObject::GetFinalPolyData()
                 if (IslandRemoval == 4) filterlimit = 4000;
                 if (IslandRemoval < 0) filterlimit = 0 - IslandRemoval;
                 //qDebug() << "[Finding Islands] Filter Limit = " << filterlimit << " Island Removal = " << IslandRemoval;
-                MainWin->setSpecificLabel("Filtering Islands");
+                mainWindow->setSpecificLabel("Filtering Islands");
                 qApp->processEvents();
 
                 int islandcount = islandfinder->GetNumberOfExtractedRegions();
@@ -380,7 +380,7 @@ void SVObject::GetFinalPolyData()
         // Do any required smoothing
         if (Smoothing != 0)
         {
-            MainWin->setSpecificLabel("Performing Smoothing");
+            mainWindow->setSpecificLabel("Performing Smoothing");
             //qDebug() << "[Smoothing] Start";
             qApp->processEvents();
             smoother = vtkWindowedSincPolyDataFilter::New();
@@ -452,7 +452,7 @@ void SVObject::GetFinalPolyData()
     }
 
     //qDebug() << "[Calculating Normals] Calculating Normals";
-    MainWin->setSpecificLabel("Calculating Normals");
+    mainWindow->setSpecificLabel("Calculating Normals");
     qApp->processEvents();
 
     // Now new simplified normal generating code
@@ -494,7 +494,7 @@ void SVObject::GetFinalPolyData()
 
         if (i % 10000 == 0)
         {
-            MainWin->setSpecificProgress((i * 100) / tcount);
+            mainWindow->setSpecificProgress((i * 100) / tcount);
             qApp->processEvents();
         }
     }
@@ -627,18 +627,18 @@ void SVObject::MakeVBOs()
 
     //and now set min and max values properly
 
-    //float minx, maxx, miny, maxy, minz, maxz;
-    if (d[0] < static_cast<double>(minx) || firstobject) minx =  static_cast<float>(d[0]);
-    if (d[1] >  static_cast<double>(maxx) || firstobject) maxx = static_cast<float>(d[1]);
-    if (d[2] <  static_cast<double>(miny) || firstobject) miny = static_cast<float>(d[2]);
-    if (d[3] >  static_cast<double>(maxy) || firstobject) maxy = static_cast<float>(d[3]);
-    if (d[4] <  static_cast<double>(minz) || firstobject) minz = static_cast<float>(d[4]);
-    if (d[5] >  static_cast<double>(maxz) || firstobject) maxz = static_cast<float>(d[5]);
+    //float minX, maxX, minY, maxY, minZ, maxZ;
+    if (d[0] < static_cast<double>(minX) || isFirstObject) minX =  static_cast<float>(d[0]);
+    if (d[1] >  static_cast<double>(maxX) || isFirstObject) maxX = static_cast<float>(d[1]);
+    if (d[2] <  static_cast<double>(minY) || isFirstObject) minY = static_cast<float>(d[2]);
+    if (d[3] >  static_cast<double>(maxY) || isFirstObject) maxY = static_cast<float>(d[3]);
+    if (d[4] <  static_cast<double>(minZ) || isFirstObject) minZ = static_cast<float>(d[4]);
+    if (d[5] >  static_cast<double>(maxZ) || isFirstObject) maxZ = static_cast<float>(d[5]);
 
     //count triangles for the record
     Triangles = static_cast<int>(polydata->GetNumberOfCells());
 
-    MainWin->setSpecificLabel("Creating VBO objects");
+    mainWindow->setSpecificLabel("Creating VBO objects");
     qApp->processEvents();
 
     //Create a VBO object and append to the list
@@ -720,22 +720,22 @@ void SVObject::MakeVBOs()
         }
 
         //progress bar
-        MainWin->setSpecificProgress((i * 100) / tcount);
+        mainWindow->setSpecificProgress((i * 100) / tcount);
         if (i % 1000 == 0) qApp->processEvents();
     }
 
-    MainWin->setSpecificLabel("Completed");
-    MainWin->setSpecificProgress(100); //looks better!
+    mainWindow->setSpecificLabel("Completed");
+    mainWindow->setSpecificProgress(100); //looks better!
     qApp->processEvents();
 
     //and delete any vtk objects used
-    if (vaxml_mode == false) DeleteVTKObjects();
+    if (isVaxmlMode == false) DeleteVTKObjects();
 
     Dirty = false;
 
-    model_ktr -= object_ktr; //remove any old one
+    modelKTr -= object_ktr; //remove any old one
     object_ktr = tcount;
-    model_ktr += tcount; //add in new count
+    modelKTr += tcount; //add in new count
 }
 
 /**
@@ -752,18 +752,18 @@ void SVObject::MakeDlists()
  */
 void SVObject::CompressPolyData(bool flag)
 {
-    //MainWin->ui->actionSave_Memory->setChecked(true);
+    //mainWindow->ui->actionSave_Memory->setChecked(true);
     if (IsGroup) return;
-    if (vaxml_mode) return;
+    if (isVaxmlMode) return;
     if (polyDataCompressed == true) return;
-    if (flag == false && !(MainWin->ui->actionSave_Memory->isChecked())) //if not a saving to ps call and if the save memory flag is unticked
+    if (flag == false && !(mainWindow->ui->actionSave_Memory->isChecked())) //if not a saving to ps call and if the save memory flag is unticked
         //we don't compress at all
         return;
     polyDataCompressed = true;
 
     if (compressedPolyData.size() > 0) //there is already compressed data
     {
-        if (MainWin->ui->actionSave_Memory->isChecked())
+        if (mainWindow->ui->actionSave_Memory->isChecked())
         {
             localPolyData->Delete();
             localPolyData = vtkPolyData::New();
@@ -784,8 +784,8 @@ void SVObject::CompressPolyData(bool flag)
 
     }
 
-    MainWin->setSpecificLabel("Compressing...");
-    MainWin->setSpecificProgress(0);
+    mainWindow->setSpecificLabel("Compressing...");
+    mainWindow->setSpecificProgress(0);
     qApp->processEvents();
 
     QByteArray outdata;
@@ -824,7 +824,7 @@ void SVObject::CompressPolyData(bool flag)
     // No gain from higher compression levels (and big speed loss)
     compressedPolyData = qCompress(outdata, 1);
 
-    if (MainWin->ui->actionSave_Memory->isChecked())
+    if (mainWindow->ui->actionSave_Memory->isChecked())
     {
         localPolyData->Delete();
         localPolyData = vtkPolyData::New();
@@ -839,8 +839,8 @@ void SVObject::CompressPolyData(bool flag)
     else  polyDataCompressed = false;
     compressedPolyData.squeeze();
 
-    MainWin->setSpecificLabel("Completed");
-    MainWin->setSpecificProgress(100);
+    mainWindow->setSpecificLabel("Completed");
+    mainWindow->setSpecificProgress(100);
     qApp->processEvents();
 }
 
@@ -850,10 +850,10 @@ void SVObject::CompressPolyData(bool flag)
 void SVObject::UnCompressPolyData()
 {
     if (polyDataCompressed == false) return;
-    if (vaxml_mode) return;
+    if (isVaxmlMode) return;
 
-    MainWin->setSpecificLabel("Decompressing...");
-    MainWin->setSpecificProgress(0);
+    mainWindow->setSpecificLabel("Decompressing...");
+    mainWindow->setSpecificProgress(0);
     qApp->processEvents();
 
     localPolyData->Initialize();
@@ -901,7 +901,7 @@ void SVObject::UnCompressPolyData()
     polyDataCompressed = false;
     compressedPolyData.squeeze(); //free compressed data
 
-    MainWin->setSpecificProgress(100);
+    mainWindow->setSpecificProgress(100);
     qApp->processEvents();
 }
 
@@ -930,7 +930,7 @@ void SVObject::ReadPD(QFile *infile)
     in.setByteOrder(QDataStream::LittleEndian);
     if (spv->FileVersion == 6)
     {
-        QMessageBox::critical(MainWin, "Error", "Can't read V6 presurfaced files, sorry");
+        QMessageBox::critical(mainWindow, "Error", "Can't read V6 presurfaced files, sorry");
         QCoreApplication::quit();
     }
     else
@@ -997,7 +997,7 @@ int SVObject::WriteDXFfaces(QFile *outfile)
     //count triangles for the record
     Triangles = static_cast<int>(polydata->GetNumberOfCells());
 
-    MainWin->setSpecificLabel("Creating DXF object");
+    mainWindow->setSpecificLabel("Creating DXF object");
     qApp->processEvents();
 
     int tcount = static_cast<int>(polydata->GetNumberOfCells());
@@ -1017,15 +1017,15 @@ int SVObject::WriteDXFfaces(QFile *outfile)
         count++;
         if (count > 1000)
         {
-            MainWin->setSpecificProgress((i * 100) / tcount);
+            mainWindow->setSpecificProgress((i * 100) / tcount);
             qApp->processEvents();
 
             count = 0;
         }
     }
 
-    MainWin->setSpecificLabel("Completed");
-    MainWin->setSpecificProgress(100); //looks better!
+    mainWindow->setSpecificLabel("Completed");
+    mainWindow->setSpecificProgress(100); //looks better!
     qApp->processEvents();
 
     //and delete any vtk objects used
@@ -1056,7 +1056,7 @@ int SVObject::AppendCompressedFaces(QString mainfile, QString internalfile, QDat
     //count triangles for the record
     Triangles = static_cast<int>(polydata->GetNumberOfCells());
 
-    MainWin->setSpecificLabel("Creating object");
+    mainWindow->setSpecificLabel("Creating object");
     qApp->processEvents();
 
     vtkPoints *verts = polydata->GetPoints();
@@ -1135,7 +1135,7 @@ int SVObject::WriteSTLfaces(QDir stldir, QString fname)
     //count triangles for the record
     Triangles = static_cast<int>(polydata->GetNumberOfCells());
 
-    MainWin->setSpecificLabel("Creating STL object");
+    mainWindow->setSpecificLabel("Creating STL object");
     qApp->processEvents();
 
     int tcount = static_cast<int>(polydata->GetNumberOfCells());
@@ -1168,7 +1168,7 @@ int SVObject::WriteSTLfaces(QDir stldir, QString fname)
         count++;
         if (count > 1000)
         {
-            MainWin->setSpecificProgress((i * 100) / tcount);
+            mainWindow->setSpecificProgress((i * 100) / tcount);
             qApp->processEvents();
 
             count = 0;
@@ -1178,8 +1178,8 @@ int SVObject::WriteSTLfaces(QDir stldir, QString fname)
         stl << static_cast<unsigned char>(0);
     }
 
-    MainWin->setSpecificLabel("Complete");
-    MainWin->setSpecificProgress(100); //looks better!
+    mainWindow->setSpecificLabel("Complete");
+    mainWindow->setSpecificProgress(100); //looks better!
     qApp->processEvents();
 
     //and delete any vtk objects used
@@ -1201,7 +1201,7 @@ void SVObject::MakePolyData()
         VertexCount += Isosurfaces[i]->nVertices;
     }
 
-    MainWin->setSpecificLabel("Converting Surface");
+    mainWindow->setSpecificLabel("Converting Surface");
     qApp->processEvents();
     verts->SetNumberOfPoints(VertexCount);
 
@@ -1210,7 +1210,7 @@ void SVObject::MakePolyData()
     {
         MakePolyVerts(i, VertexBase);
         VertexBase += Isosurfaces[i]->nVertices;
-        MainWin->setSpecificProgress((i * 50) / Isosurfaces.count());
+        mainWindow->setSpecificProgress((i * 50) / Isosurfaces.count());
         qApp->processEvents();
     }
 
@@ -1229,7 +1229,7 @@ void SVObject::MakePolyData()
             actualarray->SetValue(pos++, Isosurfaces[i]->triangles[t++]);
             actualarray->SetValue(pos++, Isosurfaces[i]->triangles[t++]);
         }
-        MainWin->setSpecificProgress(50 + (i * 50) / Isosurfaces.count());
+        mainWindow->setSpecificProgress(50 + (i * 50) / Isosurfaces.count());
         qApp->processEvents();
     }
 

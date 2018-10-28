@@ -1,12 +1,12 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
-#include <QString>
-#include <QStringList>
-#include <QtWidgets/QProgressBar>
-#include <QtWidgets/QLabel>
 #include <QMatrix4x4>
 #include <QOpenGLBuffer>
+#include <QString>
+#include <QStringList>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QProgressBar>
 
 class MainWindow;
 
@@ -39,38 +39,65 @@ class MainWindow;
 #define GL_MINOR 1
 
 // SPIERSview extrern
-extern QString fname;
-extern QString currentfile;
-extern bool IsSP2;
-extern MainWindow *MainWin;
-extern bool validprogbar, FileDirty;
-extern int NextActualDlist;
-extern int FirstObject;
-extern int TotalTriangles;
-extern bool SP2_lock;
-extern bool ContainsPresurfaced;
-extern bool ContainsNonPresurfaced;
-extern int back_red, back_green, back_blue;
-extern int grid_red, grid_green, grid_blue;
-extern int grid_minor_red, grid_minor_green, grid_minor_blue;
-extern float Xrot, Yrot, Zrot;
-extern float Xtrans, Ytrans, Ztrans;
-extern QStringList i_comments, i_reference, i_author, i_specimen, i_provenance, i_classification_name, i_classification_rank, i_title; //info stuff
-extern bool vaxml_mode;
-extern int ScaleBallColour[3]; //info stuff
-extern float ScaleBallScale; //resize applied to ball - for scale calc
-extern float globalrescale;
-extern float mm_per_unit;
-extern float ScaleMatrix[16];
-//bounding box on import VAXML stuff
-extern float minx, maxx, miny, maxy, minz, maxz;
-extern bool firstobject;
-extern int model_ktr;
-extern QString STLHash;
-extern QMatrix4x4 globalmatrix;
+extern MainWindow *mainWindow;
+
+extern bool isSP2;
+extern bool validprogbar;
+extern bool isFileDirty;
+extern bool sp2Lock;
+extern bool containsPresurfaced;
+extern bool containsNonPresurfaced;
+extern bool isVaxmlMode;
+extern bool isFirstObject;
+
 extern double applicationScaleX;
 extern double applicationScaleY;
-extern QScreen *currentScreen;
+
+extern float globalRescale;
+extern float mmPerUnit;
+extern float minX;
+extern float maxX;
+extern float minY;
+extern float maxY;
+extern float minZ;
+extern float maxZ;
+extern float rotationX;
+extern float rotationY;
+extern float rotationZ;
+extern float scaleBallScale;
+extern float scaleMatrix[16];
+extern float transformX;
+extern float transformY;
+extern float transformZ;
+
+extern int nextActualDlist;
+extern int totalTriangles;
+extern int colorBackgroundRed;
+extern int colorBackgroundGreen;
+extern int colorBackgroundBlue;
+extern int colorGridRed;
+extern int colorGridGreen;
+extern int colorGridBlue;
+extern int colorGridMinorRed;
+extern int colorGridMinorGreen;
+extern int colorGridMinorBlue;
+extern int scaleBallColour[3];
+extern int modelKTr;
+
 extern QList<QScreen *> availableScreens;
+extern QMatrix4x4 globalmatrix;
+extern QOpenGLBuffer cubeBuffer;
+extern QScreen *currentScreen;
+extern QString fname;
+extern QString currentfile;
+extern QStringList infoComments;
+extern QStringList infoReference;
+extern QStringList infoAuthor;
+extern QStringList infoSpecimen;
+extern QStringList infoProvenance;
+extern QStringList infoClassificationName;
+extern QStringList infoClassificationRank;
+extern QStringList infoTitle;
+extern QString stlHash;
 
 #endif // GLOBALS_H

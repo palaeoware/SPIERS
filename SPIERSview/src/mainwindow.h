@@ -224,6 +224,6 @@ private slots:
     void on_actionFull_Screen_triggered();
 };
 
-extern MainWindow *MainWin;
+extern MainWindow *mainWindow;
 
 #endif // MAINWINDOW_H

@@ -41,7 +41,7 @@ int SPVreader::ProcessFileReplacement(QString filename, int SPVindex)
 
     ReplaceIndex = SPVindex;
     InternalProcessFile(filename);
-    MainWin->EnableRenderCommands();
+    mainWindow->EnableRenderCommands();
     return ReplaceIndex; //may well be an error code -2 = multipart, -3 = too old
 }
 
@@ -70,7 +70,7 @@ void SPVreader::ProcessFile(QString filename)
     //call internal version with messier interface
     InternalProcessFile(filename);
 
-    MainWin->EnableRenderCommands();
+    mainWindow->EnableRenderCommands();
 }
 
 /**
@@ -108,7 +108,7 @@ void WriteFinalised()
     QFile OutputFile(fname);
     if (OutputFile.open(QIODevice::WriteOnly) == false)
     {
-        QMessageBox::warning(MainWin, "File Error", "Can't open SPV file for writing - is it set to read-only?");
+        QMessageBox::warning(mainWindow, "File Error", "Can't open SPV file for writing - is it set to read-only?");
         return;
     }
 
@@ -131,7 +131,7 @@ void SPVreader::WriteSPV(bool withpd)
     QFile OutputFile(fname);
     if (OutputFile.open(QIODevice::WriteOnly) == false)
     {
-        QMessageBox::warning(MainWin, "File Error", "Can't open SPV file for writing - is it set to read-only?");
+        QMessageBox::warning(mainWindow, "File Error", "Can't open SPV file for writing - is it set to read-only?");
         return;
     }
 
@@ -146,7 +146,7 @@ void SPVreader::WriteSPV(bool withpd)
     out << SPVs.count();
     for (int i = 0; i < SPVs.count(); i++) c += SPVs[i]->ComponentObjects.count();
     out << c; //NEW - total count of objects (for progress bar)
-    out << MainWin->ui->actionSave_Memory->isChecked();
+    out << mainWindow->ui->actionSave_Memory->isChecked();
 
     //some global settings... maybe just matrix for now
     for (int i = 0; i < SPVs.count(); i++) //NEW - do each SPV
@@ -281,28 +281,28 @@ void SPVreader::WriteSPV(bool withpd)
         out << o->Index;
     }
     out << QString("InfoLists");
-    out << i_comments << i_reference << i_author << i_specimen << i_provenance << i_classification_name << i_classification_rank << i_title;
+    out << infoComments << infoReference << infoAuthor << infoSpecimen << infoProvenance << infoClassificationName << infoClassificationRank << infoTitle;
     //finally tag on the info lists. No need for a new version for this
 
     //Now scale stuff and a few interface things
-    out << ScaleBallColour[0];
-    out << ScaleBallColour[1];
-    out << ScaleBallColour[2];
-    out << ScaleBallScale; //resize applied to ball - for scale calc
-    for (int i = 0; i < 16; i++) out << ScaleMatrix[i];
+    out << scaleBallColour[0];
+    out << scaleBallColour[1];
+    out << scaleBallColour[2];
+    out << scaleBallScale; //resize applied to ball - for scale calc
+    for (int i = 0; i < 16; i++) out << scaleMatrix[i];
 
     bool tempbool;
-    tempbool = MainWin->ui->actionQuadric_Fidelity_Reduction->isChecked();
+    tempbool = mainWindow->ui->actionQuadric_Fidelity_Reduction->isChecked();
     out << tempbool;
-    tempbool = MainWin->ui->actionShow_Ball_2->isChecked();
+    tempbool = mainWindow->ui->actionShow_Ball_2->isChecked();
     out << tempbool;
 
     //background colour
-    out << back_red << back_green << back_blue;
+    out << colorBackgroundRed << colorBackgroundGreen << colorBackgroundBlue;
 
     //grid colour
-    out << grid_red << grid_green << grid_blue;
-    out << grid_minor_red << grid_minor_green << grid_minor_blue;
+    out << colorGridRed << colorGridGreen << colorGridBlue;
+    out << colorGridMinorRed << colorGridMinorGreen << colorGridMinorBlue;
 
     //This tagged on the end to keep some sort of file compatibility
     for (int i = 0; i < SPVs.count(); i++) //NEW - do each SPV
@@ -317,7 +317,7 @@ void SPVreader::WriteSPV(bool withpd)
             out << o->Smoothing; //these might now be <0
         }
     }
-    MainWin->ui->statusBar->showMessage("Save Complete");
+    mainWindow->ui->statusBar->showMessage("Save Complete");
 }
 
 /**
@@ -337,7 +337,7 @@ void SPVreader::ReadSPV6(QString Filename)
     if (InputFile.open(QIODevice::ReadOnly) == false)
     {
         // qDebug() << "[Where I'm I?] In ReadSPV6 | File Error = Fatal - Can't open SPV file for reading";
-        QMessageBox::warning(MainWin, "File Error", "Fatal - Can't open SPV file for reading");
+        QMessageBox::warning(mainWindow, "File Error", "Fatal - Can't open SPV file for reading");
         QCoreApplication::quit();
     }
 
@@ -377,13 +377,13 @@ void SPVreader::ReadSPV6(QString Filename)
         in >> totalobjcount;
         bool t;
         in >> t;
-        MainWin->ui->actionSave_Memory->setChecked(t);
+        mainWindow->ui->actionSave_Memory->setChecked(t);
     }
 
     // qDebug() << "[Where I'm I?] In ReadSPV6 | Reading file... | spvcount = " << spvcount;
 
-    MainWin->setSpecificLabel("Reading file...");
-    MainWin->setSpecificProgress(0);
+    mainWindow->setSpecificLabel("Reading file...");
+    mainWindow->setSpecificProgress(0);
     qApp->processEvents();
 
     // For loop - for each
@@ -415,7 +415,7 @@ void SPVreader::ReadSPV6(QString Filename)
         thisspv->SlicePerMM = SlicePerMM;
         thisspv->SkewDown = -SkewDown * PixPerMM;
         thisspv->SkewLeft = -SkewLeft * PixPerMM;
-        mm_per_unit = ((static_cast<float>(SPVs[0]->iDim) / static_cast<float>(SCALE)) / static_cast<float>(SPVs[0]->PixPerMM));
+        mmPerUnit = ((static_cast<float>(SPVs[0]->iDim) / static_cast<float>(SCALE)) / static_cast<float>(SPVs[0]->PixPerMM));
 
         //create and append all the SVObjects
         for (int i = 0; i < objectcount; i++)
@@ -541,7 +541,7 @@ void SPVreader::ReadSPV6(QString Filename)
         {
             SVObject *o = thisspv->ComponentObjects[i];
 
-            MainWin->setSpecificLabel("Preprocessing Data");
+            mainWindow->setSpecificLabel("Preprocessing Data");
             qApp->processEvents();
             if (!(o->IsGroup))
             {
@@ -566,7 +566,7 @@ void SPVreader::ReadSPV6(QString Filename)
                     for (int j = 0; j < pieces; j++)
                     {
 
-                        MainWin->setSpecificProgress((j * 100) / pieces);
+                        mainWindow->setSpecificProgress((j * 100) / pieces);
                         if (j % 10 == 0) qApp->processEvents();
 
                         if (j % (thisspv->kDim - 2) == 0) ThisSlice = 1; // reached a restart from merge
@@ -624,7 +624,7 @@ void SPVreader::ReadSPV6(QString Filename)
                 in >> withpd;
                 if (withpd)
                 {
-                    ContainsPresurfaced = true;
+                    containsPresurfaced = true;
                     o->ReadPD(&InputFile);
                     o->Dirty = true;
                     o->SurfaceMe = false;
@@ -632,7 +632,7 @@ void SPVreader::ReadSPV6(QString Filename)
                 }
                 else
                 {
-                    ContainsNonPresurfaced = true;
+                    containsNonPresurfaced = true;
                     o->SurfaceMe = true;
 
                 }
@@ -675,7 +675,7 @@ void SPVreader::ReadSPV6(QString Filename)
         }
         else
         {
-            in >> i_comments >> i_reference >> i_author >> i_specimen >> i_provenance >> i_classification_name >> i_classification_rank >> i_title;
+            in >> infoComments >> infoReference >> infoAuthor >> infoSpecimen >> infoProvenance >> infoClassificationName >> infoClassificationRank >> infoTitle;
         }
     }
 
@@ -684,35 +684,35 @@ void SPVreader::ReadSPV6(QString Filename)
     {
         // qDebug() << "[Where I'm I?] In ReadSPV6 | checking for scaleball data";
 
-        in >> ScaleBallColour[0];
-        in >> ScaleBallColour[1];
-        in >> ScaleBallColour[2];
-        in >> ScaleBallScale; //resize applied to ball - for scale calc
-        for (int i = 0; i < 16; i++) in >> ScaleMatrix[i];
+        in >> scaleBallColour[0];
+        in >> scaleBallColour[1];
+        in >> scaleBallColour[2];
+        in >> scaleBallScale; //resize applied to ball - for scale calc
+        for (int i = 0; i < 16; i++) in >> scaleMatrix[i];
 
         bool tempbool;
         in >> tempbool;
-        MainWin->ui->actionQuadric_Fidelity_Reduction->setChecked(tempbool);
+        mainWindow->ui->actionQuadric_Fidelity_Reduction->setChecked(tempbool);
         in >> tempbool;
-        MainWin->ui->actionShow_Ball_2->setChecked(tempbool);
+        mainWindow->ui->actionShow_Ball_2->setChecked(tempbool);
     }
 
 
     if (!(in.atEnd()))
     {
-        in >> back_red;
-        in >> back_green;
-        in >> back_blue;
+        in >> colorBackgroundRed;
+        in >> colorBackgroundGreen;
+        in >> colorBackgroundBlue;
     }
 
     if (!(in.atEnd()))
     {
-        in >> grid_red;
-        in >> grid_green;
-        in >> grid_blue;
-        in >> grid_minor_red;
-        in >> grid_minor_green;
-        in >> grid_minor_blue;
+        in >> colorGridRed;
+        in >> colorGridGreen;
+        in >> colorGridBlue;
+        in >> colorGridMinorRed;
+        in >> colorGridMinorGreen;
+        in >> colorGridMinorBlue;
     }
 
     if (!(in.atEnd()))
@@ -733,10 +733,10 @@ void SPVreader::ReadSPV6(QString Filename)
     FixUpData();
 
     //qDebug() << "[Where I'm I?] In ReadSPV6 calling RefreshObjects();";
-    MainWin->RefreshObjects();
+    mainWindow->RefreshObjects();
 
     //qDebug() << "[Where I'm I?] In ReadSPV6 calling RefreshInfo()";
-    MainWin->RefreshInfo();
+    mainWindow->RefreshInfo();
 
     int items = 0;
     for (int z = BaseIndex; z < SVObjects.count(); z++) if (!(SVObjects[z]->IsGroup)) items++;
@@ -755,8 +755,8 @@ void SPVreader::ReadSPV6(QString Filename)
             //qDebug() << "Processing...'" << SVObjects[i]->Name << "', " << icount << " of " << items;
             ts << "Processing '" << SVObjects[i]->Name << "', " << icount << " of " << items;
 
-            MainWin->ui->OutputLabelOverall->setText(status);
-            MainWin->ui->ProgBarOverall->setValue((icount++ * 100) / items);
+            mainWindow->ui->OutputLabelOverall->setText(status);
+            mainWindow->ui->ProgBarOverall->setValue((icount++ * 100) / items);
             if (SVObjects[i]->SurfaceMe)
             {
                 MarchingCubes surfacer(SVObjects[i]); //create surfacer object
@@ -768,7 +768,7 @@ void SPVreader::ReadSPV6(QString Filename)
                     int size = SVObjects[i]->spv->size;
                     if ((fullarray = static_cast<unsigned char *>(malloc(static_cast<size_t>(size * SVObjects[i]->spv->kDim)))) == nullptr)
                     {
-                        QMessageBox::warning((QWidget *)MainWin, "Memory Error", "Fatal Error - could not obtain enough memory to reconstruct volume.\nTry exporting from a newer version of SPIERSview");
+                        QMessageBox::warning((QWidget *)mainWindow, "Memory Error", "Fatal Error - could not obtain enough memory to reconstruct volume.\nTry exporting from a newer version of SPIERSview");
                         QCoreApplication::quit();
                     }
 
@@ -803,7 +803,7 @@ void SPVreader::ReadSPV6(QString Filename)
 
             //Next job - do isosurface stretching and convert into VTK format
             SVObjects[i]->ForceUpdates(-1, -1);
-            MainWin->UpdateGL();
+            mainWindow->UpdateGL();
         }
     }
 
@@ -813,12 +813,12 @@ void SPVreader::ReadSPV6(QString Filename)
 
     //qDebug() << "[Where I'm I?] In ReadSPV6 - Completed " << (ttrig / 1000);
     QString status = QString("Completed %1").arg(ttrig / 1000);
-    MainWin->ui->OutputLabelOverall->setText(status);
-    MainWin->ui->ProgBarOverall->setValue(100);
+    mainWindow->ui->OutputLabelOverall->setText(status);
+    mainWindow->ui->ProgBarOverall->setValue(100);
 
     //qDebug() << "[Where I'm I?] In ReadSPV6 calling UpdateGL() at function end.";
-    MainWin->UpdateGL();
-    //MainWin->UpdateScaleEnabling();
+    mainWindow->UpdateGL();
+    //mainWindow->UpdateScaleEnabling();
 }
 
 /**
@@ -852,7 +852,7 @@ void SPVreader::FileFailed(QString fname, bool write, int n)
 
 
     //qDebug() << "[Where I'm I?] In FileFailed - something has gone wrong, exiting! | meesage = " << message;
-    QMessageBox::warning(static_cast<QWidget *>(MainWin), "File Error", message);
+    QMessageBox::warning(static_cast<QWidget *>(mainWindow), "File Error", message);
 
     QCoreApplication::quit();
 }
@@ -870,8 +870,8 @@ void SPVreader::InternalProcessFile(QString filename)
     QString path = fi.absolutePath();
     QString fname = fi.fileName();
 
-    IsSP2 = (fi.suffix() == "sp2");
-    if (!IsSP2)
+    isSP2 = (fi.suffix() == "sp2");
+    if (!isSP2)
     {
         //qDebug() << "[Where I'm I?] In InternalProcessFile - about to call ProcessSPV with NON .sp2 file | filecount = 0 | matrix = nullptr";
         ProcessSPV(filename, 0, nullptr);
@@ -880,7 +880,7 @@ void SPVreader::InternalProcessFile(QString filename)
     else
     {
         char buffer[1024];
-        SP2_lock = true; //lock all interactions
+        sp2Lock = true; //lock all interactions
         QFile in(filename);
         if (!in.open(QIODevice::ReadOnly | QIODevice::Text))
         {
@@ -927,9 +927,9 @@ void SPVreader::InternalProcessFile(QString filename)
         while (strcmp(buffer, "END"));
 
         //work out proper scale - from FIRST Spv (maybe this one, maybe not)
-        mm_per_unit = (static_cast<float>(SPVs[0]->iDim) / static_cast<float>(SCALE)) / static_cast<float>(SPVs[0]->PixPerMM);
+        mmPerUnit = (static_cast<float>(SPVs[0]->iDim) / static_cast<float>(SCALE)) / static_cast<float>(SPVs[0]->PixPerMM);
 
-        SP2_lock = false;
+        sp2Lock = false;
     }
 }
 
@@ -1098,7 +1098,7 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
         thisspv->SkewDown = -p3 * p1;
         thisspv->SkewLeft = -p4 * p1;
 
-        mm_per_unit = (static_cast<float>(fwidth) / static_cast<float>(SCALE)) / static_cast<float>(thisspv->PixPerMM);
+        mmPerUnit = (static_cast<float>(fwidth) / static_cast<float>(SCALE)) / static_cast<float>(thisspv->PixPerMM);
 
         //create and append all the SVObjects
         for (int i = 0; i < items; i++)
@@ -1170,7 +1170,7 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
             //alloc the main array
             if ((fullarray = reinterpret_cast<unsigned char *>(malloc(static_cast<unsigned long long>(filesused) * static_cast<unsigned long long>(fwidth) * static_cast<unsigned long long>(fheight)))) == nullptr)
             {
-                QMessageBox::warning(static_cast<QWidget *>(MainWin), "Memory Error", "Fatal Error - could not obtain enough memory to reconstruct volume.\nTry exporting from a newer version of SPIERSview");
+                QMessageBox::warning(static_cast<QWidget *>(mainWindow), "Memory Error", "Fatal Error - could not obtain enough memory to reconstruct volume.\nTry exporting from a newer version of SPIERSview");
                 QCoreApplication::quit();
             }
 
@@ -1191,10 +1191,10 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
 
             QString status;
             status.sprintf("Processing object %d of %d", m + 1, items);
-            MainWin->ui->OutputLabelOverall->setText(status);
-            MainWin->ui->ProgBarOverall->setValue((m * 100) / items);
+            mainWindow->ui->OutputLabelOverall->setText(status);
+            mainWindow->ui->ProgBarOverall->setValue((m * 100) / items);
 
-            MainWin->setSpecificLabel("Preprocessing Data");
+            mainWindow->setSpecificLabel("Preprocessing Data");
             qApp->processEvents();
 
             SVObject *thisobj = thisspv->ComponentObjects[m];
@@ -1215,7 +1215,7 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
 
                 for (int p = 0; p < pieces; p++)
                 {
-                    MainWin->setSpecificProgress((p * 100) / pieces);
+                    mainWindow->setSpecificProgress((p * 100) / pieces);
                     if (p % 10 == 0) qApp->processEvents();
 
 
@@ -1321,9 +1321,9 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
             //Next job - do isosurface stretching and convert into VTK format
             thisobj->MakePolyData();
             thisobj->ForceUpdates(-1, -1);
-            MainWin->UpdateGL();
+            mainWindow->UpdateGL();
             FixUpData();
-            MainWin->RefreshObjects();
+            mainWindow->RefreshObjects();
             if (TrigCount > 0) free(TrigArray);
 
             //qDebug()<<"Freed";
@@ -1341,8 +1341,8 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
         for (int i = 0; i < SVObjects.count(); i++) ttrig += SVObjects[i]->Triangles;
         QString status;
         status.sprintf("Completed");
-        MainWin->ui->OutputLabelOverall->setText(status);
-        MainWin->ui->ProgBarOverall->setValue(100);
+        mainWindow->ui->OutputLabelOverall->setText(status);
+        mainWindow->ui->ProgBarOverall->setValue(100);
         qApp->processEvents();
 
         //now back at end with all data stored for later writing.
@@ -1440,7 +1440,7 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
 
 out:
         FixUpData();
-        MainWin->RefreshObjects();
+        mainWindow->RefreshObjects();
         fclose(file);
 
         return 0;

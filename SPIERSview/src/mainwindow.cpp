@@ -53,7 +53,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     specificprogress = 0;
     ui->setupUi(this);
-    MainWin = this; //set global pointer to this window
+    mainWindow = this; //set global pointer to this window
     showMaximized();
 
     FilterKeys = true; //set to true to turn off interception of keys needed for type-in boxes
@@ -138,26 +138,26 @@ MainWindow::MainWindow(QWidget *parent)
 
     gl3widget->SetClip(ui->ClipStart->value(), ui->ClipDepth->value(), ui->ClipAngle->value());
 
-    vaxml_mode = false;
-    ScaleMatrix[0] = 1.0;
-    ScaleMatrix[1] = 0.0;
-    ScaleMatrix[2] = 0.0;
-    ScaleMatrix[3] = 0.0;
-    ScaleMatrix[4] = 0.0;
-    ScaleMatrix[5] = 1.0;
-    ScaleMatrix[6] = 0.0;
-    ScaleMatrix[7] = 0.0;
-    ScaleMatrix[8] = 0.0;
-    ScaleMatrix[9] = 0.0;
-    ScaleMatrix[10] = 1.0;
-    ScaleMatrix[11] = 0.0;
-    ScaleMatrix[12] = 0.0;
-    ScaleMatrix[13] = 0.0;
-    ScaleMatrix[14] = 0.0;
-    ScaleMatrix[15] = 1.0;
+    isVaxmlMode = false;
+    scaleMatrix[0] = 1.0;
+    scaleMatrix[1] = 0.0;
+    scaleMatrix[2] = 0.0;
+    scaleMatrix[3] = 0.0;
+    scaleMatrix[4] = 0.0;
+    scaleMatrix[5] = 1.0;
+    scaleMatrix[6] = 0.0;
+    scaleMatrix[7] = 0.0;
+    scaleMatrix[8] = 0.0;
+    scaleMatrix[9] = 0.0;
+    scaleMatrix[10] = 1.0;
+    scaleMatrix[11] = 0.0;
+    scaleMatrix[12] = 0.0;
+    scaleMatrix[13] = 0.0;
+    scaleMatrix[14] = 0.0;
+    scaleMatrix[15] = 1.0;
 
-    mm_per_unit = 1.0;
-    globalrescale = 1.0;
+    mmPerUnit = 1.0;
+    globalRescale = 1.0;
 
     scalelabel = new QLabel(this);
     ui->statusBar->addPermanentWidget(scalelabel);
@@ -165,7 +165,7 @@ MainWindow::MainWindow(QWidget *parent)
     ktrlabel = new QLabel(this);
     ui->statusBar->addPermanentWidget(ktrlabel);
 
-    model_ktr = 0;
+    modelKTr = 0;
 
     ui->ZoomSlider->setVisible(false);
     ui->label_7->setVisible(false);
@@ -179,19 +179,19 @@ MainWindow::MainWindow(QWidget *parent)
     ui->treeWidget->setColumnWidth(6, 90);
     ui->treeWidget->setColumnWidth(7, 90);
 
-    back_red = 0;
-    back_green = 0;
-    back_blue = 0;
-    grid_red = 0;
-    grid_green = 255;
-    grid_blue = 0;
-    grid_minor_red = 255;
-    grid_minor_green = 0;
-    grid_minor_blue = 255;
+    colorBackgroundRed = 0;
+    colorBackgroundGreen = 0;
+    colorBackgroundBlue = 0;
+    colorGridRed = 0;
+    colorGridGreen = 255;
+    colorGridBlue = 0;
+    colorGridMinorRed = 255;
+    colorGridMinorGreen = 0;
+    colorGridMinorBlue = 255;
     globalmatrix.setToIdentity();
 
-    ContainsPresurfaced = false;
-    ContainsNonPresurfaced = false;
+    containsPresurfaced = false;
+    containsNonPresurfaced = false;
 
     AnimOutputDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
     mainWindowReady = true;
@@ -237,7 +237,7 @@ void MainWindow::StartTimer_fired()
     //qDebug() << "[Where I'm I?] In StartTimer_fired | fname = " << fname;
 
     //Some General initialisation
-    NextActualDlist = 1;
+    nextActualDlist = 1;
 
     //Get Filename
     DisableRenderCommands();
@@ -433,13 +433,13 @@ void MainWindow::SpinTimer_fired()
         QString m;
         QTextStream s(&m);
 
-        QString XrotS = DegConvert(Xrot);
-        QString YrotS = DegConvert(Yrot);
-        QString ZrotS = DegConvert(Zrot);
+        QString XrotS = DegConvert(rotationX);
+        QString YrotS = DegConvert(rotationY);
+        QString ZrotS = DegConvert(rotationZ);
 
-        QString XtransS = TransConvert(Xtrans);
-        QString YtransS = TransConvert(Ytrans);
-        QString ZtransS = TransConvert(Ztrans);
+        QString XtransS = TransConvert(transformX);
+        QString YtransS = TransConvert(transformY);
+        QString ZtransS = TransConvert(transformZ);
 
         s << "Frame rate: " << framerate << "  Rotations: X:" << XrotS << " Y:" << YrotS << " Z:" << ZrotS << "  Translations: X:" << XtransS << " Y:" << YtransS << " Z:" << ZtransS;
 
@@ -467,7 +467,7 @@ void MainWindow::SpinTimer_fired()
 
     QString mess;
 
-    int TotalTriangles = 0;
+    int totalTriangles = 0;
     double Volume = 0.0; //in mm cubed
     int ObjCount = 0;
 
@@ -480,28 +480,28 @@ void MainWindow::SpinTimer_fired()
                 //qDebug()<<"j,SVJ"<<j<<SVObjects[j];
                 //qDebug()<<"SVJ"<<SVObjects[j]->spv;
                 //qDebug()<<"SVJ"<<SVObjects[j]->spv->PixPerMM;
-                if (!vaxml_mode)
+                if (!isVaxmlMode)
                 {
                     double spvscale = (1.0 / SVObjects[j]->spv->PixPerMM) * SVObjects[j]->scale;
                     spvscale = spvscale * spvscale * (1.0 / SVObjects[j]->spv->SlicePerMM) * SVObjects[j]->scale; //square it, multiply by slice spacing
                     Volume += static_cast<double>(SVObjects[j]->voxels) * spvscale;
                 }
-                TotalTriangles += SVObjects[j]->Triangles;
+                totalTriangles += SVObjects[j]->Triangles;
                 ObjCount++;
             }
         }
     }
 
     if (ObjCount == 0)
-        mess.sprintf("Whole Model: %d KTr  ", model_ktr / 1000);
+        mess.sprintf("Whole Model: %d KTr  ", modelKTr / 1000);
     else
     {
         QString oc;
         if (ObjCount == 1) oc = "object";
         else oc = "objects";
-        if (vaxml_mode)
+        if (isVaxmlMode)
         {
-            mess = QString("%1 %3: %2 KTr ").arg(ObjCount).arg(TotalTriangles / 1000).arg(oc);
+            mess = QString("%1 %3: %2 KTr ").arg(ObjCount).arg(totalTriangles / 1000).arg(oc);
         }
         else
         {
@@ -509,9 +509,9 @@ void MainWindow::SpinTimer_fired()
             if (dp < 0) dp = 0;
 
             if (dp > 10)
-                mess = QString("%1 %4: %2 KTr, %3 cubic mm ").arg(ObjCount).arg(TotalTriangles / 1000).arg(Volume, 0, 'e').arg(oc);
+                mess = QString("%1 %4: %2 KTr, %3 cubic mm ").arg(ObjCount).arg(totalTriangles / 1000).arg(Volume, 0, 'e').arg(oc);
             else
-                mess = QString("%1 %4: %2 KTr, %3 cubic mm ").arg(ObjCount).arg(TotalTriangles / 1000).arg(Volume, 0, 'f', dp).arg(oc);
+                mess = QString("%1 %4: %2 KTr, %3 cubic mm ").arg(ObjCount).arg(totalTriangles / 1000).arg(Volume, 0, 'f', dp).arg(oc);
         }
     }
     ktrlabel->setText(mess);
@@ -637,7 +637,7 @@ void MainWindow::on_actionRotate_Clockwise_triggered()
 {
     gl3widget->Rotate(-1);
     UpdateGL();
-    FileDirty = true;
+    isFileDirty = true;
 }
 
 /**
@@ -647,21 +647,21 @@ void MainWindow::on_actionRotate_Anticlockwise_triggered()
 {
     gl3widget->Rotate(1);
     UpdateGL();
-    FileDirty = true;
+    isFileDirty = true;
 }
 
 void MainWindow::on_actionLarge_Rotate_Clockwise_triggered()
 {
     gl3widget->Rotate(-30);
     UpdateGL();
-    FileDirty = true;
+    isFileDirty = true;
 }
 
 void MainWindow::on_actionLarge_Rotate_Anticlockwise_triggered()
 {
     gl3widget->Rotate(30);
     UpdateGL();
-    FileDirty = true;
+    isFileDirty = true;
 }
 
 /**
@@ -671,7 +671,7 @@ void MainWindow::on_actionMove_away_from_viewer_triggered()
 {
     gl3widget->MoveAway(.02);
     UpdateGL();
-    FileDirty = true;
+    isFileDirty = true;
 }
 
 /**
@@ -681,7 +681,7 @@ void MainWindow::on_actionMove_towards_viewer_triggered()
 {
     gl3widget->MoveAway(-.02);
     UpdateGL();
-    FileDirty = true;
+    isFileDirty = true;
 }
 
 /**
@@ -691,7 +691,7 @@ void MainWindow::on_actionLarge_Move_Closer_triggered()
 {
     gl3widget->MoveAway(-.5);
     UpdateGL();
-    FileDirty = true;
+    isFileDirty = true;
 }
 
 /**
@@ -701,7 +701,7 @@ void MainWindow::on_actionLarge_Move_Away_triggered()
 {
     gl3widget->MoveAway(0.5);
     UpdateGL();
-    FileDirty = true;
+    isFileDirty = true;
 }
 
 /**
@@ -970,7 +970,7 @@ void MainWindow::RefreshObjects()
     //set columwidths
     ui->treeWidget->setUniformRowHeights(true);
 
-    if (vaxml_mode)
+    if (isVaxmlMode)
     {
         ui->treeWidget->setColumnHidden(6, true);
         ui->treeWidget->setColumnHidden(7, true);
@@ -1023,8 +1023,8 @@ void MainWindow::RefreshInfo()
     if (SPVs.count() == 0) return;
 
     //First - if there is a title use it for window title
-    if (i_title.count() == 1)
-        setWindowTitle(QString(PRODUCTNAME) + ": " + i_title[0]);
+    if (infoTitle.count() == 1)
+        setWindowTitle(QString(PRODUCTNAME) + ": " + infoTitle[0]);
     else
     {
         QString shortfname = QString(PRODUCTNAME) + " v" + QString(SOFTWARE_VERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
@@ -1035,13 +1035,13 @@ void MainWindow::RefreshInfo()
     QTreeWidgetItem *title = new QTreeWidgetItem(QTreeWidgetItem::UserType);
     title->setText(0, "Title");
     QString rootdata = "";
-    for (int i = 0; i < i_title.count(); i++)
+    for (int i = 0; i < infoTitle.count(); i++)
     {
         QTreeWidgetItem *titleitem = new QTreeWidgetItem();
-        titleitem->setText(0, i_title[i]);
-        titleitem->setData(0, Qt::UserRole, i_title[i]);
+        titleitem->setText(0, infoTitle[i]);
+        titleitem->setData(0, Qt::UserRole, infoTitle[i]);
         title->addChild(titleitem);
-        rootdata += i_title[i] + "\n";
+        rootdata += infoTitle[i] + "\n";
     }
     title->setData(0, Qt::UserRole, rootdata);
     ui->infoTreeWidget->addTopLevelItem(title);
@@ -1049,13 +1049,13 @@ void MainWindow::RefreshInfo()
     rootdata = "";
     QTreeWidgetItem *classification = new QTreeWidgetItem(QTreeWidgetItem::UserType);
     classification->setText(0, "Classification");
-    for (int i = 0; i < i_classification_name.count(); i++)
+    for (int i = 0; i < infoClassificationName.count(); i++)
     {
         QTreeWidgetItem *commentitem = new QTreeWidgetItem;
-        commentitem->setText(0, i_classification_rank[i] + ": " + i_classification_name[i]);
-        commentitem->setData(0, Qt::UserRole, + ": " + i_classification_name[i]);
+        commentitem->setText(0, infoClassificationRank[i] + ": " + infoClassificationName[i]);
+        commentitem->setData(0, Qt::UserRole, + ": " + infoClassificationName[i]);
         classification->addChild(commentitem);
-        rootdata += i_classification_rank[i] + ": " + i_classification_name[i] + "\n";
+        rootdata += infoClassificationRank[i] + ": " + infoClassificationName[i] + "\n";
     }
     classification->setData(0, Qt::UserRole, rootdata);
     ui->infoTreeWidget->addTopLevelItem(classification);
@@ -1063,13 +1063,13 @@ void MainWindow::RefreshInfo()
     rootdata = "";
     QTreeWidgetItem *author = new QTreeWidgetItem(QTreeWidgetItem::UserType);
     author->setText(0, "Authors");
-    for (int i = 0; i < i_author.count(); i++)
+    for (int i = 0; i < infoAuthor.count(); i++)
     {
         QTreeWidgetItem *commentitem = new QTreeWidgetItem;
-        commentitem->setText(0, i_author[i]);
-        commentitem->setData(0, Qt::UserRole, i_author[i]);
+        commentitem->setText(0, infoAuthor[i]);
+        commentitem->setData(0, Qt::UserRole, infoAuthor[i]);
         author->addChild(commentitem);
-        rootdata += i_author[i] + "\n";
+        rootdata += infoAuthor[i] + "\n";
     }
     author->setData(0, Qt::UserRole, rootdata);
     ui->infoTreeWidget->addTopLevelItem(author);
@@ -1077,13 +1077,13 @@ void MainWindow::RefreshInfo()
     rootdata = "";
     QTreeWidgetItem *reference = new QTreeWidgetItem(QTreeWidgetItem::UserType);
     reference->setText(0, "References");
-    for (int i = 0; i < i_reference.count(); i++)
+    for (int i = 0; i < infoReference.count(); i++)
     {
         QTreeWidgetItem *commentitem = new QTreeWidgetItem;
-        commentitem->setText(0, i_reference[i]);
-        commentitem->setData(0, Qt::UserRole, i_reference[i]);
+        commentitem->setText(0, infoReference[i]);
+        commentitem->setData(0, Qt::UserRole, infoReference[i]);
         reference->addChild(commentitem);
-        rootdata += i_reference[i] + "\n";
+        rootdata += infoReference[i] + "\n";
     }
     reference->setData(0, Qt::UserRole, rootdata);
     ui->infoTreeWidget->addTopLevelItem(reference);
@@ -1091,13 +1091,13 @@ void MainWindow::RefreshInfo()
     rootdata = "";
     QTreeWidgetItem *specimen = new QTreeWidgetItem(QTreeWidgetItem::UserType);
     specimen->setText(0, "Specimen");
-    for (int i = 0; i < i_specimen.count(); i++)
+    for (int i = 0; i < infoSpecimen.count(); i++)
     {
         QTreeWidgetItem *commentitem = new QTreeWidgetItem;
-        commentitem->setText(0, i_specimen[i]);
-        commentitem->setData(0, Qt::UserRole, i_specimen[i]);
+        commentitem->setText(0, infoSpecimen[i]);
+        commentitem->setData(0, Qt::UserRole, infoSpecimen[i]);
         specimen->addChild(commentitem);
-        rootdata += i_specimen[i] + "\n";
+        rootdata += infoSpecimen[i] + "\n";
     }
     specimen->setData(0, Qt::UserRole, rootdata);
     ui->infoTreeWidget->addTopLevelItem(specimen);
@@ -1105,13 +1105,13 @@ void MainWindow::RefreshInfo()
     rootdata = "";
     QTreeWidgetItem *provenance = new QTreeWidgetItem(QTreeWidgetItem::UserType);
     provenance->setText(0, "Provenance");
-    for (int i = 0; i < i_provenance.count(); i++)
+    for (int i = 0; i < infoProvenance.count(); i++)
     {
         QTreeWidgetItem *commentitem = new QTreeWidgetItem;
-        commentitem->setText(0, i_provenance[i]);
-        commentitem->setData(0, Qt::UserRole, i_provenance[i]);
+        commentitem->setText(0, infoProvenance[i]);
+        commentitem->setData(0, Qt::UserRole, infoProvenance[i]);
         provenance->addChild(commentitem);
-        rootdata += i_provenance[i] + "\n";
+        rootdata += infoProvenance[i] + "\n";
     }
     provenance->setData(0, Qt::UserRole, rootdata);
     ui->infoTreeWidget->addTopLevelItem(provenance);
@@ -1119,13 +1119,13 @@ void MainWindow::RefreshInfo()
     QTreeWidgetItem *comments = new QTreeWidgetItem(QTreeWidgetItem::UserType);
     comments->setText(0, "Comments");
     rootdata = "";
-    for (int i = 0; i < i_comments.count(); i++)
+    for (int i = 0; i < infoComments.count(); i++)
     {
         QTreeWidgetItem *commentitem = new QTreeWidgetItem();
-        commentitem->setText(0, i_comments[i]);
-        commentitem->setData(0, Qt::UserRole, i_comments[i]);
+        commentitem->setText(0, infoComments[i]);
+        commentitem->setData(0, Qt::UserRole, infoComments[i]);
         comments->addChild(commentitem);
-        rootdata += i_comments[i] + "\n";
+        rootdata += infoComments[i] + "\n";
     }
     comments->setData(0, Qt::UserRole, rootdata);
     ui->infoTreeWidget->addTopLevelItem(comments);
@@ -1162,8 +1162,8 @@ void MainWindow::on_infoTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int 
 {
     Q_UNUSED(column)
 
-    if (vaxml_mode) return; //disabled in VAXML mode
-    FileDirty = true;
+    if (isVaxmlMode) return; //disabled in VAXML mode
+    isFileDirty = true;
 
     //work out if this is a root or child item
     if (item->type() == QTreeWidgetItem::UserType)
@@ -1178,7 +1178,7 @@ void MainWindow::on_infoTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int 
         if (item->text(0) == "Specimen") title = "specimen note";
         if (item->text(0) == "Classification") title = "classification";
         //it's an add item
-        if (title == "title" && i_title.count() != 0)
+        if (title == "title" && infoTitle.count() != 0)
         {
             QMessageBox::warning(this, "Only one title!", "Only one title is allowed", QMessageBox::Ok);
             return;
@@ -1190,8 +1190,8 @@ void MainWindow::on_infoTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int 
             QString text1 = QInputDialog::getText(this, "Classification item", "Rank:", QLineEdit::Normal, "");
             QString text2 = QInputDialog::getText(this, "Classification item", "Name:", QLineEdit::Normal, "");
             FilterKeys = true;
-            i_classification_rank.append(text1);
-            i_classification_name.append(text2);
+            infoClassificationRank.append(text1);
+            infoClassificationName.append(text2);
 
             RefreshInfo();
         }
@@ -1202,12 +1202,12 @@ void MainWindow::on_infoTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int 
             FilterKeys = true;
             if (text.length() > 0)
             {
-                if (item->text(0) == "Title") i_title.append(text);
-                if (item->text(0) == "Comments") i_comments.append(text);
-                if (item->text(0) == "Authors") i_author.append(text);
-                if (item->text(0) == "References") i_reference.append(text);
-                if (item->text(0) == "Provenance") i_provenance.append(text);
-                if (item->text(0) == "Specimen") i_specimen.append(text);
+                if (item->text(0) == "Title") infoTitle.append(text);
+                if (item->text(0) == "Comments") infoComments.append(text);
+                if (item->text(0) == "Authors") infoAuthor.append(text);
+                if (item->text(0) == "References") infoReference.append(text);
+                if (item->text(0) == "Provenance") infoProvenance.append(text);
+                if (item->text(0) == "Specimen") infoSpecimen.append(text);
                 RefreshInfo();
             }
         }
@@ -1231,10 +1231,10 @@ void MainWindow::on_infoTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int 
             QString text2 = QInputDialog::getText(this, "Edit classification item", "Name:", QLineEdit::Normal, "");
             FilterKeys = true;
 
-            for (int i = 0; i < i_classification_rank.count(); i++) if (i_classification_rank[i] + ": " + i_classification_name[i] == oldtext)
+            for (int i = 0; i < infoClassificationRank.count(); i++) if (infoClassificationRank[i] + ": " + infoClassificationName[i] == oldtext)
                 {
-                    i_classification_rank[i] = text1;
-                    i_classification_name[i] = text2;
+                    infoClassificationRank[i] = text1;
+                    infoClassificationName[i] = text2;
                 }
 
             RefreshInfo();
@@ -1248,17 +1248,17 @@ void MainWindow::on_infoTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int 
             if (text.length() > 0)
             {
                 if (item->parent()->text(0) == "Title")
-                    for (int i = 0; i < i_title.count(); i++) if (i_title[i] == oldtext) i_title[i] = text;
+                    for (int i = 0; i < infoTitle.count(); i++) if (infoTitle[i] == oldtext) infoTitle[i] = text;
                 if (item->parent()->text(0) == "Comments")
-                    for (int i = 0; i < i_comments.count(); i++) if (i_comments[i] == oldtext) i_comments[i] = text;
+                    for (int i = 0; i < infoComments.count(); i++) if (infoComments[i] == oldtext) infoComments[i] = text;
                 if (item->parent()->text(0) == "Authors")
-                    for (int i = 0; i < i_author.count(); i++) if (i_author[i] == oldtext) i_author[i] = text;
+                    for (int i = 0; i < infoAuthor.count(); i++) if (infoAuthor[i] == oldtext) infoAuthor[i] = text;
                 if (item->parent()->text(0) == "Specimen")
-                    for (int i = 0; i < i_specimen.count(); i++) if (i_specimen[i] == oldtext) i_specimen[i] = text;
+                    for (int i = 0; i < infoSpecimen.count(); i++) if (infoSpecimen[i] == oldtext) infoSpecimen[i] = text;
                 if (item->parent()->text(0) == "Provenance")
-                    for (int i = 0; i < i_provenance.count(); i++) if (i_provenance[i] == oldtext) i_provenance[i] = text;
+                    for (int i = 0; i < infoProvenance.count(); i++) if (infoProvenance[i] == oldtext) infoProvenance[i] = text;
                 if (item->parent()->text(0) == "References")
-                    for (int i = 0; i < i_reference.count(); i++) if (i_reference[i] == oldtext) i_reference[i] = text;
+                    for (int i = 0; i < infoReference.count(); i++) if (infoReference[i] == oldtext) infoReference[i] = text;
 
                 RefreshInfo();
             }
@@ -1273,7 +1273,7 @@ void MainWindow::deleteinfo()
 {
     if (ui->infoTreeWidget->isVisible() == false) return;
     if (ui->infoTreeWidget->selectedItems().count() != 1) return;
-    if (vaxml_mode) return;
+    if (isVaxmlMode) return;
     QTreeWidgetItem *item = ui->infoTreeWidget->selectedItems().at(0);
 
     QString oldtext = item->text(0);
@@ -1299,16 +1299,16 @@ void MainWindow::deleteinfo()
 
         if (QMessageBox::question(this, "Delete", "Delete ALL " + title + "s?", QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes)
         {
-            if (item->text(0) == "Title") i_title.clear();
-            if (item->text(0) == "Comments") i_comments.clear();
-            if (item->text(0) == "Authors")  i_author.clear();
-            if (item->text(0) == "Specimen")  i_specimen.clear();
-            if (item->text(0) == "Provenance")  i_provenance.clear();
-            if (item->text(0) == "References") i_reference.clear();
+            if (item->text(0) == "Title") infoTitle.clear();
+            if (item->text(0) == "Comments") infoComments.clear();
+            if (item->text(0) == "Authors")  infoAuthor.clear();
+            if (item->text(0) == "Specimen")  infoSpecimen.clear();
+            if (item->text(0) == "Provenance")  infoProvenance.clear();
+            if (item->text(0) == "References") infoReference.clear();
             if (item->text(0) == "Classification")
             {
-                i_classification_name.clear();
-                i_classification_rank.clear();
+                infoClassificationName.clear();
+                infoClassificationRank.clear();
             }
             RefreshInfo();
         }
@@ -1326,43 +1326,43 @@ void MainWindow::deleteinfo()
 
         if (QMessageBox::question(this, "Delete", "Really delete " + title + "?", QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes)
         {
-            if (item->parent()->text(0) == "Title") i_title.clear();
+            if (item->parent()->text(0) == "Title") infoTitle.clear();
 
             if (item->parent()->text(0) == "Comments")
-                for (int i = 0; i < i_comments.count(); i++) if (i_comments[i] == oldtext)
+                for (int i = 0; i < infoComments.count(); i++) if (infoComments[i] == oldtext)
                     {
-                        i_comments.removeAt(i);
+                        infoComments.removeAt(i);
                         break;
                     }
             if (item->parent()->text(0) == "Authors")
-                for (int i = 0; i < i_author.count(); i++) if (i_author[i] == oldtext)
+                for (int i = 0; i < infoAuthor.count(); i++) if (infoAuthor[i] == oldtext)
                     {
-                        i_author.removeAt(i);
+                        infoAuthor.removeAt(i);
                         break;
                     }
             if (item->parent()->text(0) == "Specimen")
-                for (int i = 0; i < i_specimen.count(); i++) if (i_specimen[i] == oldtext)
+                for (int i = 0; i < infoSpecimen.count(); i++) if (infoSpecimen[i] == oldtext)
                     {
-                        i_specimen.removeAt(i);
+                        infoSpecimen.removeAt(i);
                         break;
                     }
             if (item->parent()->text(0) == "Provenance")
-                for (int i = 0; i < i_provenance.count(); i++) if (i_provenance[i] == oldtext)
+                for (int i = 0; i < infoProvenance.count(); i++) if (infoProvenance[i] == oldtext)
                     {
-                        i_provenance.removeAt(i);
+                        infoProvenance.removeAt(i);
                         break;
                     }
             if (item->parent()->text(0) == "References")
-                for (int i = 0; i < i_reference.count(); i++) if (i_reference[i] == oldtext)
+                for (int i = 0; i < infoReference.count(); i++) if (infoReference[i] == oldtext)
                     {
-                        i_reference.removeAt(i);
+                        infoReference.removeAt(i);
                         break;
                     }
             if (item->parent()->text(0) == "Classification")
-                for (int i = 0; i < i_classification_rank.count(); i++) if (i_classification_rank[i] + ": " + i_classification_name[i] == oldtext)
+                for (int i = 0; i < infoClassificationRank.count(); i++) if (infoClassificationRank[i] + ": " + infoClassificationName[i] == oldtext)
                     {
-                        i_classification_rank.removeAt(i);
-                        i_classification_name.removeAt(i);
+                        infoClassificationRank.removeAt(i);
+                        infoClassificationName.removeAt(i);
                         break;
                     }
             RefreshInfo();
@@ -1403,7 +1403,7 @@ void MainWindow::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int colu
                 if (temp != "")
                 {
                     SVObjects[i]->Name = temp;
-                    FileDirty = true;
+                    isFileDirty = true;
                 }
 
                 RefreshObjects();
@@ -1412,7 +1412,7 @@ void MainWindow::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int colu
             if (column == 1)
             {
                 SVObjects[i]->Visible = !(SVObjects[i]->Visible);
-                FileDirty = true;
+                isFileDirty = true;
                 RefreshOneItem(item, i);
                 UpdateGL();
             }
@@ -1436,7 +1436,7 @@ void MainWindow::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int colu
 
                 if (ok && !qitem.isEmpty())
                 {
-                    FileDirty = true;
+                    isFileDirty = true;
                     if (qitem == "[None]") SVObjects[i]->Key = 0;
                     else SVObjects[i]->Key = static_cast<int>(qitem.toLatin1()[0]);
                 }
@@ -1455,7 +1455,7 @@ void MainWindow::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int colu
 
                 if (newcol.isValid())
                 {
-                    FileDirty = true;
+                    isFileDirty = true;
                     SVObjects[i]->Colour[0] = static_cast<uchar>(newcol.red());
                     SVObjects[i]->Colour[1] = static_cast<uchar>(newcol.green());
                     SVObjects[i]->Colour[2] = static_cast<uchar>(newcol.blue());
@@ -1491,7 +1491,7 @@ void MainWindow::SetResample()
             {
                 SVObjects[i]->Resample = temp;
                 SVObjects[i]->Dirty = true;
-                FileDirty = true;
+                isFileDirty = true;
             }
         }
         RefreshObjects();
@@ -1647,7 +1647,7 @@ void MainWindow::SetSmoothing(int v)
         if (SVObjects[i]->widgetitem->isSelected())
         {
             SVObjects[i]->Smoothing = v;
-            FileDirty = true;
+            isFileDirty = true;
             SVObjects[i]->Dirty = true;
         }
     }
@@ -1666,7 +1666,7 @@ void MainWindow::SetIslands(int v)
         if (SVObjects[i]->widgetitem->isSelected())
         {
             SVObjects[i]->IslandRemoval = v;
-            FileDirty = true;
+            isFileDirty = true;
             SVObjects[i]->Dirty = true;
         }
     }
@@ -1684,7 +1684,7 @@ void MainWindow::SetTrans(int v)
     {
         if (SVObjects[i]->widgetitem->isSelected())
         {
-            FileDirty = true;
+            isFileDirty = true;
             SVObjects[i]->Transparency = v;
         }
     }
@@ -1702,7 +1702,7 @@ void MainWindow::SetShininess(int s)
     {
         if (SVObjects[i]->widgetitem->isSelected())
         {
-            FileDirty = true;
+            isFileDirty = true;
             SVObjects[i]->Shininess = s;
         }
     }
@@ -1717,12 +1717,12 @@ void MainWindow::on_actionResurface_Now_triggered()
 {
     {
         //show prog bars if needbe
-        if (ui->actionProgress_Bars->isChecked() == false && vaxml_mode == true)
+        if (ui->actionProgress_Bars->isChecked() == false && isVaxmlMode == true)
         {
             ui->actionProgress_Bars->setEnabled(false);
             ui->ProgressDock->setVisible(true);
         }
-        if (vaxml_mode == false) MainWin->DisableRenderCommands();
+        if (isVaxmlMode == false) mainWindow->DisableRenderCommands();
         //How many to change?
         int ObjectsRedoing = 0;
         for (int i = 0; i < SVObjects.count(); i++) if (SVObjects[i]->Dirty && SVObjects[i]->IsGroup == false) ObjectsRedoing++;
@@ -1754,8 +1754,8 @@ void MainWindow::on_actionResurface_Now_triggered()
         ui->OutputLabelOverall->setText("Complete");
         ui->ProgBarOverall->setValue(100);
 
-        if (vaxml_mode == false) MainWin->EnableRenderCommands();
-        if (ui->actionProgress_Bars->isChecked() == false && vaxml_mode == true)
+        if (isVaxmlMode == false) mainWindow->EnableRenderCommands();
+        if (ui->actionProgress_Bars->isChecked() == false && isVaxmlMode == true)
         {
             ui->actionProgress_Bars->setEnabled(true);
             ui->ProgressDock->setVisible(false);
@@ -1889,7 +1889,7 @@ void MainWindow::EnableRenderCommands()
     ui->actionSave_Presurfaced->setEnabled(true);
     ui->actionSave_Finalised_As->setEnabled(true);
 
-    if (IsSP2) ui->actionSave_Changes->setEnabled(false);
+    if (isSP2) ui->actionSave_Changes->setEnabled(false);
     else ui->actionSave_Changes->setEnabled(true);
     ui->actionSave_As->setEnabled(true);
     ui->actionSTL->setEnabled(true);
@@ -2080,9 +2080,9 @@ void MainWindow::on_actionClip_Controls_triggered()
 void MainWindow::on_actionSave_Changes_triggered()
 {
     bool flag = false;
-    if (ContainsPresurfaced && !ContainsNonPresurfaced) flag = true;
-    if (!ContainsPresurfaced && ContainsNonPresurfaced) flag = false;
-    if (ContainsPresurfaced && ContainsNonPresurfaced)
+    if (containsPresurfaced && !containsNonPresurfaced) flag = true;
+    if (!containsPresurfaced && containsNonPresurfaced) flag = false;
+    if (containsPresurfaced && containsNonPresurfaced)
     {
         if (QMessageBox::question(this, "Ambiguous save", "This file contains items with both presurfaced and compact data. Proceeding will save as compact - is this OK?",
                                   QMessageBox::Yes | QMessageBox::No) != QMessageBox::Yes) return;
@@ -2090,7 +2090,7 @@ void MainWindow::on_actionSave_Changes_triggered()
 
     SPVreader r;
     r.WriteFile(flag);
-    FileDirty = false;
+    isFileDirty = false;
 }
 
 /**
@@ -2117,7 +2117,7 @@ void MainWindow::on_actionSave_As_triggered()
     this->setWindowTitle(shortfname);
     SPVreader r;
     r.WriteFile(false);
-    FileDirty = false;
+    isFileDirty = false;
 }
 
 /**
@@ -2142,9 +2142,9 @@ void MainWindow::on_actionSave_Presurfaced_triggered()
 
     SPVreader r;
     r.WriteFile(true); //with polydata structures tagged on
-    ContainsPresurfaced = true;
-    ContainsNonPresurfaced = false;
-    FileDirty = false;
+    containsPresurfaced = true;
+    containsNonPresurfaced = false;
+    isFileDirty = false;
 }
 
 /**
@@ -2368,7 +2368,7 @@ void MainWindow::on_actionAuto_Resurface_triggered()
 void MainWindow::on_actionShow_All_triggered()
 {
     for (int i = 0; i < SVObjects.count(); i++)   SVObjects[i]->Visible = true;
-    FileDirty = true;
+    isFileDirty = true;
     RefreshObjects();
     UpdateGL();
 }
@@ -2380,7 +2380,7 @@ void MainWindow::on_actionHide_All_triggered()
 {
     //hide everything except groups
     for (int i = 0; i < SVObjects.count(); i++)  if (SVObjects[i]->IsGroup == false) SVObjects[i]->Visible = false;
-    FileDirty = true;
+    isFileDirty = true;
     RefreshObjects();
     UpdateGL();
 }
@@ -2401,7 +2401,7 @@ void MainWindow::on_actionInvert_Show_triggered()
         if (SVObjects[i]->IsGroup) SVObjects[i]->Visible = true;
         else SVObjects[i]->Visible = !visible[i];
     }
-    FileDirty = true;
+    isFileDirty = true;
     RefreshObjects();
     UpdateGL();
 }
@@ -2411,7 +2411,7 @@ void MainWindow::on_actionInvert_Show_triggered()
  */
 void MainWindow::on_actionSave_Memory_triggered()
 {
-    FileDirty = true;
+    isFileDirty = true;
     if (ui->actionSave_Memory->isChecked())
         for (int i = 0; i < SVObjects.count(); i++) SVObjects[i]->CompressPolyData(false);
 }
@@ -2467,7 +2467,7 @@ void MainWindow::on_actionImport_SPV_triggered()
     //OK, we have a file. Try
     SPVreader r;
     r.ProcessFile(ifname);
-    FileDirty = true;
+    isFileDirty = true;
     RefreshInfo();
 }
 
@@ -2566,7 +2566,7 @@ void MainWindow::KillSPV(int retcode)
             SVObjects[i]->InGroup = indices.indexOf(SVObjects[i]->InGroup);
     }
 
-    FileDirty = true;
+    isFileDirty = true;
     RefreshObjects();
 }
 
@@ -2684,7 +2684,7 @@ void MainWindow::on_PiecesList_itemDoubleClicked(QListWidgetItem *item)
 void MainWindow::on_actionIncrease_Size_triggered()
 {
     gl3widget->Resize(static_cast<float>(1.003));
-    FileDirty = true;
+    isFileDirty = true;
     UpdateGL();
 }
 
@@ -2694,7 +2694,7 @@ void MainWindow::on_actionIncrease_Size_triggered()
 void MainWindow::on_actionDecrease_Size_triggered()
 {
     gl3widget->Resize(static_cast<float>(.997));
-    FileDirty = true;
+    isFileDirty = true;
     UpdateGL();
 }
 
@@ -2704,7 +2704,7 @@ void MainWindow::on_actionDecrease_Size_triggered()
 void MainWindow::on_actionReset_Size_triggered()
 {
     gl3widget->ResetSize();
-    FileDirty = true;
+    isFileDirty = true;
     UpdateGL();
 }
 
@@ -2714,7 +2714,7 @@ void MainWindow::on_actionReset_Size_triggered()
  */
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    if (vaxml_mode == true)
+    if (isVaxmlMode == true)
     {
         event->accept();
         return;
@@ -2734,7 +2734,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
         return;
     }
 
-    if (FileDirty)
+    if (isFileDirty)
     {
         QMessageBox msgBox;
         msgBox.setText("Data has beeen modified");
@@ -2789,7 +2789,7 @@ void MainWindow::on_action_Move_Up_triggered()
                     int temp = SVObjects[highindex]->Position;
                     SVObjects[highindex]->Position = SVObjects[i]->Position;
                     SVObjects[i]->Position = temp;
-                    FileDirty = true;
+                    isFileDirty = true;
                 }
             }
         }
@@ -2829,7 +2829,7 @@ void MainWindow::on_actionMove_Down_triggered()
                     int temp = SVObjects[lowestindex]->Position;
                     SVObjects[lowestindex]->Position = SVObjects[i]->Position;
                     SVObjects[i]->Position = temp;
-                    FileDirty = true;
+                    isFileDirty = true;
                 }
             }
         }
@@ -2876,7 +2876,7 @@ void MainWindow::on_actionGroup_triggered()
 
         o->Position = max + 1;
         SVObjects.append(o);
-        FileDirty = true;
+        isFileDirty = true;
         RefreshObjects();
     }
 }
@@ -2955,7 +2955,7 @@ void MainWindow::on_actionUngroup_triggered()
         }
     };
 
-    FileDirty = true;
+    isFileDirty = true;
     RefreshObjects();
 }
 
@@ -2997,7 +2997,7 @@ void MainWindow::on_actionMove_to_group_triggered()
                         SVObjects[i]->InGroup = Group;
 
                 RefreshObjects();
-                FileDirty = true;
+                isFileDirty = true;
             }
             else
             {
@@ -3155,7 +3155,7 @@ void MainWindow::on_actionRescale_by_triggered()
     if (ok)
     {
         gl3widget->Resize(static_cast<float>(d));
-        FileDirty = true;
+        isFileDirty = true;
         UpdateGL();
     }
     else
@@ -3169,11 +3169,11 @@ void MainWindow::on_actionBackground_Colour_triggered()
 {
     FilterKeys = false;
 
-    QColor newcolour = QColorDialog::getColor(QColor(back_red, back_green, back_blue));
+    QColor newcolour = QColorDialog::getColor(QColor(colorBackgroundRed, colorBackgroundGreen, colorBackgroundBlue));
     FilterKeys = true;
-    back_red = newcolour.red();
-    back_green = newcolour.green();
-    back_blue = newcolour.blue();
+    colorBackgroundRed = newcolour.red();
+    colorBackgroundGreen = newcolour.green();
+    colorBackgroundBlue = newcolour.blue();
 }
 
 /**
@@ -3203,12 +3203,12 @@ void MainWindow::on_actionScale_Grid_Colour_triggered()
 {
     FilterKeys = false;
 
-    QColor newcolour = QColorDialog::getColor(QColor(grid_red, grid_green, grid_blue));
+    QColor newcolour = QColorDialog::getColor(QColor(colorGridRed, colorGridGreen, colorGridBlue));
     FilterKeys = true;
-    grid_red = newcolour.red();
-    grid_green = newcolour.green();
-    grid_blue = newcolour.blue();
-    FileDirty = true;
+    colorGridRed = newcolour.red();
+    colorGridGreen = newcolour.green();
+    colorGridBlue = newcolour.blue();
+    isFileDirty = true;
     UpdateGL();
 }
 
@@ -3218,12 +3218,12 @@ void MainWindow::on_actionScale_Grid_Colour_triggered()
 void MainWindow::on_actionMinor_Grid_Colour_triggered()
 {
     FilterKeys = false;
-    QColor newcolour = QColorDialog::getColor(QColor(grid_minor_red, grid_minor_green, grid_minor_blue));
+    QColor newcolour = QColorDialog::getColor(QColor(colorGridMinorRed, colorGridMinorGreen, colorGridMinorBlue));
     FilterKeys = true;
-    grid_minor_red = newcolour.red();
-    grid_minor_green = newcolour.green();
-    grid_minor_blue = newcolour.blue();
-    FileDirty = true;
+    colorGridMinorRed = newcolour.red();
+    colorGridMinorGreen = newcolour.green();
+    colorGridMinorBlue = newcolour.blue();
+    isFileDirty = true;
     UpdateGL();
 }
 

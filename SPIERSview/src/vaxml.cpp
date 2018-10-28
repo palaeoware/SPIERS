@@ -18,22 +18,22 @@
 #include "ui_mainwindow.h"
 #include "../SPIERScommon/netmodule.h"
 
-bool firstobject;
-bool vaxml_mode;
-float minx;
-float maxx;
-float miny;
-float maxy;
-float minz;
-float maxz;
-QStringList i_comments;
-QStringList i_reference;
-QStringList i_author;
-QStringList i_specimen;
-QStringList i_provenance;
-QStringList i_classification_name;
-QStringList i_classification_rank;
-QStringList i_title;
+bool isFirstObject;
+bool isVaxmlMode;
+float minX;
+float maxX;
+float minY;
+float maxY;
+float minZ;
+float maxZ;
+QStringList infoComments;
+QStringList infoReference;
+QStringList infoAuthor;
+QStringList infoSpecimen;
+QStringList infoProvenance;
+QStringList infoClassificationName;
+QStringList infoClassificationRank;
+QStringList infoTitle;
 QMatrix4x4 globalmatrix;
 
 /**
@@ -140,8 +140,8 @@ bool VAXML::readSPVF(QString fname)
                             if (text.length() == 0) xmlError("invalid (empty) title");
                             if (title.length() > 0) return xmlError("multiple title tags");
                             title = text;
-                            i_title.clear();
-                            i_title.append(title);
+                            infoTitle.clear();
+                            infoTitle.append(title);
                         }
 
                         if (xml.name() == "scale")
@@ -425,7 +425,7 @@ bool VAXML::readSPVF(QString fname)
     //Now attempt to read all the STLs.
     QList <vtkPolyData *> localPolyData;
 
-    MainWin->setSpecificLabel("Setting up objects");
+    mainWindow->setSpecificLabel("Setting up objects");
     qApp->processEvents();
 
     float f = 0.0;
@@ -503,10 +503,10 @@ bool VAXML::readSPVF(QString fname)
 
         localPolyData.append(polydata);
         f += (100.0 / objects.count());
-        MainWin->setSpecificProgress(static_cast<int>(f / static_cast<float>(2.0)));
+        mainWindow->setSpecificProgress(static_cast<int>(f / static_cast<float>(2.0)));
         qApp->processEvents();
     }
-    vaxml_mode = true;
+    isVaxmlMode = true;
     //qDebug()<<"H6";
 
     //All OK - create the local objects
@@ -514,15 +514,15 @@ bool VAXML::readSPVF(QString fname)
     SPV *spv = new SPV(0, 0, 0, 0, 0);
     SPVs.append(spv);
     spv->filename = title;
-    i_classification_name = classification_name;
-    i_classification_rank = classification_rank;
-    i_provenance = provenance;
-    i_specimen = specimen;
-    i_author = author;
-    i_comments = comments;
-    i_reference = reference;
+    infoClassificationName = classification_name;
+    infoClassificationRank = classification_rank;
+    infoProvenance = provenance;
+    infoSpecimen = specimen;
+    infoAuthor = author;
+    infoComments = comments;
+    infoReference = reference;
 
-    mm_per_unit = scale;
+    mmPerUnit = scale;
 
 
     for (int i = 0; i < groups.count(); i++)
@@ -573,9 +573,9 @@ bool VAXML::readSPVF(QString fname)
     {
         SVObject *svo = SVObjects[(i + firstrealobj)];
         svo->MakeDlists();
-        MainWin->UpdateGL();
+        mainWindow->UpdateGL();
         f += (100.0 / objects.count());
-        MainWin->ui->ProgBarOverall->setValue(50 + static_cast<int>(f / static_cast<float>(2.0)));
+        mainWindow->ui->ProgBarOverall->setValue(50 + static_cast<int>(f / static_cast<float>(2.0)));
     }
 
     return true;
@@ -636,8 +636,8 @@ bool VAXML::readVAXML(QString fname)
                             if (text.length() == 0) xmlError("invalid (empty) title");
                             if (title.length() > 0) return xmlError("multiple title tags");
                             title = text;
-                            i_title.clear();
-                            i_title.append(title);
+                            infoTitle.clear();
+                            infoTitle.append(title);
                         }
 
                         if (xml.name() == "scale")
@@ -979,7 +979,7 @@ bool VAXML::readVAXML(QString fname)
     //Now attempt to read all the STL/PLYs.
     QList <vtkPolyData *> localPolyData;
 
-    MainWin->ui->OutputLabelOverall->setText("Importing objects");
+    mainWindow->ui->OutputLabelOverall->setText("Importing objects");
     qApp->processEvents();
 
     float f = 0.0;
@@ -994,7 +994,7 @@ bool VAXML::readVAXML(QString fname)
             else
             {
                 //File not there - let's download it!
-                MainWin->setSpecificLabel("Downloading " + o->file);
+                mainWindow->setSpecificLabel("Downloading " + o->file);
 
                 //make path if needbe
                 QDir d;
@@ -1003,7 +1003,7 @@ bool VAXML::readVAXML(QString fname)
 
 
                 NetModule netModule;
-                netModule.doDownload(o->url, fpath + "/" + o->file, MainWin->ui->ProgBarSpecific);
+                netModule.doDownload(o->url, fpath + "/" + o->file, mainWindow->ui->ProgBarSpecific);
                 do
                 {
                     qApp->processEvents();
@@ -1015,7 +1015,7 @@ bool VAXML::readVAXML(QString fname)
         }
 
         // File is available now
-        MainWin->setSpecificLabel("");
+        mainWindow->setSpecificLabel("");
         qApp->processEvents();
 
         //Is this stl or ply?
@@ -1029,7 +1029,7 @@ bool VAXML::readVAXML(QString fname)
             polydata = reader->GetOutput();
             localPolyData.append(polydata);
             f += (100.0 / objects.count());
-            MainWin->ui->ProgBarOverall->setValue(static_cast<int>(f / static_cast<float>(2.0)));
+            mainWindow->ui->ProgBarOverall->setValue(static_cast<int>(f / static_cast<float>(2.0)));
             qApp->processEvents();
 
             //now add some bytes from the STL to the hash - pick 50 bytes scattered through file.
@@ -1056,7 +1056,7 @@ bool VAXML::readVAXML(QString fname)
             polydata = reader->GetOutput();
             localPolyData.append(polydata);
             f += (100.0 / objects.count());
-            MainWin->ui->ProgBarOverall->setValue(static_cast<int>(f / static_cast<float>(2.0)));
+            mainWindow->ui->ProgBarOverall->setValue(static_cast<int>(f / static_cast<float>(2.0)));
             qApp->processEvents();
 
             //now add some bytes from the PLY to the hash - pick 50 bytes scattered through file.
@@ -1076,31 +1076,31 @@ bool VAXML::readVAXML(QString fname)
         else xmlError("File '" + file.fileName() + "' is not STL or PLY format");
     }
 
-    vaxml_mode = true;
+    isVaxmlMode = true;
 
     //All OK - create the local objects
     //Create a 'dummy' spv
     SPV *spv = new SPV(0, 0, 0, 0, 0);
     SPVs.append(spv);
     spv->filename = title;
-    i_classification_name = classification_name;
-    i_classification_rank = classification_rank;
-    i_provenance = provenance;
-    i_specimen = specimen;
-    i_author = author;
-    i_comments = comments;
-    i_reference = reference;
+    infoClassificationName = classification_name;
+    infoClassificationRank = classification_rank;
+    infoProvenance = provenance;
+    infoSpecimen = specimen;
+    infoAuthor = author;
+    infoComments = comments;
+    infoReference = reference;
 
     NetModule netModule;
     QCryptographicHash h1(QCryptographicHash::Md5);
     h1.addData(shasharray);
-    netModule.checkHash(h1.result(), &i_comments);
+    netModule.checkHash(h1.result(), &infoComments);
 
     //store for messaging
     QString t(h1.result().toHex());
-    STLHash = t;
+    stlHash = t;
 
-    mm_per_unit = scale;
+    mmPerUnit = scale;
 
     for (int i = 0; i < groups.count(); i++)
     {
@@ -1149,16 +1149,16 @@ bool VAXML::readVAXML(QString fname)
     //surface them. Two loops needed as matrices must be in place before I start buggering with this!
     for (int i = 0; i < objects.count(); i++)
     {
-        if (i == 0) firstobject = true;
-        else firstobject = false;
+        if (i == 0) isFirstObject = true;
+        else isFirstObject = false;
         SVObject *svo = SVObjects[(i + firstrealobj)];
         svo->MakeDlists();
-        MainWin->UpdateGL();
+        mainWindow->UpdateGL();
         f += (100.0 / objects.count());
-        MainWin->ui->ProgBarOverall->setValue(50 + static_cast<int>(f / static_cast<float>(2.0)));
+        mainWindow->ui->ProgBarOverall->setValue(50 + static_cast<int>(f / static_cast<float>(2.0)));
     }
 
-    //qDebug()<<"Final ` box is "<<minx<<maxx<<miny<<maxy<<minz<<maxz;
+    //qDebug()<<"Final ` box is "<<minX<<maxX<<minY<<maxY<<minZ<<maxZ;
 
     //Do some clever stuff to determine shift/rescale etc for this
 
@@ -1166,18 +1166,18 @@ bool VAXML::readVAXML(QString fname)
 
     //work out rescale
     qreal rescale = 1;
-    float biggestsize = qMax(maxx - minx, qMax(maxy - miny, maxz - minz));
+    float biggestsize = qMax(maxX - minX, qMax(maxY - minY, maxZ - minZ));
     if (biggestsize > 3 || biggestsize < 1 ) rescale = 3 / (static_cast<qreal>(biggestsize));
 
 
     //work out translate
-    float midx = static_cast<float>(static_cast<float>(rescale) * (maxx + minx) / 2);
-    float midy = static_cast<float>(static_cast<float>(rescale) * (maxy + miny) / 2);
-    float midz = static_cast<float>(static_cast<float>(rescale) * (maxz + minz) / 2);
+    float midx = static_cast<float>(static_cast<float>(rescale) * (maxX + minX) / 2);
+    float midy = static_cast<float>(static_cast<float>(rescale) * (maxY + minY) / 2);
+    float midz = static_cast<float>(static_cast<float>(rescale) * (maxZ + minZ) / 2);
 
     globalmatrix.translate(0 - midx, 0 - midy, static_cast<float>(0.3) - midz);
     globalmatrix.scale(static_cast<float>(rescale));
-    globalrescale = static_cast<float>(rescale);
+    globalRescale = static_cast<float>(rescale);
 
     //In theory now have a transform matrix to apply to EVERYTHING
     //qDebug()<<"Global matrix is "<<globalmatrix;
@@ -1251,19 +1251,19 @@ bool VAXML::writeVAXML(QString fname, bool mode) //mode true means this is part 
     out << "<header>\n";
     out << "<version>2</version>\n";
 
-    if (i_title.count() == 0) out << "<title>" + SPVs[0]->filenamenopath + "</title>\n";
-    else out << "<title>" + encode(i_title[0]) + "</title>\n";
+    if (infoTitle.count() == 0) out << "<title>" + SPVs[0]->filenamenopath + "</title>\n";
+    else out << "<title>" + encode(infoTitle[0]) + "</title>\n";
 
-    out << "<scale>" << mm_per_unit << "</scale>\n";
+    out << "<scale>" << mmPerUnit << "</scale>\n";
 
-    foreach(QString comment, i_comments) out << "<comments>" << encode(comment) << "</comments>\n";
-    foreach(QString comment, i_reference) out << "<reference>" << encode(comment) << "</reference>\n";
-    foreach(QString comment, i_author) out << "<author>" << encode(comment) << "</author>\n";
-    foreach(QString comment, i_provenance) out << "<provenance>" << encode(comment) << "</provenance>\n";
-    foreach(QString comment, i_specimen) out << "<specimen>" << encode(comment) << "</specimen>\n";
-    for (int i = 0; i < i_classification_name.count(); i++)
+    foreach(QString comment, infoComments) out << "<comments>" << encode(comment) << "</comments>\n";
+    foreach(QString comment, infoReference) out << "<reference>" << encode(comment) << "</reference>\n";
+    foreach(QString comment, infoAuthor) out << "<author>" << encode(comment) << "</author>\n";
+    foreach(QString comment, infoProvenance) out << "<provenance>" << encode(comment) << "</provenance>\n";
+    foreach(QString comment, infoSpecimen) out << "<specimen>" << encode(comment) << "</specimen>\n";
+    for (int i = 0; i < infoClassificationName.count(); i++)
     {
-        out << "<classification><rank>" << encode(i_classification_rank[i]) << "</rank><name>" << encode(i_classification_name[i]) << "</name></classification>\n";
+        out << "<classification><rank>" << encode(infoClassificationRank[i]) << "</rank><name>" << encode(infoClassificationName[i]) << "</name></classification>\n";
     }
 
     out << "</header>\n";
@@ -1290,7 +1290,7 @@ bool VAXML::writeVAXML(QString fname, bool mode) //mode true means this is part 
     out << "<objects>\n";
     foreach (SVObject *o, SVObjects)
     {
-        if (!(o->IsGroup) && (o->Visible || MainWin->ui->actionExport_Hidden_Objects->isChecked()))
+        if (!(o->IsGroup) && (o->Visible || mainWindow->ui->actionExport_Hidden_Objects->isChecked()))
         {
             out << "<object>\n";
             out << "<name>" << encode(o->Name) << "</name>\n";

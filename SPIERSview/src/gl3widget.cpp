@@ -17,14 +17,14 @@
 #define STEREO_SEPARATION_MODIFIER 15.0
 #define SHININESS 0.0
 
-float ScaleMatrix[16];
+float scaleMatrix[16];
 float GlobalMatrix[16];
 float Default0Matrix[16];
 float DefaultClipAngle;
 
-int ScaleBallColour[3]; //info stuff
-float ScaleBallScale;
-float mm_per_unit;
+int scaleBallColour[3]; //info stuff
+float scaleBallScale;
+float mmPerUnit;
 
 /**
  * @brief GlWidget::GlWidget
@@ -39,7 +39,7 @@ GlWidget::GlWidget(QWidget *parent)
     campos = 3;
     StereoSeparation = static_cast<float>(.04);
     setFocusPolicy(Qt::NoFocus);
-    DefaultClipAngle = MainWin->ui->ClipAngle->value() / 10;
+    DefaultClipAngle = mainWindow->ui->ClipAngle->value() / 10;
 
     // Capture the following touch screen gestures
     QList<Qt::GestureType> gestures;
@@ -222,7 +222,7 @@ void GlWidget::DoPMatrix(int width, int height)
     float fudge = static_cast<float>(1300) / static_cast<float>(width);
 
     pMatrix.setToIdentity();
-    if (MainWin->ui->actionOrthographic_View->isChecked())
+    if (mainWindow->ui->actionOrthographic_View->isChecked())
         pMatrix.ortho((0 - ClipAngle / (10 * fudge)), ClipAngle / (10 * fudge), (0 - ClipAngle / (10 * fudge)) / asp, ClipAngle / (10 * fudge) / asp, ClipStart, ClipDepth);
     else
         pMatrix.perspective(ClipAngle, static_cast<float>(width) / static_cast<float>(height), ClipStart, ClipDepth);
@@ -252,9 +252,9 @@ void GlWidget::DrawLine(QMatrix4x4 vMatrix, QVector3D lPosition, float pos, bool
     lightingShaderProgram.setUniformValue("normalMatrix", vMatrix.normalMatrix());
 
     if (major)
-        lightingShaderProgram.setUniformValue("ambientColor", QColor(grid_red, grid_green, grid_blue));
+        lightingShaderProgram.setUniformValue("ambientColor", QColor(colorGridRed, colorGridGreen, colorGridBlue));
     else
-        lightingShaderProgram.setUniformValue("ambientColor", QColor(grid_minor_red, grid_minor_green, grid_minor_blue));
+        lightingShaderProgram.setUniformValue("ambientColor", QColor(colorGridMinorRed, colorGridMinorGreen, colorGridMinorBlue));
     lightingShaderProgram.setUniformValue("diffuseColor", QColor(0.0, 0.0, 0.0));
     lightingShaderProgram.setUniformValue("specularColor", QColor(0.0, 0.0, 0.0));
 
@@ -320,9 +320,9 @@ void GlWidget::RenderNumber(GLfloat x, GLfloat y, GLfloat z, float number, int d
 
     QColor numcolour;
     if (major)
-        numcolour = QColor(grid_red, grid_green, grid_blue);
+        numcolour = QColor(colorGridRed, colorGridGreen, colorGridBlue);
     else
-        numcolour = QColor(grid_minor_red, grid_minor_green, grid_minor_blue);
+        numcolour = QColor(colorGridMinorRed, colorGridMinorGreen, colorGridMinorBlue);
 
     //construct number as list of characters
     QList<int>characters;
@@ -385,7 +385,7 @@ void GlWidget::DrawScaleGrid(QMatrix4x4 vMatrix, QVector3D lPosition)
     lightingShaderProgram.setUniformValue("mvpMatrix", pMatrix * vMatrix);
     lightingShaderProgram.setUniformValue("mvMatrix", vMatrix);
     lightingShaderProgram.setUniformValue("normalMatrix", vMatrix.normalMatrix());
-    lightingShaderProgram.setUniformValue("ambientColor", QColor(back_red, back_green, back_blue));
+    lightingShaderProgram.setUniformValue("ambientColor", QColor(colorBackgroundRed, colorBackgroundGreen, colorBackgroundBlue));
     lightingShaderProgram.setUniformValue("diffuseColor", QColor(0, 0.0, 0.0));
     lightingShaderProgram.setUniformValue("specularColor", QColor(0, 0.0, 0.0));
     lightingShaderProgram.setUniformValue("alpha", static_cast<GLfloat>(0.6));
@@ -402,10 +402,10 @@ void GlWidget::DrawScaleGrid(QMatrix4x4 vMatrix, QVector3D lPosition)
     lightingShaderProgram.setUniformValue("alpha", static_cast<GLfloat>(1.0));
     glfunctions->glClear(GL_DEPTH_BUFFER_BIT);
 
-    float s = static_cast<float>(1.0) / static_cast<float>(mm_per_unit);
+    float s = static_cast<float>(1.0) / static_cast<float>(mmPerUnit);
 
     //work out field of view (max of height and width)
-    float divider = (this->height() * globalrescale) / static_cast<float>(30.0);
+    float divider = (this->height() * globalRescale) / static_cast<float>(30.0);
 
     //work out x field of view in mm
     double fov;
@@ -422,10 +422,10 @@ void GlWidget::DrawScaleGrid(QMatrix4x4 vMatrix, QVector3D lPosition)
 
     //qDebug()<<"Coarse"<<coarse<<"Fine"<<fine;
 
-    for (int i = -10; i < 10; i++) DrawLine(vMatrix, lPosition, (static_cast<float>(i))*s * coarse * globalrescale, true, false);
-    for (int i = -10; i < 10; i++) DrawLine(vMatrix, lPosition, (static_cast<float>(i))*s * coarse * globalrescale, true, true);
-    for (int i = -100; i < 100; i++) if (i % 10 != 0) DrawLine(vMatrix, lPosition, (static_cast<float>(i))*s * fine * globalrescale, false, false);
-    for (int i = -100; i < 100; i++) if (i % 10 != 0) DrawLine(vMatrix, lPosition, (static_cast<float>(i))*s * fine * globalrescale, false, true);
+    for (int i = -10; i < 10; i++) DrawLine(vMatrix, lPosition, (static_cast<float>(i))*s * coarse * globalRescale, true, false);
+    for (int i = -10; i < 10; i++) DrawLine(vMatrix, lPosition, (static_cast<float>(i))*s * coarse * globalRescale, true, true);
+    for (int i = -100; i < 100; i++) if (i % 10 != 0) DrawLine(vMatrix, lPosition, (static_cast<float>(i))*s * fine * globalRescale, false, false);
+    for (int i = -100; i < 100; i++) if (i % 10 != 0) DrawLine(vMatrix, lPosition, (static_cast<float>(i))*s * fine * globalRescale, false, true);
 
     //and the values
     int dp = 0 - static_cast<int>(log10(fov) + .7); //decimal places
@@ -534,7 +534,7 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
 
 
                         float mcolor[3];
-                        if (MainWin->ui->actionMute_Colours->isChecked())
+                        if (mainWindow->ui->actionMute_Colours->isChecked())
                         {
                             mcolor[0] = (static_cast<GLfloat>(SVObjects[i]->Colour[0] / 3 + 170));
                             mcolor[1] = (static_cast<GLfloat>(SVObjects[i]->Colour[1] / 3 + 170));
@@ -547,7 +547,7 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
                             mcolor[2] = (static_cast<GLfloat>(SVObjects[i]->Colour[2]));
                         }
 
-                        if (MainWin->ui->actionBounding_Box->isChecked())
+                        if (mainWindow->ui->actionBounding_Box->isChecked())
                         {
                             if (SVObjects[i]->boundingBoxBuffer.isCreated())
                             {
@@ -641,7 +641,7 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
     }
     glfunctions->glDepthMask(true);
 
-    if (MainWin->ui->actionShow_Scale_Grid->isChecked())
+    if (mainWindow->ui->actionShow_Scale_Grid->isChecked())
         DrawScaleGrid(vMatrix, vMatrix * cameraPosition);
 }
 
@@ -653,14 +653,14 @@ void GlWidget::paintGL()
     //qDebug() << "[Where I'm I?] In paintGL";
 
     glfunctions->glClearColor(
-        static_cast<float>(back_red) / static_cast<float>(255),
-        static_cast<float>(back_green) / static_cast<float>(255),
-        static_cast<float>(back_blue) / static_cast<float>(255),
+        static_cast<float>(colorBackgroundRed) / static_cast<float>(255),
+        static_cast<float>(colorBackgroundGreen) / static_cast<float>(255),
+        static_cast<float>(colorBackgroundBlue) / static_cast<float>(255),
         0.5f
     );
     glfunctions->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    if (MainWin->ui->actionSplit_Stereo->isChecked())
+    if (mainWindow->ui->actionSplit_Stereo->isChecked())
     {
         DoPMatrix(xdim / 2, ydim);
         glfunctions->glViewport(0, 0, xdim / 2, ydim);
@@ -673,7 +673,7 @@ void GlWidget::paintGL()
 
     glfunctions->glViewport(0, 0, xdim, ydim);
 
-    if (MainWin->ui->actionAnaglyph_Stereo->isChecked())
+    if (mainWindow->ui->actionAnaglyph_Stereo->isChecked())
     {
         DoPMatrix(xdim, ydim);
         glfunctions->glColorMask(true, false, false, true);
@@ -685,7 +685,7 @@ void GlWidget::paintGL()
         return;
     }
 
-    if (MainWin->ui->actionQuadBuffer_Stereo->isChecked())
+    if (mainWindow->ui->actionQuadBuffer_Stereo->isChecked())
     {
         DoPMatrix(xdim, ydim);
         //glfunctions->glDrawBuffer(GL_BACK_LEFT); //TODO - WTF DO I USE HERE?
@@ -750,21 +750,21 @@ void GlWidget::Rotate(double angle)
     for (int i = 0; i < SVObjects.count(); i++)
     {
         bool f = false;
-        if (MainWin->ui->actionReposition_Selected->isChecked() && (SVObjects[i]->widgetitem->isSelected())) f = true;
-        if (!MainWin->ui->actionReposition_Selected->isChecked()) f = true;
+        if (mainWindow->ui->actionReposition_Selected->isChecked() && (SVObjects[i]->widgetitem->isSelected())) f = true;
+        if (!mainWindow->ui->actionReposition_Selected->isChecked()) f = true;
         if (f)
         {
             QMatrix4x4 rotmatrix;
             rotmatrix.setToIdentity();
             rotmatrix.rotate(static_cast<float>(angle), 0.0f, 0.0f, 1.0f);
-            if (i == 0) Zrot += angle;
+            if (i == 0) rotationZ += angle;
 
             QMatrix4x4 svmatrix(SVObjects[i]->matrix);
-            if (!SP2_lock)
+            if (!sp2Lock)
             {
                 rotmatrix *= svmatrix;
                 rotmatrix.copyDataTo(SVObjects[i]->matrix);
-                FileDirty = true;
+                isFileDirty = true;
             }
         }
     }
@@ -793,7 +793,7 @@ void GlWidget::mouseMoveEvent(QMouseEvent *event)
     if (
         event->buttons() & Qt::RightButton
         || ((event->buttons() & Qt::LeftButton) && event->modifiers() == Qt::CTRL)
-        || ((event->buttons() & Qt::LeftButton) && MainWin->ui->actionRotate_Lock->isChecked())
+        || ((event->buttons() & Qt::LeftButton) && mainWindow->ui->actionRotate_Lock->isChecked())
     )
     {
         rotmode = true;
@@ -822,8 +822,8 @@ void GlWidget::mouseMoveEvent(QMouseEvent *event)
         for (int i = 0; i < SVObjects.count(); i++)
         {
             bool f = false;
-            if (MainWin->ui->actionReposition_Selected->isChecked() && (SVObjects[i]->widgetitem->isSelected())) f = true;
-            if (!MainWin->ui->actionReposition_Selected->isChecked()) f = true;
+            if (mainWindow->ui->actionReposition_Selected->isChecked() && (SVObjects[i]->widgetitem->isSelected())) f = true;
+            if (!mainWindow->ui->actionReposition_Selected->isChecked()) f = true;
             if (f)
             {
 
@@ -834,16 +834,16 @@ void GlWidget::mouseMoveEvent(QMouseEvent *event)
 
                 if (i == 0)
                 {
-                    Xrot += xangle;    //WTF does this do?
-                    Yrot += yangle;
+                    rotationX += xangle;    //WTF does this do?
+                    rotationY += yangle;
                 }
                 QMatrix4x4 svmatrix(SVObjects[i]->matrix);
-                if (!SP2_lock)
+                if (!sp2Lock)
                 {
                     rotmatrix *= svmatrix;
                     rotmatrix.copyDataTo(SVObjects[i]->matrix);
                     donesomething = true;
-                    FileDirty = true;
+                    isFileDirty = true;
                 }
 
             }
@@ -858,8 +858,8 @@ void GlWidget::mouseMoveEvent(QMouseEvent *event)
         for (int i = 0; i < SVObjects.count(); i++)
         {
             bool f = false;
-            if (MainWin->ui->actionReposition_Selected->isChecked() && (SVObjects[i]->widgetitem->isSelected())) f = true;
-            if (!MainWin->ui->actionReposition_Selected->isChecked()) f = true;
+            if (mainWindow->ui->actionReposition_Selected->isChecked() && (SVObjects[i]->widgetitem->isSelected())) f = true;
+            if (!mainWindow->ui->actionReposition_Selected->isChecked()) f = true;
             if (f)
             {
                 {
@@ -868,16 +868,16 @@ void GlWidget::mouseMoveEvent(QMouseEvent *event)
                     rotmatrix.translate(ObjXpos, ObjYpos, 0.0f);
                     if (i == 0)
                     {
-                        Xtrans += ObjXpos;    //WTF does this do?
-                        Ytrans += ObjYpos;
+                        transformX += ObjXpos;    //WTF does this do?
+                        transformY += ObjYpos;
                     }
                     QMatrix4x4 svmatrix(SVObjects[i]->matrix);
-                    if (!SP2_lock)
+                    if (!sp2Lock)
                     {
                         rotmatrix *= svmatrix;
                         rotmatrix.copyDataTo(SVObjects[i]->matrix);
                         donesomething = true;
-                        FileDirty = true;
+                        isFileDirty = true;
                     }
 
                 }
@@ -909,21 +909,21 @@ void GlWidget::ZRotate(float angle)
     for (int i = 0; i < SVObjects.count(); i++)
     {
         bool f = false;
-        if (MainWin->ui->actionReposition_Selected->isChecked() && (SVObjects[i]->widgetitem->isSelected())) f = true;
-        if (!MainWin->ui->actionReposition_Selected->isChecked()) f = true;
+        if (mainWindow->ui->actionReposition_Selected->isChecked() && (SVObjects[i]->widgetitem->isSelected())) f = true;
+        if (!mainWindow->ui->actionReposition_Selected->isChecked()) f = true;
         if (f)
         {
             QMatrix4x4 rotmatrix;
             rotmatrix.setToIdentity();
             rotmatrix.rotate(angle, 0.0f, 0.0f, 1.0f);
-            if (i == 0) Zrot += angle;
+            if (i == 0) rotationZ += angle;
 
             QMatrix4x4 svmatrix(SVObjects[i]->matrix);
-            if (!SP2_lock)
+            if (!sp2Lock)
             {
                 rotmatrix *= svmatrix;
                 rotmatrix.copyDataTo(SVObjects[i]->matrix);
-                FileDirty = true;
+                isFileDirty = true;
             }
         }
     }
@@ -938,21 +938,21 @@ void GlWidget::YRotate(float angle)
     for (int i = 0; i < SVObjects.count(); i++)
     {
         bool f = false;
-        if (MainWin->ui->actionReposition_Selected->isChecked() && (SVObjects[i]->widgetitem->isSelected())) f = true;
-        if (!MainWin->ui->actionReposition_Selected->isChecked()) f = true;
+        if (mainWindow->ui->actionReposition_Selected->isChecked() && (SVObjects[i]->widgetitem->isSelected())) f = true;
+        if (!mainWindow->ui->actionReposition_Selected->isChecked()) f = true;
         if (f)
         {
             QMatrix4x4 rotmatrix;
             rotmatrix.setToIdentity();
             rotmatrix.rotate(angle, 0.0f, 1.0f, 0.0f);
-            if (i == 0) Yrot += angle;
+            if (i == 0) rotationY += angle;
 
             QMatrix4x4 svmatrix(SVObjects[i]->matrix);
-            if (!SP2_lock)
+            if (!sp2Lock)
             {
                 rotmatrix *= svmatrix;
                 rotmatrix.copyDataTo(SVObjects[i]->matrix);
-                FileDirty = true;
+                isFileDirty = true;
             }
         }
     }
@@ -967,21 +967,21 @@ void GlWidget::XRotate(float angle)
     for (int i = 0; i < SVObjects.count(); i++)
     {
         bool f = false;
-        if (MainWin->ui->actionReposition_Selected->isChecked() && (SVObjects[i]->widgetitem->isSelected())) f = true;
-        if (!MainWin->ui->actionReposition_Selected->isChecked()) f = true;
+        if (mainWindow->ui->actionReposition_Selected->isChecked() && (SVObjects[i]->widgetitem->isSelected())) f = true;
+        if (!mainWindow->ui->actionReposition_Selected->isChecked()) f = true;
         if (f)
         {
             QMatrix4x4 rotmatrix;
             rotmatrix.setToIdentity();
             rotmatrix.rotate(angle, 1.0f, 0.0f, 0.0f);
-            if (i == 0) Xrot += angle;
+            if (i == 0) rotationX += angle;
 
             QMatrix4x4 svmatrix(SVObjects[i]->matrix);
-            if (!SP2_lock)
+            if (!sp2Lock)
             {
                 rotmatrix *= svmatrix;
                 rotmatrix.copyDataTo(SVObjects[i]->matrix);
-                FileDirty = true;
+                isFileDirty = true;
             }
         }
     }
@@ -998,8 +998,8 @@ void GlWidget::Translate(float x, float y, float z)
     for (int i = 0; i < SVObjects.count(); i++)
     {
         bool f = false;
-        if (MainWin->ui->actionReposition_Selected->isChecked() && (SVObjects[i]->widgetitem->isSelected())) f = true;
-        if (!MainWin->ui->actionReposition_Selected->isChecked()) f = true;
+        if (mainWindow->ui->actionReposition_Selected->isChecked() && (SVObjects[i]->widgetitem->isSelected())) f = true;
+        if (!mainWindow->ui->actionReposition_Selected->isChecked()) f = true;
         if (f)
         {
             QMatrix4x4 rotmatrix;
@@ -1007,17 +1007,17 @@ void GlWidget::Translate(float x, float y, float z)
             rotmatrix.translate(static_cast<float>(x) / static_cast<float>(10.0), static_cast<float>(y) / static_cast<float>(10.0), static_cast<float>(z) / static_cast<float>(10.0));
             if (i == 0)
             {
-                Xtrans += x;
-                Ytrans += y;
-                Ztrans += z;
+                transformX += x;
+                transformY += y;
+                transformZ += z;
             }
 
             QMatrix4x4 svmatrix(SVObjects[i]->matrix);
-            if (!SP2_lock)
+            if (!sp2Lock)
             {
                 rotmatrix *= svmatrix;
                 rotmatrix.copyDataTo(SVObjects[i]->matrix);
-                FileDirty = true;
+                isFileDirty = true;
             }
         }
     }
@@ -1033,8 +1033,8 @@ void GlWidget::Resize(float value)
     for (int i = 0; i < SVObjects.count(); i++)
     {
         bool f = false;
-        if (MainWin->ui->actionReposition_Selected->isChecked() && (SVObjects[i]->widgetitem->isSelected())) f = true;
-        if (!MainWin->ui->actionReposition_Selected->isChecked()) f = true;
+        if (mainWindow->ui->actionReposition_Selected->isChecked() && (SVObjects[i]->widgetitem->isSelected())) f = true;
+        if (!mainWindow->ui->actionReposition_Selected->isChecked()) f = true;
         if (f)
         {
             QMatrix4x4 rotmatrix;
@@ -1043,11 +1043,11 @@ void GlWidget::Resize(float value)
             SVObjects[i]->scale *= static_cast<double>(value);
 
             QMatrix4x4 svmatrix(SVObjects[i]->matrix);
-            if (!SP2_lock)
+            if (!sp2Lock)
             {
                 rotmatrix *= svmatrix;
                 rotmatrix.copyDataTo(SVObjects[i]->matrix);
-                FileDirty = true;
+                isFileDirty = true;
             }
         }
     }
@@ -1061,8 +1061,8 @@ void GlWidget::ResetSize()
     for (int i = 0; i < SVObjects.count(); i++)
     {
         bool f = false;
-        if (MainWin->ui->actionReposition_Selected->isChecked() && (SVObjects[i]->widgetitem->isSelected())) f = true;
-        if (!MainWin->ui->actionReposition_Selected->isChecked()) f = true;
+        if (mainWindow->ui->actionReposition_Selected->isChecked() && (SVObjects[i]->widgetitem->isSelected())) f = true;
+        if (!mainWindow->ui->actionReposition_Selected->isChecked()) f = true;
         if (f)
         {
             {
@@ -1072,13 +1072,13 @@ void GlWidget::ResetSize()
                                 static_cast<float>(1.0) / static_cast<float>(SVObjects[i]->scale));
 
                 QMatrix4x4 svmatrix(SVObjects[i]->matrix);
-                if (!SP2_lock)
+                if (!sp2Lock)
                 {
                     rotmatrix *= svmatrix;
                     rotmatrix.copyDataTo(SVObjects[i]->matrix);
                 }
                 SVObjects[i]->scale = 1.0;
-                FileDirty = true;
+                isFileDirty = true;
             }
         }
     }
@@ -1097,13 +1097,13 @@ void GlWidget::ResetToDefault()
     }
 
     ClipAngle = DefaultClipAngle;
-    Xrot = 0;
-    Yrot = 0;
-    Zrot = 0;
-    Xtrans = 0;
-    Ytrans = 0;
-    Ztrans = 0;
-    MainWin->ui->ClipAngle->setValue(static_cast<int>(ClipAngle) * 10); //should trigger a refresh? not if no change!
+    rotationX = 0;
+    rotationY = 0;
+    rotationZ = 0;
+    transformX = 0;
+    transformY = 0;
+    transformZ = 0;
+    mainWindow->ui->ClipAngle->setValue(static_cast<int>(ClipAngle) * 10); //should trigger a refresh? not if no change!
 }
 
 /**
@@ -1123,12 +1123,12 @@ void GlWidget::NewDefault()
             }
         }
         DefaultClipAngle = ClipAngle; //yes, doing for each one, for convenience
-        Xrot = 0;
-        Yrot = 0;
-        Zrot = 0;
-        Xtrans = 0;
-        Ytrans = 0;
-        Ztrans = 0;
+        rotationX = 0;
+        rotationY = 0;
+        rotationZ = 0;
+        transformX = 0;
+        transformY = 0;
+        transformZ = 0;
     }
 }
 
@@ -1191,9 +1191,9 @@ void GlWidget::pinchTriggered(QPinchGesture *gesture)
     if (changeFlags & QPinchGesture::ScaleFactorChanged)
     {
         currentStepScaleFactor = gesture->totalScaleFactor();
-        int currentClipAngle = MainWin->ui->ClipAngle->value();
-        int maximumClipAngleAllowed = MainWin->ui->ClipAngle->maximum();
-        int minimumClipAngleAllowed = MainWin->ui->ClipAngle->minimum();
+        int currentClipAngle = mainWindow->ui->ClipAngle->value();
+        int maximumClipAngleAllowed = mainWindow->ui->ClipAngle->maximum();
+        int minimumClipAngleAllowed = mainWindow->ui->ClipAngle->minimum();
         int newClipAngle = currentClipAngle;
 
         if (currentStepScaleFactor > 0.0)
@@ -1201,16 +1201,16 @@ void GlWidget::pinchTriggered(QPinchGesture *gesture)
             // Zoom in
             newClipAngle = static_cast<int>(static_cast<double>(currentClipAngle) * (1 + ((currentStepScaleFactor - 1) / 20)));
             if (newClipAngle > maximumClipAngleAllowed) newClipAngle = maximumClipAngleAllowed;
-            MainWin->ui->ClipAngle->setValue(newClipAngle);
+            mainWindow->ui->ClipAngle->setValue(newClipAngle);
         }
         else if (currentStepScaleFactor < 0.0)
         {
             // Zoom Out
             newClipAngle = static_cast<int>(static_cast<double>(currentClipAngle) * (currentStepScaleFactor / 20));
             if (newClipAngle < minimumClipAngleAllowed) newClipAngle = minimumClipAngleAllowed;
-            MainWin->ui->ClipAngle->setValue(newClipAngle);
+            mainWindow->ui->ClipAngle->setValue(newClipAngle);
         }
-        SetClip(MainWin->ui->ClipStart->value(), MainWin->ui->ClipDepth->value(), MainWin->ui->ClipAngle->value());
+        SetClip(mainWindow->ui->ClipStart->value(), mainWindow->ui->ClipDepth->value(), mainWindow->ui->ClipAngle->value());
         update();
 
         //qDebug() << "pinchTriggered(): zoom by" << gesture->scaleFactor() << "->" << currentStepScaleFactor << " Current Clip = " << currentClipAngle << " New Clip = " << newClipAngle;

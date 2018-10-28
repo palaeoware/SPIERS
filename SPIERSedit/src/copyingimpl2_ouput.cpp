@@ -782,7 +782,7 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
     escapeFlag = false;
 
 
-    //qDebug()<<"FileDirty"<<FilesDirty;
+    //qDebug()<<"isFileDirty"<<FilesDirty;
 
     label->setFixedWidth(60);
 

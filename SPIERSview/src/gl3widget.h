@@ -74,7 +74,7 @@ private:
     void pinchTriggered(QPinchGesture *gesture);
 
     QMatrix4x4 pMatrix;
-    QMatrix4x4 ScaleMatrix; //Manipulations to scale ball
+    QMatrix4x4 scaleMatrix; //Manipulations to scale ball
     QOpenGLShaderProgram lightingShaderProgram;
     QOpenGLShaderProgram lightingShaderProgramForColour;
 };

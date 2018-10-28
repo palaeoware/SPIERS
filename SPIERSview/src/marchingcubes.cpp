@@ -437,7 +437,7 @@ void MarchingCubes::surfaceChunked()
 
     //Is this empty?? Surface it anyway I think - grid will control the work
     object->Isosurfaces.append(marchChunked(layer, 0, 0, object->compressedslices[0]->grid, gridxscale, gridyscale));
-    TotalTriangles += object->Isosurfaces[0]->nTriangles;
+    totalTriangles += object->Isosurfaces[0]->nTriangles;
     int vertbase = object->Isosurfaces[0]->nVertices;
 
     /* now do the remaining layers */
@@ -445,10 +445,10 @@ void MarchingCubes::surfaceChunked()
     {
         QString text;
         QTextStream s(&text);
-        s << "Surfacing: slice " << k << "  - Ktr " << TotalTriangles / 1000;
-        MainWin->ui->OutputLabelSpecific->setText(text);
-        MainWin->setSpecificLabel(text);
-        MainWin->setSpecificProgress(((k + 1) * 100) / kDim);
+        s << "Surfacing: slice " << k << "  - Ktr " << totalTriangles / 1000;
+        mainWindow->ui->OutputLabelSpecific->setText(text);
+        mainWindow->setSpecificLabel(text);
+        mainWindow->setSpecificProgress(((k + 1) * 100) / kDim);
         if (k % 10 == 0) qApp->processEvents();
 
         //move stuff down in arrays
@@ -522,7 +522,7 @@ void MarchingCubes::surfaceChunked()
             object->Isosurfaces.append(marchChunked(layer, k, vertbase, object->compressedslices[k]->grid, gridxscale, gridyscale));
             //qDebug()<<"DONE Marching slice "<<k;
             vertbase += object->Isosurfaces[k]->nVertices;
-            TotalTriangles += object->Isosurfaces[k]->nTriangles;
+            totalTriangles += object->Isosurfaces[k]->nTriangles;
         }
         else
         {
@@ -587,9 +587,9 @@ void MarchingCubes::surfaceNonChunked()
     {
         QString text;
         QTextStream s(&text);
-        s << "Surfacing: slice " << k << "  - Ktr " << (TotalTriangles + iso->nTriangles) / 1000;
-        MainWin->setSpecificLabel(text);
-        MainWin->setSpecificProgress(((k + 1) * 100) / kDim);
+        s << "Surfacing: slice " << k << "  - Ktr " << (totalTriangles + iso->nTriangles) / 1000;
+        mainWindow->setSpecificLabel(text);
+        mainWindow->setSpecificProgress(((k + 1) * 100) / kDim);
         if (k % 10 == 0) qApp->processEvents();
 
         /* update the layer for this iteration */
@@ -616,7 +616,7 @@ void MarchingCubes::surfaceNonChunked()
         marchNonChunked(dataset, layer, k, 128, iso);
     }
 
-    TotalTriangles += iso->nTriangles;
+    totalTriangles += iso->nTriangles;
 
     /* clean up */
     free(layer->edges);

@@ -1,31 +1,41 @@
 #include "globals.h"
 
-QString fname; //filename passed in argv
-QString currentfile; //SPV file being processed at moment (used for status)
-bool IsSP2;
-MainWindow *MainWin;
-bool validprogbar, FileDirty = false;
-int NextActualDlist = 1;
-int FirstObject;
-int TotalTriangles = 0;
-bool SP2_lock = false;
-bool ContainsPresurfaced = false;
-bool ContainsNonPresurfaced = false;
-int back_red, back_green, back_blue;
-int grid_red, grid_green, grid_blue;
-int grid_minor_red, grid_minor_green, grid_minor_blue;
-float Xrot, Yrot, Zrot;
-float Xtrans, Ytrans, Ztrans;
+MainWindow *mainWindow;
 
-QString STLHash;
-
-float globalrescale;
-QProgressBar *PB;
-QLabel *OL;
-int model_ktr;
-QOpenGLBuffer cubeBuffer;
+bool isSP2;
+bool validprogbar;
+bool isFileDirty = false;
+bool sp2Lock = false;
+bool containsPresurfaced = false;
+bool containsNonPresurfaced = false;
 
 double applicationScaleX;
 double applicationScaleY;
-QScreen *currentScreen;
+
+float globalRescale;
+float rotationX;
+float rotationY;
+float rotationZ;
+float transformX;
+float transformY;
+float transformZ;
+
+int colorBackgroundRed;
+int colorBackgroundGreen;
+int colorBackgroundBlue;
+int colorGridRed;
+int colorGridGreen;
+int colorGridBlue;
+int colorGridMinorRed;
+int colorGridMinorGreen;
+int colorGridMinorBlue;
+int modelKTr;
+int nextActualDlist = 1;
+int totalTriangles = 0;
+
 QList<QScreen *> availableScreens;
+QOpenGLBuffer cubeBuffer;
+QScreen *currentScreen;
+QString fname; //filename passed in argv
+QString currentfile; //SPV file being processed at moment (used for status)
+QString stlHash;
