@@ -34,8 +34,9 @@
 
 #include "mainwindowimpl.h"
 
-// internal version for file purposes - take as SPIERSedit 2.this
-#define SPIERS_VERSION 2
+// Internal versions for input/output file purposes
+#define SPEFILEVERSION 2
+#define SPVFILEVERSION 1010
 
 //Legal Stuff
 #define COPYRIGHT "Copyright © 2018 Mark D. Sutton, Russell J. Garwood, Alan R.T.Spencer"

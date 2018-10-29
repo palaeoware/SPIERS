@@ -755,10 +755,13 @@ int SPVreader::ProcessSPV(QString filename, unsigned int index, float *PassedMat
 
     version = 1; //default
 
-    // V1 SPV files lacked a versioning system...
-    // Work around is for first param to be negative in
-    // v2 and up. For V2 and up, next param is int version
-    // followed by real p1.
+    // v1 SPV files lacked a versioning system...
+    // ... so work around is for first param to be negative in v2 and up. For v2
+    // and up, next param is int version followed by real p1.
+    // Note 1: version numbers >= 1000 are reserved for SPIERSedit generated files
+    // that have not yet been resaved by SPIERSview
+    // Note 2: v5 was first QT one; v4 was last one from VB; v3 is last Mac one;
+    // v6 includes grid/flag support. (this note is out fo date)
     if (p1 < 0)
     {
         fread(&version, sizeof(int), 1, file);

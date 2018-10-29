@@ -875,7 +875,7 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
     out.setByteOrder(QDataStream::LittleEndian);
 
     out << static_cast<double>(-1); //start with -1 - historical reasons
-    out << static_cast<int>(1000); //file version
+    out << static_cast<int>(SPVFILEVERSION); //file version
     //- 5 was first QT one, 4 was last one from VB, 3 is last Mac one. 6 includes grid/flag support.
     //Now - 1000+ are exports from edit only
     out << PixPerMM / (static_cast<double>(XYDownsample * ColMonoScale));

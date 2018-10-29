@@ -1960,7 +1960,7 @@ void DumpSettings()
     //Message("HERE");
     //First header - standard text, v number, then SettingsFileName (might not be same as current filename - so store!)
     qDebug() << QString("SPIERSedit settings file");
-    qDebug() << static_cast<int>(SPIERS_VERSION);
+    qDebug() << static_cast<int>(SPEFILEVERSION);
     qDebug() << SettingsFileName;
 
     //Do all the simple stuff first
@@ -2060,7 +2060,7 @@ void WriteSettings()
 
     //First header - standard text, v number, then SettingsFileName (might not be same as current filename - so store!)
     out << QString("SPIERSedit settings file");
-    out << static_cast<int>(SPIERS_VERSION);
+    out << static_cast<int>(SPEFILEVERSION);
     out << SettingsFileName;
 
     //Do all the simple stuff first
@@ -2154,7 +2154,7 @@ void WriteSettings()
         out << o->Merge;
     }
 
-    QByteArray b =  AppMainWindow->saveState(SPIERS_VERSION);
+    QByteArray b =  AppMainWindow->saveState(SPEFILEVERSION);
     out << b;
 
     out << MenuGenChecked;
@@ -2226,7 +2226,7 @@ void ReadSettings()
 
     in >> version;
 
-    if (version > SPIERS_VERSION) Message("Warning - settings file " + SettingsFileName + " is too recent for this version of SPIERSedit. Will try to read anyway...");
+    if (version > SPEFILEVERSION) Message("Warning - settings file " + SettingsFileName + " is too recent for this version of SPIERSedit. Will try to read anyway...");
 
     in >> dummy;
     //qDebug()<<"Read"<<dummy;
@@ -2413,7 +2413,7 @@ void ReadSettings()
 
     QByteArray b;
     in >> b;
-    AppMainWindow->restoreState(b, SPIERS_VERSION);
+    AppMainWindow->restoreState(b, SPEFILEVERSION);
 
     in >> MenuGenChecked;
     in >> MenuMasksChecked;
