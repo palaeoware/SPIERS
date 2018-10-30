@@ -314,8 +314,8 @@ agin:
 
         QString shortfname = QString(PRODUCTNAME) + " v" + QString(SOFTWARE_VERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
         this->setWindowTitle(shortfname);
-        SPVreader reader;
-        reader.ProcessFile(fname);
+        SPVReader reader;
+        reader.processFile(fname);
 
         //qDebug() << "[Where I'm I?] In StartTimer_fired - about to call RefreshInfo()";
         RefreshInfo();
@@ -840,8 +840,15 @@ void MainWindow::RefreshOneItem(QTreeWidgetItem *item, int i)
     QTextStream rs(&ResampleSt);
     rs << SVObjects[i]->Resample << "%";
 
-    item->setText(0, SVObjects[i]->Name);
-
+    // This forces models with blank or missing object names to have something
+    if (SVObjects[i]->Name.isEmpty() | SVObjects[i]->Name.isNull())
+    {
+        item->setText(0, QString ("Unknown %1").arg(i));
+    }
+    else
+    {
+        item->setText(0, SVObjects[i]->Name);
+    }
 
     QLabel *show = new QLabel();
     show->setAlignment(Qt::AlignCenter);
@@ -908,6 +915,9 @@ void MainWindow::RefreshOneItem(QTreeWidgetItem *item, int i)
         if (SVObjects[i]->Shininess < 0) t.sprintf("Custom (%d%%)", 0 - SVObjects[i]->Shininess);
         item->setText(8, t);
     }
+
+    // Resize tree so name is fully shown
+    ui->treeWidget->resizeColumnToContents(0);
 }
 
 /**
@@ -2477,8 +2487,8 @@ void MainWindow::on_actionImport_SPV_triggered()
     if (ifname.isNull()) return; //if nothing there, cancel
 
     //OK, we have a file. Try
-    SPVreader r;
-    r.ProcessFile(ifname);
+    SPVReader r;
+    r.processFile(ifname);
     isFileDirty = true;
     RefreshInfo();
 }
@@ -2607,8 +2617,8 @@ void MainWindow::on_actionImport_Replacement_triggered()
         if (ifname.isNull()) return; //if nothing there, cancel
 
         //OK, we have a file. Try
-        SPVreader r;
-        int retcode = r.ProcessFileReplacement(ifname, ui->PiecesList->currentRow());
+        SPVReader r;
+        int retcode = r.processFileReplacement(ifname, ui->PiecesList->currentRow());
         if (retcode == -2) QMessageBox::warning(this, "Can't Replace", "Replacement file must contain a single piece only");
         if (retcode == -3) QMessageBox::warning(this, "Can't Replace", "Replacement file format too old");
 

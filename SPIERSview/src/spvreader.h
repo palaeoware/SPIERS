@@ -7,24 +7,26 @@
 
 class SPV;
 
-//Reads and writes an SPV/sp2
-class SPVreader
+/**
+ * @brief The SPVReader class
+ */
+class SPVReader
 {
 public:
-    SPVreader();
-    void ProcessFile(QString filename);
-    int ProcessFileReplacement(QString filename, int SPVindex);
+    SPVReader();
+    void processFile(QString filename);
+    int processFileReplacement(QString filename, int spvIndex);
+
 private:
+    int replaceIndex;
+    QString currentFilename;
 
-    int ReplaceIndex;
-    QString FileName;
-
-    void FixUpData();
-    void InternalProcessFile(QString filename);
-    bool is_sp2(char *fn);
-    void FileFailed(QString fname, bool write, int n);
-    int ProcessSPV(QString filename, unsigned int index, float *PassedMatrix);
-    void ReadSPV6(QString Filename);
+    void fixKeyCodeData();
+    void internalProcessFile(QString filename);
+    void fileReadFailed(QString filename, bool write, int n);
+    int processSPV(QString filename, float *passedMatrix);
+    void version5Below(QString filename, float *passedMatrix);
+    void version6Plus(QString filename);
 };
 
 #endif // SPVREADER_H
