@@ -14,18 +14,6 @@
 #include "rowmans.h"
 #include "globals.h"
 
-#define STEREO_SEPARATION_MODIFIER 15.0
-#define SHININESS 0.0
-
-float scaleMatrix[16];
-float GlobalMatrix[16];
-float Default0Matrix[16];
-float DefaultClipAngle;
-
-int scaleBallColour[3]; //info stuff
-float scaleBallScale;
-float mmPerUnit;
-
 /**
  * @brief GlWidget::GlWidget
  * @param parent
@@ -33,29 +21,40 @@ float mmPerUnit;
 GlWidget::GlWidget(QWidget *parent)
     : QOpenGLWidget(parent)
 {
+    // default mouse position X/Y
     LastMouseXpos = -1;
     LastMouseYpos = -1;
     setMouseTracking(true);//do nothing except pass parent on
-    campos = 3;
+
+    // Set default eye/camera position X/Y/Z
+    cameraX = 0;
+    cameraY = 0;
+    cameraZ = 3;
+
+    // Set default eye/camera center to look at
+    centerX = 0;
+    centerY = 0;
+    centerZ = 0;
+
+    // Default stereo seperation
     StereoSeparation = static_cast<float>(.04);
+
+    // Defautl clip angle
+    defaultClipAngle = mainWindow->ui->ClipAngle->value() / 10;
+
     setFocusPolicy(Qt::NoFocus);
-    DefaultClipAngle = mainWindow->ui->ClipAngle->value() / 10;
 
     // Capture the following touch screen gestures
     QList<Qt::GestureType> gestures;
     gestures << Qt::PinchGesture;
     grabGestures(gestures);
 
-    //setAutoBufferSwap(true);
-
-    //qDebug() << "Done init widget";
-
-    QSurfaceFormat f;
-    f.setMajorVersion(2);
-    f.setMinorVersion(0);
-    f.setRenderableType(QSurfaceFormat::OpenGL);
-
-    setFormat(f);
+    // Set GL surface format
+    QSurfaceFormat surfaceFormat;
+    surfaceFormat.setMajorVersion(GL_MAJOR);
+    surfaceFormat.setMinorVersion(GL_MINOR);
+    surfaceFormat.setRenderableType(QSurfaceFormat::OpenGL);
+    setFormat(surfaceFormat);
 }
 
 /**
@@ -75,7 +74,6 @@ GlWidget::~GlWidget()
 void GlWidget::initializeGL()
 {
     //qDebug() << "[Where I'm I?] In initializeGL";
-    //qDebug() << this->context();
 
     glfunctions = this->context()->functions();
     glfunctions->glEnable(GL_DEPTH_TEST);
@@ -245,7 +243,7 @@ void GlWidget::DrawLine(QMatrix4x4 vMatrix, QVector3D lPosition, float pos, bool
     //vMatrix.translate(pos,0,-1);
     if (!horizontal) vMatrix.translate(pos, 0, -1);
     else vMatrix.translate(0, pos, -1);
-    vMatrix *= globalmatrix;
+    vMatrix *= globalMatrix;
 
     lightingShaderProgram.setUniformValue("mvpMatrix", pMatrix * vMatrix);
     lightingShaderProgram.setUniformValue("mvMatrix", vMatrix);
@@ -476,14 +474,15 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
     QMatrix4x4 vMatrix; //view matrix
     vMatrix.setToIdentity();
 
-    QVector3D cameraPosition = QVector3D(0, 0, campos);
-    QVector3D rightcameraPosition = QVector3D(static_cast<float>(StereoSeparation) * static_cast<float>(STEREO_SEPARATION_MODIFIER) / static_cast<float>(campos), 0, campos);
+    QVector3D camera = QVector3D(cameraX, cameraY, cameraZ);
+    QVector3D rightcameraPosition = QVector3D(static_cast<float>(StereoSeparation) * static_cast<float>(STEREO_SEPARATION_MODIFIER) / static_cast<float>(cameraZ), 0, cameraZ);
     QVector3D cameraUpDirection = QVector3D(0, 1, 0);
+    QVector3D center = QVector3D(centerX, centerY, centerZ);
 
     if (rightview)
-        vMatrix.lookAt(rightcameraPosition, QVector3D(0, 0, 0), cameraUpDirection); // first 0 is StereoSeparation*3.0/campos
+        vMatrix.lookAt(rightcameraPosition, center, cameraUpDirection);
     else
-        vMatrix.lookAt(cameraPosition, QVector3D(0, 0, 0), cameraUpDirection);
+        vMatrix.lookAt(camera, center, cameraUpDirection);
 
     QOpenGLShaderProgram *useshader;
 
@@ -512,12 +511,10 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
 
                     mvMatrix.translate(0, 0, -1); //for backward compatibility
                     mvMatrix *= mMatrix;
-                    mvMatrix *= globalmatrix;
-
+                    mvMatrix *= globalMatrix;
 
                     QMatrix3x3 normalMatrix;
                     normalMatrix = mvMatrix.normalMatrix();
-
 
                     if ((SVObjects[i]->Transparency == 0 && trans == 0) || (SVObjects[i]->Transparency != 0 && trans == 1)) //do trans on second run
                     {
@@ -530,8 +527,7 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
                         useshader->setUniformValue("mvpMatrix", pMatrix * mvMatrix);
                         useshader->setUniformValue("mvMatrix", mvMatrix);
                         useshader->setUniformValue("normalMatrix", normalMatrix);
-                        useshader->setUniformValue("lightPosition", vMatrix * cameraPosition);
-
+                        useshader->setUniformValue("lightPosition", vMatrix * camera);
 
                         float mcolor[3];
                         if (mainWindow->ui->actionMute_Colours->isChecked())
@@ -642,7 +638,7 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
     glfunctions->glDepthMask(true);
 
     if (mainWindow->ui->actionShow_Scale_Grid->isChecked())
-        DrawScaleGrid(vMatrix, vMatrix * cameraPosition);
+        DrawScaleGrid(vMatrix, vMatrix * camera);
 }
 
 /**
@@ -891,12 +887,13 @@ void GlWidget::mouseMoveEvent(QMouseEvent *event)
 }
 
 /**
- * @brief GlWidget::MoveAway
- * @param dist
+ * @brief GlWidget::moveCameraZ
+ * This function add z to the current cameraZ value.
+ * @param z
  */
-void GlWidget::MoveAway(double dist)
+void GlWidget::moveCameraZ(double value)
 {
-    campos += dist;
+    cameraZ += value;
     update();
 }
 
@@ -1096,7 +1093,7 @@ void GlWidget::ResetToDefault()
             for (int i = 0; i < 16; i++) SVObjects[j]->matrix[i] = SVObjects[j]->defaultmatrix[i];
     }
 
-    ClipAngle = DefaultClipAngle;
+    ClipAngle = defaultClipAngle;
     rotationX = 0;
     rotationY = 0;
     rotationZ = 0;
@@ -1122,7 +1119,7 @@ void GlWidget::NewDefault()
                 SVObjects[j]->gotdefaultmatrix = true;
             }
         }
-        DefaultClipAngle = ClipAngle; //yes, doing for each one, for convenience
+        defaultClipAngle = ClipAngle; //yes, doing for each one, for convenience
         rotationX = 0;
         rotationY = 0;
         rotationZ = 0;

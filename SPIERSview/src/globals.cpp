@@ -19,6 +19,10 @@ float rotationZ;
 float transformX;
 float transformY;
 float transformZ;
+float scaleBallScale;
+float mmPerUnit;
+float scaleMatrix[16];
+float defaultClipAngle;
 
 int colorBackgroundRed;
 int colorBackgroundGreen;
@@ -32,6 +36,7 @@ int colorGridMinorBlue;
 int modelKTr;
 int nextActualDlist = 1;
 int totalTriangles = 0;
+int scaleBallColour[3]; //info stuff
 
 QList<QScreen *> availableScreens;
 QOpenGLBuffer cubeBuffer;

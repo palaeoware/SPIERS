@@ -9,10 +9,6 @@
 
 #include "globals.h"
 
-extern float GlobalMatrix[16];
-extern float Default0Matrix[16];
-extern float DefaultClipAngle;
-
 class GlWidget : public QOpenGLWidget
 {
     Q_OBJECT
@@ -22,23 +18,30 @@ public:
     ~GlWidget();
     void grabGestures(const QList<Qt::GestureType> &gestures);
 
+    float cameraX;
+    float cameraY;
+    float cameraZ;
+    float centerX;
+    float centerY;
+    float centerZ;
     float ClipStart;
     float ClipDepth;
     float ClipAngle;
-    float DefaultClipAngle;
-    float campos;
+    float defaultClipAngle;
     float StereoSeparation;
+
     int LastMouseXpos;
     int LastMouseYpos;
     int xdim;
     int ydim;
+
     QOpenGLFunctions *glfunctions;
 
     bool CanISee(int index);
     void SetClip(int Start, int Depth, int Angle);
     void DoPMatrix(int width, int height);
     void Rotate(double angle);
-    void MoveAway(double dist);
+    void moveCameraZ(double value);
     void DrawObjects(bool rightview, bool halfsize);
     void SetStereoSeparation(float s);
     void YRotate(float angle);

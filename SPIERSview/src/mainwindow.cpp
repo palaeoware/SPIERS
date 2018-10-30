@@ -189,7 +189,7 @@ MainWindow::MainWindow(QWidget *parent)
     colorGridMinorRed = 255;
     colorGridMinorGreen = 0;
     colorGridMinorBlue = 255;
-    globalmatrix.setToIdentity();
+    globalMatrix.setToIdentity();
 
     containsPresurfaced = false;
     containsNonPresurfaced = false;
@@ -670,7 +670,7 @@ void MainWindow::on_actionLarge_Rotate_Anticlockwise_triggered()
  */
 void MainWindow::on_actionMove_away_from_viewer_triggered()
 {
-    gl3widget->MoveAway(.02);
+    gl3widget->moveCameraZ(.02);
     UpdateGL();
     isFileDirty = true;
 }
@@ -680,7 +680,7 @@ void MainWindow::on_actionMove_away_from_viewer_triggered()
  */
 void MainWindow::on_actionMove_towards_viewer_triggered()
 {
-    gl3widget->MoveAway(-.02);
+    gl3widget->moveCameraZ(-.02);
     UpdateGL();
     isFileDirty = true;
 }
@@ -690,7 +690,7 @@ void MainWindow::on_actionMove_towards_viewer_triggered()
  */
 void MainWindow::on_actionLarge_Move_Closer_triggered()
 {
-    gl3widget->MoveAway(-.5);
+    gl3widget->moveCameraZ(-.5);
     UpdateGL();
     isFileDirty = true;
 }
@@ -700,7 +700,7 @@ void MainWindow::on_actionLarge_Move_Closer_triggered()
  */
 void MainWindow::on_actionLarge_Move_Away_triggered()
 {
-    gl3widget->MoveAway(0.5);
+    gl3widget->moveCameraZ(0.5);
     UpdateGL();
     isFileDirty = true;
 }
@@ -714,8 +714,12 @@ void MainWindow::on_actionScreen_Capture_triggered()
     QImage ScreenCapture = gl3widget->grabFramebuffer();
     FilterKeys = false;
 
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Current View"),
-                                                    "", tr("JPEG Image (*.jpg);;Windows Bitmap Image (*.bmp);;TIFF image (*.tif);;PNG Image (*.png)"));
+    QString fileName = QFileDialog::getSaveFileName(
+                           this,
+                           tr("Save Current View"),
+                           "",
+                           tr("JPEG Image (*.jpg);;Windows Bitmap Image (*.bmp);;TIFF image (*.tif);;PNG Image (*.png)")
+                       );
     FilterKeys = true;
 
     ScreenCapture.save(fileName);
@@ -3081,12 +3085,12 @@ void MainWindow::setSamples(int i)
     gl3widget2->ClipStart = gl3widget->ClipStart;
     gl3widget2->ClipDepth = gl3widget->ClipDepth;
     gl3widget2->ClipAngle = gl3widget->ClipAngle;
-    gl3widget2->DefaultClipAngle = gl3widget->DefaultClipAngle;
+    gl3widget2->defaultClipAngle = gl3widget->defaultClipAngle;
     gl3widget2->LastMouseXpos = gl3widget->LastMouseXpos;
     gl3widget2->LastMouseYpos = gl3widget->LastMouseYpos;
     gl3widget2->xdim = gl3widget->xdim;
     gl3widget2->ydim = gl3widget->ydim;
-    gl3widget2->campos = gl3widget->campos;
+    gl3widget2->cameraZ = gl3widget->cameraZ;
     gl3widget2->StereoSeparation = gl3widget->StereoSeparation;
 
     gllayout->removeWidget(gl3widget);

@@ -5,8 +5,8 @@
 #include <QOpenGLBuffer>
 #include <QString>
 #include <QStringList>
-#include <QtWidgets/QLabel>
-#include <QtWidgets/QProgressBar>
+#include <QLabel>
+#include <QProgressBar>
 
 class MainWindow;
 
@@ -28,9 +28,9 @@ class MainWindow;
 #define READTHEDOCS "https://spiersview.readthedocs.io/"
 
 // Test file location
-#define TESTDUMPLOCATION "C:/Documents and Settings/mdsutton/Desktop/Test/"
+#define TESTDUMPLOCATION "C:/SPIERSview_test/"
 
-//SPIERSview Defines
+//SPIERSview defines
 #define GRIDSIZE 32
 #define SCALE 2
 #define MAXDLISTSIZE 100000
@@ -40,8 +40,10 @@ class MainWindow;
 #define SPVFILEVERSION 10
 #define GL_MAJOR 2
 #define GL_MINOR 1
+#define STEREO_SEPARATION_MODIFIER 15.0
+#define SHININESS 0.0
 
-// SPIERSview extrern
+// SPIERSview extrerns
 extern MainWindow *mainWindow;
 
 extern bool isSP2;
@@ -72,6 +74,7 @@ extern float scaleMatrix[16];
 extern float transformX;
 extern float transformY;
 extern float transformZ;
+extern float defaultClipAngle;
 
 extern int nextActualDlist;
 extern int totalTriangles;
@@ -88,7 +91,7 @@ extern int scaleBallColour[3];
 extern int modelKTr;
 
 extern QList<QScreen *> availableScreens;
-extern QMatrix4x4 globalmatrix;
+extern QMatrix4x4 globalMatrix;
 extern QOpenGLBuffer cubeBuffer;
 extern QScreen *currentScreen;
 extern QString fname;

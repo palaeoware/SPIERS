@@ -34,7 +34,7 @@ QStringList infoProvenance;
 QStringList infoClassificationName;
 QStringList infoClassificationRank;
 QStringList infoTitle;
-QMatrix4x4 globalmatrix;
+QMatrix4x4 globalMatrix;
 
 /**
  * @brief VAXML::VAXML
@@ -1162,7 +1162,7 @@ bool VAXML::readVAXML(QString fname)
 
     //Do some clever stuff to determine shift/rescale etc for this
 
-    globalmatrix.setToIdentity();
+    globalMatrix.setToIdentity();
 
     //work out rescale
     qreal rescale = 1;
@@ -1175,12 +1175,12 @@ bool VAXML::readVAXML(QString fname)
     float midy = static_cast<float>(static_cast<float>(rescale) * (maxY + minY) / 2);
     float midz = static_cast<float>(static_cast<float>(rescale) * (maxZ + minZ) / 2);
 
-    globalmatrix.translate(0 - midx, 0 - midy, static_cast<float>(0.3) - midz);
-    globalmatrix.scale(static_cast<float>(rescale));
+    globalMatrix.translate(0 - midx, 0 - midy, static_cast<float>(0.3) - midz);
+    globalMatrix.scale(static_cast<float>(rescale));
     globalRescale = static_cast<float>(rescale);
 
     //In theory now have a transform matrix to apply to EVERYTHING
-    //qDebug()<<"Global matrix is "<<globalmatrix;
+    //qDebug()<<"Global matrix is "<<globalMatrix;
     return true;
 }
 
