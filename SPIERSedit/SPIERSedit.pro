@@ -15,7 +15,8 @@ CONFIG += warn_on \
     qt \
     thread \
 
-RESOURCES = SPIERSedit.qrc
+RESOURCES = SPIERSedit.qrc \
+    ../SPIERScommon/licenseresource.qrc
 
 UI_DIR += ui
 

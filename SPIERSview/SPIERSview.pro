@@ -17,7 +17,8 @@ CONFIG += qt \
     release \
     warn_on
 
-RESOURCES = view.qrc
+RESOURCES = view.qrc \
+    ../SPIERScommon/licenseresource.qrc
 
 DESTDIR \
     += \

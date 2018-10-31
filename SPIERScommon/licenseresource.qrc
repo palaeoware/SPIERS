@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/license">
+        <file alias="license">LicenseWithMarkup.txt</file>
+    </qresource>
+</RCC>

@@ -12,7 +12,8 @@ CONFIG += qt \
     release \
     warn_on
 
-RESOURCES += align.qrc
+RESOURCES += align.qrc \
+    ../SPIERScommon/licenseresource.qrc
 
 UI_DIR = build
 
