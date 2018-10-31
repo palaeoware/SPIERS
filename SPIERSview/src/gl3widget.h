@@ -8,6 +8,7 @@
 #include <QGestureEvent>
 
 #include "globals.h"
+#include "drawglscalegrid.h"
 
 class GlWidget : public QOpenGLWidget
 {
@@ -36,6 +37,9 @@ public:
     int ydim;
 
     QOpenGLFunctions *glfunctions;
+    QOpenGLShaderProgram lightingShaderProgram;
+    QOpenGLShaderProgram lightingShaderProgramForColour;
+    QMatrix4x4 pMatrix;
 
     bool CanISee(int index);
     void SetClip(int Start, int Depth, int Angle);
@@ -52,10 +56,6 @@ public:
     void ResetSize();
     void ResetToDefault();
     void NewDefault();
-    void DrawScaleGrid(QMatrix4x4 vMatrix, QVector3D lPosition);
-    void DrawLine(QMatrix4x4 vMatrix, QVector3D lPosition, float pos, bool major, bool horizontal);
-    void RenderCharacter(GLfloat x, GLfloat y, GLfloat z, int charactercode, QMatrix4x4 vMatrix, QColor Colour);
-    void RenderNumber(GLfloat x, GLfloat y, GLfloat z, float number, int decimalplaces, bool mm, bool major, QMatrix4x4 vMatrix);
 
 protected:
     // Overrides
@@ -65,21 +65,11 @@ protected:
     void paintGL();
     void mouseMoveEvent(QMouseEvent *event);
 
-    int numOccVertices;
-    GLfloat CharacterWidths[13]; //widths of these characters
-    GLfloat CharacterLineCounts[13]; //widths of these characters
-    QOpenGLBuffer VBOcharacters[13]; //0-9 are digits 0-9, 10 is -, 11 is ., 12 is m
-    QOpenGLBuffer VBOline;
-    QOpenGLBuffer occBuffer;
-
 private:
     bool gestureEvent(QGestureEvent *event);
     void pinchTriggered(QPinchGesture *gesture);
 
-    QMatrix4x4 pMatrix;
-    QMatrix4x4 scaleMatrix; //Manipulations to scale ball
-    QOpenGLShaderProgram lightingShaderProgram;
-    QOpenGLShaderProgram lightingShaderProgramForColour;
+    DrawGLScaleGrid *scaleGrid;
 };
 
 #endif // GL3WIDGET_H
