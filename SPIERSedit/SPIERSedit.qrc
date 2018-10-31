@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/">
+    <qresource prefix="/license">
         <file>resources/gplv3-127x51.png</file>
         <file>resources/Built_with_Qt_RGB_logo.png</file>
         <file>resources/palaeoware_logo_square.png</file>
