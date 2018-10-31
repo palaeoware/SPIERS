@@ -18,24 +18,6 @@
 #include "ui_mainwindow.h"
 #include "../SPIERScommon/netmodule.h"
 
-bool isFirstObject;
-bool isVaxmlMode;
-float minX;
-float maxX;
-float minY;
-float maxY;
-float minZ;
-float maxZ;
-QStringList infoComments;
-QStringList infoReference;
-QStringList infoAuthor;
-QStringList infoSpecimen;
-QStringList infoProvenance;
-QStringList infoClassificationName;
-QStringList infoClassificationRank;
-QStringList infoTitle;
-QMatrix4x4 globalMatrix;
-
 /**
  * @brief VAXML::VAXML
  */

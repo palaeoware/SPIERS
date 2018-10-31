@@ -8,6 +8,8 @@ bool isFileDirty = false;
 bool sp2Lock = false;
 bool containsPresurfaced = false;
 bool containsNonPresurfaced = false;
+bool isFirstObject;
+bool isVaxmlMode;
 
 double applicationScaleX;
 double applicationScaleY;
@@ -23,6 +25,12 @@ float scaleBallScale;
 float mmPerUnit;
 float scaleMatrix[16];
 float defaultClipAngle;
+float minX;
+float maxX;
+float minY;
+float maxY;
+float minZ;
+float maxZ;
 
 int colorBackgroundRed;
 int colorBackgroundGreen;
@@ -44,3 +52,12 @@ QScreen *currentScreen;
 QString fname; //filename passed in argv
 QString currentfile; //SPV file being processed at moment (used for status)
 QString stlHash;
+QStringList infoComments;
+QStringList infoReference;
+QStringList infoAuthor;
+QStringList infoSpecimen;
+QStringList infoProvenance;
+QStringList infoClassificationName;
+QStringList infoClassificationRank;
+QStringList infoTitle;
+QMatrix4x4 globalMatrix;
