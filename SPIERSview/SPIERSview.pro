@@ -263,7 +263,8 @@ SOURCES += src/main.cpp \
     src/fullscreenwindow.cpp \
     src/spvwriter.cpp \
     src/staticfunctions.cpp \
-    src/drawglscalegrid.cpp
+    src/drawglscalegrid.cpp \
+    src/drawglscaleball.cpp
 
 HEADERS += src/mainwindow.h \
     src/darkstyletheme.h \
@@ -291,7 +292,8 @@ HEADERS += src/mainwindow.h \
     src/fullscreenwindow.h \
     src/spvwriter.h \
     src/staticfunctions.h \
-    src/drawglscalegrid.h
+    src/drawglscalegrid.h \
+    src/drawglscaleball.h
 
 FORMS += ui/mainwindow.ui \
     ui/movetogroup.ui \

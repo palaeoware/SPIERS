@@ -9,6 +9,7 @@
 
 #include "globals.h"
 #include "drawglscalegrid.h"
+#include "drawglscaleball.h"
 
 class GlWidget : public QOpenGLWidget
 {
@@ -70,6 +71,7 @@ private:
     void pinchTriggered(QPinchGesture *gesture);
 
     DrawGLScaleGrid *scaleGrid;
+    DrawGLScaleBall *scaleBall;
 };
 
 #endif // GL3WIDGET_H

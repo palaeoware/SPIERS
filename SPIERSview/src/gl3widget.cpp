@@ -57,6 +57,7 @@ GlWidget::GlWidget(QWidget *parent)
 
     // Create new GL scale grid
     scaleGrid = new DrawGLScaleGrid(this);
+    scaleBall = new DrawGLScaleBall(this);
 }
 
 /**
@@ -90,8 +91,11 @@ void GlWidget::initializeGL()
     lightingShaderProgramForColour.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/lightingFragmentShaderTextured.fsh");
     lightingShaderProgramForColour.link();
 
-    // Initalize teh GL Scale grid
+    // Initalize the GL Scale grid
     scaleGrid->initializeGL();
+
+    // Initalize the GL Scale ball
+    scaleBall->initializeGL();
 }
 
 /**
@@ -311,6 +315,9 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
                 }
     }
     glfunctions->glDepthMask(true);
+
+    // Show/Hide GL Scale Ball
+    scaleBall->draw(vMatrix, vMatrix * camera);
 
     // Show/Hide GL Scale Grid
     if (mainWindow->ui->actionShow_Scale_Grid->isChecked())
