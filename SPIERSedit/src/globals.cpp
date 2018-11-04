@@ -101,12 +101,15 @@ bool MenuHistChecked, MenuInfoChecked, MenuGenChecked, MenuMasksChecked, MenuSeg
 Mask::Mask(QString name)
 //Constructor for a mask - set defaults
 {
-    int n, m;
+    quint64 n, m;
     Name = name;
-    n = (int(static_cast<double>(50) * qrand()));
+
+    n = static_cast<quint64>(50. * static_cast<double>(qrand()));
+
     ForeColour[0] = 128 + static_cast<int>( static_cast<double>(126) * sin(static_cast<double>(n)));
     ForeColour[1] = 128 + static_cast<int>( static_cast<double>(126) * cos(static_cast<double>(n)));
     ForeColour[2] = 128 + static_cast<int>( static_cast<double>(127) * (qrand() / RAND_MAX));
+
     Contrast = 2;
 
     for (m = 0; m < 3; m++) BackColour[m] = ForeColour[m] / 3;
@@ -122,7 +125,7 @@ Segment::Segment(QString name)
 //Constructor for a segment - set defaults
 {
     Name = name;
-    int n = (int(static_cast<double>(50) * qrand()));
+    quint64 n = static_cast<quint64>(50. * static_cast<double>(qrand()));
     Colour[0] = 128 + int( static_cast<double>(126) * sin(static_cast<double>(n)));
     Colour[1] = 128 + int( static_cast<double>(126) * cos(static_cast<double>(n)));
     Colour[2] = 128 + int( static_cast<double>(127) * (qrand() / RAND_MAX));
@@ -186,7 +189,7 @@ Segment::~Segment()
 Curve::Curve(QString name)
 {
     Name = name;
-    int n = (int(static_cast<double>(50) * qrand()));
+    quint64 n = static_cast<quint64>(50. * static_cast<double>(qrand()));
     Colour[0] = 128 + int( static_cast<double>(126) * sin(static_cast<double>(n)));
     Colour[1] = 128 + int( static_cast<double>(126) * cos(static_cast<double>(n)));
     Colour[2] = 128 + int( static_cast<double>(127) * (qrand() / RAND_MAX));
