@@ -104,9 +104,9 @@ Mask::Mask(QString name)
     int n, m;
     Name = name;
     n = (int(static_cast<double>(50) * qrand()));
-    ForeColour[0] = 128 + int( static_cast<double>(126) * sin(static_cast<double>(n)));
-    ForeColour[1] = 128 + int( static_cast<double>(126) * cos(static_cast<double>(n)));
-    ForeColour[2] = 128 + int( static_cast<double>(127) * (qrand() / RAND_MAX));
+    ForeColour[0] = 128 + static_cast<int>( static_cast<double>(126) * sin(static_cast<double>(n)));
+    ForeColour[1] = 128 + static_cast<int>( static_cast<double>(126) * cos(static_cast<double>(n)));
+    ForeColour[2] = 128 + static_cast<int>( static_cast<double>(127) * (qrand() / RAND_MAX));
     Contrast = 2;
 
     for (m = 0; m < 3; m++) BackColour[m] = ForeColour[m] / 3;
