@@ -711,18 +711,42 @@ void MainWindow::on_actionLarge_Move_Away_triggered()
 void MainWindow::on_actionScreen_Capture_triggered()
 {
     UpdateGL();
-    QImage ScreenCapture = gl3widget->grabFramebuffer();
-    FilterKeys = false;
 
+    // 32-bit RGB image from GLWidget
+    QImage screenCapture = gl3widget->grabFramebuffer();
+
+    // Find all available image formats that the program can use for saving
+    QString availableFormats = "";
+    for (int i = 0; i < QImageWriter::supportedImageFormats().size(); ++i)
+    {
+        if (i > 0) availableFormats.append(";;");
+        availableFormats.append(QString(QImageWriter::supportedImageFormats().at(i).constData()).toUpper());
+        availableFormats.append(" image (*.");
+        availableFormats.append(QImageWriter::supportedImageFormats().at(i).constData());
+        availableFormats.append(")");
+    }
+
+    FilterKeys = false;
     QString fileName = QFileDialog::getSaveFileName(
                            this,
                            tr("Save Current View"),
                            "",
-                           tr("JPEG Image (*.jpg);;Windows Bitmap Image (*.bmp);;TIFF image (*.tif);;PNG Image (*.png)")
+                           tr(availableFormats.toLocal8Bit())
                        );
     FilterKeys = true;
 
-    ScreenCapture.save(fileName);
+    // Only save if there is a file name, otherwise assume it is canceled
+    if (!fileName.isNull())
+    {
+        bool didItSave = screenCapture.save(fileName);
+
+        if (!didItSave)
+        {
+            QMessageBox messageBox;
+            messageBox.warning(nullptr, "Saving Error", "The program could not save the image format to your selected location.");
+            messageBox.setFixedSize(500, 200);
+        }
+    }
 }
 
 /**
