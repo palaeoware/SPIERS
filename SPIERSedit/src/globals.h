@@ -76,6 +76,11 @@ extern QList<double> FullStretches;
 extern bool ShowSlicePosition;
 extern bool temptestflag;
 extern int Counter;
+extern double k; // the integer part of the thing
+extern double RedConsts[10];
+extern double GreenConsts[10];
+extern double BlueConsts[10];
+extern QString DefaultPath;
 
 extern QGraphicsPixmapItem *MainImage;
 extern double LastZoom;

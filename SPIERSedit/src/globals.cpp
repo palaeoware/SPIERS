@@ -83,10 +83,10 @@ bool RangeHardFill, RangeSelectedOnly, OutputMirroring;
 int PixSens, XYDownsample, ZDownsample;
 int LastMouseX, LastMouseY;
 bool MoveFlag, ChangeFlag;
-QList <struct Segment *> Segments;
-QList <struct Mask *> MasksSettings;
-QList <struct Curve *> Curves;
-QList <struct OutputObject *> OutputObjects;
+QList <class Segment *> Segments;
+QList <class Mask *> MasksSettings;
+QList <class Curve *> Curves;
+QList <class OutputObject *> OutputObjects;
 bool HorribleBodgeFlagDontStoreUndo;
 bool MenuHistSelectedOnly;
 bool SquareBrush;
@@ -101,12 +101,15 @@ bool MenuHistChecked, MenuInfoChecked, MenuGenChecked, MenuMasksChecked, MenuSeg
 Mask::Mask(QString name)
 //Constructor for a mask - set defaults
 {
-    int n, m;
+    quint64 n, m;
     Name = name;
-    n = (int((double)50 * qrand()));
-    ForeColour[0] = 128 + int( (double)126 * sin((double)n));
-    ForeColour[1] = 128 + int( (double)126 * cos((double)n));
-    ForeColour[2] = 128 + int( (double)127 * (qrand() / RAND_MAX));
+
+    n = static_cast<quint64>(50. * static_cast<double>(qrand()));
+
+    ForeColour[0] = 128 + static_cast<int>( static_cast<double>(126) * sin(static_cast<double>(n)));
+    ForeColour[1] = 128 + static_cast<int>( static_cast<double>(126) * cos(static_cast<double>(n)));
+    ForeColour[2] = 128 + static_cast<int>( static_cast<double>(127) * (qrand() / RAND_MAX));
+
     Contrast = 2;
 
     for (m = 0; m < 3; m++) BackColour[m] = ForeColour[m] / 3;
@@ -114,7 +117,7 @@ Mask::Mask(QString name)
     Show = true;
     Write = true;
     Lock = false;
-    widgetitem = 0; //no pointer
+    widgetitem = nullptr; //no pointer
     ListOrder = MasksSettings.count();
 }
 
@@ -122,10 +125,10 @@ Segment::Segment(QString name)
 //Constructor for a segment - set defaults
 {
     Name = name;
-    int n = (int((double)50 * qrand()));
-    Colour[0] = 128 + int( (double)126 * sin((double)n));
-    Colour[1] = 128 + int( (double)126 * cos((double)n));
-    Colour[2] = 128 + int( (double)127 * (qrand() / RAND_MAX));
+    quint64 n = static_cast<quint64>(50. * static_cast<double>(qrand()));
+    Colour[0] = 128 + int( static_cast<double>(126) * sin(static_cast<double>(n)));
+    Colour[1] = 128 + int( static_cast<double>(126) * cos(static_cast<double>(n)));
+    Colour[2] = 128 + int( static_cast<double>(127) * (qrand() / RAND_MAX));
     LinPercent[0] = 100;
     LinPercent[1] = 100;
     LinPercent[2] = 100;
@@ -162,7 +165,7 @@ Segment::Segment(QString name)
     UndoDirty = false;
     ListOrder = Segments.count();
     Locked = false;
-    widgetitem = 0; //no pointer
+    widgetitem = nullptr; //no pointer
     Activated = true;
 
     rectitem = new QGraphicsRectItem;
@@ -186,10 +189,10 @@ Segment::~Segment()
 Curve::Curve(QString name)
 {
     Name = name;
-    int n = (int((double)50 * qrand()));
-    Colour[0] = 128 + int( (double)126 * sin((double)n));
-    Colour[1] = 128 + int( (double)126 * cos((double)n));
-    Colour[2] = 128 + int( (double)127 * qrand() / RAND_MAX);
+    quint64 n = static_cast<quint64>(50. * static_cast<double>(qrand()));
+    Colour[0] = 128 + int( static_cast<double>(126) * sin(static_cast<double>(n)));
+    Colour[1] = 128 + int( static_cast<double>(126) * cos(static_cast<double>(n)));
+    Colour[2] = 128 + int( static_cast<double>(127) * (qrand() / RAND_MAX));
     Closed = false;
     Filled = false;
     Segment = 0;
@@ -202,7 +205,7 @@ Curve::Curve(QString name)
         SplinePoints.append(new PointList());
     }
     ListOrder = Curves.count();
-    widgetitem = 0; //no pointer
+    widgetitem = nullptr; //no pointer
 }
 
 Curve::~Curve()
@@ -231,7 +234,7 @@ OutputObject::OutputObject(QString name)
     Parent = -1; //root
     Show = true;
     Merge = false;
-    widgetitem = 0; //no pointer
+    widgetitem = nullptr; //no pointer
     Expanded = false;
     ComponentMasks.clear();
     ComponentSegments.clear();
@@ -275,20 +278,20 @@ void OutputObject::SetUpForRender()
 
 void Message(QString message)
 {
-    QMessageBox::information(0, "Message", message, QMessageBox::Ok);
+    QMessageBox::information(nullptr, "Message", message, QMessageBox::Ok);
 }
 
 void Message1(char *message, int x)
 {
     QString temp;
     temp.sprintf(message, x);
-    QMessageBox::information(0, "Message", message, QMessageBox::Ok);
+    QMessageBox::information(nullptr, "Message", message, QMessageBox::Ok);
 }
 
 
 void Error(QString message)
 {
-    QMessageBox::critical(0, "ERROR", message, QMessageBox::Ok);
+    QMessageBox::critical(nullptr, "ERROR", message, QMessageBox::Ok);
     exit(0);
 }
 
@@ -375,9 +378,9 @@ int randn(int n)
     //random 0 - n-1
     long r;
 
-    r = (long)rand();
-    r *= (long)n;
-    return r / RAND_MAX;
+    r = static_cast<long>(rand());
+    r *= static_cast<long>(n);
+    return static_cast<int>(r / RAND_MAX);
 }
 
 void ResetFilesDirty()
