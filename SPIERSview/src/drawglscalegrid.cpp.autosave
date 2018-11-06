@@ -228,7 +228,7 @@ void DrawGLScaleGrid::draw(QMatrix4x4 vMatrix, QVector3D lPosition)
     {
         renderNumber(
             static_cast<GLfloat>((static_cast<float>(10.0 / FONT_SCALE_FACTOR)*static_cast<float>(glWidget->ClipAngle) / static_cast<float>(glWidget->height()))),
-            static_cast<GLfloat>(static_cast<float>(i))*s * coarse - ((static_cast<float>(10.0 / FONT_SCALE_FACTOR)*static_cast<float>(glWidget->ClipAngle) / static_cast<float>(glWidget->height()))),
+            static_cast<GLfloat>(static_cast<float>(i))* s * coarse - ((static_cast<float>(10.0 / FONT_SCALE_FACTOR)*static_cast<float>(glWidget->ClipAngle) / static_cast<float>(glWidget->height()))),
             static_cast<GLfloat>(-.99),
             (static_cast<float>(i) * coarse),
             true,
@@ -259,7 +259,7 @@ void DrawGLScaleGrid::draw(QMatrix4x4 vMatrix, QVector3D lPosition)
             {
                 renderNumber(
                     static_cast<GLfloat>((static_cast<float>(10.0 / FONT_SCALE_FACTOR)*static_cast<float>(glWidget->ClipAngle) / static_cast<float>(glWidget->height()))),
-                    static_cast<GLfloat>(static_cast<float>(i))*s * fine - ((static_cast<float>(10.0 / FONT_SCALE_FACTOR)*static_cast<float>(glWidget->ClipAngle) / static_cast<float>(glWidget->height()))),
+                    static_cast<GLfloat>(static_cast<float>(i))* s * fine - ((static_cast<float>(10.0 / FONT_SCALE_FACTOR)*static_cast<float>(glWidget->ClipAngle) / static_cast<float>(glWidget->height()))),
                     static_cast<GLfloat>(-.99),
                     (static_cast<float>(i) * fine),
                     false,
