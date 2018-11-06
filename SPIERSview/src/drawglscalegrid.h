@@ -20,9 +20,9 @@ public:
 private:
     int numOccVertices;
 
-    GLfloat CharacterWidths[13]; //widths of these characters
-    GLfloat CharacterLineCounts[13]; //widths of these characters
-    QOpenGLBuffer VBOcharacters[13]; //0-9 are digits 0-9, 10 is -, 11 is ., 12 is m
+    GLfloat CharacterWidths[15]; //widths of these characters
+    GLfloat CharacterLineCounts[15]; //widths of these characters
+    QOpenGLBuffer VBOcharacters[15]; //0-9 are digits 0-9, 10 is -, 11 is ., 12 is m, 13 is u
     QOpenGLBuffer VBOline;
     QOpenGLBuffer occBuffer;
     QMatrix4x4 scaleMatrix; //Manipulations to scale ball
@@ -30,7 +30,7 @@ private:
 
     void drawLine(QMatrix4x4 vMatrix, QVector3D lPosition, float pos, bool major, bool horizontal);
     void renderCharacter(GLfloat x, GLfloat y, GLfloat z, int charactercode, QMatrix4x4 vMatrix, QColor Colour);
-    void renderNumber(GLfloat x, GLfloat y, GLfloat z, float number, int decimalplaces, bool mm, bool major, QMatrix4x4 vMatrix);
+    void renderNumber(GLfloat x, GLfloat y, GLfloat z, float number, bool major, QMatrix4x4 vMatrix);
 };
 
 #endif // DRAWGLSCALEGRID_H

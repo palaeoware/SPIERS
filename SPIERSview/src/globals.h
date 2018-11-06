@@ -54,6 +54,7 @@ extern bool containsPresurfaced;
 extern bool containsNonPresurfaced;
 extern bool isVaxmlMode;
 extern bool isFirstObject;
+extern bool showMinorGridValues;
 
 extern double applicationScaleX;
 extern double applicationScaleY;

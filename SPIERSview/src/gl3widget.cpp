@@ -316,6 +316,9 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
     }
     glfunctions->glDepthMask(true);
 
+    // Update the stored FOV
+    updateFOV();
+
     // Show/Hide GL Scale Ball
     scaleBall->draw(vMatrix, vMatrix * camera);
 
@@ -905,15 +908,22 @@ void GlWidget::pinchTriggered(QPinchGesture *gesture)
 
 /**
  * @brief GlWidget::getFOV
- * Work out x field of view in mm
- * @return
+ * Return field of view in mm
+ * @return double
  */
 double GlWidget::getFOV()
+{
+    return currentFOV;
+}
+
+/**
+ * @brief GlWidget::updateFOV
+ * Work out x field of view in mm
+ */
+void GlWidget::updateFOV()
 {
     float scale = static_cast<float>(1.0) / static_cast<float>(mmPerUnit);
     float divider = (this->height() * globalRescale) / static_cast<float>(30.0);
 
     currentFOV = static_cast<double>(ClipAngle / (divider * scale));
-
-    return currentFOV;
 }

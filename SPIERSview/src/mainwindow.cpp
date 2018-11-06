@@ -3969,3 +3969,20 @@ void MainWindow::on_actionFull_Screen_triggered()
         //qDebug() << "[Full Screen Mode] Closing full screen mode";
     }
 }
+
+/**
+ * @brief MainWindow::on_actionShow_Minor_Values_triggered
+ */
+void MainWindow::on_actionShow_Minor_Values_triggered()
+{
+    if (ui->actionShow_Minor_Values->isChecked())
+    {
+        showMinorGridValues = true;
+    }
+    else
+    {
+        showMinorGridValues = false;
+    }
+
+    UpdateGL();
+}

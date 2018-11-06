@@ -106,7 +106,7 @@
      <x>0</x>
      <y>0</y>
      <width>1071</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuSPIERSview">
@@ -275,6 +275,7 @@
      <string>Scale</string>
     </property>
     <addaction name="actionShow_Scale_Grid"/>
+    <addaction name="actionShow_Minor_Values"/>
     <addaction name="actionScale_Grid_Colour"/>
     <addaction name="actionMinor_Grid_Colour"/>
     <addaction name="separator"/>
@@ -288,6 +289,7 @@
     <addaction name="actionDecrease_Size"/>
     <addaction name="actionReset_Size"/>
     <addaction name="actionRescale_by"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuAnimation">
     <property name="title">
@@ -2313,6 +2315,14 @@
    </property>
    <property name="shortcutContext">
     <enum>Qt::WindowShortcut</enum>
+   </property>
+  </action>
+  <action name="actionShow_Minor_Values">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show Minor Scale Values</string>
    </property>
   </action>
  </widget>

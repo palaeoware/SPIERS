@@ -32,7 +32,7 @@ void DrawGLScaleGrid::initializeGL()
     VBOline.release();
 
     // Set up fonts
-    //0-9 are digits 0-9, 10 is -, 11 is ., 12 is m
+    //0-9 are digits 0-9, 10 is -, 11 is ., 12 is m, 13 is u
 
     for (int charnumber = 16; charnumber < 26; charnumber++)
     {
@@ -58,12 +58,14 @@ void DrawGLScaleGrid::initializeGL()
         CharacterLineCounts[charnumber - 16] = rowmans_size[charnumber] / 2;
     }
 
-    for (int ii = 10; ii < 13; ii++)
+    for (int ii = 10; ii < 15; ii++)
     {
         int charnumber = 0;
-        if (ii == 10) charnumber = 14;
-        if (ii == 11) charnumber = 13;
-        if (ii == 12) charnumber = 109 - 32; //ascii code - 32
+        if (ii == 10) charnumber = 14; // -
+        if (ii == 11) charnumber = 13; // .
+        if (ii == 12) charnumber = 77; // m
+        if (ii == 13) charnumber = 85; // u
+        if (ii == 14) charnumber = 67; // c
 
         QVector<QVector3D> fontVertices;
         for (int i = 0; i < rowmans_size[charnumber] / 4; i++)
@@ -152,20 +154,67 @@ void DrawGLScaleGrid::draw(QMatrix4x4 vMatrix, QVector3D lPosition)
     glWidget->lightingShaderProgram.setUniformValue("alpha", static_cast<GLfloat>(1.0));
     glWidget->glfunctions->glClear(GL_DEPTH_BUFFER_BIT);
 
-    // Update field of view (max of height and width)
-    glWidget->getFOV();
-
     // OK, work out correct scale in mm
     // Look at fov and find coarse level to use
     // fov 5mm - want coarse 1, fine 0.1
     // fov 50mm - want coarse 10, fine 1
     // fov .5mm - want coarse .1, fine .01 etc
     // work out coarse below
+    float coarse = 1;
 
-    float coarse = static_cast<float>(pow(static_cast<double>(10.0), (static_cast<double>(static_cast<int>(log10(currentFOV) + .7))))); //double cast is to round it
+    // first find out if field of view need rectifying due to very small values
+    if (currentFOV < static_cast<double>(1) && currentFOV > static_cast<double>(0.1))
+    {
+        coarse = static_cast<float>(1);
+    }
+    else if (currentFOV < static_cast<double>(0.1) && currentFOV > static_cast<double>(0.01))
+    {
+        coarse = static_cast<float>(0.1);
+    }
+    else if (currentFOV < static_cast<double>(0.01) && currentFOV > static_cast<double>(0.001))
+    {
+        coarse = static_cast<float>(0.01);
+    }
+    else if (currentFOV < static_cast<double>(0.001) && currentFOV > static_cast<double>(0.0001))
+    {
+        coarse = static_cast<float>(0.001);
+    }
+    else if (currentFOV < static_cast<double>(0.0001) && currentFOV > static_cast<double>(0.00001))
+    {
+        coarse = static_cast<float>(0.0001);
+    }
+    else if (currentFOV < static_cast<double>(0.00001) && currentFOV > static_cast<double>(0.000001))
+    {
+        coarse = static_cast<float>(0.00001);
+    }
+    else if (currentFOV < static_cast<double>(0.000001) && currentFOV > static_cast<double>(0.0000001))
+    {
+        coarse = static_cast<float>(0.000001);
+    }
+    else if (currentFOV < static_cast<double>(0.0000001) && currentFOV > static_cast<double>(0.00000001))
+    {
+        coarse = static_cast<float>(0.0000001);
+    }
+    else if (currentFOV < static_cast<double>(0.00000001) && currentFOV > static_cast<double>(0.000000001))
+    {
+        coarse = static_cast<float>(0.00000001);
+    }
+    else if (currentFOV > static_cast<double>(1) && currentFOV < static_cast<double>(10))
+    {
+        coarse = static_cast<float>(10);
+    }
+    else if (currentFOV >= static_cast<double>(10) && currentFOV < static_cast<double>(1000))
+    {
+        coarse = static_cast<float>(100);
+    }
+    else if (currentFOV >= static_cast<double>(1000))
+    {
+        coarse = static_cast<float>(1000);
+    }
+
     float fine = coarse / 10;
 
-    //qDebug()<<"Coarse"<<coarse<<"Fine"<<fine;
+    //qDebug() << "Coarse" << coarse << "Fine" << fine;
 
     float s = static_cast<float>(1.0) / static_cast<float>(mmPerUnit);
 
@@ -175,9 +224,38 @@ void DrawGLScaleGrid::draw(QMatrix4x4 vMatrix, QVector3D lPosition)
     for (int i = -100; i < 100; i++) if (i % 10 != 0) drawLine(vMatrix, lPosition, (static_cast<float>(i))*s * fine * globalRescale, false, true);
 
     //and the values
-    int dp = 0 - static_cast<int>(log10(currentFOV) + .7); //decimal places
-    if (dp < 0) dp = 0;
-    bool mm = true;
+    if (showMinorGridValues)
+    {
+        for (int i = -100; i < 100; i++)
+        {
+            if ((i != 0) && (i % 10 != 0))
+            {
+                renderNumber(
+                    static_cast<GLfloat>((static_cast<float>(10.0 / FONT_SCALE_FACTOR)*static_cast<float>(glWidget->ClipAngle) / static_cast<float>(glWidget->height()))),
+                    static_cast<GLfloat>(static_cast<float>(i))*s * fine - ((static_cast<float>(10.0 / FONT_SCALE_FACTOR)*static_cast<float>(glWidget->ClipAngle) / static_cast<float>(glWidget->height()))),
+                    static_cast<GLfloat>(-.99),
+                    (static_cast<float>(i) * fine),
+                    false,
+                    vMatrix
+                );
+            }
+        }
+        for (int i = -100; i < 100; i++)
+        {
+            if ((i != 0) && (i % 10 != 0))
+            {
+                renderNumber(
+                    static_cast<GLfloat>(static_cast<float>(i) * s * fine + ((static_cast<float>(10.0 / FONT_SCALE_FACTOR)*static_cast<float>(glWidget->ClipAngle) / static_cast<float>(glWidget->height())))),
+                    static_cast<GLfloat>(0 - (((10.0 / FONT_SCALE_FACTOR)*static_cast<double>(glWidget->ClipAngle) / static_cast<double>(glWidget->height())))),
+                    static_cast<GLfloat>(-.99),
+                    (static_cast<float>(i) * fine),
+                    false,
+                    vMatrix
+                );
+            }
+        }
+    }
+
     for (int i = -10; i < 10; i++)
     {
         renderNumber(
@@ -185,8 +263,6 @@ void DrawGLScaleGrid::draw(QMatrix4x4 vMatrix, QVector3D lPosition)
             static_cast<GLfloat>(static_cast<float>(i))*s * coarse - ((static_cast<float>(10.0 / FONT_SCALE_FACTOR)*static_cast<float>(glWidget->ClipAngle) / static_cast<float>(glWidget->height()))),
             static_cast<GLfloat>(-.99),
             (static_cast<float>(i) * coarse),
-            dp,
-            mm,
             true,
             vMatrix
         );
@@ -200,8 +276,6 @@ void DrawGLScaleGrid::draw(QMatrix4x4 vMatrix, QVector3D lPosition)
                 static_cast<GLfloat>(0 - (((10.0 / FONT_SCALE_FACTOR)*static_cast<double>(glWidget->ClipAngle) / static_cast<double>(glWidget->height())))),
                 static_cast<GLfloat>(-.99),
                 (static_cast<float>(i) * coarse),
-                dp,
-                mm,
                 true,
                 vMatrix
             );
@@ -292,7 +366,7 @@ void DrawGLScaleGrid::renderCharacter(GLfloat x, GLfloat y, GLfloat z, int chara
  * @param major
  * @param vMatrix
  */
-void DrawGLScaleGrid::renderNumber(GLfloat x, GLfloat y, GLfloat z, float number, int decimalplaces, bool mm, bool major, QMatrix4x4 vMatrix)
+void DrawGLScaleGrid::renderNumber(GLfloat x, GLfloat y, GLfloat z, float number, bool major, QMatrix4x4 vMatrix)
 {
     //qDebug() << "[Where I'm I?] In RenderNumber";
 
@@ -311,30 +385,69 @@ void DrawGLScaleGrid::renderNumber(GLfloat x, GLfloat y, GLfloat z, float number
         number = qAbs(number);
     }
 
-    //add int part
-    QString inumstring;
-    inumstring.sprintf("%d", static_cast<int>(number));
-    for (int i = 0; i < inumstring.length(); i++)
-        characters.append(inumstring.toLatin1().at(i) - '0');
+    qDebug() << number;
 
-    if (decimalplaces > 0)
+    QString numberAsCharacter = QString::number(number);
+
+    // If in m then /1000
+    if (number >= static_cast<float>(1000))
     {
-        characters.append(10); // a dot
-
-        number -= static_cast<float>((static_cast<int>(number))); //get decimal part
-        number *= pow(10.0, static_cast<float>((decimalplaces)));
-
-        inumstring.sprintf("%d", static_cast<int>(static_cast<double>(number) + .5));
-        for (int i = 0; i < inumstring.length(); i++)
-            characters.append(inumstring.toLatin1().at(i) - '0');
+        numberAsCharacter = QString::number(number / 1000);
+    }
+    // If in cm then /100
+    if (number < static_cast<float>(1000) && number >= static_cast<float>(10))
+    {
+        numberAsCharacter = QString::number(number / 100);
+    }
+    // If in um then *1000
+    if (number < static_cast<float>(0.09))
+    {
+        numberAsCharacter = QString::number(number * 1000);
     }
 
-    //finally the units
-    characters.append(12); //for m
-    if (mm) characters.append(12); //for mm
+    for (int i = 0; i < numberAsCharacter.length(); i++)
+    {
+        if (numberAsCharacter.at(i) == QChar(QString(".").toLatin1().at(0)))
+        {
+            characters.append(10); // a dot
+        }
+        else
+        {
+            characters.append(QString(numberAsCharacter.at(i)).toInt() - 0);
+        }
+    }
 
+    // Finally the units
+    // 12 = m
+    // 13 = u
+    // 14 = c
+
+    if (number >= static_cast<float>(1000))
+    {
+        // Is in meter scale
+        characters.append(12); //for m
+    }
+    else if (number >= static_cast<float>(10))
+    {
+        // Is in cm scale
+        characters.append(14); //for c
+        characters.append(12); //for m
+    }
+    else if (number >= static_cast<float>(0.09))
+    {
+        // Is in mm scale
+        characters.append(12); //for m
+        characters.append(12); //for m
+    }
+    else if (number < static_cast<float>(0.09))
+    {
+        // Is in um scale
+        characters.append(13); //for u
+        characters.append(12); //for m
+    }
+
+    // Now display them
     GLfloat off = 0; //offset
-    //now display them
     for (int i = 0; i < characters.length(); i++)
     {
         renderCharacter(x + off, y, z, characters[i], vMatrix, numcolour);

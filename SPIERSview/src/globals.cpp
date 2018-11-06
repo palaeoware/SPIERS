@@ -10,6 +10,7 @@ bool containsPresurfaced = false;
 bool containsNonPresurfaced = false;
 bool isFirstObject;
 bool isVaxmlMode;
+bool showMinorGridValues = false;
 
 double applicationScaleX;
 double applicationScaleY;

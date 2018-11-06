@@ -201,6 +201,7 @@ private slots:
 
     void on_actionScale_Grid_Colour_triggered();
     void on_actionMinor_Grid_Colour_triggered();
+    void on_actionShow_Minor_Values_triggered();
     void on_actionSet_Image_Folder_triggered();
     void on_actionSave_Image_and_Apply_Step_triggered();
     void on_actionApply_Step_triggered();

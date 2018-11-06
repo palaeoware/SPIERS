@@ -58,6 +58,7 @@ public:
     void ResetToDefault();
     void NewDefault();
     double getFOV();
+    void updateFOV();
 
 protected:
     // Overrides
