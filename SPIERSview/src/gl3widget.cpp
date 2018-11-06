@@ -902,3 +902,18 @@ void GlWidget::pinchTriggered(QPinchGesture *gesture)
     }
 
 }
+
+/**
+ * @brief GlWidget::getFOV
+ * Work out x field of view in mm
+ * @return
+ */
+double GlWidget::getFOV()
+{
+    float scale = static_cast<float>(1.0) / static_cast<float>(mmPerUnit);
+    float divider = (this->height() * globalRescale) / static_cast<float>(30.0);
+
+    currentFOV = static_cast<double>(ClipAngle / (divider * scale));
+
+    return currentFOV;
+}

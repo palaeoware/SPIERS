@@ -13,6 +13,7 @@ bool isVaxmlMode;
 
 double applicationScaleX;
 double applicationScaleY;
+double currentFOV = 0.0;
 
 float globalRescale;
 float rotationX;

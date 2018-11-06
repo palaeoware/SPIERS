@@ -431,8 +431,8 @@ void MainWindow::SpinTimer_fired()
         tot /= 10; //tot is average ms
         tot += 1;
         int framerate = static_cast<int>(1000.0 / tot);
-        QString m;
-        QTextStream s(&m);
+        QString message;
+        QTextStream string(&message);
 
         QString XrotS = DegConvert(rotationX);
         QString YrotS = DegConvert(rotationY);
@@ -442,9 +442,16 @@ void MainWindow::SpinTimer_fired()
         QString YtransS = TransConvert(transformY);
         QString ZtransS = TransConvert(transformZ);
 
-        s << "Frame rate: " << framerate << "  Rotations: X:" << XrotS << " Y:" << YrotS << " Z:" << ZrotS << "  Translations: X:" << XtransS << " Y:" << YtransS << " Z:" << ZtransS;
+        string << "Frame rate: " << framerate;
+        string << "  Rotations: X = " << XrotS;
+        string << " Y = " << YrotS;
+        string << " Z = " << ZrotS;
+        string << "  Translations: X = " << XtransS;
+        string << " Y = " << YtransS;
+        string << " Z = " << ZtransS;
+        string << " FOV: " << gl3widget->getFOV() << "mm";
 
-        ui->statusBar->showMessage(m);//should be m
+        ui->statusBar->showMessage(message);//should be m
         Framenumbs.clear();
     }
 

@@ -12,11 +12,6 @@
 #include <QDesktopWidget>
 #include <QScreen>
 
-#include "mainwindow.h"
-#include "globals.h"
-#include "../../SPIERScommon/src/netmodule.h"
-#include "../../SPIERScommon/src/darkstyletheme.h"
-
 #ifndef __APPLE__
 
 #ifdef _WIN64
@@ -24,6 +19,10 @@
 #endif
 
 #include "main.h"
+#include "mainwindow.h"
+#include "globals.h"
+#include "../SPIERScommon/src/netmodule.h"
+#include "../SPIERScommon/src/darkstyletheme.h"
 
 /**
  * @brief logMessageOutput

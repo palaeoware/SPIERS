@@ -152,25 +152,22 @@ void DrawGLScaleGrid::draw(QMatrix4x4 vMatrix, QVector3D lPosition)
     glWidget->lightingShaderProgram.setUniformValue("alpha", static_cast<GLfloat>(1.0));
     glWidget->glfunctions->glClear(GL_DEPTH_BUFFER_BIT);
 
-    float s = static_cast<float>(1.0) / static_cast<float>(mmPerUnit);
+    // Update field of view (max of height and width)
+    glWidget->getFOV();
 
-    //work out field of view (max of height and width)
-    float divider = (glWidget->height() * globalRescale) / static_cast<float>(30.0);
+    // OK, work out correct scale in mm
+    // Look at fov and find coarse level to use
+    // fov 5mm - want coarse 1, fine 0.1
+    // fov 50mm - want coarse 10, fine 1
+    // fov .5mm - want coarse .1, fine .01 etc
+    // work out coarse below
 
-    //work out x field of view in mm
-    double fov;
-    fov = static_cast<double>(glWidget->ClipAngle / (divider * s));
-    //OK, work out correct scale in mm
-    //Look at fov and find coarse level to use
-    //fov 5mm - want coarse 1, fine 0.1
-    //fov 50mm - want coarse 10, fine 1
-    //fov .5mm - want coarse .1, fine .01 etc
-    //work out coarse below
-
-    float coarse = static_cast<float>(pow(static_cast<double>(10.0), (static_cast<double>(static_cast<int>(log10(fov) + .7))))); //double cast is to round it
+    float coarse = static_cast<float>(pow(static_cast<double>(10.0), (static_cast<double>(static_cast<int>(log10(currentFOV) + .7))))); //double cast is to round it
     float fine = coarse / 10;
 
     //qDebug()<<"Coarse"<<coarse<<"Fine"<<fine;
+
+    float s = static_cast<float>(1.0) / static_cast<float>(mmPerUnit);
 
     for (int i = -10; i < 10; i++) drawLine(vMatrix, lPosition, (static_cast<float>(i))*s * coarse * globalRescale, true, false);
     for (int i = -10; i < 10; i++) drawLine(vMatrix, lPosition, (static_cast<float>(i))*s * coarse * globalRescale, true, true);
@@ -178,7 +175,7 @@ void DrawGLScaleGrid::draw(QMatrix4x4 vMatrix, QVector3D lPosition)
     for (int i = -100; i < 100; i++) if (i % 10 != 0) drawLine(vMatrix, lPosition, (static_cast<float>(i))*s * fine * globalRescale, false, true);
 
     //and the values
-    int dp = 0 - static_cast<int>(log10(fov) + .7); //decimal places
+    int dp = 0 - static_cast<int>(log10(currentFOV) + .7); //decimal places
     if (dp < 0) dp = 0;
     bool mm = true;
     for (int i = -10; i < 10; i++)

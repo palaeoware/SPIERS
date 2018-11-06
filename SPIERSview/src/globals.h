@@ -57,6 +57,7 @@ extern bool isFirstObject;
 
 extern double applicationScaleX;
 extern double applicationScaleY;
+extern double currentFOV;
 
 extern float globalRescale;
 extern float mmPerUnit;
