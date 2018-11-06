@@ -21,10 +21,10 @@
 #include <QString>
 #include <QStyle>
 
-#include "darkstyletheme.h"
 #include "mainwindowimpl.h"
 #include "globals.h"
-#include "../SPIERScommon/netmodule.h"
+#include "../../SPIERScommon/src/darkstyletheme.h"
+#include "../../SPIERScommon/src/netmodule.h"
 
 /**
  * @brief qMain
@@ -48,7 +48,7 @@ int main(int argc, char **argv)
     //Style program with our dark style
     QApplication::setStyle(new DarkStyleTheme);
 
-    QPixmap splashPixmap(":/palaeoware_logo_square.png");
+    QPixmap splashPixmap(":/logo/palaeoware_square.png");
     QSplashScreen *splash = new QSplashScreen(splashPixmap, Qt::WindowStaysOnTopHint);
     splash->show();
     splash->showMessage("<font><b>" + QString(PRODUCTNAME) + " v" + QString(SOFTWARE_VERSION) + " </b></font>", Qt::AlignHCenter, Qt::white);

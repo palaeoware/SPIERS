@@ -7,7 +7,7 @@
 #include <QWidget>
 #include <QTimer>
 
-#include "darkstyletheme.h"
+#include "../../../SPIERScommon/src/darkstyletheme.h"
 #include "mainwindow.h"
 #include "globals.h"
 
@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
     // Style program with our dark style
     QApplication::setStyle(new DarkStyleTheme);
 
-    QPixmap splashPixmap(":/resources/palaeoware_logo_square.png");
+    QPixmap splashPixmap(":/logo/palaeoware_square.png");
     QSplashScreen *splash = new QSplashScreen(splashPixmap, Qt::WindowStaysOnTopHint);
     splash->show();
     splash->showMessage("<font><b>" + QString(PRODUCTNAME) + " v" + QString(SOFTWARE_VERSION) + " </b></font>", Qt::AlignHCenter, Qt::white);

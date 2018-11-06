@@ -12,8 +12,8 @@ CONFIG += qt \
     release \
     warn_on
 
-RESOURCES = version.qrc \
-    ../../SPIERScommon/licenseresource.qrc
+#RESOURCES = version.qrc \
+RESOURCES = ../../SPIERScommon/commonresources.qrc
 
 DESTDIR \
     += \
@@ -34,12 +34,12 @@ OBJECTS_DIR += build
 
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
-    src/darkstyletheme.cpp \
+    ../../SPIERScommon/src/darkstyletheme.cpp \
     src/globals.cpp \
     src/aboutdialog.cpp \
 
 HEADERS += src/mainwindow.h \
-    src/darkstyletheme.h \
+    ../../SPIERScommon/src/darkstyletheme.h \
     src/globals.h \
     src/main.h \
     src/aboutdialog.h \

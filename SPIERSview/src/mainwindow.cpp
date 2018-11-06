@@ -34,7 +34,7 @@
 #include "globals.h"
 #include "spvreader.h"
 #include "spvwriter.h"
-#include "../SPIERScommon/netmodule.h"
+#include "../SPIERScommon/src/netmodule.h"
 #include <vtkProperty2D.h>
 #include "movetogroup.h"
 

@@ -1,9 +1,15 @@
+#include <QIcon>
+
 #include "aboutdialog.h"
 #include "ui_aboutdialog.h"
-#include "../SPIERScommon/netmodule.h"
+#include "../SPIERScommon/src/netmodule.h"
 #include "globals.h"
 #include "mainwindow.h"
 
+/**
+ * @brief aboutdialog::aboutdialog
+ * @param parent
+ */
 aboutdialog::aboutdialog(QWidget *parent) :
     QDialog(parent),
     m_ui(new Ui::aboutdialog)
@@ -13,9 +19,7 @@ aboutdialog::aboutdialog(QWidget *parent) :
     setWindowTitle("About");
     setWindowIcon(QIcon(":/ViewIcon.bmp"));
 
-    QPixmap picture_1(":/img.png");
-    m_ui->header->setPixmap(picture_1);
-    m_ui->header->setAlignment(Qt::AlignCenter);
+    m_ui->header->setVisible(false);
 
     m_ui->textLabel_1->setText(QString(PRODUCTNAME) + " v" + QString(SOFTWARE_VERSION));
     m_ui->textLabel_1->setObjectName("aboutTextLabel1");
@@ -38,22 +42,29 @@ aboutdialog::aboutdialog(QWidget *parent) :
     m_ui->textBrowser->setOpenLinks(true);
     m_ui->textBrowser->setOpenExternalLinks(true);
 
-    QPixmap picture_2(":/resources/gplv3-127x51.png");
+    QPixmap picture_2(":/license/gplV3Logo");
     m_ui->footer1->setPixmap(picture_2);
     m_ui->footer1->setAlignment(Qt::AlignCenter);
 
-    QPixmap picture_3(":/resources/Built_with_Qt_RGB_logo.png");
+    QPixmap picture_3(":/license/builtWithQTLogo");
     m_ui->footer2->setPixmap(picture_3);
     m_ui->footer2->setAlignment(Qt::AlignCenter);
 
     m_ui->buttonBox->setStandardButtons(QDialogButtonBox::Close);
 }
 
+/**
+ * @brief aboutdialog::~aboutdialog
+ */
 aboutdialog::~aboutdialog()
 {
     delete m_ui;
 }
 
+/**
+ * @brief aboutdialog::changeEvent
+ * @param e
+ */
 void aboutdialog::changeEvent(QEvent *e)
 {
     QDialog::changeEvent(e);
@@ -67,16 +78,23 @@ void aboutdialog::changeEvent(QEvent *e)
     }
 }
 
+/**
+ * @brief aboutdialog::on_closebutton_clicked
+ */
 void aboutdialog::on_closebutton_clicked()
 {
     close();
 }
 
+/**
+ * @brief aboutdialog::returnLicense
+ * @return
+ */
 QString aboutdialog::returnLicense()
 {
     QFile file(":/license/license");
 
-    if(file.open(QIODevice::ReadOnly))
+    if (file.open(QIODevice::ReadOnly))
     {
         QString license = file.readAll();
         file.close();
@@ -84,5 +102,3 @@ QString aboutdialog::returnLicense()
     }
     else return "License Missing!";
 }
-
-

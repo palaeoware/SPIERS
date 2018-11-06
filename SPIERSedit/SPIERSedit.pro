@@ -16,7 +16,7 @@ CONFIG += warn_on \
     thread \
 
 RESOURCES = SPIERSedit.qrc \
-    ../SPIERScommon/licenseresource.qrc
+    ../SPIERScommon/commonresources.qrc
 
 UI_DIR += ui
 
@@ -84,10 +84,10 @@ HEADERS += src/display.h \
     src/dialogaboutimpl.h \
     src/keysafespinbox.h \
     src/mainview.h \
-    src/darkstyletheme.h \
-    ../SPIERScommon/netmodule.h \
-    ../SPIERScommon/semanticversion.h \
-    ../SPIERScommon/prereleasecomponent.h
+    ../SPIERScommon/src/darkstyletheme.h \
+    ../SPIERScommon/src/netmodule.h \
+    ../SPIERScommon/src/semanticversion.h \
+    ../SPIERScommon/src/prereleasecomponent.h
 
 SOURCES += src/display.cpp \
     src/brush.cpp \
@@ -123,7 +123,7 @@ SOURCES += src/display.cpp \
     src/copyingimpl2_ouput.cpp \
     src/keysafespinbox.cpp \
     src/mainview.cpp \
-    src/darkstyletheme.cpp \
-    ../SPIERScommon/netmodule.cpp \
-    ../SPIERScommon/semanticversion.cpp \
-    ../SPIERScommon/prereleasecomponent.cpp
+    ../SPIERScommon/src/darkstyletheme.cpp \
+    ../SPIERScommon/src/netmodule.cpp \
+    ../SPIERScommon/src/semanticversion.cpp \
+    ../SPIERScommon/src//prereleasecomponent.cpp

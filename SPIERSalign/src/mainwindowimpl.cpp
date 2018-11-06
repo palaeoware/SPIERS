@@ -51,7 +51,7 @@
 #include "globals.h"
 #include "mainwindowimpl.h"
 #include "globals.h"
-#include "../SPIERScommon/netmodule.h"
+#include "../SPIERScommon/src/netmodule.h"
 
 #define PI 3.14159265
 #define TOLERANCE 20

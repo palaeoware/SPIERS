@@ -16,7 +16,7 @@
 #include "vtkPLYReader.h"
 #include "globals.h"
 #include "ui_mainwindow.h"
-#include "../SPIERScommon/netmodule.h"
+#include "../SPIERScommon/src/netmodule.h"
 
 /**
  * @brief VAXML::VAXML

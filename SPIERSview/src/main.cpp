@@ -12,10 +12,10 @@
 #include <QDesktopWidget>
 #include <QScreen>
 
-#include "darkstyletheme.h"
 #include "mainwindow.h"
 #include "globals.h"
-#include "../SPIERScommon/netmodule.h"
+#include "../../SPIERScommon/src/netmodule.h"
+#include "../../SPIERScommon/src/darkstyletheme.h"
 
 #ifndef __APPLE__
 
@@ -24,25 +24,6 @@
 #endif
 
 #include "main.h"
-
-/**
- * @brief qMain::qMain
- * @param argc
- * @param argv
- */
-main::main(int &argc, char *argv[]) : QApplication(argc, argv)
-{
-}
-
-/**
- * @brief qMain::event
- * @param event
- * @return
- */
-bool main::event(QEvent *event)
-{
-    return QApplication::event(event);
-}
 
 /**
  * @brief logMessageOutput
@@ -92,7 +73,26 @@ void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const Q
 }
 
 /**
- * @brief qMain
+ * @brief qMain::qMain
+ * @param argc
+ * @param argv
+ */
+main::main(int &argc, char *argv[]) : QApplication(argc, argv)
+{
+}
+
+/**
+ * @brief qMain::event
+ * @param event
+ * @return
+ */
+bool main::event(QEvent *event)
+{
+    return QApplication::event(event);
+}
+
+/**
+ * @brief qmain
  * @param argc
  * @param argv
  * @return
@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
     // Style program with our dark style
     QApplication::setStyle(new DarkStyleTheme);
 
-    QPixmap splashPixmap(":/resources/palaeoware_logo_square.png");
+    QPixmap splashPixmap(":/logo/palaeoware_square.png");
     QSplashScreen *splash = new QSplashScreen(splashPixmap, Qt::WindowStaysOnTopHint);
     splash->show();
     splash->showMessage("<font><b>" + QString(PRODUCTNAME) + " v" + QString(SOFTWARE_VERSION) + " </b></font>", Qt::AlignHCenter, Qt::white);

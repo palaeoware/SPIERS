@@ -13,7 +13,7 @@ CONFIG += qt \
     warn_on
 
 RESOURCES += align.qrc \
-    ../SPIERScommon/licenseresource.qrc
+    ../SPIERScommon/commonresources.qrc
 
 UI_DIR = build
 
@@ -40,19 +40,19 @@ FORMS += ui/mainwindow.ui \
 HEADERS += src/mainwindowimpl.h \
     src/globals.h \
     src/scene.h \
-    src/darkstyletheme.h \
+    ../SPIERScommon/src/darkstyletheme.h \
     src/about.h \
-    ../SPIERScommon/netmodule.h \
-    ../SPIERScommon/semanticversion.h \
-    ../SPIERScommon/prereleasecomponent.h
+    ../SPIERScommon/src/netmodule.h \
+    ../SPIERScommon/src/semanticversion.h \
+    ../SPIERScommon/src/prereleasecomponent.h
 
 SOURCES += src/mainwindowimpl.cpp \
     src/main.cpp \
     src/globals.cpp \
     src/scene.cpp \
-    src/darkstyletheme.cpp \
+    ../SPIERScommon/src/darkstyletheme.cpp \
     src/about.cpp \
-   ../SPIERScommon/netmodule.cpp \
-    ../SPIERScommon/semanticversion.cpp \
-    ../SPIERScommon/prereleasecomponent.cpp
+    ../SPIERScommon/src/netmodule.cpp \
+    ../SPIERScommon/src/semanticversion.cpp \
+    ../SPIERScommon/src/prereleasecomponent.cpp
 

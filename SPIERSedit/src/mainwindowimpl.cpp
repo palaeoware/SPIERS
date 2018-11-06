@@ -36,7 +36,7 @@ Main Window class - lots of functions to
 #include "settingsimpl.h"
 #include "backthread.h"
 #include "histogram.h"
-#include "../../SPIERScommon/netmodule.h"
+#include "../../SPIERScommon/src/netmodule.h"
 
 #include <QColorDialog>
 #include <QFileDialog>

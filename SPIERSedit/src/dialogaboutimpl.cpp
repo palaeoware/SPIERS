@@ -2,9 +2,14 @@
 #include "mainwindowimpl.h"
 #include "globals.h"
 
-#include "../../SPIERScommon/netmodule.h"
+#include "../../SPIERScommon/src/netmodule.h"
 #include <QString>
 
+/**
+ * @brief DialogAboutImpl::DialogAboutImpl
+ * @param parent
+ * @param f
+ */
 DialogAboutImpl::DialogAboutImpl(QWidget *parent, Qt::WindowFlags f)
     : QDialog(parent, f)
 {
@@ -12,9 +17,7 @@ DialogAboutImpl::DialogAboutImpl(QWidget *parent, Qt::WindowFlags f)
     setWindowTitle("About");
     setWindowIcon(QIcon(":/icons/ProgramIcon.bmp"));
 
-    QPixmap picture_1(":/img.png");
-    header->setPixmap(picture_1);
-    header->setAlignment(Qt::AlignCenter);
+    header->setVisible(false);
 
     textLabel_1->setText(AppMainWindow->windowTitle());
     textLabel_1->setObjectName("aboutTextLabel1");
@@ -23,7 +26,7 @@ DialogAboutImpl::DialogAboutImpl(QWidget *parent, Qt::WindowFlags f)
     textLabel_2->setWordWrap(true);
     textLabel_2->setText("This  software is " + QString(PRODUCTNAME) +
                          ". It was coded by"
-                         " Mark Sutton (m.sutton@imperial.ac.uk). It uses a GUI theme created/implemented by Alan R.T. Spencer (alan.spencer@imperial.ac.uk) and Russell Garwood (russell.garwood@gmail.com)"
+                         " Mark Sutton (m.sutton@imperial.ac.uk). With additional code by Alan R.T. Spencer (alan.spencer@imperial.ac.uk) and Russell Garwood (russell.garwood@gmail.com)"
                          "<br><br>Reports are appreciated, and comments, suggestions, and feature requests are welcome.");
     textLabel_2->setAlignment(Qt::AlignCenter);
 
@@ -38,22 +41,26 @@ DialogAboutImpl::DialogAboutImpl(QWidget *parent, Qt::WindowFlags f)
     textBrowser->setOpenLinks(true);
     textBrowser->setOpenExternalLinks(true);
 
-    QPixmap picture_2(":/resources/gplv3-127x51.png");
+    QPixmap picture_2(":/license/gplV3Logo");
     footer1->setPixmap(picture_2);
     footer1->setAlignment(Qt::AlignCenter);
 
-    QPixmap picture_3(":/resources/Built_with_Qt_RGB_logo.png");
+    QPixmap picture_3(":/license/builtWithQTLogo");
     footer2->setPixmap(picture_3);
     footer2->setAlignment(Qt::AlignCenter);
 
     buttonBox->setStandardButtons(QDialogButtonBox::Close);
 }
 
+/**
+ * @brief DialogAboutImpl::returnLicense
+ * @return
+ */
 QString DialogAboutImpl::returnLicense()
 {
     QFile file(":/license/license");
 
-    if(file.open(QIODevice::ReadOnly))
+    if (file.open(QIODevice::ReadOnly))
     {
         QString license = file.readAll();
         file.close();

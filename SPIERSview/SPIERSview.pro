@@ -6,7 +6,7 @@ TARGET = SPIERSview64
 
 TEMPLATE = app
 
-QT += network xml gui core opengl
+QT += network xml gui core widgets opengl
 
 # Allow debug in release
 #QMAKE_CXXFLAGS_RELEASE += -g
@@ -18,7 +18,7 @@ CONFIG += qt \
     warn_on
 
 RESOURCES = view.qrc \
-    ../SPIERScommon/licenseresource.qrc
+    ../SPIERScommon/commonresources.qrc
 
 DESTDIR \
     += \
@@ -38,8 +38,6 @@ DISTFILES += \
 MOC_DIR += build
 
 OBJECTS_DIR += build
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 # Windows common build here
 win32 {
@@ -240,7 +238,7 @@ macx {
 
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
-    src/darkstyletheme.cpp \
+    ../SPIERScommon/src/darkstyletheme.cpp \
     src/globals.cpp \
     src/spvreader.cpp \
     src/svobject.cpp \
@@ -253,9 +251,9 @@ SOURCES += src/main.cpp \
     src/quickhelpbox.cpp \
     src/aboutdialog.cpp \
     src/gl3widget.cpp \
-    ../SPIERScommon/netmodule.cpp \
-    ../SPIERScommon/semanticversion.cpp \
-    ../SPIERScommon/prereleasecomponent.cpp \
+    ../SPIERScommon/src/netmodule.cpp \
+    ../SPIERScommon/src/semanticversion.cpp \
+    ../SPIERScommon/src/prereleasecomponent.cpp \
     src/vaxmlgroup.cpp \
     src/vaxmlobject.cpp \
     src/isosurface.cpp \
@@ -267,7 +265,7 @@ SOURCES += src/main.cpp \
     src/drawglscaleball.cpp
 
 HEADERS += src/mainwindow.h \
-    src/darkstyletheme.h \
+    ../SPIERScommon/src/darkstyletheme.h \
     src/globals.h \
     src/spvreader.h \
     src/svobject.h \
@@ -282,9 +280,9 @@ HEADERS += src/mainwindow.h \
     src/gl3widget.h \
     src/rowmans.h \
     src/main.h \
-    ../SPIERScommon/netmodule.h \
-    ../SPIERScommon/semanticversion.h \
-    ../SPIERScommon/prereleasecomponent.h \
+    ../SPIERScommon/src/netmodule.h \
+    ../SPIERScommon/src/semanticversion.h \
+    ../SPIERScommon/src/prereleasecomponent.h \
     src/vaxmlgroup.h \
     src/vaxmlobject.h \
     src/isosurface.h \

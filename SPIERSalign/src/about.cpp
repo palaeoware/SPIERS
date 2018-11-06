@@ -34,9 +34,7 @@ About::About(QWidget *parent) :
     setWindowTitle("About");
     setWindowIcon(QIcon (":/icon.png"));
 
-    QPixmap picture_1(":/img.png");
-    ui->header->setPixmap(picture_1);
-    ui->header->setAlignment(Qt::AlignCenter);
+    ui->header->setVisible(false);
 
     ui->textLabel_1->setText(theMainWindow->windowTitle());
     ui->textLabel_1->setObjectName("aboutTextLabel1");
@@ -60,11 +58,11 @@ About::About(QWidget *parent) :
     ui->textBrowser->setOpenLinks(true);
     ui->textBrowser->setOpenExternalLinks(true);
 
-    QPixmap picture_2(":/gplV3Logo");
+    QPixmap picture_2(":/license/gplV3Logo");
     ui->footer1->setPixmap(picture_2);
     ui->footer1->setAlignment(Qt::AlignCenter);
 
-    QPixmap picture_3(":/builtWithQTLogo");
+    QPixmap picture_3(":/license/builtWithQTLogo");
     ui->footer2->setPixmap(picture_3);
     ui->footer2->setAlignment(Qt::AlignCenter);
 
@@ -87,7 +85,7 @@ QString About::returnLicense()
 {
     QFile file(":/license/license");
 
-    if(file.open(QIODevice::ReadOnly))
+    if (file.open(QIODevice::ReadOnly))
     {
         QString license = file.readAll();
         file.close();
