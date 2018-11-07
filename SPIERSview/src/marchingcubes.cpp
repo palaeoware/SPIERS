@@ -388,15 +388,22 @@ void MarchingCubes::surfaceChunked()
     unsigned char *blankpointer = static_cast<unsigned char *>(malloc(static_cast<size_t>(size)));
     for (int ii = 0; ii < size; ii++) blankpointer[ii] = static_cast<unsigned char>(0);
 
-    //set up the slice buffers
-    for (int ii = 0; ii < 6; ii++) slicebuffers_copy[ii] = slicebuffers[ii] = static_cast<unsigned char *>(malloc(static_cast<size_t>(size))); //get memory (2 copies of pointers)
+    // Set up the 6 slice buffers
+    for (int ii = 0; ii < 6; ii++)
+    {
+        slicebuffers[ii] = static_cast<unsigned char *>(malloc(static_cast<size_t>(size)));
+        // 2nd copy of pointer
+        slicebuffers_copy[ii] = slicebuffers[ii];
+    }
 
-    //decompress the first four layers
-    //blank the first two (-1 and -2)
+    // Decompress the first four layers
+    // Blank the first two (-1 and -2)
     slicebuffers[0] = blankpointer;
     slicebuffers[1] = blankpointer;
+    empty[0] = true;
+    empty[1] = true;
 
-    //and read in the next four, blanking if not present
+    // ...and read in the next four, blanking if not present
     for (int ii = 0; ii < 4; ii++)
     {
         if (kDim > ii && object->compressedslices[ii]->empty == false) //no need to copy pointers from backup - not yet touched
@@ -405,14 +412,11 @@ void MarchingCubes::surfaceChunked()
         {
             slicebuffers[ii + 2] = blankpointer;
         }
-    }
 
-    empty[0] = true;
-    empty[1] = true;
-    for (int ii = 0; ii < 4; ii++)
-    {
         empty[ii + 2] = true;
-        if (ii < object->compressedslices.count()) if (object->compressedslices[ii]->empty == false) empty[ii + 2] = false;
+        if (ii < object->compressedslices.count())
+            if (object->compressedslices[ii]->empty == false)
+                empty[ii + 2] = false;
     }
 
     layer = static_cast<ScalarFieldLayer *>(malloc(sizeof(ScalarFieldLayer)));
@@ -421,37 +425,37 @@ void MarchingCubes::surfaceChunked()
         QCoreApplication::quit();
     }
 
-    /* initially, botData points to the start of dataset, and */
-    /* topData points to the next layer */
+    // initially, botData points to the start of dataset, and topData points to the next layer
     layer->botData = slicebuffers[2];
     layer->topData = slicebuffers[3];
 
-    /* allocate storage to hold the indexing tags for edges in the layer */
+    // allocate storage to hold the indexing tags for edges in the layer
     layer->edges = static_cast<int *>(malloc(static_cast<unsigned long long>(iDim - 1) * static_cast<unsigned long long>(jDim - 1) * 12 * sizeof(int)));
 
-    /* initialize the edge table to EMPTY */
+    // initialize the edge table to EMPTY
     for (i = 0; i < (iDim - 1) * (jDim - 1) * 12; i++)
     {
         *(layer->edges + i) = EMPTY_EDGE;
     }
 
-    //Is this empty?? Surface it anyway I think - grid will control the work
+    // Is this empty?? Surface it anyway I think - grid will control the work
     object->Isosurfaces.append(marchChunked(layer, 0, 0, object->compressedslices[0]->grid, gridxscale, gridyscale));
     totalTriangles += object->Isosurfaces[0]->nTriangles;
     int vertbase = object->Isosurfaces[0]->nVertices;
 
-    /* now do the remaining layers */
+    // ...now do the remaining layers
     for (k = 1; k < kDim - 1; k++)
     {
+        // Update the progress bar
         QString text;
-        QTextStream s(&text);
-        s << "Surfacing: slice " << k << "  - Ktr " << totalTriangles / 1000;
+        QTextStream string(&text);
+        string << "Surfacing: slice " << k << "  - Ktr " << totalTriangles / 1000;
         mainWindow->ui->OutputLabelSpecific->setText(text);
         mainWindow->setSpecificLabel(text);
         mainWindow->setSpecificProgress(((k + 1) * 100) / kDim);
         if (k % 10 == 0) qApp->processEvents();
 
-        //move stuff down in arrays
+        // Move everything down in arrays by one
         unsigned char *temppointer = slicebuffers[0];
         slicebuffers[0] = slicebuffers[1];
         slicebuffers[1] = slicebuffers[2];
@@ -476,10 +480,12 @@ void MarchingCubes::surfaceChunked()
         empty[4] = empty[5];
         empty[5] = t;
 
-        //now decompress next slice into 5 - or zero it
+        // ...now decompress next slice into 5 - or zero it
         empty[5] = false;
-        if (k + 3 >= object->compressedslices.count()) empty[5] = true;
-        else if (object->compressedslices[k + 3]->empty == true) empty[5] = true;
+        if (k + 3 >= object->compressedslices.count())
+            empty[5] = true;
+        else if (object->compressedslices[k + 3]->empty == true)
+            empty[5] = true;
 
         if (empty[5] == false)
         {
@@ -487,16 +493,17 @@ void MarchingCubes::surfaceChunked()
             object->compressedslices[k + 3]->getFullData((slicebuffers[5]));
         }
         else slicebuffers[5] = blankpointer;
+
         //qDebug()<<"Slice"<<k+3<<"is"<<empty[5];
 
-        /* update the layer for this iteration */
+        // update the layer for this iteration
         layer->botData = slicebuffers[2];
         layer->topData = slicebuffers[3];
 
 
         if ((!(empty[1])) || (!(empty[2])) || (!(empty[3]))) //shift edges down if last slice generated any
         {
-            // percolate the last layer's top edges to this layer's bottom edges
+            // Percolate the last layer's top edges to this layer's bottom edges
             for (i = 0; i < iDim - 1; i++)
             {
                 for (j = 1; j < jDim; j++)
@@ -505,7 +512,7 @@ void MarchingCubes::surfaceChunked()
                         *(layer->edges + EDGE_OFFSET(e, i, j, iDim)) = *(layer->edges + EDGE_OFFSET(e + 4, i, j, iDim));
 
 
-                    // reinitialize all of the remaining edges
+                    // Reinitialize all of the remaining edges
                     for (e = 4; e < 12; e++)
                     {
                         *(layer->edges + EDGE_OFFSET(e, i, j, iDim)) = EMPTY_EDGE;
@@ -513,11 +520,10 @@ void MarchingCubes::surfaceChunked()
                 }
             }
         }
-        //do a march if this slice is not empty
 
+        // Do a march if this slice is not empty
         if ((!(empty[2])) || (!(empty[3])) || (!(empty[4])))
         {
-            //do a march if this slice is not empty
             //qDebug()<<"Marching slice "<<k;
             object->Isosurfaces.append(marchChunked(layer, k, vertbase, object->compressedslices[k]->grid, gridxscale, gridyscale));
             //qDebug()<<"DONE Marching slice "<<k;
@@ -534,14 +540,11 @@ void MarchingCubes::surfaceChunked()
         }
     }
 
-    //qDebug()<<"Freeing edges";
+    // Do clean up
     free(layer->edges);
-    //qDebug()<<"Freeing layer";
     free(layer);
-    //qDebug()<<"Freeing slices";
     for (int ii = 0; ii < 6; ii++) free(slicebuffers_copy[ii]);
     free (blankpointer);
-    //qDebug("Time elapsed: %d ms", t.elapsed());
 
     return;
 }
