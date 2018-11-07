@@ -22,8 +22,8 @@ void DrawGLScaleGrid::initializeGL()
     // Set up lines
     QVector<QVector3D> lineVertices;
 
-    lineVertices << QVector3D(0, -10000000.0,  0.0) << QVector3D( 0, 10000000.0,  0.0);
-    lineVertices << QVector3D(-10000000, 0.0,  0.0) << QVector3D(10000000, 0.0,  0.0);  //second two are horizontal line
+    lineVertices << QVector3D(0, -10000000.0,  0.0) << QVector3D( 0, 10000000.0,  0.0); // vertical line
+    lineVertices << QVector3D(-10000000, 0.0,  0.0) << QVector3D(10000000, 0.0,  0.0);  // horizontal line
 
     VBOline.create();
     VBOline.bind();
@@ -32,8 +32,7 @@ void DrawGLScaleGrid::initializeGL()
     VBOline.release();
 
     // Set up fonts
-    //0-9 are digits 0-9, 10 is -, 11 is ., 12 is m, 13 is u
-
+    // 0-9 are digits 0-9, 10 is -, 11 is ., 12 is m, 13 is u, 14 is c
     for (int charnumber = 16; charnumber < 26; charnumber++)
     {
         QVector<QVector3D> fontVertices;
@@ -85,7 +84,7 @@ void DrawGLScaleGrid::initializeGL()
         CharacterLineCounts[ii] = rowmans_size[charnumber] / 2;
     }
 
-    //now the occlusion object for the scale grid
+    // Now the occlusion object for the scale grid
     QVector<QVector3D> occVertices;
     QVector<QVector3D> occNormals;
 
@@ -133,7 +132,7 @@ void DrawGLScaleGrid::draw(QMatrix4x4 vMatrix, QVector3D lPosition)
     glWidget->lightingShaderProgram.setUniformValue("specularReflection", static_cast<GLfloat>(1.0));
     glWidget->lightingShaderProgram.setUniformValue("shininess", static_cast<GLfloat>(1000.0));
 
-    //draw occlusion thing
+    // Draw occlusion box to darken parts of the model that are past the scale grid drawing point in the z-axis
     glWidget->lightingShaderProgram.setUniformValue("mvpMatrix", glWidget->pMatrix * vMatrix);
     glWidget->lightingShaderProgram.setUniformValue("mvMatrix", vMatrix);
     glWidget->lightingShaderProgram.setUniformValue("normalMatrix", vMatrix.normalMatrix());
@@ -162,7 +161,8 @@ void DrawGLScaleGrid::draw(QMatrix4x4 vMatrix, QVector3D lPosition)
     // work out coarse below
     float coarse = 1;
 
-    // first find out if field of view need rectifying due to very small values
+    // Sets the course (i.e. major grid line) spacing in mm. This code can probally be reduced is a more intelegent function
+    // using pow() log10() etc... however this works and is simple change individual fov breakpoint for scale changes.
     if (currentFOV >= static_cast<double>(1000))
     {
         coarse = static_cast<float>(1000);
@@ -218,23 +218,25 @@ void DrawGLScaleGrid::draw(QMatrix4x4 vMatrix, QVector3D lPosition)
 
     float s = static_cast<float>(1.0) / static_cast<float>(mmPerUnit);
 
-    for (int i = -100; i < 100; i++) drawLine(vMatrix, lPosition, (static_cast<float>(i))*s * coarse * globalRescale, true, false);
-    for (int i = -100; i < 100; i++) drawLine(vMatrix, lPosition, (static_cast<float>(i))*s * coarse * globalRescale, true, true);
-    for (int i = -1000; i < 1000; i++) if (i % 10 != 0) drawLine(vMatrix, lPosition, (static_cast<float>(i))*s * fine * globalRescale, false, false);
-    for (int i = -1000; i < 1000; i++) if (i % 10 != 0) drawLine(vMatrix, lPosition, (static_cast<float>(i))*s * fine * globalRescale, false, true);
+    for (int i = -100; i < 100; i++) drawLine(vMatrix, lPosition, (static_cast<float>(i))* s * coarse * globalRescale, true, false);
+    for (int i = -100; i < 100; i++) drawLine(vMatrix, lPosition, (static_cast<float>(i))* s * coarse * globalRescale, true, true);
+    for (int i = -1000; i < 1000; i++) if (i % 10 != 0) drawLine(vMatrix, lPosition, (static_cast<float>(i))* s * fine * globalRescale, false, false);
+    for (int i = -1000; i < 1000; i++) if (i % 10 != 0) drawLine(vMatrix, lPosition, (static_cast<float>(i))* s * fine * globalRescale, false, true);
 
     // Major Number
+    // Vertical lines values
     for (int i = -100; i < 100; i++)
     {
         renderNumber(
             static_cast<GLfloat>((static_cast<float>(10.0 / FONT_SCALE_FACTOR)*static_cast<float>(glWidget->ClipAngle) / static_cast<float>(glWidget->height()))),
-            static_cast<GLfloat>(static_cast<float>(i))*s * coarse - ((static_cast<float>(10.0 / FONT_SCALE_FACTOR)*static_cast<float>(glWidget->ClipAngle) / static_cast<float>(glWidget->height()))),
+            static_cast<GLfloat>(static_cast<float>(i))* s * coarse - ((static_cast<float>(10.0 / FONT_SCALE_FACTOR)*static_cast<float>(glWidget->ClipAngle) / static_cast<float>(glWidget->height()))),
             static_cast<GLfloat>(-.99),
             (static_cast<float>(i) * coarse),
             true,
             vMatrix
         );
     }
+    // Horizontal line values
     for (int i = -100; i < 100; i++)
     {
         if (i != 0)
@@ -250,16 +252,17 @@ void DrawGLScaleGrid::draw(QMatrix4x4 vMatrix, QVector3D lPosition)
         }
     }
 
-    // Minor Number
+    // Minor Numbers
     if (showMinorGridValues)
     {
+        // Vertical lines values
         for (int i = -1000; i < 1000; i++)
         {
             if ((i != 0) && (i % 10 != 0))
             {
                 renderNumber(
                     static_cast<GLfloat>((static_cast<float>(10.0 / FONT_SCALE_FACTOR)*static_cast<float>(glWidget->ClipAngle) / static_cast<float>(glWidget->height()))),
-                    static_cast<GLfloat>(static_cast<float>(i))*s * fine - ((static_cast<float>(10.0 / FONT_SCALE_FACTOR)*static_cast<float>(glWidget->ClipAngle) / static_cast<float>(glWidget->height()))),
+                    static_cast<GLfloat>(static_cast<float>(i))* s * fine - ((static_cast<float>(10.0 / FONT_SCALE_FACTOR)*static_cast<float>(glWidget->ClipAngle) / static_cast<float>(glWidget->height()))),
                     static_cast<GLfloat>(-.99),
                     (static_cast<float>(i) * fine),
                     false,
@@ -267,6 +270,8 @@ void DrawGLScaleGrid::draw(QMatrix4x4 vMatrix, QVector3D lPosition)
                 );
             }
         }
+
+        // Horizontal line values
         for (int i = -1000; i < 1000; i++)
         {
             if ((i != 0) && (i % 10 != 0))
@@ -321,7 +326,19 @@ void DrawGLScaleGrid::drawLine(QMatrix4x4 vMatrix, QVector3D lPosition, float po
     glWidget->lightingShaderProgram.enableAttributeArray("vertex");
     VBOline.release();
 
+    // Set Line width if major line
+    if (major)
+    {
+        glWidget->glfunctions->glLineWidth(4);
+    }
+
     glWidget->glfunctions->glDrawArrays(GL_LINES, 0, 2);
+
+    // Reset line with if major
+    if (major)
+    {
+        glWidget->glfunctions->glLineWidth(1);
+    }
 }
 
 /**
@@ -333,7 +350,7 @@ void DrawGLScaleGrid::drawLine(QMatrix4x4 vMatrix, QVector3D lPosition, float po
  * @param vMatrix
  * @param Colour
  */
-void DrawGLScaleGrid::renderCharacter(GLfloat x, GLfloat y, GLfloat z, int charactercode, QMatrix4x4 vMatrix, QColor Colour)
+void DrawGLScaleGrid::renderCharacter(GLfloat x, GLfloat y, GLfloat z, int charactercode, QMatrix4x4 vMatrix, QColor Colour, bool bold = false)
 {
     //qDebug() << "[Where I'm I?] In RenderCharacter";
 
@@ -353,7 +370,19 @@ void DrawGLScaleGrid::renderCharacter(GLfloat x, GLfloat y, GLfloat z, int chara
     glWidget->lightingShaderProgram.enableAttributeArray("vertex");
     VBOcharacters[charactercode].release();
 
+    // Set line with if bold
+    if (bold)
+    {
+        glWidget->glfunctions->glLineWidth(3);
+    }
+
     glWidget->glfunctions->glDrawArrays(GL_LINES, 0, static_cast<int>(CharacterLineCounts[charactercode]));
+
+    // Reset line with if bold
+    if (bold)
+    {
+        glWidget->glfunctions->glLineWidth(1);
+    }
 }
 
 /**
@@ -388,22 +417,22 @@ void DrawGLScaleGrid::renderNumber(GLfloat x, GLfloat y, GLfloat z, float number
 
     //qDebug() << number;
 
-    QString numberAsCharacter = QString::number(number);
+    QString numberAsCharacter = QString::number(static_cast<double>(number));
 
     // If in m then /1000
     if (number >= static_cast<float>(1000))
     {
-        numberAsCharacter = QString::number(number / 1000);
+        numberAsCharacter = QString::number(static_cast<double>(number / 1000));
     }
     // If in cm then /10
     if (number < static_cast<float>(1000) && number >= static_cast<float>(10))
     {
-        numberAsCharacter = QString::number(number / 10);
+        numberAsCharacter = QString::number(static_cast<double>(number / 10));
     }
     // If in um then *1000
     if (number < static_cast<float>(0.09))
     {
-        numberAsCharacter = QString::number(number * 1000);
+        numberAsCharacter = QString::number(static_cast<double>(number * 1000));
     }
 
     for (int i = 0; i < numberAsCharacter.length(); i++)
@@ -451,7 +480,7 @@ void DrawGLScaleGrid::renderNumber(GLfloat x, GLfloat y, GLfloat z, float number
     GLfloat off = 0; //offset
     for (int i = 0; i < characters.length(); i++)
     {
-        renderCharacter(x + off, y, z, characters[i], vMatrix, numcolour);
+        renderCharacter(x + off, y, z, characters[i], vMatrix, numcolour, major);
         off += static_cast<GLfloat>(CharacterWidths[characters[i]] * ((static_cast<float>(0.9 / FONT_SCALE_FACTOR) * glWidget->ClipAngle / static_cast<float>(glWidget->height()))));
     }
 }

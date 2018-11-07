@@ -180,15 +180,17 @@ MainWindow::MainWindow(QWidget *parent)
     ui->treeWidget->setColumnWidth(6, 90);
     ui->treeWidget->setColumnWidth(7, 90);
 
+    // Set default colours
     colorBackgroundRed = 0;
     colorBackgroundGreen = 0;
     colorBackgroundBlue = 0;
-    colorGridRed = 0;
+    colorGridRed = 255;
     colorGridGreen = 255;
-    colorGridBlue = 0;
-    colorGridMinorRed = 255;
-    colorGridMinorGreen = 0;
-    colorGridMinorBlue = 255;
+    colorGridBlue = 255;
+    colorGridMinorRed = 168;
+    colorGridMinorGreen = 181;
+    colorGridMinorBlue = 212;
+
     globalMatrix.setToIdentity();
 
     containsPresurfaced = false;
