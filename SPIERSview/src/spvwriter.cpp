@@ -248,9 +248,10 @@ void SPVWriter::writeSPV(bool withPolydata)
     // Background colour
     out << colorBackgroundRed << colorBackgroundGreen << colorBackgroundBlue;
 
-    // Grid colour
+    // Scale Grid - colour, options, fonts
     out << colorGridRed << colorGridGreen << colorGridBlue;
     out << colorGridMinorRed << colorGridMinorGreen << colorGridMinorBlue;
+    out << fontSizeGrid << showMinorGridLines << showMinorGridValues << showScaleGrid;
 
     // This tagged on the end to keep some sort of file compatibility
     for (int i = 0; i < SPVs.count(); i++) //NEW - do each SPV

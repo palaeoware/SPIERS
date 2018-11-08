@@ -37,11 +37,12 @@ class MainWindow;
 #define SENSITIVITY 5
 #define SPINTIMERINTERVAL 10
 #define SPINRATE .02
-#define SPVFILEVERSION 10
+#define SPVFILEVERSION 11
 #define GL_MAJOR 2
 #define GL_MINOR 1
 #define STEREO_SEPARATION_MODIFIER 15.0
 #define SHININESS 0.0
+#define FONT_SCALE_FACTOR 24.0 // Eqates to roughtly the same font size as the default used by the QT GUI
 
 // SPIERSview extrerns
 extern MainWindow *mainWindow;
@@ -54,7 +55,10 @@ extern bool containsPresurfaced;
 extern bool containsNonPresurfaced;
 extern bool isVaxmlMode;
 extern bool isFirstObject;
+extern bool showScaleGrid;
 extern bool showMinorGridValues;
+extern bool showMinorGridLines;
+extern bool isFileLoaded;
 
 extern double applicationScaleX;
 extern double applicationScaleY;
@@ -91,6 +95,7 @@ extern int colorGridMinorGreen;
 extern int colorGridMinorBlue;
 extern int scaleBallColour[3];
 extern int modelKTr;
+extern int fontSizeGrid;
 
 extern QList<QScreen *> availableScreens;
 extern QMatrix4x4 globalMatrix;

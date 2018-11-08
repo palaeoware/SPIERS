@@ -19,10 +19,13 @@ public:
 
 private:
     int numOccVertices;
+    int currentFontScale;
 
-    GLfloat CharacterWidths[15]; //widths of these characters
-    GLfloat CharacterLineCounts[15]; //widths of these characters
-    QOpenGLBuffer VBOcharacters[15]; //0-9 are digits 0-9, 10 is -, 11 is ., 12 is m, 13 is u
+    // We need a set of these for each of the 6 font sizes available
+    GLfloat CharacterWidths[7][15] ; //widths of these characters
+    GLfloat CharacterLineCounts[7][15] ; //widths of these characters
+    QOpenGLBuffer VBOcharacters[7][15] ; //0-9 are digits 0-9, 10 is -, 11 is ., 12 is m, 13 is u, 14 = c
+
     QOpenGLBuffer VBOline;
     QOpenGLBuffer occBuffer;
     QMatrix4x4 scaleMatrix; //Manipulations to scale ball

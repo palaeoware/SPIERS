@@ -1080,6 +1080,17 @@ void SPVReader::version6Plus(QString filename)
         in >> colorGridMinorRed;
         in >> colorGridMinorGreen;
         in >> colorGridMinorBlue;
+
+        if (version >= 11)
+        {
+            in >> fontSizeGrid;
+            in >> showMinorGridLines;
+            mainWindow->ui->actionShow_Minor_Scale_Lines->setChecked(showMinorGridLines);
+            in >> showMinorGridValues;
+            mainWindow->ui->actionShow_Minor_Values->setChecked(showMinorGridValues);
+            in >> showScaleGrid;
+            mainWindow->ui->actionShow_Scale_Grid->setChecked(showScaleGrid);
+        }
     }
 
     if (!(in.atEnd()))

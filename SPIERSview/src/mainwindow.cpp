@@ -37,6 +37,7 @@
 #include "../SPIERScommon/src/netmodule.h"
 #include <vtkProperty2D.h>
 #include "movetogroup.h"
+#include "gridfontsizedialog.h"
 
 /**
  * @brief MainWindow::MainWindow
@@ -425,39 +426,56 @@ void MainWindow::SpinTimer_fired()
     Framenumbs.append(millisecs);
     if (Framenumbs.count() > 10)
     {
-        double tot = 0;
-        for (int i = 0; i < 10; i++)
-        {
-            tot += static_cast<double>(Framenumbs[i]);
-        }
-        tot /= 10; //tot is average ms
-        tot += 1;
-        int framerate = static_cast<int>(1000.0 / tot);
         QString message;
         QTextStream string(&message);
 
-        QString XrotS = DegConvert(rotationX);
-        QString YrotS = DegConvert(rotationY);
-        QString ZrotS = DegConvert(rotationZ);
+        // If there is a model loaded in the GL widget...
+        if (isFileLoaded)
+        {
+            double tot = 0;
+            for (int i = 0; i < 10; i++)
+            {
+                tot += static_cast<double>(Framenumbs[i]);
+            }
+            tot /= 10; //tot is average ms
+            tot += 1;
+            int framerate = static_cast<int>(1000.0 / tot);
 
-        QString XtransS = TransConvert(transformX);
-        QString YtransS = TransConvert(transformY);
-        QString ZtransS = TransConvert(transformZ);
 
-        string << "Frame rate: " << framerate;
-        string << "  Rotations: X = " << XrotS;
-        string << " Y = " << YrotS;
-        string << " Z = " << ZrotS;
-        string << "  Translations: X = " << XtransS;
-        string << " Y = " << YtransS;
-        string << " Z = " << ZtransS;
-        string << " FOV: " << gl3widget->getFOV() << "mm";
+            QString XrotS = DegConvert(rotationX);
+            QString YrotS = DegConvert(rotationY);
+            QString ZrotS = DegConvert(rotationZ);
+
+            QString XtransS = TransConvert(transformX);
+            QString YtransS = TransConvert(transformY);
+            QString ZtransS = TransConvert(transformZ);
+
+            string << "Frame rate: " << framerate;
+            string << "  Rotations: X = " << XrotS;
+            string << " Y = " << YrotS;
+            string << " Z = " << ZrotS;
+            string << "  Translations: X = " << XtransS;
+            string << " Y = " << YtransS;
+            string << " Z = " << ZtransS;
+            string << " FOV: " << gl3widget->getFOV() << "mm";
+        }
+        else
+        {
+            string << "Frame rate: 0";
+            string << "  Rotations: X = 000.0";
+            string << " Y = 000.0";
+            string << " Z = 000.0" ;
+            string << "  Translations: X = 00.0";
+            string << " Y = 00.0";
+            string << " Z = 00.0";
+            string << " FOV: 0.0mm";
+        }
 
         ui->statusBar->showMessage(message);//should be m
         Framenumbs.clear();
     }
 
-    //also a good place to recalc the width of output
+    // Also a good place to recalc the width of output
     int wheight = gl3widget->height();
     int wwidth = gl3widget->width();
 
@@ -525,14 +543,6 @@ void MainWindow::SpinTimer_fired()
         }
     }
     ktrlabel->setText(mess);
-}
-
-/**
- * @brief MainWindow::on_actionShow_Scale_Grid_triggered
- */
-void MainWindow::on_actionShow_Scale_Grid_triggered()
-{
-    UpdateGL();
 }
 
 /**
@@ -3973,6 +3983,23 @@ void MainWindow::on_actionFull_Screen_triggered()
 }
 
 /**
+ * @brief MainWindow::on_actionShow_Scale_Grid_triggered
+ */
+void MainWindow::on_actionShow_Scale_Grid_triggered()
+{
+    if (ui->actionShow_Scale_Grid->isChecked())
+    {
+        showScaleGrid = true;
+    }
+    else
+    {
+        showScaleGrid = false;
+    }
+
+    UpdateGL();
+}
+
+/**
  * @brief MainWindow::on_actionShow_Minor_Values_triggered
  */
 void MainWindow::on_actionShow_Minor_Values_triggered()
@@ -3985,6 +4012,61 @@ void MainWindow::on_actionShow_Minor_Values_triggered()
     {
         showMinorGridValues = false;
     }
+
+    UpdateGL();
+}
+
+/**
+ * @brief MainWindow::on_actionScale_Grid_Font_Size_triggered
+ */
+void MainWindow::on_actionScale_Grid_Font_Size_triggered()
+{
+    GridFontSizeDialog gridFontSizeDialog;
+    FilterKeys = false;
+    gridFontSizeDialog.exec();
+    FilterKeys = true;
+}
+
+/**
+ * @brief MainWindow::on_actionShow_Minor_Scale_Lines_triggered
+ */
+void MainWindow::on_actionShow_Minor_Scale_Lines_triggered()
+{
+    if (ui->actionShow_Minor_Scale_Lines->isChecked())
+    {
+        showMinorGridLines = true;
+    }
+    else
+    {
+        showMinorGridLines = false;
+    }
+
+    UpdateGL();
+}
+
+/**
+ * @brief MainWindow::on_actionReset_Scale_Grid_to_Defaults_triggered
+ */
+void MainWindow::on_actionReset_Scale_Grid_to_Defaults_triggered()
+{
+    // Reset minor gridline values show status
+    ui->actionShow_Minor_Values->setChecked(false);
+    showMinorGridValues = false;
+
+    // Reset minor gridline show status
+    ui->actionShow_Minor_Scale_Lines->setChecked(true);
+    showMinorGridLines = true;
+
+    // Reset gridline colors
+    colorGridRed = 255;
+    colorGridGreen = 255;
+    colorGridBlue = 255;
+    colorGridMinorRed = 168;
+    colorGridMinorGreen = 181;
+    colorGridMinorBlue = 212;
+
+    // Reset grid font size
+    fontSizeGrid = 3;
 
     UpdateGL();
 }

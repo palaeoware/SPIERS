@@ -12,6 +12,7 @@
 DrawGLScaleGrid::DrawGLScaleGrid(GlWidget *parent)
 {
     glWidget = parent;
+    currentFontScale = FONT_SCALE_FACTOR;
 }
 
 /**
@@ -31,57 +32,74 @@ void DrawGLScaleGrid::initializeGL()
     VBOline.write(0, lineVertices.constData(), 12 * sizeof(GLfloat));
     VBOline.release();
 
-    // Set up fonts
-    // 0-9 are digits 0-9, 10 is -, 11 is ., 12 is m, 13 is u, 14 is c
-    for (int charnumber = 16; charnumber < 26; charnumber++)
+    // Set up fonts with sizes 0 to 6; 3 being default
+    for (int fontSize = 0; fontSize < 7; fontSize++)
     {
-        QVector<QVector3D> fontVertices;
-        for (int i = 0; i < rowmans_size[charnumber] / 4; i++)
+        int fontScale = FONT_SCALE_FACTOR;
+        if (fontSize == 0)
+            fontScale = static_cast<int>(FONT_SCALE_FACTOR * 3);
+        if (fontSize == 1)
+            fontScale = static_cast<int>(FONT_SCALE_FACTOR * 2);
+        if (fontSize == 2)
+            fontScale = static_cast<int>(FONT_SCALE_FACTOR * 1.5);
+        if (fontSize == 4)
+            fontScale = static_cast<int>(FONT_SCALE_FACTOR / 1.5);
+        if (fontSize == 5)
+            fontScale = static_cast<int>(FONT_SCALE_FACTOR / 2);
+        if (fontSize == 6)
+            fontScale = static_cast<int>(FONT_SCALE_FACTOR / 3);
+
+        // 0-9 are digits 0-9, 10 is -, 11 is ., 12 is m, 13 is u, 14 is c
+        for (int charnumber = 16; charnumber < 26; charnumber++)
         {
-            fontVertices << QVector3D(
-                             (static_cast<float>(rowmans[charnumber][i * 4])) / static_cast<float>(FONT_SCALE_FACTOR),
-                             (static_cast<float>(rowmans[charnumber][i * 4 + 1])) / static_cast<float>(FONT_SCALE_FACTOR),
-                             0.0)
-                         << QVector3D(
-                             (static_cast<float>(rowmans[charnumber][i * 4 + 2])) / static_cast<float>(FONT_SCALE_FACTOR),
-                             (static_cast<float>(rowmans[charnumber][i * 4 + 3])) / static_cast<float>(FONT_SCALE_FACTOR),
-                             0.0);
+            QVector<QVector3D> fontVertices;
+            for (int i = 0; i < rowmans_size[charnumber] / 4; i++)
+            {
+                fontVertices << QVector3D(
+                                 (static_cast<float>(rowmans[charnumber][i * 4])) / static_cast<float>(fontScale),
+                                 (static_cast<float>(rowmans[charnumber][i * 4 + 1])) / static_cast<float>(fontScale),
+                                 0.0)
+                             << QVector3D(
+                                 (static_cast<float>(rowmans[charnumber][i * 4 + 2])) / static_cast<float>(fontScale),
+                                 (static_cast<float>(rowmans[charnumber][i * 4 + 3])) / static_cast<float>(fontScale),
+                                 0.0);
+            }
+
+            VBOcharacters[fontSize][charnumber - 16].create();
+            VBOcharacters[fontSize][charnumber - 16].bind();
+            VBOcharacters[fontSize][charnumber - 16].allocate(6 * static_cast<int>(sizeof(GLfloat)) * (rowmans_size[charnumber] / 4));
+            VBOcharacters[fontSize][charnumber - 16].write(0, fontVertices.constData(), 6 * static_cast<int>(sizeof(GLfloat)) * (rowmans_size[charnumber] / 4));
+            VBOcharacters[fontSize][charnumber - 16].release();
+            CharacterWidths[fontSize][charnumber - 16] = rowmans_width[charnumber];
+            CharacterLineCounts[fontSize][charnumber - 16] = rowmans_size[charnumber] / 2;
         }
 
-        VBOcharacters[charnumber - 16].create();
-        VBOcharacters[charnumber - 16].bind();
-        VBOcharacters[charnumber - 16].allocate(6 * static_cast<int>(sizeof(GLfloat)) * (rowmans_size[charnumber] / 4));
-        VBOcharacters[charnumber - 16].write(0, fontVertices.constData(), 6 * static_cast<int>(sizeof(GLfloat)) * (rowmans_size[charnumber] / 4));
-        VBOcharacters[charnumber - 16].release();
-        CharacterWidths[charnumber - 16] = rowmans_width[charnumber];
-        CharacterLineCounts[charnumber - 16] = rowmans_size[charnumber] / 2;
-    }
-
-    for (int ii = 10; ii < 15; ii++)
-    {
-        int charnumber = 0;
-        if (ii == 10) charnumber = 14; // -
-        if (ii == 11) charnumber = 13; // .
-        if (ii == 12) charnumber = 77; // m
-        if (ii == 13) charnumber = 85; // u
-        if (ii == 14) charnumber = 67; // c
-
-        QVector<QVector3D> fontVertices;
-        for (int i = 0; i < rowmans_size[charnumber] / 4; i++)
+        for (int ii = 10; ii < 15; ii++)
         {
-            fontVertices << QVector3D((static_cast<float>(rowmans[charnumber][i * 4])) / static_cast<float>(FONT_SCALE_FACTOR),
-                                      (static_cast<float>(rowmans[charnumber][i * 4 + 1])) / static_cast<float>(FONT_SCALE_FACTOR), 0.0)
-                         << QVector3D((static_cast<float>(rowmans[charnumber][i * 4 + 2])) / static_cast<float>(FONT_SCALE_FACTOR),
-                                      (static_cast<float>(rowmans[charnumber][i * 4 + 3])) / static_cast<float>(FONT_SCALE_FACTOR), 0.0);
-        }
+            int charnumber = 0;
+            if (ii == 10) charnumber = 14; // -
+            if (ii == 11) charnumber = 13; // .
+            if (ii == 12) charnumber = 77; // m
+            if (ii == 13) charnumber = 85; // u
+            if (ii == 14) charnumber = 67; // c
 
-        VBOcharacters[ii].create();
-        VBOcharacters[ii].bind();
-        VBOcharacters[ii].allocate(6 * static_cast<int>(sizeof(GLfloat)) * (rowmans_size[charnumber] / 4));
-        VBOcharacters[ii].write(0, fontVertices.constData(), 6 * static_cast<int>(sizeof(GLfloat)) * (rowmans_size[charnumber] / 4));
-        VBOcharacters[ii].release();
-        CharacterWidths[ii] = rowmans_width[charnumber];
-        CharacterLineCounts[ii] = rowmans_size[charnumber] / 2;
+            QVector<QVector3D> fontVertices;
+            for (int i = 0; i < rowmans_size[charnumber] / 4; i++)
+            {
+                fontVertices << QVector3D((static_cast<float>(rowmans[charnumber][i * 4])) / static_cast<float>(fontScale),
+                                          (static_cast<float>(rowmans[charnumber][i * 4 + 1])) / static_cast<float>(fontScale), 0.0)
+                             << QVector3D((static_cast<float>(rowmans[charnumber][i * 4 + 2])) / static_cast<float>(fontScale),
+                                          (static_cast<float>(rowmans[charnumber][i * 4 + 3])) / static_cast<float>(fontScale), 0.0);
+            }
+
+            VBOcharacters[fontSize][ii].create();
+            VBOcharacters[fontSize][ii].bind();
+            VBOcharacters[fontSize][ii].allocate(6 * static_cast<int>(sizeof(GLfloat)) * (rowmans_size[charnumber] / 4));
+            VBOcharacters[fontSize][ii].write(0, fontVertices.constData(), 6 * static_cast<int>(sizeof(GLfloat)) * (rowmans_size[charnumber] / 4));
+            VBOcharacters[fontSize][ii].release();
+            CharacterWidths[fontSize][ii] = rowmans_width[charnumber];
+            CharacterLineCounts[fontSize][ii] = rowmans_size[charnumber] / 2;
+        }
     }
 
     // Now the occlusion object for the scale grid
@@ -218,18 +236,39 @@ void DrawGLScaleGrid::draw(QMatrix4x4 vMatrix, QVector3D lPosition)
 
     float s = static_cast<float>(1.0) / static_cast<float>(mmPerUnit);
 
+    // Draw major grid lines
     for (int i = -100; i < 100; i++) drawLine(vMatrix, lPosition, (static_cast<float>(i))* s * coarse * globalRescale, true, false);
     for (int i = -100; i < 100; i++) drawLine(vMatrix, lPosition, (static_cast<float>(i))* s * coarse * globalRescale, true, true);
-    for (int i = -1000; i < 1000; i++) if (i % 10 != 0) drawLine(vMatrix, lPosition, (static_cast<float>(i))* s * fine * globalRescale, false, false);
-    for (int i = -1000; i < 1000; i++) if (i % 10 != 0) drawLine(vMatrix, lPosition, (static_cast<float>(i))* s * fine * globalRescale, false, true);
 
-    // Major Number
+    // Draw minor grid lines
+    if (showMinorGridLines)
+    {
+        for (int i = -1000; i < 1000; i++) if (i % 10 != 0) drawLine(vMatrix, lPosition, (static_cast<float>(i))* s * fine * globalRescale, false, false);
+        for (int i = -1000; i < 1000; i++) if (i % 10 != 0) drawLine(vMatrix, lPosition, (static_cast<float>(i))* s * fine * globalRescale, false, true);
+    }
+
+    // Set up current font size values
+    currentFontScale = FONT_SCALE_FACTOR;
+    if (fontSizeGrid == 0)
+        currentFontScale = static_cast<int>(FONT_SCALE_FACTOR * 3);
+    if (fontSizeGrid == 1)
+        currentFontScale = static_cast<int>(FONT_SCALE_FACTOR * 2);
+    if (fontSizeGrid == 2)
+        currentFontScale = static_cast<int>(FONT_SCALE_FACTOR * 1.5);
+    if (fontSizeGrid == 4)
+        currentFontScale = static_cast<int>(FONT_SCALE_FACTOR / 1.5);
+    if (fontSizeGrid == 5)
+        currentFontScale = static_cast<int>(FONT_SCALE_FACTOR / 2);
+    if (fontSizeGrid == 6)
+        currentFontScale = static_cast<int>(FONT_SCALE_FACTOR / 3);
+
+    // Draw Major Number
     // Vertical lines values
     for (int i = -100; i < 100; i++)
     {
         renderNumber(
-            static_cast<GLfloat>((static_cast<float>(10.0 / FONT_SCALE_FACTOR)*static_cast<float>(glWidget->ClipAngle) / static_cast<float>(glWidget->height()))),
-            static_cast<GLfloat>(static_cast<float>(i))* s * coarse - ((static_cast<float>(10.0 / FONT_SCALE_FACTOR)*static_cast<float>(glWidget->ClipAngle) / static_cast<float>(glWidget->height()))),
+            static_cast<GLfloat>((static_cast<float>(10.0 / currentFontScale)*static_cast<float>(glWidget->ClipAngle) / static_cast<float>(glWidget->height()))),
+            static_cast<GLfloat>(static_cast<float>(i))* s * coarse - ((static_cast<float>(10.0 / currentFontScale)*static_cast<float>(glWidget->ClipAngle) / static_cast<float>(glWidget->height()))),
             static_cast<GLfloat>(-.99),
             (static_cast<float>(i) * coarse),
             true,
@@ -242,8 +281,8 @@ void DrawGLScaleGrid::draw(QMatrix4x4 vMatrix, QVector3D lPosition)
         if (i != 0)
         {
             renderNumber(
-                static_cast<GLfloat>(static_cast<float>(i) * s * coarse + ((static_cast<float>(10.0 / FONT_SCALE_FACTOR)*static_cast<float>(glWidget->ClipAngle) / static_cast<float>(glWidget->height())))),
-                static_cast<GLfloat>(0 - (((10.0 / FONT_SCALE_FACTOR)*static_cast<double>(glWidget->ClipAngle) / static_cast<double>(glWidget->height())))),
+                static_cast<GLfloat>(static_cast<float>(i) * s * coarse + ((static_cast<float>(10.0 / currentFontScale)*static_cast<float>(glWidget->ClipAngle) / static_cast<float>(glWidget->height())))),
+                static_cast<GLfloat>(0 - (((10.0 / currentFontScale)*static_cast<double>(glWidget->ClipAngle) / static_cast<double>(glWidget->height())))),
                 static_cast<GLfloat>(-.99),
                 (static_cast<float>(i) * coarse),
                 true,
@@ -252,7 +291,7 @@ void DrawGLScaleGrid::draw(QMatrix4x4 vMatrix, QVector3D lPosition)
         }
     }
 
-    // Minor Numbers
+    // Draw Minor Numbers
     if (showMinorGridValues)
     {
         // Vertical lines values
@@ -261,8 +300,8 @@ void DrawGLScaleGrid::draw(QMatrix4x4 vMatrix, QVector3D lPosition)
             if ((i != 0) && (i % 10 != 0))
             {
                 renderNumber(
-                    static_cast<GLfloat>((static_cast<float>(10.0 / FONT_SCALE_FACTOR)*static_cast<float>(glWidget->ClipAngle) / static_cast<float>(glWidget->height()))),
-                    static_cast<GLfloat>(static_cast<float>(i))* s * fine - ((static_cast<float>(10.0 / FONT_SCALE_FACTOR)*static_cast<float>(glWidget->ClipAngle) / static_cast<float>(glWidget->height()))),
+                    static_cast<GLfloat>((static_cast<float>(10.0 / currentFontScale)*static_cast<float>(glWidget->ClipAngle) / static_cast<float>(glWidget->height()))),
+                    static_cast<GLfloat>(static_cast<float>(i))* s * fine - ((static_cast<float>(10.0 / currentFontScale)*static_cast<float>(glWidget->ClipAngle) / static_cast<float>(glWidget->height()))),
                     static_cast<GLfloat>(-.99),
                     (static_cast<float>(i) * fine),
                     false,
@@ -277,8 +316,8 @@ void DrawGLScaleGrid::draw(QMatrix4x4 vMatrix, QVector3D lPosition)
             if ((i != 0) && (i % 10 != 0))
             {
                 renderNumber(
-                    static_cast<GLfloat>(static_cast<float>(i) * s * fine + ((static_cast<float>(10.0 / FONT_SCALE_FACTOR)*static_cast<float>(glWidget->ClipAngle) / static_cast<float>(glWidget->height())))),
-                    static_cast<GLfloat>(0 - (((10.0 / FONT_SCALE_FACTOR)*static_cast<double>(glWidget->ClipAngle) / static_cast<double>(glWidget->height())))),
+                    static_cast<GLfloat>(static_cast<float>(i) * s * fine + ((static_cast<float>(10.0 / currentFontScale)*static_cast<float>(glWidget->ClipAngle) / static_cast<float>(glWidget->height())))),
+                    static_cast<GLfloat>(0 - (((10.0 / currentFontScale)*static_cast<double>(glWidget->ClipAngle) / static_cast<double>(glWidget->height())))),
                     static_cast<GLfloat>(-.99),
                     (static_cast<float>(i) * fine),
                     false,
@@ -365,10 +404,10 @@ void DrawGLScaleGrid::renderCharacter(GLfloat x, GLfloat y, GLfloat z, int chara
     glWidget->lightingShaderProgram.setUniformValue("diffuseColor", QColor(0.0, 0.0, 0.0));
     glWidget->lightingShaderProgram.setUniformValue("specularColor", QColor(0.0, 0.0, 0.0));
 
-    VBOcharacters[charactercode].bind();
+    VBOcharacters[fontSizeGrid][charactercode].bind();
     glWidget->lightingShaderProgram.setAttributeBuffer("vertex", GL_FLOAT, 0, 3, 0);
     glWidget->lightingShaderProgram.enableAttributeArray("vertex");
-    VBOcharacters[charactercode].release();
+    VBOcharacters[fontSizeGrid][charactercode].release();
 
     // Set line with if bold
     if (bold)
@@ -376,7 +415,7 @@ void DrawGLScaleGrid::renderCharacter(GLfloat x, GLfloat y, GLfloat z, int chara
         glWidget->glfunctions->glLineWidth(3);
     }
 
-    glWidget->glfunctions->glDrawArrays(GL_LINES, 0, static_cast<int>(CharacterLineCounts[charactercode]));
+    glWidget->glfunctions->glDrawArrays(GL_LINES, 0, static_cast<int>(CharacterLineCounts[fontSizeGrid][charactercode]));
 
     // Reset line with if bold
     if (bold)
@@ -447,40 +486,41 @@ void DrawGLScaleGrid::renderNumber(GLfloat x, GLfloat y, GLfloat z, float number
         }
     }
 
-    // Finally the units
+    // Finally the units, if the number is not 0
     // 12 = m
     // 13 = u
     // 14 = c
-
-    if (number >= static_cast<float>(1000))
+    if (number != 0.0f)
     {
-        // Is in meter scale
-        characters.append(12); //for m
+        if (number >= 1000.0f)
+        {
+            // Is in meter scale
+            characters.append(12); //for m
+        }
+        else if (number >= 10.0f)
+        {
+            // Is in cm scale
+            characters.append(14); //for c
+            characters.append(12); //for m
+        }
+        else if (number >= 0.09f)
+        {
+            // Is in mm scale
+            characters.append(12); //for m
+            characters.append(12); //for m
+        }
+        else if (number < 0.09f)
+        {
+            // Is in um scale
+            characters.append(13); //for u
+            characters.append(12); //for m
+        }
     }
-    else if (number >= static_cast<float>(10))
-    {
-        // Is in cm scale
-        characters.append(14); //for c
-        characters.append(12); //for m
-    }
-    else if (number >= static_cast<float>(0.09))
-    {
-        // Is in mm scale
-        characters.append(12); //for m
-        characters.append(12); //for m
-    }
-    else if (number < static_cast<float>(0.09))
-    {
-        // Is in um scale
-        characters.append(13); //for u
-        characters.append(12); //for m
-    }
-
     // Now display them
     GLfloat off = 0; //offset
     for (int i = 0; i < characters.length(); i++)
     {
         renderCharacter(x + off, y, z, characters[i], vMatrix, numcolour, major);
-        off += static_cast<GLfloat>(CharacterWidths[characters[i]] * ((static_cast<float>(0.9 / FONT_SCALE_FACTOR) * glWidget->ClipAngle / static_cast<float>(glWidget->height()))));
+        off += static_cast<GLfloat>(CharacterWidths[fontSizeGrid][characters[i]] * ((static_cast<float>(0.9 / currentFontScale) * glWidget->ClipAngle / static_cast<float>(glWidget->height()))));
     }
 }

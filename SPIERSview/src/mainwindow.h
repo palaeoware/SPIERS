@@ -111,13 +111,11 @@ private slots:
     void on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column);
     void on_actionBugIssueFeatureRequest_triggered();
     void on_actionCode_on_GitHub_triggered();
-
     void on_actionVery_Low_triggered();
     void on_actionLow_triggered();
     void on_actionMedium_triggered();
     void on_actionHigh_triggered();
     void on_actionVery_High_triggered();
-
     void on_actionOff_triggered();
     void on_actionVery_Weak_triggered();
     void on_actionWeak_triggered();
@@ -125,14 +123,12 @@ private slots:
     void on_actionStrongish_triggered();
     void on_actionStrong_triggered();
     void on_actionStrongest_triggered();
-
     void on_actionOff_2_triggered();
     void on_actionRemove_Tiny_triggered();
     void on_actionRemove_Small_triggered();
     void on_actionRemove_Medium_triggered();
     void on_actionRemove_Large_triggered();
     void on_actionRemove_All_triggered();
-
     void on_actionOpaque_2_triggered();
     void on_action75_Opaque_2_triggered();
     void on_action50_Opaque_triggered();
@@ -145,7 +141,6 @@ private slots:
     void on_actionSave_Changes_triggered();
     void on_actionSave_As_triggered();
     void on_actionSave_Presurfaced_triggered();
-
     void on_actionResurface_Now_triggered();
     void on_actionAuto_Resurface_triggered();
     void on_actionDXF_triggered();
@@ -158,7 +153,6 @@ private slots:
     void on_actionImport_Replacement_triggered();
     void on_actionPieces_Panel_triggered();
     void on_actionOrthographic_View_triggered();
-
     void on_actionGroup_triggered();
     void on_actionUngroup_triggered();
     void on_actionMove_to_group_triggered();
@@ -171,7 +165,6 @@ private slots:
     void on_actionDecrease_Size_triggered();
     void on_actionReset_Size_triggered();
     void on_PiecesList_itemDoubleClicked(QListWidgetItem *);
-
     void on_actionAANone_triggered();
     void on_action2x_triggered();
     void on_action4x_triggered();
@@ -193,12 +186,9 @@ private slots:
     void on_infoTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column);
     void deleteinfo();
     void on_actionShow_Scale_Grid_triggered();
-
     void on_actionSave_Finalised_As_triggered();
-
     void on_actionBackground_Colour_triggered();
     void on_actionManual_triggered();
-
     void on_actionScale_Grid_Colour_triggered();
     void on_actionMinor_Grid_Colour_triggered();
     void on_actionShow_Minor_Values_triggered();
@@ -211,7 +201,6 @@ private slots:
     void on_SingleStepSaveButton_pressed();
     void on_actionReset_to_default_position_triggered();
     void on_actionSet_new_default_position_triggered();
-
     void on_actionMatte_triggered();
     void on_actionSlightly_Shiny_triggered();
     void on_actionFairly_Shiny_triggered();
@@ -223,6 +212,9 @@ private slots:
     void on_actionBounding_Box_triggered();
     void on_MultipleStepButton_pressed();
     void on_actionFull_Screen_triggered();
+    void on_actionScale_Grid_Font_Size_triggered();
+    void on_actionReset_Scale_Grid_to_Defaults_triggered();
+    void on_actionShow_Minor_Scale_Lines_triggered();
 };
 
 extern MainWindow *mainWindow;

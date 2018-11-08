@@ -106,7 +106,7 @@
      <x>0</x>
      <y>0</y>
      <width>1071</width>
-     <height>20</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuSPIERSview">
@@ -274,10 +274,19 @@
     <property name="title">
      <string>Scale</string>
     </property>
+    <widget class="QMenu" name="menuScale_Grid_Settings">
+     <property name="title">
+      <string>Scale Grid Settings...</string>
+     </property>
+     <addaction name="actionShow_Minor_Scale_Lines"/>
+     <addaction name="actionShow_Minor_Values"/>
+     <addaction name="actionScale_Grid_Colour"/>
+     <addaction name="actionMinor_Grid_Colour"/>
+     <addaction name="actionScale_Grid_Font_Size"/>
+     <addaction name="actionReset_Scale_Grid_to_Defaults"/>
+    </widget>
     <addaction name="actionShow_Scale_Grid"/>
-    <addaction name="actionShow_Minor_Values"/>
-    <addaction name="actionScale_Grid_Colour"/>
-    <addaction name="actionMinor_Grid_Colour"/>
+    <addaction name="menuScale_Grid_Settings"/>
     <addaction name="separator"/>
     <addaction name="actionShow_Ball_2"/>
     <addaction name="actionReposition_Scale_Ball"/>
@@ -1993,6 +2002,9 @@
    <property name="text">
     <string>Show Scale Grid</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+K</string>
+   </property>
   </action>
   <action name="actionMove_towards_viewer">
    <property name="text">
@@ -2323,6 +2335,27 @@
    </property>
    <property name="text">
     <string>Show Minor Scale Values</string>
+   </property>
+  </action>
+  <action name="actionScale_Grid_Font_Size">
+   <property name="text">
+    <string>Font Size...</string>
+   </property>
+  </action>
+  <action name="actionReset_Scale_Grid_to_Defaults">
+   <property name="text">
+    <string>Reset Scale Grid to Defaults</string>
+   </property>
+  </action>
+  <action name="actionShow_Minor_Scale_Lines">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show Minor Scale Lines</string>
    </property>
   </action>
  </widget>

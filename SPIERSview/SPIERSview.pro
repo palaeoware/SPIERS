@@ -262,7 +262,8 @@ SOURCES += src/main.cpp \
     src/spvwriter.cpp \
     src/staticfunctions.cpp \
     src/drawglscalegrid.cpp \
-    src/drawglscaleball.cpp
+    src/drawglscaleball.cpp \
+    src/gridfontsizedialog.cpp
 
 HEADERS += src/mainwindow.h \
     ../SPIERScommon/src/darkstyletheme.h \
@@ -291,9 +292,11 @@ HEADERS += src/mainwindow.h \
     src/spvwriter.h \
     src/staticfunctions.h \
     src/drawglscalegrid.h \
-    src/drawglscaleball.h
+    src/drawglscaleball.h \
+    src/gridfontsizedialog.h
 
 FORMS += ui/mainwindow.ui \
     ui/movetogroup.ui \
     ui/quickhelpbox.ui \
-    ui/aboutdialog.ui
+    ui/aboutdialog.ui \
+    ui/gridfontsizedialog.ui

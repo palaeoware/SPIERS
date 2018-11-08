@@ -22,26 +22,26 @@ Converted with Hershey font converter v2.0 by Jari Komppa, http://iki.fi/sol/
 USE RESTRICTION:
 This distribution of the Hershey Fonts may be used by anyone for
 any purpose, commercial or otherwise, providing that:
-	1. The following acknowledgements must be distributed with
-		the font data:
-		- The Hershey Fonts were originally created by Dr.
-			A. V. Hershey while working at the U. S.
-			National Bureau of Standards.
-		- The format of the Font data in this distribution
-			was originally created by
-				James Hurt
-				Cognition, Inc.
-				900 Technology Park Drive
-				Billerica, MA 01821
-				(mit-eddie!ci-dandelion!hurt)
-	2. The font data in this distribution may be converted into
-		any other format *EXCEPT* the format distributed by
-		the U.S. NTIS (which organization holds the rights
-		to the distribution and use of the font data in that
-		particular format). Not that anybody would really
-		*want* to use their format... each point is described
-		in eight bytes as "xxx yyy:", where xxx and yyy are
-		the coordinate values as ASCII numbers.
+    1. The following acknowledgements must be distributed with
+        the font data:
+        - The Hershey Fonts were originally created by Dr.
+            A. V. Hershey while working at the U. S.
+            National Bureau of Standards.
+        - The format of the Font data in this distribution
+            was originally created by
+                James Hurt
+                Cognition, Inc.
+                900 Technology Park Drive
+                Billerica, MA 01821
+                (mit-eddie!ci-dandelion!hurt)
+    2. The font data in this distribution may be converted into
+        any other format *EXCEPT* the format distributed by
+        the U.S. NTIS (which organization holds the rights
+        to the distribution and use of the font data in that
+        particular format). Not that anybody would really
+        *want* to use their format... each point is described
+        in eight bytes as "xxx yyy:", where xxx and yyy are
+        the coordinate values as ASCII numbers.
 
 --------------------------------------------------------------------
 
@@ -437,8 +437,9 @@ ironic looking at the comments above)
 static const char rowmans_1_width = 16;
 static const char rowmans_1_realwidth = 16;
 static const int rowmans_1_size = 4;
-static const char rowmans_1[4] = {
-       0,   16,    0,   16
+static const char rowmans_1[4] =
+{
+    0,   16,    0,   16
 };
 
 
@@ -446,9 +447,10 @@ static const char rowmans_1[4] = {
 static const char rowmans_2_width = 10;
 static const char rowmans_2_realwidth = 2;
 static const int rowmans_2_size = 20;
-static const char rowmans_2[20] = {
-       1,    4,    1,   18,        1,   23,    0,   24,        0,   24,    1,   25,     
-   1,   25,    2,   24,        2,   24,    1,   23
+static const char rowmans_2[20] =
+{
+    1,    4,    1,   18,        1,   23,    0,   24,        0,   24,    1,   25,
+    1,   25,    2,   24,        2,   24,    1,   23
 };
 
 
@@ -456,8 +458,9 @@ static const char rowmans_2[20] = {
 static const char rowmans_3_width = 16;
 static const char rowmans_3_realwidth = 8;
 static const int rowmans_3_size = 8;
-static const char rowmans_3[8] = {
-       0,    4,    0,   11,        8,    4,    8,   11
+static const char rowmans_3[8] =
+{
+    0,    4,    0,   11,        8,    4,    8,   11
 };
 
 
@@ -465,9 +468,10 @@ static const char rowmans_3[8] = {
 static const char rowmans_4_width = 21;
 static const char rowmans_4_realwidth = 15;
 static const int rowmans_4_size = 16;
-static const char rowmans_4[16] = {
-       8,    0,    1,   32,       14,    0,    7,   32,        1,   13,   15,   13,     
-   0,   19,   14,   19
+static const char rowmans_4[16] =
+{
+    8,    0,    1,   32,       14,    0,    7,   32,        1,   13,   15,   13,
+    0,   19,   14,   19
 };
 
 
@@ -475,14 +479,15 @@ static const char rowmans_4[16] = {
 static const char rowmans_5_width = 20;
 static const char rowmans_5_realwidth = 14;
 static const int rowmans_5_size = 84;
-static const char rowmans_5[84] = {
-       5,    0,    5,   29,        9,    0,    9,   29,       14,    7,   12,    5,     
-  12,    5,    9,    4,        9,    4,    5,    4,        5,    4,    2,    5,     
-   2,    5,    0,    7,        0,    7,    0,    9,        0,    9,    1,   11,     
-   1,   11,    2,   12,        2,   12,    4,   13,        4,   13,   10,   15,     
-  10,   15,   12,   16,       12,   16,   13,   17,       13,   17,   14,   19,     
-  14,   19,   14,   22,       14,   22,   12,   24,       12,   24,    9,   25,     
-   9,   25,    5,   25,        5,   25,    2,   24,        2,   24,    0,   22
+static const char rowmans_5[84] =
+{
+    5,    0,    5,   29,        9,    0,    9,   29,       14,    7,   12,    5,
+    12,    5,    9,    4,        9,    4,    5,    4,        5,    4,    2,    5,
+    2,    5,    0,    7,        0,    7,    0,    9,        0,    9,    1,   11,
+    1,   11,    2,   12,        2,   12,    4,   13,        4,   13,   10,   15,
+    10,   15,   12,   16,       12,   16,   13,   17,       13,   17,   14,   19,
+    14,   19,   14,   22,       14,   22,   12,   24,       12,   24,    9,   25,
+    9,   25,    5,   25,        5,   25,    2,   24,        2,   24,    0,   22
 };
 
 
@@ -490,16 +495,17 @@ static const char rowmans_5[84] = {
 static const char rowmans_6_width = 24;
 static const char rowmans_6_realwidth = 18;
 static const int rowmans_6_size = 104;
-static const char rowmans_6[104] = {
-      18,    4,    0,   25,        5,    4,    7,    6,        7,    6,    7,    8,     
-   7,    8,    6,   10,        6,   10,    4,   11,        4,   11,    2,   11,     
-   2,   11,    0,    9,        0,    9,    0,    7,        0,    7,    1,    5,     
-   1,    5,    3,    4,        3,    4,    5,    4,        5,    4,    7,    5,     
-   7,    5,   10,    6,       10,    6,   13,    6,       13,    6,   16,    5,     
-  16,    5,   18,    4,       14,   18,   12,   19,       12,   19,   11,   21,     
-  11,   21,   11,   23,       11,   23,   13,   25,       13,   25,   15,   25,     
-  15,   25,   17,   24,       17,   24,   18,   22,       18,   22,   18,   20,     
-  18,   20,   16,   18,       16,   18,   14,   18
+static const char rowmans_6[104] =
+{
+    18,    4,    0,   25,        5,    4,    7,    6,        7,    6,    7,    8,
+    7,    8,    6,   10,        6,   10,    4,   11,        4,   11,    2,   11,
+    2,   11,    0,    9,        0,    9,    0,    7,        0,    7,    1,    5,
+    1,    5,    3,    4,        3,    4,    5,    4,        5,    4,    7,    5,
+    7,    5,   10,    6,       10,    6,   13,    6,       13,    6,   16,    5,
+    16,    5,   18,    4,       14,   18,   12,   19,       12,   19,   11,   21,
+    11,   21,   11,   23,       11,   23,   13,   25,       13,   25,   15,   25,
+    15,   25,   17,   24,       17,   24,   18,   22,       18,   22,   18,   20,
+    18,   20,   16,   18,       16,   18,   14,   18
 };
 
 
@@ -507,18 +513,19 @@ static const char rowmans_6[104] = {
 static const char rowmans_7_width = 26;
 static const char rowmans_7_realwidth = 20;
 static const int rowmans_7_size = 132;
-static const char rowmans_7[132] = {
-      20,   13,   20,   12,       20,   12,   19,   11,       19,   11,   18,   11,     
-  18,   11,   17,   12,       17,   12,   16,   14,       16,   14,   14,   19,     
-  14,   19,   12,   22,       12,   22,   10,   24,       10,   24,    8,   25,     
-   8,   25,    4,   25,        4,   25,    2,   24,        2,   24,    1,   23,     
-   1,   23,    0,   21,        0,   21,    0,   19,        0,   19,    1,   17,     
-   1,   17,    2,   16,        2,   16,    9,   12,        9,   12,   10,   11,     
-  10,   11,   11,    9,       11,    9,   11,    7,       11,    7,   10,    5,     
-  10,    5,    8,    4,        8,    4,    6,    5,        6,    5,    5,    7,     
-   5,    7,    5,    9,        5,    9,    6,   12,        6,   12,    8,   15,     
-   8,   15,   13,   22,       13,   22,   15,   24,       15,   24,   17,   25,     
-  17,   25,   19,   25,       19,   25,   20,   24,       20,   24,   20,   23
+static const char rowmans_7[132] =
+{
+    20,   13,   20,   12,       20,   12,   19,   11,       19,   11,   18,   11,
+    18,   11,   17,   12,       17,   12,   16,   14,       16,   14,   14,   19,
+    14,   19,   12,   22,       12,   22,   10,   24,       10,   24,    8,   25,
+    8,   25,    4,   25,        4,   25,    2,   24,        2,   24,    1,   23,
+    1,   23,    0,   21,        0,   21,    0,   19,        0,   19,    1,   17,
+    1,   17,    2,   16,        2,   16,    9,   12,        9,   12,   10,   11,
+    10,   11,   11,    9,       11,    9,   11,    7,       11,    7,   10,    5,
+    10,    5,    8,    4,        8,    4,    6,    5,        6,    5,    5,    7,
+    5,    7,    5,    9,        5,    9,    6,   12,        6,   12,    8,   15,
+    8,   15,   13,   22,       13,   22,   15,   24,       15,   24,   17,   25,
+    17,   25,   19,   25,       19,   25,   20,   24,       20,   24,   20,   23
 };
 
 
@@ -526,9 +533,10 @@ static const char rowmans_7[132] = {
 static const char rowmans_8_width = 10;
 static const char rowmans_8_realwidth = 2;
 static const int rowmans_8_size = 24;
-static const char rowmans_8[24] = {
-       1,    6,    0,    5,        0,    5,    1,    4,        1,    4,    2,    5,     
-   2,    5,    2,    7,        2,    7,    1,    9,        1,    9,    0,   10
+static const char rowmans_8[24] =
+{
+    1,    6,    0,    5,        0,    5,    1,    4,        1,    4,    2,    5,
+    2,    5,    2,    7,        2,    7,    1,    9,        1,    9,    0,   10
 };
 
 
@@ -536,10 +544,11 @@ static const char rowmans_8[24] = {
 static const char rowmans_9_width = 14;
 static const char rowmans_9_realwidth = 7;
 static const int rowmans_9_size = 36;
-static const char rowmans_9[36] = {
-       7,    0,    5,    2,        5,    2,    3,    5,        3,    5,    1,    9,     
-   1,    9,    0,   14,        0,   14,    0,   18,        0,   18,    1,   23,     
-   1,   23,    3,   27,        3,   27,    5,   30,        5,   30,    7,   32
+static const char rowmans_9[36] =
+{
+    7,    0,    5,    2,        5,    2,    3,    5,        3,    5,    1,    9,
+    1,    9,    0,   14,        0,   14,    0,   18,        0,   18,    1,   23,
+    1,   23,    3,   27,        3,   27,    5,   30,        5,   30,    7,   32
 };
 
 
@@ -547,10 +556,11 @@ static const char rowmans_9[36] = {
 static const char rowmans_10_width = 14;
 static const char rowmans_10_realwidth = 7;
 static const int rowmans_10_size = 36;
-static const char rowmans_10[36] = {
-       0,    0,    2,    2,        2,    2,    4,    5,        4,    5,    6,    9,     
-   6,    9,    7,   14,        7,   14,    7,   18,        7,   18,    6,   23,     
-   6,   23,    4,   27,        4,   27,    2,   30,        2,   30,    0,   32
+static const char rowmans_10[36] =
+{
+    0,    0,    2,    2,        2,    2,    4,    5,        4,    5,    6,    9,
+    6,    9,    7,   14,        7,   14,    7,   18,        7,   18,    6,   23,
+    6,   23,    4,   27,        4,   27,    2,   30,        2,   30,    0,   32
 };
 
 
@@ -558,8 +568,9 @@ static const char rowmans_10[36] = {
 static const char rowmans_11_width = 16;
 static const char rowmans_11_realwidth = 10;
 static const int rowmans_11_size = 12;
-static const char rowmans_11[12] = {
-       5,    4,    5,   16,        0,    7,   10,   13,       10,    7,    0,   13
+static const char rowmans_11[12] =
+{
+    5,    4,    5,   16,        0,    7,   10,   13,       10,    7,    0,   13
 };
 
 
@@ -567,8 +578,9 @@ static const char rowmans_11[12] = {
 static const char rowmans_12_width = 26;
 static const char rowmans_12_realwidth = 18;
 static const int rowmans_12_size = 8;
-static const char rowmans_12[8] = {
-       9,    7,    9,   25,        0,   16,   18,   16
+static const char rowmans_12[8] =
+{
+    9,    7,    9,   25,        0,   16,   18,   16
 };
 
 
@@ -576,10 +588,11 @@ static const char rowmans_12[8] = {
 static const char rowmans_13_width = 10;
 static const char rowmans_13_realwidth = 2;
 static const int rowmans_13_size = 28;
-static const char rowmans_13[28] = {
-       2,   24,    1,   25,        1,   25,    0,   24,        0,   24,    1,   23,     
-   1,   23,    2,   24,        2,   24,    2,   26,        2,   26,    1,   28,     
-   1,   28,    0,   29
+static const char rowmans_13[28] =
+{
+    2,   24,    1,   25,        1,   25,    0,   24,        0,   24,    1,   23,
+    1,   23,    2,   24,        2,   24,    2,   26,        2,   26,    1,   28,
+    1,   28,    0,   29
 };
 
 
@@ -587,8 +600,9 @@ static const char rowmans_13[28] = {
 static const char rowmans_14_width = 26;
 static const char rowmans_14_realwidth = 18;
 static const int rowmans_14_size = 4;
-static const char rowmans_14[4] = {
-       0,   16,   18,   16
+static const char rowmans_14[4] =
+{
+    0,   16,   18,   16
 };
 
 
@@ -596,9 +610,10 @@ static const char rowmans_14[4] = {
 static const char rowmans_15_width = 10;
 static const char rowmans_15_realwidth = 2;
 static const int rowmans_15_size = 16;
-static const char rowmans_15[16] = {
-       1,   23,    0,   24,        0,   24,    1,   25,        1,   25,    2,   24,     
-   2,   24,    1,   23
+static const char rowmans_15[16] =
+{
+    1,   23,    0,   24,        0,   24,    1,   25,        1,   25,    2,   24,
+    2,   24,    1,   23
 };
 
 
@@ -606,8 +621,9 @@ static const char rowmans_15[16] = {
 static const char rowmans_16_width = 22;
 static const char rowmans_16_realwidth = 18;
 static const int rowmans_16_size = 4;
-static const char rowmans_16[4] = {
-      18,    0,    0,   32
+static const char rowmans_16[4] =
+{
+    18,    0,    0,   32
 };
 
 
@@ -615,13 +631,14 @@ static const char rowmans_16[4] = {
 static const char rowmans_17_width = 20;
 static const char rowmans_17_realwidth = 14;
 static const int rowmans_17_size = 64;
-static const char rowmans_17[64] = {
-       6,    4,    3,    5,        3,    5,    1,    8,        1,    8,    0,   13,     
-   0,   13,    0,   16,        0,   16,    1,   21,        1,   21,    3,   24,     
-   3,   24,    6,   25,        6,   25,    8,   25,        8,   25,   11,   24,     
-  11,   24,   13,   21,       13,   21,   14,   16,       14,   16,   14,   13,     
-  14,   13,   13,    8,       13,    8,   11,    5,       11,    5,    8,    4,     
-   8,    4,    6,    4
+static const char rowmans_17[64] =
+{
+    6,    4,    3,    5,        3,    5,    1,    8,        1,    8,    0,   13,
+    0,   13,    0,   16,        0,   16,    1,   21,        1,   21,    3,   24,
+    3,   24,    6,   25,        6,   25,    8,   25,        8,   25,   11,   24,
+    11,   24,   13,   21,       13,   21,   14,   16,       14,   16,   14,   13,
+    14,   13,   13,    8,       13,    8,   11,    5,       11,    5,    8,    4,
+    8,    4,    6,    4
 };
 
 
@@ -629,8 +646,9 @@ static const char rowmans_17[64] = {
 static const char rowmans_18_width = 20;
 static const char rowmans_18_realwidth = 5;
 static const int rowmans_18_size = 12;
-static const char rowmans_18[12] = {
-       0,    8,    2,    7,        2,    7,    5,    4,        5,    4,    5,   25
+static const char rowmans_18[12] =
+{
+    0,    8,    2,    7,        2,    7,    5,    4,        5,    4,    5,   25
 };
 
 
@@ -638,12 +656,13 @@ static const char rowmans_18[12] = {
 static const char rowmans_19_width = 20;
 static const char rowmans_19_realwidth = 14;
 static const int rowmans_19_size = 52;
-static const char rowmans_19[52] = {
-       1,    9,    1,    8,        1,    8,    2,    6,        2,    6,    3,    5,     
-   3,    5,    5,    4,        5,    4,    9,    4,        9,    4,   11,    5,     
-  11,    5,   12,    6,       12,    6,   13,    8,       13,    8,   13,   10,     
-  13,   10,   12,   12,       12,   12,   10,   15,       10,   15,    0,   25,     
-   0,   25,   14,   25
+static const char rowmans_19[52] =
+{
+    1,    9,    1,    8,        1,    8,    2,    6,        2,    6,    3,    5,
+    3,    5,    5,    4,        5,    4,    9,    4,        9,    4,   11,    5,
+    11,    5,   12,    6,       12,    6,   13,    8,       13,    8,   13,   10,
+    13,   10,   12,   12,       12,   12,   10,   15,       10,   15,    0,   25,
+    0,   25,   14,   25
 };
 
 
@@ -651,12 +670,13 @@ static const char rowmans_19[52] = {
 static const char rowmans_20_width = 20;
 static const char rowmans_20_realwidth = 14;
 static const int rowmans_20_size = 56;
-static const char rowmans_20[56] = {
-       2,    4,   13,    4,       13,    4,    7,   12,        7,   12,   10,   12,     
-  10,   12,   12,   13,       12,   13,   13,   14,       13,   14,   14,   17,     
-  14,   17,   14,   19,       14,   19,   13,   22,       13,   22,   11,   24,     
-  11,   24,    8,   25,        8,   25,    5,   25,        5,   25,    2,   24,     
-   2,   24,    1,   23,        1,   23,    0,   21
+static const char rowmans_20[56] =
+{
+    2,    4,   13,    4,       13,    4,    7,   12,        7,   12,   10,   12,
+    10,   12,   12,   13,       12,   13,   13,   14,       13,   14,   14,   17,
+    14,   17,   14,   19,       14,   19,   13,   22,       13,   22,   11,   24,
+    11,   24,    8,   25,        8,   25,    5,   25,        5,   25,    2,   24,
+    2,   24,    1,   23,        1,   23,    0,   21
 };
 
 
@@ -664,8 +684,9 @@ static const char rowmans_20[56] = {
 static const char rowmans_21_width = 20;
 static const char rowmans_21_realwidth = 15;
 static const int rowmans_21_size = 12;
-static const char rowmans_21[12] = {
-      10,    4,    0,   18,        0,   18,   15,   18,       10,    4,   10,   25
+static const char rowmans_21[12] =
+{
+    10,    4,    0,   18,        0,   18,   15,   18,       10,    4,   10,   25
 };
 
 
@@ -673,13 +694,14 @@ static const char rowmans_21[12] = {
 static const char rowmans_22_width = 20;
 static const char rowmans_22_realwidth = 14;
 static const int rowmans_22_size = 64;
-static const char rowmans_22[64] = {
-      12,    4,    2,    4,        2,    4,    1,   13,        1,   13,    2,   12,     
-   2,   12,    5,   11,        5,   11,    8,   11,        8,   11,   11,   12,     
-  11,   12,   13,   14,       13,   14,   14,   17,       14,   17,   14,   19,     
-  14,   19,   13,   22,       13,   22,   11,   24,       11,   24,    8,   25,     
-   8,   25,    5,   25,        5,   25,    2,   24,        2,   24,    1,   23,     
-   1,   23,    0,   21
+static const char rowmans_22[64] =
+{
+    12,    4,    2,    4,        2,    4,    1,   13,        1,   13,    2,   12,
+    2,   12,    5,   11,        5,   11,    8,   11,        8,   11,   11,   12,
+    11,   12,   13,   14,       13,   14,   14,   17,       14,   17,   14,   19,
+    14,   19,   13,   22,       13,   22,   11,   24,       11,   24,    8,   25,
+    8,   25,    5,   25,        5,   25,    2,   24,        2,   24,    1,   23,
+    1,   23,    0,   21
 };
 
 
@@ -687,15 +709,16 @@ static const char rowmans_22[64] = {
 static const char rowmans_23_width = 20;
 static const char rowmans_23_realwidth = 13;
 static const int rowmans_23_size = 88;
-static const char rowmans_23[88] = {
-      12,    7,   11,    5,       11,    5,    8,    4,        8,    4,    6,    4,     
-   6,    4,    3,    5,        3,    5,    1,    8,        1,    8,    0,   13,     
-   0,   13,    0,   18,        0,   18,    1,   22,        1,   22,    3,   24,     
-   3,   24,    6,   25,        6,   25,    7,   25,        7,   25,   10,   24,     
-  10,   24,   12,   22,       12,   22,   13,   19,       13,   19,   13,   18,     
-  13,   18,   12,   15,       12,   15,   10,   13,       10,   13,    7,   12,     
-   7,   12,    6,   12,        6,   12,    3,   13,        3,   13,    1,   15,     
-   1,   15,    0,   18
+static const char rowmans_23[88] =
+{
+    12,    7,   11,    5,       11,    5,    8,    4,        8,    4,    6,    4,
+    6,    4,    3,    5,        3,    5,    1,    8,        1,    8,    0,   13,
+    0,   13,    0,   18,        0,   18,    1,   22,        1,   22,    3,   24,
+    3,   24,    6,   25,        6,   25,    7,   25,        7,   25,   10,   24,
+    10,   24,   12,   22,       12,   22,   13,   19,       13,   19,   13,   18,
+    13,   18,   12,   15,       12,   15,   10,   13,       10,   13,    7,   12,
+    7,   12,    6,   12,        6,   12,    3,   13,        3,   13,    1,   15,
+    1,   15,    0,   18
 };
 
 
@@ -703,8 +726,9 @@ static const char rowmans_23[88] = {
 static const char rowmans_24_width = 20;
 static const char rowmans_24_realwidth = 14;
 static const int rowmans_24_size = 8;
-static const char rowmans_24[8] = {
-      14,    4,    4,   25,        0,    4,   14,    4
+static const char rowmans_24[8] =
+{
+    14,    4,    4,   25,        0,    4,   14,    4
 };
 
 
@@ -712,17 +736,18 @@ static const char rowmans_24[8] = {
 static const char rowmans_25_width = 20;
 static const char rowmans_25_realwidth = 14;
 static const int rowmans_25_size = 112;
-static const char rowmans_25[112] = {
-       5,    4,    2,    5,        2,    5,    1,    7,        1,    7,    1,    9,     
-   1,    9,    2,   11,        2,   11,    4,   12,        4,   12,    8,   13,     
-   8,   13,   11,   14,       11,   14,   13,   16,       13,   16,   14,   18,     
-  14,   18,   14,   21,       14,   21,   13,   23,       13,   23,   12,   24,     
-  12,   24,    9,   25,        9,   25,    5,   25,        5,   25,    2,   24,     
-   2,   24,    1,   23,        1,   23,    0,   21,        0,   21,    0,   18,     
-   0,   18,    1,   16,        1,   16,    3,   14,        3,   14,    6,   13,     
-   6,   13,   10,   12,       10,   12,   12,   11,       12,   11,   13,    9,     
-  13,    9,   13,    7,       13,    7,   12,    5,       12,    5,    9,    4,     
-   9,    4,    5,    4
+static const char rowmans_25[112] =
+{
+    5,    4,    2,    5,        2,    5,    1,    7,        1,    7,    1,    9,
+    1,    9,    2,   11,        2,   11,    4,   12,        4,   12,    8,   13,
+    8,   13,   11,   14,       11,   14,   13,   16,       13,   16,   14,   18,
+    14,   18,   14,   21,       14,   21,   13,   23,       13,   23,   12,   24,
+    12,   24,    9,   25,        9,   25,    5,   25,        5,   25,    2,   24,
+    2,   24,    1,   23,        1,   23,    0,   21,        0,   21,    0,   18,
+    0,   18,    1,   16,        1,   16,    3,   14,        3,   14,    6,   13,
+    6,   13,   10,   12,       10,   12,   12,   11,       12,   11,   13,    9,
+    13,    9,   13,    7,       13,    7,   12,    5,       12,    5,    9,    4,
+    9,    4,    5,    4
 };
 
 
@@ -730,15 +755,16 @@ static const char rowmans_25[112] = {
 static const char rowmans_26_width = 20;
 static const char rowmans_26_realwidth = 13;
 static const int rowmans_26_size = 88;
-static const char rowmans_26[88] = {
-      13,   11,   12,   14,       12,   14,   10,   16,       10,   16,    7,   17,     
-   7,   17,    6,   17,        6,   17,    3,   16,        3,   16,    1,   14,     
-   1,   14,    0,   11,        0,   11,    0,   10,        0,   10,    1,    7,     
-   1,    7,    3,    5,        3,    5,    6,    4,        6,    4,    7,    4,     
-   7,    4,   10,    5,       10,    5,   12,    7,       12,    7,   13,   11,     
-  13,   11,   13,   16,       13,   16,   12,   21,       12,   21,   10,   24,     
-  10,   24,    7,   25,        7,   25,    5,   25,        5,   25,    2,   24,     
-   2,   24,    1,   22
+static const char rowmans_26[88] =
+{
+    13,   11,   12,   14,       12,   14,   10,   16,       10,   16,    7,   17,
+    7,   17,    6,   17,        6,   17,    3,   16,        3,   16,    1,   14,
+    1,   14,    0,   11,        0,   11,    0,   10,        0,   10,    1,    7,
+    1,    7,    3,    5,        3,    5,    6,    4,        6,    4,    7,    4,
+    7,    4,   10,    5,       10,    5,   12,    7,       12,    7,   13,   11,
+    13,   11,   13,   16,       13,   16,   12,   21,       12,   21,   10,   24,
+    10,   24,    7,   25,        7,   25,    5,   25,        5,   25,    2,   24,
+    2,   24,    1,   22
 };
 
 
@@ -746,10 +772,11 @@ static const char rowmans_26[88] = {
 static const char rowmans_27_width = 10;
 static const char rowmans_27_realwidth = 2;
 static const int rowmans_27_size = 32;
-static const char rowmans_27[32] = {
-       1,   11,    0,   12,        0,   12,    1,   13,        1,   13,    2,   12,     
-   2,   12,    1,   11,        1,   23,    0,   24,        0,   24,    1,   25,     
-   1,   25,    2,   24,        2,   24,    1,   23
+static const char rowmans_27[32] =
+{
+    1,   11,    0,   12,        0,   12,    1,   13,        1,   13,    2,   12,
+    2,   12,    1,   11,        1,   23,    0,   24,        0,   24,    1,   25,
+    1,   25,    2,   24,        2,   24,    1,   23
 };
 
 
@@ -757,11 +784,12 @@ static const char rowmans_27[32] = {
 static const char rowmans_28_width = 10;
 static const char rowmans_28_realwidth = 2;
 static const int rowmans_28_size = 44;
-static const char rowmans_28[44] = {
-       1,   11,    0,   12,        0,   12,    1,   13,        1,   13,    2,   12,     
-   2,   12,    1,   11,        2,   24,    1,   25,        1,   25,    0,   24,     
-   0,   24,    1,   23,        1,   23,    2,   24,        2,   24,    2,   26,     
-   2,   26,    1,   28,        1,   28,    0,   29
+static const char rowmans_28[44] =
+{
+    1,   11,    0,   12,        0,   12,    1,   13,        1,   13,    2,   12,
+    2,   12,    1,   11,        2,   24,    1,   25,        1,   25,    0,   24,
+    0,   24,    1,   23,        1,   23,    2,   24,        2,   24,    2,   26,
+    2,   26,    1,   28,        1,   28,    0,   29
 };
 
 
@@ -769,8 +797,9 @@ static const char rowmans_28[44] = {
 static const char rowmans_29_width = 24;
 static const char rowmans_29_realwidth = 16;
 static const int rowmans_29_size = 8;
-static const char rowmans_29[8] = {
-      16,    7,    0,   16,        0,   16,   16,   25
+static const char rowmans_29[8] =
+{
+    16,    7,    0,   16,        0,   16,   16,   25
 };
 
 
@@ -778,8 +807,9 @@ static const char rowmans_29[8] = {
 static const char rowmans_30_width = 26;
 static const char rowmans_30_realwidth = 18;
 static const int rowmans_30_size = 8;
-static const char rowmans_30[8] = {
-       0,   13,   18,   13,        0,   19,   18,   19
+static const char rowmans_30[8] =
+{
+    0,   13,   18,   13,        0,   19,   18,   19
 };
 
 
@@ -787,8 +817,9 @@ static const char rowmans_30[8] = {
 static const char rowmans_31_width = 24;
 static const char rowmans_31_realwidth = 16;
 static const int rowmans_31_size = 8;
-static const char rowmans_31[8] = {
-       0,    7,   16,   16,       16,   16,    0,   25
+static const char rowmans_31[8] =
+{
+    0,    7,   16,   16,       16,   16,    0,   25
 };
 
 
@@ -796,13 +827,14 @@ static const char rowmans_31[8] = {
 static const char rowmans_32_width = 18;
 static const char rowmans_32_realwidth = 12;
 static const int rowmans_32_size = 68;
-static const char rowmans_32[68] = {
-       0,    9,    0,    8,        0,    8,    1,    6,        1,    6,    2,    5,     
-   2,    5,    4,    4,        4,    4,    8,    4,        8,    4,   10,    5,     
-  10,    5,   11,    6,       11,    6,   12,    8,       12,    8,   12,   10,     
-  12,   10,   11,   12,       11,   12,   10,   13,       10,   13,    6,   15,     
-   6,   15,    6,   18,        6,   23,    5,   24,        5,   24,    6,   25,     
-   6,   25,    7,   24,        7,   24,    6,   23
+static const char rowmans_32[68] =
+{
+    0,    9,    0,    8,        0,    8,    1,    6,        1,    6,    2,    5,
+    2,    5,    4,    4,        4,    4,    8,    4,        8,    4,   10,    5,
+    10,    5,   11,    6,       11,    6,   12,    8,       12,    8,   12,   10,
+    12,   10,   11,   12,       11,   12,   10,   13,       10,   13,    6,   15,
+    6,   15,    6,   18,        6,   23,    5,   24,        5,   24,    6,   25,
+    6,   25,    7,   24,        7,   24,    6,   23
 };
 
 
@@ -810,23 +842,24 @@ static const char rowmans_32[68] = {
 static const char rowmans_33_width = 27;
 static const char rowmans_33_realwidth = 21;
 static const int rowmans_33_size = 192;
-static const char rowmans_33[192] = {
-      15,   12,   14,   10,       14,   10,   12,    9,       12,    9,    9,    9,     
-   9,    9,    7,   10,        7,   10,    6,   11,        6,   11,    5,   14,     
-   5,   14,    5,   17,        5,   17,    6,   19,        6,   19,    8,   20,     
-   8,   20,   11,   20,       11,   20,   13,   19,       13,   19,   14,   17,     
-   9,    9,    7,   11,        7,   11,    6,   14,        6,   14,    6,   17,     
-   6,   17,    7,   19,        7,   19,    8,   20,       15,    9,   14,   17,     
-  14,   17,   14,   19,       14,   19,   16,   20,       16,   20,   18,   20,     
-  18,   20,   20,   18,       20,   18,   21,   15,       21,   15,   21,   13,     
-  21,   13,   20,   10,       20,   10,   19,    8,       19,    8,   17,    6,     
-  17,    6,   15,    5,       15,    5,   12,    4,       12,    4,    9,    4,     
-   9,    4,    6,    5,        6,    5,    4,    6,        4,    6,    2,    8,     
-   2,    8,    1,   10,        1,   10,    0,   13,        0,   13,    0,   16,     
-   0,   16,    1,   19,        1,   19,    2,   21,        2,   21,    4,   23,     
-   4,   23,    6,   24,        6,   24,    9,   25,        9,   25,   12,   25,     
-  12,   25,   15,   24,       15,   24,   17,   23,       17,   23,   18,   22,     
-  16,    9,   15,   17,       15,   17,   15,   19,       15,   19,   16,   20
+static const char rowmans_33[192] =
+{
+    15,   12,   14,   10,       14,   10,   12,    9,       12,    9,    9,    9,
+    9,    9,    7,   10,        7,   10,    6,   11,        6,   11,    5,   14,
+    5,   14,    5,   17,        5,   17,    6,   19,        6,   19,    8,   20,
+    8,   20,   11,   20,       11,   20,   13,   19,       13,   19,   14,   17,
+    9,    9,    7,   11,        7,   11,    6,   14,        6,   14,    6,   17,
+    6,   17,    7,   19,        7,   19,    8,   20,       15,    9,   14,   17,
+    14,   17,   14,   19,       14,   19,   16,   20,       16,   20,   18,   20,
+    18,   20,   20,   18,       20,   18,   21,   15,       21,   15,   21,   13,
+    21,   13,   20,   10,       20,   10,   19,    8,       19,    8,   17,    6,
+    17,    6,   15,    5,       15,    5,   12,    4,       12,    4,    9,    4,
+    9,    4,    6,    5,        6,    5,    4,    6,        4,    6,    2,    8,
+    2,    8,    1,   10,        1,   10,    0,   13,        0,   13,    0,   16,
+    0,   16,    1,   19,        1,   19,    2,   21,        2,   21,    4,   23,
+    4,   23,    6,   24,        6,   24,    9,   25,        9,   25,   12,   25,
+    12,   25,   15,   24,       15,   24,   17,   23,       17,   23,   18,   22,
+    16,    9,   15,   17,       15,   17,   15,   19,       15,   19,   16,   20
 };
 
 
@@ -834,8 +867,9 @@ static const char rowmans_33[192] = {
 static const char rowmans_34_width = 18;
 static const char rowmans_34_realwidth = 16;
 static const int rowmans_34_size = 12;
-static const char rowmans_34[12] = {
-       8,    4,    0,   25,        8,    4,   16,   25,        3,   18,   13,   18
+static const char rowmans_34[12] =
+{
+    8,    4,    0,   25,        8,    4,   16,   25,        3,   18,   13,   18
 };
 
 
@@ -843,13 +877,14 @@ static const char rowmans_34[12] = {
 static const char rowmans_35_width = 21;
 static const char rowmans_35_realwidth = 14;
 static const int rowmans_35_size = 72;
-static const char rowmans_35[72] = {
-       0,    4,    0,   25,        0,    4,    9,    4,        9,    4,   12,    5,     
-  12,    5,   13,    6,       13,    6,   14,    8,       14,    8,   14,   10,     
-  14,   10,   13,   12,       13,   12,   12,   13,       12,   13,    9,   14,     
-   0,   14,    9,   14,        9,   14,   12,   15,       12,   15,   13,   16,     
-  13,   16,   14,   18,       14,   18,   14,   21,       14,   21,   13,   23,     
-  13,   23,   12,   24,       12,   24,    9,   25,        9,   25,    0,   25
+static const char rowmans_35[72] =
+{
+    0,    4,    0,   25,        0,    4,    9,    4,        9,    4,   12,    5,
+    12,    5,   13,    6,       13,    6,   14,    8,       14,    8,   14,   10,
+    14,   10,   13,   12,       13,   12,   12,   13,       12,   13,    9,   14,
+    0,   14,    9,   14,        9,   14,   12,   15,       12,   15,   13,   16,
+    13,   16,   14,   18,       14,   18,   14,   21,       14,   21,   13,   23,
+    13,   23,   12,   24,       12,   24,    9,   25,        9,   25,    0,   25
 };
 
 
@@ -857,13 +892,14 @@ static const char rowmans_35[72] = {
 static const char rowmans_36_width = 21;
 static const char rowmans_36_realwidth = 15;
 static const int rowmans_36_size = 68;
-static const char rowmans_36[68] = {
-      15,    9,   14,    7,       14,    7,   12,    5,       12,    5,   10,    4,     
-  10,    4,    6,    4,        6,    4,    4,    5,        4,    5,    2,    7,     
-   2,    7,    1,    9,        1,    9,    0,   12,        0,   12,    0,   17,     
-   0,   17,    1,   20,        1,   20,    2,   22,        2,   22,    4,   24,     
-   4,   24,    6,   25,        6,   25,   10,   25,       10,   25,   12,   24,     
-  12,   24,   14,   22,       14,   22,   15,   20
+static const char rowmans_36[68] =
+{
+    15,    9,   14,    7,       14,    7,   12,    5,       12,    5,   10,    4,
+    10,    4,    6,    4,        6,    4,    4,    5,        4,    5,    2,    7,
+    2,    7,    1,    9,        1,    9,    0,   12,        0,   12,    0,   17,
+    0,   17,    1,   20,        1,   20,    2,   22,        2,   22,    4,   24,
+    4,   24,    6,   25,        6,   25,   10,   25,       10,   25,   12,   24,
+    12,   24,   14,   22,       14,   22,   15,   20
 };
 
 
@@ -871,11 +907,12 @@ static const char rowmans_36[68] = {
 static const char rowmans_37_width = 21;
 static const char rowmans_37_realwidth = 14;
 static const int rowmans_37_size = 48;
-static const char rowmans_37[48] = {
-       0,    4,    0,   25,        0,    4,    7,    4,        7,    4,   10,    5,     
-  10,    5,   12,    7,       12,    7,   13,    9,       13,    9,   14,   12,     
-  14,   12,   14,   17,       14,   17,   13,   20,       13,   20,   12,   22,     
-  12,   22,   10,   24,       10,   24,    7,   25,        7,   25,    0,   25
+static const char rowmans_37[48] =
+{
+    0,    4,    0,   25,        0,    4,    7,    4,        7,    4,   10,    5,
+    10,    5,   12,    7,       12,    7,   13,    9,       13,    9,   14,   12,
+    14,   12,   14,   17,       14,   17,   13,   20,       13,   20,   12,   22,
+    12,   22,   10,   24,       10,   24,    7,   25,        7,   25,    0,   25
 };
 
 
@@ -883,9 +920,10 @@ static const char rowmans_37[48] = {
 static const char rowmans_38_width = 19;
 static const char rowmans_38_realwidth = 13;
 static const int rowmans_38_size = 16;
-static const char rowmans_38[16] = {
-       0,    4,    0,   25,        0,    4,   13,    4,        0,   14,    8,   14,     
-   0,   25,   13,   25
+static const char rowmans_38[16] =
+{
+    0,    4,    0,   25,        0,    4,   13,    4,        0,   14,    8,   14,
+    0,   25,   13,   25
 };
 
 
@@ -893,8 +931,9 @@ static const char rowmans_38[16] = {
 static const char rowmans_39_width = 18;
 static const char rowmans_39_realwidth = 13;
 static const int rowmans_39_size = 12;
-static const char rowmans_39[12] = {
-       0,    4,    0,   25,        0,    4,   13,    4,        0,   14,    8,   14
+static const char rowmans_39[12] =
+{
+    0,    4,    0,   25,        0,    4,   13,    4,        0,   14,    8,   14
 };
 
 
@@ -902,14 +941,15 @@ static const char rowmans_39[12] = {
 static const char rowmans_40_width = 21;
 static const char rowmans_40_realwidth = 15;
 static const int rowmans_40_size = 76;
-static const char rowmans_40[76] = {
-      15,    9,   14,    7,       14,    7,   12,    5,       12,    5,   10,    4,     
-  10,    4,    6,    4,        6,    4,    4,    5,        4,    5,    2,    7,     
-   2,    7,    1,    9,        1,    9,    0,   12,        0,   12,    0,   17,     
-   0,   17,    1,   20,        1,   20,    2,   22,        2,   22,    4,   24,     
-   4,   24,    6,   25,        6,   25,   10,   25,       10,   25,   12,   24,     
-  12,   24,   14,   22,       14,   22,   15,   20,       15,   20,   15,   17,     
-  10,   17,   15,   17
+static const char rowmans_40[76] =
+{
+    15,    9,   14,    7,       14,    7,   12,    5,       12,    5,   10,    4,
+    10,    4,    6,    4,        6,    4,    4,    5,        4,    5,    2,    7,
+    2,    7,    1,    9,        1,    9,    0,   12,        0,   12,    0,   17,
+    0,   17,    1,   20,        1,   20,    2,   22,        2,   22,    4,   24,
+    4,   24,    6,   25,        6,   25,   10,   25,       10,   25,   12,   24,
+    12,   24,   14,   22,       14,   22,   15,   20,       15,   20,   15,   17,
+    10,   17,   15,   17
 };
 
 
@@ -917,8 +957,9 @@ static const char rowmans_40[76] = {
 static const char rowmans_41_width = 22;
 static const char rowmans_41_realwidth = 14;
 static const int rowmans_41_size = 12;
-static const char rowmans_41[12] = {
-       0,    4,    0,   25,       14,    4,   14,   25,        0,   14,   14,   14
+static const char rowmans_41[12] =
+{
+    0,    4,    0,   25,       14,    4,   14,   25,        0,   14,   14,   14
 };
 
 
@@ -926,8 +967,9 @@ static const char rowmans_41[12] = {
 static const char rowmans_42_width = 8;
 static const char rowmans_42_realwidth = 0;
 static const int rowmans_42_size = 4;
-static const char rowmans_42[4] = {
-       0,    4,    0,   25
+static const char rowmans_42[4] =
+{
+    0,    4,    0,   25
 };
 
 
@@ -935,10 +977,11 @@ static const char rowmans_42[4] = {
 static const char rowmans_43_width = 16;
 static const char rowmans_43_realwidth = 10;
 static const int rowmans_43_size = 36;
-static const char rowmans_43[36] = {
-      10,    4,   10,   20,       10,   20,    9,   23,        9,   23,    8,   24,     
-   8,   24,    6,   25,        6,   25,    4,   25,        4,   25,    2,   24,     
-   2,   24,    1,   23,        1,   23,    0,   20,        0,   20,    0,   18
+static const char rowmans_43[36] =
+{
+    10,    4,   10,   20,       10,   20,    9,   23,        9,   23,    8,   24,
+    8,   24,    6,   25,        6,   25,    4,   25,        4,   25,    2,   24,
+    2,   24,    1,   23,        1,   23,    0,   20,        0,   20,    0,   18
 };
 
 
@@ -946,8 +989,9 @@ static const char rowmans_43[36] = {
 static const char rowmans_44_width = 21;
 static const char rowmans_44_realwidth = 14;
 static const int rowmans_44_size = 12;
-static const char rowmans_44[12] = {
-       0,    4,    0,   25,       14,    4,    0,   18,        5,   13,   14,   25
+static const char rowmans_44[12] =
+{
+    0,    4,    0,   25,       14,    4,    0,   18,        5,   13,   14,   25
 };
 
 
@@ -955,8 +999,9 @@ static const char rowmans_44[12] = {
 static const char rowmans_45_width = 17;
 static const char rowmans_45_realwidth = 12;
 static const int rowmans_45_size = 8;
-static const char rowmans_45[8] = {
-       0,    4,    0,   25,        0,   25,   12,   25
+static const char rowmans_45[8] =
+{
+    0,    4,    0,   25,        0,   25,   12,   25
 };
 
 
@@ -964,9 +1009,10 @@ static const char rowmans_45[8] = {
 static const char rowmans_46_width = 24;
 static const char rowmans_46_realwidth = 16;
 static const int rowmans_46_size = 16;
-static const char rowmans_46[16] = {
-       0,    4,    0,   25,        0,    4,    8,   25,       16,    4,    8,   25,     
-  16,    4,   16,   25
+static const char rowmans_46[16] =
+{
+    0,    4,    0,   25,        0,    4,    8,   25,       16,    4,    8,   25,
+    16,    4,   16,   25
 };
 
 
@@ -974,8 +1020,9 @@ static const char rowmans_46[16] = {
 static const char rowmans_47_width = 22;
 static const char rowmans_47_realwidth = 14;
 static const int rowmans_47_size = 12;
-static const char rowmans_47[12] = {
-       0,    4,    0,   25,        0,    4,   14,   25,       14,    4,   14,   25
+static const char rowmans_47[12] =
+{
+    0,    4,    0,   25,        0,    4,   14,   25,       14,    4,   14,   25
 };
 
 
@@ -983,14 +1030,15 @@ static const char rowmans_47[12] = {
 static const char rowmans_48_width = 22;
 static const char rowmans_48_realwidth = 16;
 static const int rowmans_48_size = 80;
-static const char rowmans_48[80] = {
-       6,    4,    4,    5,        4,    5,    2,    7,        2,    7,    1,    9,     
-   1,    9,    0,   12,        0,   12,    0,   17,        0,   17,    1,   20,     
-   1,   20,    2,   22,        2,   22,    4,   24,        4,   24,    6,   25,     
-   6,   25,   10,   25,       10,   25,   12,   24,       12,   24,   14,   22,     
-  14,   22,   15,   20,       15,   20,   16,   17,       16,   17,   16,   12,     
-  16,   12,   15,    9,       15,    9,   14,    7,       14,    7,   12,    5,     
-  12,    5,   10,    4,       10,    4,    6,    4
+static const char rowmans_48[80] =
+{
+    6,    4,    4,    5,        4,    5,    2,    7,        2,    7,    1,    9,
+    1,    9,    0,   12,        0,   12,    0,   17,        0,   17,    1,   20,
+    1,   20,    2,   22,        2,   22,    4,   24,        4,   24,    6,   25,
+    6,   25,   10,   25,       10,   25,   12,   24,       12,   24,   14,   22,
+    14,   22,   15,   20,       15,   20,   16,   17,       16,   17,   16,   12,
+    16,   12,   15,    9,       15,    9,   14,    7,       14,    7,   12,    5,
+    12,    5,   10,    4,       10,    4,    6,    4
 };
 
 
@@ -998,11 +1046,12 @@ static const char rowmans_48[80] = {
 static const char rowmans_49_width = 21;
 static const char rowmans_49_realwidth = 14;
 static const int rowmans_49_size = 40;
-static const char rowmans_49[40] = {
-       0,    4,    0,   25,        0,    4,    9,    4,        9,    4,   12,    5,     
-  12,    5,   13,    6,       13,    6,   14,    8,       14,    8,   14,   11,     
-  14,   11,   13,   13,       13,   13,   12,   14,       12,   14,    9,   15,     
-   9,   15,    0,   15
+static const char rowmans_49[40] =
+{
+    0,    4,    0,   25,        0,    4,    9,    4,        9,    4,   12,    5,
+    12,    5,   13,    6,       13,    6,   14,    8,       14,    8,   14,   11,
+    14,   11,   13,   13,       13,   13,   12,   14,       12,   14,    9,   15,
+    9,   15,    0,   15
 };
 
 
@@ -1010,14 +1059,15 @@ static const char rowmans_49[40] = {
 static const char rowmans_50_width = 22;
 static const char rowmans_50_realwidth = 16;
 static const int rowmans_50_size = 84;
-static const char rowmans_50[84] = {
-       6,    4,    4,    5,        4,    5,    2,    7,        2,    7,    1,    9,     
-   1,    9,    0,   12,        0,   12,    0,   17,        0,   17,    1,   20,     
-   1,   20,    2,   22,        2,   22,    4,   24,        4,   24,    6,   25,     
-   6,   25,   10,   25,       10,   25,   12,   24,       12,   24,   14,   22,     
-  14,   22,   15,   20,       15,   20,   16,   17,       16,   17,   16,   12,     
-  16,   12,   15,    9,       15,    9,   14,    7,       14,    7,   12,    5,     
-  12,    5,   10,    4,       10,    4,    6,    4,        9,   21,   15,   27
+static const char rowmans_50[84] =
+{
+    6,    4,    4,    5,        4,    5,    2,    7,        2,    7,    1,    9,
+    1,    9,    0,   12,        0,   12,    0,   17,        0,   17,    1,   20,
+    1,   20,    2,   22,        2,   22,    4,   24,        4,   24,    6,   25,
+    6,   25,   10,   25,       10,   25,   12,   24,       12,   24,   14,   22,
+    14,   22,   15,   20,       15,   20,   16,   17,       16,   17,   16,   12,
+    16,   12,   15,    9,       15,    9,   14,    7,       14,    7,   12,    5,
+    12,    5,   10,    4,       10,    4,    6,    4,        9,   21,   15,   27
 };
 
 
@@ -1025,11 +1075,12 @@ static const char rowmans_50[84] = {
 static const char rowmans_51_width = 21;
 static const char rowmans_51_realwidth = 14;
 static const int rowmans_51_size = 44;
-static const char rowmans_51[44] = {
-       0,    4,    0,   25,        0,    4,    9,    4,        9,    4,   12,    5,     
-  12,    5,   13,    6,       13,    6,   14,    8,       14,    8,   14,   10,     
-  14,   10,   13,   12,       13,   12,   12,   13,       12,   13,    9,   14,     
-   9,   14,    0,   14,        7,   14,   14,   25
+static const char rowmans_51[44] =
+{
+    0,    4,    0,   25,        0,    4,    9,    4,        9,    4,   12,    5,
+    12,    5,   13,    6,       13,    6,   14,    8,       14,    8,   14,   10,
+    14,   10,   13,   12,       13,   12,   12,   13,       12,   13,    9,   14,
+    9,   14,    0,   14,        7,   14,   14,   25
 };
 
 
@@ -1037,14 +1088,15 @@ static const char rowmans_51[44] = {
 static const char rowmans_52_width = 20;
 static const char rowmans_52_realwidth = 14;
 static const int rowmans_52_size = 76;
-static const char rowmans_52[76] = {
-      14,    7,   12,    5,       12,    5,    9,    4,        9,    4,    5,    4,     
-   5,    4,    2,    5,        2,    5,    0,    7,        0,    7,    0,    9,     
-   0,    9,    1,   11,        1,   11,    2,   12,        2,   12,    4,   13,     
-   4,   13,   10,   15,       10,   15,   12,   16,       12,   16,   13,   17,     
-  13,   17,   14,   19,       14,   19,   14,   22,       14,   22,   12,   24,     
-  12,   24,    9,   25,        9,   25,    5,   25,        5,   25,    2,   24,     
-   2,   24,    0,   22
+static const char rowmans_52[76] =
+{
+    14,    7,   12,    5,       12,    5,    9,    4,        9,    4,    5,    4,
+    5,    4,    2,    5,        2,    5,    0,    7,        0,    7,    0,    9,
+    0,    9,    1,   11,        1,   11,    2,   12,        2,   12,    4,   13,
+    4,   13,   10,   15,       10,   15,   12,   16,       12,   16,   13,   17,
+    13,   17,   14,   19,       14,   19,   14,   22,       14,   22,   12,   24,
+    12,   24,    9,   25,        9,   25,    5,   25,        5,   25,    2,   24,
+    2,   24,    0,   22
 };
 
 
@@ -1052,8 +1104,9 @@ static const char rowmans_52[76] = {
 static const char rowmans_53_width = 16;
 static const char rowmans_53_realwidth = 14;
 static const int rowmans_53_size = 8;
-static const char rowmans_53[8] = {
-       7,    4,    7,   25,        0,    4,   14,    4
+static const char rowmans_53[8] =
+{
+    7,    4,    7,   25,        0,    4,   14,    4
 };
 
 
@@ -1061,10 +1114,11 @@ static const char rowmans_53[8] = {
 static const char rowmans_54_width = 22;
 static const char rowmans_54_realwidth = 14;
 static const int rowmans_54_size = 36;
-static const char rowmans_54[36] = {
-       0,    4,    0,   19,        0,   19,    1,   22,        1,   22,    3,   24,     
-   3,   24,    6,   25,        6,   25,    8,   25,        8,   25,   11,   24,     
-  11,   24,   13,   22,       13,   22,   14,   19,       14,   19,   14,    4
+static const char rowmans_54[36] =
+{
+    0,    4,    0,   19,        0,   19,    1,   22,        1,   22,    3,   24,
+    3,   24,    6,   25,        6,   25,    8,   25,        8,   25,   11,   24,
+    11,   24,   13,   22,       13,   22,   14,   19,       14,   19,   14,    4
 };
 
 
@@ -1072,8 +1126,9 @@ static const char rowmans_54[36] = {
 static const char rowmans_55_width = 18;
 static const char rowmans_55_realwidth = 16;
 static const int rowmans_55_size = 8;
-static const char rowmans_55[8] = {
-       0,    4,    8,   25,       16,    4,    8,   25
+static const char rowmans_55[8] =
+{
+    0,    4,    8,   25,       16,    4,    8,   25
 };
 
 
@@ -1081,9 +1136,10 @@ static const char rowmans_55[8] = {
 static const char rowmans_56_width = 24;
 static const char rowmans_56_realwidth = 20;
 static const int rowmans_56_size = 16;
-static const char rowmans_56[16] = {
-       0,    4,    5,   25,       10,    4,    5,   25,       10,    4,   15,   25,     
-  20,    4,   15,   25
+static const char rowmans_56[16] =
+{
+    0,    4,    5,   25,       10,    4,    5,   25,       10,    4,   15,   25,
+    20,    4,   15,   25
 };
 
 
@@ -1091,8 +1147,9 @@ static const char rowmans_56[16] = {
 static const char rowmans_57_width = 20;
 static const char rowmans_57_realwidth = 14;
 static const int rowmans_57_size = 8;
-static const char rowmans_57[8] = {
-       0,    4,   14,   25,       14,    4,    0,   25
+static const char rowmans_57[8] =
+{
+    0,    4,   14,   25,       14,    4,    0,   25
 };
 
 
@@ -1100,8 +1157,9 @@ static const char rowmans_57[8] = {
 static const char rowmans_58_width = 18;
 static const char rowmans_58_realwidth = 16;
 static const int rowmans_58_size = 12;
-static const char rowmans_58[12] = {
-       0,    4,    8,   14,        8,   14,    8,   25,       16,    4,    8,   14
+static const char rowmans_58[12] =
+{
+    0,    4,    8,   14,        8,   14,    8,   25,       16,    4,    8,   14
 };
 
 
@@ -1109,8 +1167,9 @@ static const char rowmans_58[12] = {
 static const char rowmans_59_width = 20;
 static const char rowmans_59_realwidth = 14;
 static const int rowmans_59_size = 12;
-static const char rowmans_59[12] = {
-      14,    4,    0,   25,        0,    4,   14,    4,        0,   25,   14,   25
+static const char rowmans_59[12] =
+{
+    14,    4,    0,   25,        0,    4,   14,    4,        0,   25,   14,   25
 };
 
 
@@ -1118,9 +1177,10 @@ static const char rowmans_59[12] = {
 static const char rowmans_60_width = 14;
 static const char rowmans_60_realwidth = 7;
 static const int rowmans_60_size = 16;
-static const char rowmans_60[16] = {
-       0,    0,    0,   32,        1,    0,    1,   32,        0,    0,    7,    0,     
-   0,   32,    7,   32
+static const char rowmans_60[16] =
+{
+    0,    0,    0,   32,        1,    0,    1,   32,        0,    0,    7,    0,
+    0,   32,    7,   32
 };
 
 
@@ -1128,8 +1188,9 @@ static const char rowmans_60[16] = {
 static const char rowmans_61_width = 14;
 static const char rowmans_61_realwidth = 14;
 static const int rowmans_61_size = 4;
-static const char rowmans_61[4] = {
-       0,    4,   14,   28
+static const char rowmans_61[4] =
+{
+    0,    4,   14,   28
 };
 
 
@@ -1137,9 +1198,10 @@ static const char rowmans_61[4] = {
 static const char rowmans_62_width = 14;
 static const char rowmans_62_realwidth = 7;
 static const int rowmans_62_size = 16;
-static const char rowmans_62[16] = {
-       6,    0,    6,   32,        7,    0,    7,   32,        0,    0,    7,    0,     
-   0,   32,    7,   32
+static const char rowmans_62[16] =
+{
+    6,    0,    6,   32,        7,    0,    7,   32,        0,    0,    7,    0,
+    0,   32,    7,   32
 };
 
 
@@ -1147,9 +1209,10 @@ static const char rowmans_62[16] = {
 static const char rowmans_63_width = 16;
 static const char rowmans_63_realwidth = 10;
 static const int rowmans_63_size = 20;
-static const char rowmans_63[20] = {
-       3,   10,    5,    7,        5,    7,    7,   10,        0,   13,    5,    8,     
-   5,    8,   10,   13,        5,    8,    5,   25
+static const char rowmans_63[20] =
+{
+    3,   10,    5,    7,        5,    7,    7,   10,        0,   13,    5,    8,
+    5,    8,   10,   13,        5,    8,    5,   25
 };
 
 
@@ -1157,8 +1220,9 @@ static const char rowmans_63[20] = {
 static const char rowmans_64_width = 16;
 static const char rowmans_64_realwidth = 16;
 static const int rowmans_64_size = 4;
-static const char rowmans_64[4] = {
-       0,   27,   16,   27
+static const char rowmans_64[4] =
+{
+    0,   27,   16,   27
 };
 
 
@@ -1166,9 +1230,10 @@ static const char rowmans_64[4] = {
 static const char rowmans_65_width = 10;
 static const char rowmans_65_realwidth = 2;
 static const int rowmans_65_size = 24;
-static const char rowmans_65[24] = {
-       2,    4,    1,    5,        1,    5,    0,    7,        0,    7,    0,    9,     
-   0,    9,    1,   10,        1,   10,    2,    9,        2,    9,    1,    8
+static const char rowmans_65[24] =
+{
+    2,    4,    1,    5,        1,    5,    0,    7,        0,    7,    0,    9,
+    0,    9,    1,   10,        1,   10,    2,    9,        2,    9,    1,    8
 };
 
 
@@ -1176,12 +1241,13 @@ static const char rowmans_65[24] = {
 static const char rowmans_66_width = 19;
 static const char rowmans_66_realwidth = 12;
 static const int rowmans_66_size = 56;
-static const char rowmans_66[56] = {
-      12,   11,   12,   25,       12,   14,   10,   12,       10,   12,    8,   11,     
-   8,   11,    5,   11,        5,   11,    3,   12,        3,   12,    1,   14,     
-   1,   14,    0,   17,        0,   17,    0,   19,        0,   19,    1,   22,     
-   1,   22,    3,   24,        3,   24,    5,   25,        5,   25,    8,   25,     
-   8,   25,   10,   24,       10,   24,   12,   22
+static const char rowmans_66[56] =
+{
+    12,   11,   12,   25,       12,   14,   10,   12,       10,   12,    8,   11,
+    8,   11,    5,   11,        5,   11,    3,   12,        3,   12,    1,   14,
+    1,   14,    0,   17,        0,   17,    0,   19,        0,   19,    1,   22,
+    1,   22,    3,   24,        3,   24,    5,   25,        5,   25,    8,   25,
+    8,   25,   10,   24,       10,   24,   12,   22
 };
 
 
@@ -1189,12 +1255,13 @@ static const char rowmans_66[56] = {
 static const char rowmans_67_width = 19;
 static const char rowmans_67_realwidth = 12;
 static const int rowmans_67_size = 56;
-static const char rowmans_67[56] = {
-       0,    4,    0,   25,        0,   14,    2,   12,        2,   12,    4,   11,     
-   4,   11,    7,   11,        7,   11,    9,   12,        9,   12,   11,   14,     
-  11,   14,   12,   17,       12,   17,   12,   19,       12,   19,   11,   22,     
-  11,   22,    9,   24,        9,   24,    7,   25,        7,   25,    4,   25,     
-   4,   25,    2,   24,        2,   24,    0,   22
+static const char rowmans_67[56] =
+{
+    0,    4,    0,   25,        0,   14,    2,   12,        2,   12,    4,   11,
+    4,   11,    7,   11,        7,   11,    9,   12,        9,   12,   11,   14,
+    11,   14,   12,   17,       12,   17,   12,   19,       12,   19,   11,   22,
+    11,   22,    9,   24,        9,   24,    7,   25,        7,   25,    4,   25,
+    4,   25,    2,   24,        2,   24,    0,   22
 };
 
 
@@ -1202,12 +1269,13 @@ static const char rowmans_67[56] = {
 static const char rowmans_68_width = 18;
 static const char rowmans_68_realwidth = 12;
 static const int rowmans_68_size = 52;
-static const char rowmans_68[52] = {
-      12,   14,   10,   12,       10,   12,    8,   11,        8,   11,    5,   11,     
-   5,   11,    3,   12,        3,   12,    1,   14,        1,   14,    0,   17,     
-   0,   17,    0,   19,        0,   19,    1,   22,        1,   22,    3,   24,     
-   3,   24,    5,   25,        5,   25,    8,   25,        8,   25,   10,   24,     
-  10,   24,   12,   22
+static const char rowmans_68[52] =
+{
+    12,   14,   10,   12,       10,   12,    8,   11,        8,   11,    5,   11,
+    5,   11,    3,   12,        3,   12,    1,   14,        1,   14,    0,   17,
+    0,   17,    0,   19,        0,   19,    1,   22,        1,   22,    3,   24,
+    3,   24,    5,   25,        5,   25,    8,   25,        8,   25,   10,   24,
+    10,   24,   12,   22
 };
 
 
@@ -1215,12 +1283,13 @@ static const char rowmans_68[52] = {
 static const char rowmans_69_width = 19;
 static const char rowmans_69_realwidth = 12;
 static const int rowmans_69_size = 56;
-static const char rowmans_69[56] = {
-      12,    4,   12,   25,       12,   14,   10,   12,       10,   12,    8,   11,     
-   8,   11,    5,   11,        5,   11,    3,   12,        3,   12,    1,   14,     
-   1,   14,    0,   17,        0,   17,    0,   19,        0,   19,    1,   22,     
-   1,   22,    3,   24,        3,   24,    5,   25,        5,   25,    8,   25,     
-   8,   25,   10,   24,       10,   24,   12,   22
+static const char rowmans_69[56] =
+{
+    12,    4,   12,   25,       12,   14,   10,   12,       10,   12,    8,   11,
+    8,   11,    5,   11,        5,   11,    3,   12,        3,   12,    1,   14,
+    1,   14,    0,   17,        0,   17,    0,   19,        0,   19,    1,   22,
+    1,   22,    3,   24,        3,   24,    5,   25,        5,   25,    8,   25,
+    8,   25,   10,   24,       10,   24,   12,   22
 };
 
 
@@ -1228,13 +1297,14 @@ static const char rowmans_69[56] = {
 static const char rowmans_70_width = 18;
 static const char rowmans_70_realwidth = 12;
 static const int rowmans_70_size = 64;
-static const char rowmans_70[64] = {
-       0,   17,   12,   17,       12,   17,   12,   15,       12,   15,   11,   13,     
-  11,   13,   10,   12,       10,   12,    8,   11,        8,   11,    5,   11,     
-   5,   11,    3,   12,        3,   12,    1,   14,        1,   14,    0,   17,     
-   0,   17,    0,   19,        0,   19,    1,   22,        1,   22,    3,   24,     
-   3,   24,    5,   25,        5,   25,    8,   25,        8,   25,   10,   24,     
-  10,   24,   12,   22
+static const char rowmans_70[64] =
+{
+    0,   17,   12,   17,       12,   17,   12,   15,       12,   15,   11,   13,
+    11,   13,   10,   12,       10,   12,    8,   11,        8,   11,    5,   11,
+    5,   11,    3,   12,        3,   12,    1,   14,        1,   14,    0,   17,
+    0,   17,    0,   19,        0,   19,    1,   22,        1,   22,    3,   24,
+    3,   24,    5,   25,        5,   25,    8,   25,        8,   25,   10,   24,
+    10,   24,   12,   22
 };
 
 
@@ -1242,9 +1312,10 @@ static const char rowmans_70[64] = {
 static const char rowmans_71_width = 12;
 static const char rowmans_71_realwidth = 8;
 static const int rowmans_71_size = 20;
-static const char rowmans_71[20] = {
-       8,    4,    6,    4,        6,    4,    4,    5,        4,    5,    3,    8,     
-   3,    8,    3,   25,        0,   11,    7,   11
+static const char rowmans_71[20] =
+{
+    8,    4,    6,    4,        6,    4,    4,    5,        4,    5,    3,    8,
+    3,    8,    3,   25,        0,   11,    7,   11
 };
 
 
@@ -1252,14 +1323,15 @@ static const char rowmans_71[20] = {
 static const char rowmans_72_width = 19;
 static const char rowmans_72_realwidth = 12;
 static const int rowmans_72_size = 76;
-static const char rowmans_72[76] = {
-      12,   11,   12,   27,       12,   27,   11,   30,       11,   30,   10,   31,     
-  10,   31,    8,   32,        8,   32,    5,   32,        5,   32,    3,   31,     
-  12,   14,   10,   12,       10,   12,    8,   11,        8,   11,    5,   11,     
-   5,   11,    3,   12,        3,   12,    1,   14,        1,   14,    0,   17,     
-   0,   17,    0,   19,        0,   19,    1,   22,        1,   22,    3,   24,     
-   3,   24,    5,   25,        5,   25,    8,   25,        8,   25,   10,   24,     
-  10,   24,   12,   22
+static const char rowmans_72[76] =
+{
+    12,   11,   12,   27,       12,   27,   11,   30,       11,   30,   10,   31,
+    10,   31,    8,   32,        8,   32,    5,   32,        5,   32,    3,   31,
+    12,   14,   10,   12,       10,   12,    8,   11,        8,   11,    5,   11,
+    5,   11,    3,   12,        3,   12,    1,   14,        1,   14,    0,   17,
+    0,   17,    0,   19,        0,   19,    1,   22,        1,   22,    3,   24,
+    3,   24,    5,   25,        5,   25,    8,   25,        8,   25,   10,   24,
+    10,   24,   12,   22
 };
 
 
@@ -1267,10 +1339,11 @@ static const char rowmans_72[76] = {
 static const char rowmans_73_width = 19;
 static const char rowmans_73_realwidth = 11;
 static const int rowmans_73_size = 28;
-static const char rowmans_73[28] = {
-       0,    4,    0,   25,        0,   15,    3,   12,        3,   12,    5,   11,     
-   5,   11,    8,   11,        8,   11,   10,   12,       10,   12,   11,   15,     
-  11,   15,   11,   25
+static const char rowmans_73[28] =
+{
+    0,    4,    0,   25,        0,   15,    3,   12,        3,   12,    5,   11,
+    5,   11,    8,   11,        8,   11,   10,   12,       10,   12,   11,   15,
+    11,   15,   11,   25
 };
 
 
@@ -1278,9 +1351,10 @@ static const char rowmans_73[28] = {
 static const char rowmans_74_width = 8;
 static const char rowmans_74_realwidth = 2;
 static const int rowmans_74_size = 20;
-static const char rowmans_74[20] = {
-       0,    4,    1,    5,        1,    5,    2,    4,        2,    4,    1,    3,     
-   1,    3,    0,    4,        1,   11,    1,   25
+static const char rowmans_74[20] =
+{
+    0,    4,    1,    5,        1,    5,    2,    4,        2,    4,    1,    3,
+    1,    3,    0,    4,        1,   11,    1,   25
 };
 
 
@@ -1288,10 +1362,11 @@ static const char rowmans_74[20] = {
 static const char rowmans_75_width = 10;
 static const char rowmans_75_realwidth = 6;
 static const int rowmans_75_size = 32;
-static const char rowmans_75[32] = {
-       4,    4,    5,    5,        5,    5,    6,    4,        6,    4,    5,    3,     
-   5,    3,    4,    4,        5,   11,    5,   28,        5,   28,    4,   31,     
-   4,   31,    2,   32,        2,   32,    0,   32
+static const char rowmans_75[32] =
+{
+    4,    4,    5,    5,        5,    5,    6,    4,        6,    4,    5,    3,
+    5,    3,    4,    4,        5,   11,    5,   28,        5,   28,    4,   31,
+    4,   31,    2,   32,        2,   32,    0,   32
 };
 
 
@@ -1299,8 +1374,9 @@ static const char rowmans_75[32] = {
 static const char rowmans_76_width = 17;
 static const char rowmans_76_realwidth = 11;
 static const int rowmans_76_size = 12;
-static const char rowmans_76[12] = {
-       0,    4,    0,   25,       10,   11,    0,   21,        4,   17,   11,   25
+static const char rowmans_76[12] =
+{
+    0,    4,    0,   25,       10,   11,    0,   21,        4,   17,   11,   25
 };
 
 
@@ -1308,8 +1384,9 @@ static const char rowmans_76[12] = {
 static const char rowmans_77_width = 8;
 static const char rowmans_77_realwidth = 0;
 static const int rowmans_77_size = 4;
-static const char rowmans_77[4] = {
-       0,    4,    0,   25
+static const char rowmans_77[4] =
+{
+    0,    4,    0,   25
 };
 
 
@@ -1317,12 +1394,13 @@ static const char rowmans_77[4] = {
 static const char rowmans_78_width = 30;
 static const char rowmans_78_realwidth = 22;
 static const int rowmans_78_size = 52;
-static const char rowmans_78[52] = {
-       0,   11,    0,   25,        0,   15,    3,   12,        3,   12,    5,   11,     
-   5,   11,    8,   11,        8,   11,   10,   12,       10,   12,   11,   15,     
-  11,   15,   11,   25,       11,   15,   14,   12,       14,   12,   16,   11,     
-  16,   11,   19,   11,       19,   11,   21,   12,       21,   12,   22,   15,     
-  22,   15,   22,   25
+static const char rowmans_78[52] =
+{
+    0,   11,    0,   25,        0,   15,    3,   12,        3,   12,    5,   11,
+    5,   11,    8,   11,        8,   11,   10,   12,       10,   12,   11,   15,
+    11,   15,   11,   25,       11,   15,   14,   12,       14,   12,   16,   11,
+    16,   11,   19,   11,       19,   11,   21,   12,       21,   12,   22,   15,
+    22,   15,   22,   25
 };
 
 
@@ -1330,10 +1408,11 @@ static const char rowmans_78[52] = {
 static const char rowmans_79_width = 19;
 static const char rowmans_79_realwidth = 11;
 static const int rowmans_79_size = 28;
-static const char rowmans_79[28] = {
-       0,   11,    0,   25,        0,   15,    3,   12,        3,   12,    5,   11,     
-   5,   11,    8,   11,        8,   11,   10,   12,       10,   12,   11,   15,     
-  11,   15,   11,   25
+static const char rowmans_79[28] =
+{
+    0,   11,    0,   25,        0,   15,    3,   12,        3,   12,    5,   11,
+    5,   11,    8,   11,        8,   11,   10,   12,       10,   12,   11,   15,
+    11,   15,   11,   25
 };
 
 
@@ -1341,13 +1420,14 @@ static const char rowmans_79[28] = {
 static const char rowmans_80_width = 19;
 static const char rowmans_80_realwidth = 13;
 static const int rowmans_80_size = 64;
-static const char rowmans_80[64] = {
-       5,   11,    3,   12,        3,   12,    1,   14,        1,   14,    0,   17,     
-   0,   17,    0,   19,        0,   19,    1,   22,        1,   22,    3,   24,     
-   3,   24,    5,   25,        5,   25,    8,   25,        8,   25,   10,   24,     
-  10,   24,   12,   22,       12,   22,   13,   19,       13,   19,   13,   17,     
-  13,   17,   12,   14,       12,   14,   10,   12,       10,   12,    8,   11,     
-   8,   11,    5,   11
+static const char rowmans_80[64] =
+{
+    5,   11,    3,   12,        3,   12,    1,   14,        1,   14,    0,   17,
+    0,   17,    0,   19,        0,   19,    1,   22,        1,   22,    3,   24,
+    3,   24,    5,   25,        5,   25,    8,   25,        8,   25,   10,   24,
+    10,   24,   12,   22,       12,   22,   13,   19,       13,   19,   13,   17,
+    13,   17,   12,   14,       12,   14,   10,   12,       10,   12,    8,   11,
+    8,   11,    5,   11
 };
 
 
@@ -1355,12 +1435,13 @@ static const char rowmans_80[64] = {
 static const char rowmans_81_width = 19;
 static const char rowmans_81_realwidth = 12;
 static const int rowmans_81_size = 56;
-static const char rowmans_81[56] = {
-       0,   11,    0,   32,        0,   14,    2,   12,        2,   12,    4,   11,     
-   4,   11,    7,   11,        7,   11,    9,   12,        9,   12,   11,   14,     
-  11,   14,   12,   17,       12,   17,   12,   19,       12,   19,   11,   22,     
-  11,   22,    9,   24,        9,   24,    7,   25,        7,   25,    4,   25,     
-   4,   25,    2,   24,        2,   24,    0,   22
+static const char rowmans_81[56] =
+{
+    0,   11,    0,   32,        0,   14,    2,   12,        2,   12,    4,   11,
+    4,   11,    7,   11,        7,   11,    9,   12,        9,   12,   11,   14,
+    11,   14,   12,   17,       12,   17,   12,   19,       12,   19,   11,   22,
+    11,   22,    9,   24,        9,   24,    7,   25,        7,   25,    4,   25,
+    4,   25,    2,   24,        2,   24,    0,   22
 };
 
 
@@ -1368,12 +1449,13 @@ static const char rowmans_81[56] = {
 static const char rowmans_82_width = 19;
 static const char rowmans_82_realwidth = 12;
 static const int rowmans_82_size = 56;
-static const char rowmans_82[56] = {
-      12,   11,   12,   32,       12,   14,   10,   12,       10,   12,    8,   11,     
-   8,   11,    5,   11,        5,   11,    3,   12,        3,   12,    1,   14,     
-   1,   14,    0,   17,        0,   17,    0,   19,        0,   19,    1,   22,     
-   1,   22,    3,   24,        3,   24,    5,   25,        5,   25,    8,   25,     
-   8,   25,   10,   24,       10,   24,   12,   22
+static const char rowmans_82[56] =
+{
+    12,   11,   12,   32,       12,   14,   10,   12,       10,   12,    8,   11,
+    8,   11,    5,   11,        5,   11,    3,   12,        3,   12,    1,   14,
+    1,   14,    0,   17,        0,   17,    0,   19,        0,   19,    1,   22,
+    1,   22,    3,   24,        3,   24,    5,   25,        5,   25,    8,   25,
+    8,   25,   10,   24,       10,   24,   12,   22
 };
 
 
@@ -1381,9 +1463,10 @@ static const char rowmans_82[56] = {
 static const char rowmans_83_width = 13;
 static const char rowmans_83_realwidth = 8;
 static const int rowmans_83_size = 20;
-static const char rowmans_83[20] = {
-       0,   11,    0,   25,        0,   17,    1,   14,        1,   14,    3,   12,     
-   3,   12,    5,   11,        5,   11,    8,   11
+static const char rowmans_83[20] =
+{
+    0,   11,    0,   25,        0,   17,    1,   14,        1,   14,    3,   12,
+    3,   12,    5,   11,        5,   11,    8,   11
 };
 
 
@@ -1391,13 +1474,14 @@ static const char rowmans_83[20] = {
 static const char rowmans_84_width = 17;
 static const char rowmans_84_realwidth = 11;
 static const int rowmans_84_size = 64;
-static const char rowmans_84[64] = {
-      11,   14,   10,   12,       10,   12,    7,   11,        7,   11,    4,   11,     
-   4,   11,    1,   12,        1,   12,    0,   14,        0,   14,    1,   16,     
-   1,   16,    3,   17,        3,   17,    8,   18,        8,   18,   10,   19,     
-  10,   19,   11,   21,       11,   21,   11,   22,       11,   22,   10,   24,     
-  10,   24,    7,   25,        7,   25,    4,   25,        4,   25,    1,   24,     
-   1,   24,    0,   22
+static const char rowmans_84[64] =
+{
+    11,   14,   10,   12,       10,   12,    7,   11,        7,   11,    4,   11,
+    4,   11,    1,   12,        1,   12,    0,   14,        0,   14,    1,   16,
+    1,   16,    3,   17,        3,   17,    8,   18,        8,   18,   10,   19,
+    10,   19,   11,   21,       11,   21,   11,   22,       11,   22,   10,   24,
+    10,   24,    7,   25,        7,   25,    4,   25,        4,   25,    1,   24,
+    1,   24,    0,   22
 };
 
 
@@ -1405,9 +1489,10 @@ static const char rowmans_84[64] = {
 static const char rowmans_85_width = 12;
 static const char rowmans_85_realwidth = 8;
 static const int rowmans_85_size = 20;
-static const char rowmans_85[20] = {
-       3,    4,    3,   21,        3,   21,    4,   24,        4,   24,    6,   25,     
-   6,   25,    8,   25,        0,   11,    7,   11
+static const char rowmans_85[20] =
+{
+    3,    4,    3,   21,        3,   21,    4,   24,        4,   24,    6,   25,
+    6,   25,    8,   25,        0,   11,    7,   11
 };
 
 
@@ -1415,10 +1500,11 @@ static const char rowmans_85[20] = {
 static const char rowmans_86_width = 19;
 static const char rowmans_86_realwidth = 11;
 static const int rowmans_86_size = 28;
-static const char rowmans_86[28] = {
-       0,   11,    0,   21,        0,   21,    1,   24,        1,   24,    3,   25,     
-   3,   25,    6,   25,        6,   25,    8,   24,        8,   24,   11,   21,     
-  11,   11,   11,   25
+static const char rowmans_86[28] =
+{
+    0,   11,    0,   21,        0,   21,    1,   24,        1,   24,    3,   25,
+    3,   25,    6,   25,        6,   25,    8,   24,        8,   24,   11,   21,
+    11,   11,   11,   25
 };
 
 
@@ -1426,8 +1512,9 @@ static const char rowmans_86[28] = {
 static const char rowmans_87_width = 16;
 static const char rowmans_87_realwidth = 12;
 static const int rowmans_87_size = 8;
-static const char rowmans_87[8] = {
-       0,   11,    6,   25,       12,   11,    6,   25
+static const char rowmans_87[8] =
+{
+    0,   11,    6,   25,       12,   11,    6,   25
 };
 
 
@@ -1435,9 +1522,10 @@ static const char rowmans_87[8] = {
 static const char rowmans_88_width = 22;
 static const char rowmans_88_realwidth = 16;
 static const int rowmans_88_size = 16;
-static const char rowmans_88[16] = {
-       0,   11,    4,   25,        8,   11,    4,   25,        8,   11,   12,   25,     
-  16,   11,   12,   25
+static const char rowmans_88[16] =
+{
+    0,   11,    4,   25,        8,   11,    4,   25,        8,   11,   12,   25,
+    16,   11,   12,   25
 };
 
 
@@ -1445,8 +1533,9 @@ static const char rowmans_88[16] = {
 static const char rowmans_89_width = 17;
 static const char rowmans_89_realwidth = 11;
 static const int rowmans_89_size = 8;
-static const char rowmans_89[8] = {
-       0,   11,   11,   25,       11,   11,    0,   25
+static const char rowmans_89[8] =
+{
+    0,   11,   11,   25,       11,   11,    0,   25
 };
 
 
@@ -1454,9 +1543,10 @@ static const char rowmans_89[8] = {
 static const char rowmans_90_width = 16;
 static const char rowmans_90_realwidth = 13;
 static const int rowmans_90_size = 24;
-static const char rowmans_90[24] = {
-       1,   11,    7,   25,       13,   11,    7,   25,        7,   25,    5,   29,     
-   5,   29,    3,   31,        3,   31,    1,   32,        1,   32,    0,   32
+static const char rowmans_90[24] =
+{
+    1,   11,    7,   25,       13,   11,    7,   25,        7,   25,    5,   29,
+    5,   29,    3,   31,        3,   31,    1,   32,        1,   32,    0,   32
 };
 
 
@@ -1464,8 +1554,9 @@ static const char rowmans_90[24] = {
 static const char rowmans_91_width = 17;
 static const char rowmans_91_realwidth = 11;
 static const int rowmans_91_size = 12;
-static const char rowmans_91[12] = {
-      11,   11,    0,   25,        0,   11,   11,   11,        0,   25,   11,   25
+static const char rowmans_91[12] =
+{
+    11,   11,    0,   25,        0,   11,   11,   11,        0,   25,   11,   25
 };
 
 
@@ -1473,19 +1564,20 @@ static const char rowmans_91[12] = {
 static const char rowmans_92_width = 14;
 static const char rowmans_92_realwidth = 5;
 static const int rowmans_92_size = 136;
-static const char rowmans_92[136] = {
-       5,    0,    3,    1,        3,    1,    2,    2,        2,    2,    1,    4,     
-   1,    4,    1,    6,        1,    6,    2,    8,        2,    8,    3,    9,     
-   3,    9,    4,   11,        4,   11,    4,   13,        4,   13,    2,   15,     
-   3,    1,    2,    3,        2,    3,    2,    5,        2,    5,    3,    7,     
-   3,    7,    4,    8,        4,    8,    5,   10,        5,   10,    5,   12,     
-   5,   12,    4,   14,        4,   14,    0,   16,        0,   16,    4,   18,     
-   4,   18,    5,   20,        5,   20,    5,   22,        5,   22,    4,   24,     
-   4,   24,    3,   25,        3,   25,    2,   27,        2,   27,    2,   29,     
-   2,   29,    3,   31,        2,   17,    4,   19,        4,   19,    4,   21,     
-   4,   21,    3,   23,        3,   23,    2,   24,        2,   24,    1,   26,     
-   1,   26,    1,   28,        1,   28,    2,   30,        2,   30,    3,   31,     
-   3,   31,    5,   32
+static const char rowmans_92[136] =
+{
+    5,    0,    3,    1,        3,    1,    2,    2,        2,    2,    1,    4,
+    1,    4,    1,    6,        1,    6,    2,    8,        2,    8,    3,    9,
+    3,    9,    4,   11,        4,   11,    4,   13,        4,   13,    2,   15,
+    3,    1,    2,    3,        2,    3,    2,    5,        2,    5,    3,    7,
+    3,    7,    4,    8,        4,    8,    5,   10,        5,   10,    5,   12,
+    5,   12,    4,   14,        4,   14,    0,   16,        0,   16,    4,   18,
+    4,   18,    5,   20,        5,   20,    5,   22,        5,   22,    4,   24,
+    4,   24,    3,   25,        3,   25,    2,   27,        2,   27,    2,   29,
+    2,   29,    3,   31,        2,   17,    4,   19,        4,   19,    4,   21,
+    4,   21,    3,   23,        3,   23,    2,   24,        2,   24,    1,   26,
+    1,   26,    1,   28,        1,   28,    2,   30,        2,   30,    3,   31,
+    3,   31,    5,   32
 };
 
 
@@ -1493,8 +1585,9 @@ static const char rowmans_92[136] = {
 static const char rowmans_93_width = 8;
 static const char rowmans_93_realwidth = 0;
 static const int rowmans_93_size = 4;
-static const char rowmans_93[4] = {
-       0,    0,    0,   32
+static const char rowmans_93[4] =
+{
+    0,    0,    0,   32
 };
 
 
@@ -1502,19 +1595,20 @@ static const char rowmans_93[4] = {
 static const char rowmans_94_width = 14;
 static const char rowmans_94_realwidth = 5;
 static const int rowmans_94_size = 136;
-static const char rowmans_94[136] = {
-       0,    0,    2,    1,        2,    1,    3,    2,        3,    2,    4,    4,     
-   4,    4,    4,    6,        4,    6,    3,    8,        3,    8,    2,    9,     
-   2,    9,    1,   11,        1,   11,    1,   13,        1,   13,    3,   15,     
-   2,    1,    3,    3,        3,    3,    3,    5,        3,    5,    2,    7,     
-   2,    7,    1,    8,        1,    8,    0,   10,        0,   10,    0,   12,     
-   0,   12,    1,   14,        1,   14,    5,   16,        5,   16,    1,   18,     
-   1,   18,    0,   20,        0,   20,    0,   22,        0,   22,    1,   24,     
-   1,   24,    2,   25,        2,   25,    3,   27,        3,   27,    3,   29,     
-   3,   29,    2,   31,        3,   17,    1,   19,        1,   19,    1,   21,     
-   1,   21,    2,   23,        2,   23,    3,   24,        3,   24,    4,   26,     
-   4,   26,    4,   28,        4,   28,    3,   30,        3,   30,    2,   31,     
-   2,   31,    0,   32
+static const char rowmans_94[136] =
+{
+    0,    0,    2,    1,        2,    1,    3,    2,        3,    2,    4,    4,
+    4,    4,    4,    6,        4,    6,    3,    8,        3,    8,    2,    9,
+    2,    9,    1,   11,        1,   11,    1,   13,        1,   13,    3,   15,
+    2,    1,    3,    3,        3,    3,    3,    5,        3,    5,    2,    7,
+    2,    7,    1,    8,        1,    8,    0,   10,        0,   10,    0,   12,
+    0,   12,    1,   14,        1,   14,    5,   16,        5,   16,    1,   18,
+    1,   18,    0,   20,        0,   20,    0,   22,        0,   22,    1,   24,
+    1,   24,    2,   25,        2,   25,    3,   27,        3,   27,    3,   29,
+    3,   29,    2,   31,        3,   17,    1,   19,        1,   19,    1,   21,
+    1,   21,    2,   23,        2,   23,    3,   24,        3,   24,    4,   26,
+    4,   26,    4,   28,        4,   28,    3,   30,        3,   30,    2,   31,
+    2,   31,    0,   32
 };
 
 
@@ -1522,14 +1616,15 @@ static const char rowmans_94[136] = {
 static const char rowmans_95_width = 24;
 static const char rowmans_95_realwidth = 18;
 static const int rowmans_95_size = 80;
-static const char rowmans_95[80] = {
-       0,   19,    0,   17,        0,   17,    1,   14,        1,   14,    3,   13,     
-   3,   13,    5,   13,        5,   13,    7,   14,        7,   14,   11,   17,     
-  11,   17,   13,   18,       13,   18,   15,   18,       15,   18,   17,   17,     
-  17,   17,   18,   15,        0,   17,    1,   15,        1,   15,    3,   14,     
-   3,   14,    5,   14,        5,   14,    7,   15,        7,   15,   11,   18,     
-  11,   18,   13,   19,       13,   19,   15,   19,       15,   19,   17,   18,     
-  17,   18,   18,   15,       18,   15,   18,   13
+static const char rowmans_95[80] =
+{
+    0,   19,    0,   17,        0,   17,    1,   14,        1,   14,    3,   13,
+    3,   13,    5,   13,        5,   13,    7,   14,        7,   14,   11,   17,
+    11,   17,   13,   18,       13,   18,   15,   18,       15,   18,   17,   17,
+    17,   17,   18,   15,        0,   17,    1,   15,        1,   15,    3,   14,
+    3,   14,    5,   14,        5,   14,    7,   15,        7,   15,   11,   18,
+    11,   18,   13,   19,       13,   19,   15,   19,       15,   19,   17,   18,
+    17,   18,   18,   15,       18,   15,   18,   13
 };
 
 
@@ -1537,11 +1632,12 @@ static const char rowmans_95[80] = {
 static const char rowmans_96_width = 14;
 static const char rowmans_96_realwidth = 8;
 static const int rowmans_96_size = 48;
-static const char rowmans_96[48] = {
-       3,    4,    1,    5,        1,    5,    0,    7,        0,    7,    0,    9,     
-   0,    9,    1,   11,        1,   11,    3,   12,        3,   12,    5,   12,     
-   5,   12,    7,   11,        7,   11,    8,    9,        8,    9,    8,    7,     
-   8,    7,    7,    5,        7,    5,    5,    4,        5,    4,    3,    4
+static const char rowmans_96[48] =
+{
+    3,    4,    1,    5,        1,    5,    0,    7,        0,    7,    0,    9,
+    0,    9,    1,   11,        1,   11,    3,   12,        3,   12,    5,   12,
+    5,   12,    7,   11,        7,   11,    8,    9,        8,    9,    8,    7,
+    8,    7,    7,    5,        7,    5,    5,    4,        5,    4,    3,    4
 };
 
 
@@ -1557,5 +1653,3 @@ const char rowmans_realwidth[96] = {rowmans_1_realwidth, rowmans_2_realwidth, ro
 const int rowmans_size[96] = {rowmans_1_size, rowmans_2_size, rowmans_3_size, rowmans_4_size, rowmans_5_size, rowmans_6_size, rowmans_7_size, rowmans_8_size, rowmans_9_size, rowmans_10_size, rowmans_11_size, rowmans_12_size, rowmans_13_size, rowmans_14_size, rowmans_15_size, rowmans_16_size, rowmans_17_size, rowmans_18_size, rowmans_19_size, rowmans_20_size, rowmans_21_size, rowmans_22_size, rowmans_23_size, rowmans_24_size, rowmans_25_size, rowmans_26_size, rowmans_27_size, rowmans_28_size, rowmans_29_size, rowmans_30_size, rowmans_31_size, rowmans_32_size, rowmans_33_size, rowmans_34_size, rowmans_35_size, rowmans_36_size, rowmans_37_size, rowmans_38_size, rowmans_39_size, rowmans_40_size, rowmans_41_size, rowmans_42_size, rowmans_43_size, rowmans_44_size, rowmans_45_size, rowmans_46_size, rowmans_47_size, rowmans_48_size, rowmans_49_size, rowmans_50_size, rowmans_51_size, rowmans_52_size, rowmans_53_size, rowmans_54_size, rowmans_55_size, rowmans_56_size, rowmans_57_size, rowmans_58_size, rowmans_59_size, rowmans_60_size, rowmans_61_size, rowmans_62_size, rowmans_63_size, rowmans_64_size, rowmans_65_size, rowmans_66_size, rowmans_67_size, rowmans_68_size, rowmans_69_size, rowmans_70_size, rowmans_71_size, rowmans_72_size, rowmans_73_size, rowmans_74_size, rowmans_75_size, rowmans_76_size, rowmans_77_size, rowmans_78_size, rowmans_79_size, rowmans_80_size, rowmans_81_size, rowmans_82_size, rowmans_83_size, rowmans_84_size, rowmans_85_size, rowmans_86_size, rowmans_87_size, rowmans_88_size, rowmans_89_size, rowmans_90_size, rowmans_91_size, rowmans_92_size, rowmans_93_size, rowmans_94_size, rowmans_95_size, rowmans_96_size};
 // Pointers to glyph data
 const char *rowmans[96] = {&rowmans_1[0], &rowmans_2[0], &rowmans_3[0], &rowmans_4[0], &rowmans_5[0], &rowmans_6[0], &rowmans_7[0], &rowmans_8[0], &rowmans_9[0], &rowmans_10[0], &rowmans_11[0], &rowmans_12[0], &rowmans_13[0], &rowmans_14[0], &rowmans_15[0], &rowmans_16[0], &rowmans_17[0], &rowmans_18[0], &rowmans_19[0], &rowmans_20[0], &rowmans_21[0], &rowmans_22[0], &rowmans_23[0], &rowmans_24[0], &rowmans_25[0], &rowmans_26[0], &rowmans_27[0], &rowmans_28[0], &rowmans_29[0], &rowmans_30[0], &rowmans_31[0], &rowmans_32[0], &rowmans_33[0], &rowmans_34[0], &rowmans_35[0], &rowmans_36[0], &rowmans_37[0], &rowmans_38[0], &rowmans_39[0], &rowmans_40[0], &rowmans_41[0], &rowmans_42[0], &rowmans_43[0], &rowmans_44[0], &rowmans_45[0], &rowmans_46[0], &rowmans_47[0], &rowmans_48[0], &rowmans_49[0], &rowmans_50[0], &rowmans_51[0], &rowmans_52[0], &rowmans_53[0], &rowmans_54[0], &rowmans_55[0], &rowmans_56[0], &rowmans_57[0], &rowmans_58[0], &rowmans_59[0], &rowmans_60[0], &rowmans_61[0], &rowmans_62[0], &rowmans_63[0], &rowmans_64[0], &rowmans_65[0], &rowmans_66[0], &rowmans_67[0], &rowmans_68[0], &rowmans_69[0], &rowmans_70[0], &rowmans_71[0], &rowmans_72[0], &rowmans_73[0], &rowmans_74[0], &rowmans_75[0], &rowmans_76[0], &rowmans_77[0], &rowmans_78[0], &rowmans_79[0], &rowmans_80[0], &rowmans_81[0], &rowmans_82[0], &rowmans_83[0], &rowmans_84[0], &rowmans_85[0], &rowmans_86[0], &rowmans_87[0], &rowmans_88[0], &rowmans_89[0], &rowmans_90[0], &rowmans_91[0], &rowmans_92[0], &rowmans_93[0], &rowmans_94[0], &rowmans_95[0], &rowmans_96[0]};
-
-#define FONT_SCALE_FACTOR 18.0

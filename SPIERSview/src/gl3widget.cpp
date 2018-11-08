@@ -180,6 +180,11 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
             glfunctions->glDisable(GL_BLEND);
         }
         for (int i = 0; i < SVObjects.count(); i++)
+        {
+
+            // We must have a file load by this point so set the global to true.
+            isFileLoaded = true;
+
             if (!(SVObjects[i]->IsGroup))
                 if (CanISee(i))
                 {
@@ -313,6 +318,7 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
                         useshader->release();
                     }
                 }
+        }
     }
     glfunctions->glDepthMask(true);
 

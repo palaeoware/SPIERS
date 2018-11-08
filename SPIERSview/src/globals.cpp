@@ -10,7 +10,10 @@ bool containsPresurfaced = false;
 bool containsNonPresurfaced = false;
 bool isFirstObject;
 bool isVaxmlMode;
+bool showScaleGrid = false;
 bool showMinorGridValues = false;
+bool showMinorGridLines = true;
+bool isFileLoaded = false;
 
 double applicationScaleX;
 double applicationScaleY;
@@ -47,6 +50,7 @@ int modelKTr;
 int nextActualDlist = 1;
 int totalTriangles = 0;
 int scaleBallColour[3]; //info stuff
+int fontSizeGrid = 3;
 
 QList<QScreen *> availableScreens;
 QOpenGLBuffer cubeBuffer;
