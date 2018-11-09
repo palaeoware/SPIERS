@@ -9,7 +9,7 @@ Some additions and maintenance by:
  - Russell J. Garwood (russell.garwood@manchester.ac.uk)
 
 <p align="center">
-  <img width="250" height="250" src="./resources/palaeoware_logo_square.png">
+  <img width="250" height="250" src="../SPIERScommon/resources/palaeoware_logo_square.png">
 </p>
 
 ______
