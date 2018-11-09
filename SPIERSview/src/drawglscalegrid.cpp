@@ -368,7 +368,8 @@ void DrawGLScaleGrid::drawLine(QMatrix4x4 vMatrix, QVector3D lPosition, float po
     // Set Line width if major line
     if (major)
     {
-        glWidget->glfunctions->glLineWidth(4);
+
+        glWidget->glfunctions->glLineWidth(2 * ((applicationScaleX + applicationScaleY) / 2));
     }
 
     glWidget->glfunctions->glDrawArrays(GL_LINES, 0, 2);
@@ -412,7 +413,7 @@ void DrawGLScaleGrid::renderCharacter(GLfloat x, GLfloat y, GLfloat z, int chara
     // Set line with if bold
     if (bold)
     {
-        glWidget->glfunctions->glLineWidth(3);
+        glWidget->glfunctions->glLineWidth(2 * ((applicationScaleX + applicationScaleY) / 2));
     }
 
     glWidget->glfunctions->glDrawArrays(GL_LINES, 0, static_cast<int>(CharacterLineCounts[fontSizeGrid][charactercode]));
