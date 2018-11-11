@@ -1,438 +1,51 @@
-/*
-Source: Hershey font "rowmans.jhf"
-Converted with Hershey font converter v2.0 by Jari Komppa, http://iki.fi/sol/
---------------------------------------------------------------------
+/**
+ * @file
+ * Header: Rowman (Hershey Font)
+ *
+ * All SPIERSview code is released under the GNU General Public License.
+ * See LICENSE.md files in the programme directory.
+ *
+ * All SPIERSview code is Copyright 2008-2018 by Mark D. Sutton, Russell J. Garwood,
+ * and Alan R.T. Spencer.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version. This program is distributed in the
+ * hope that it will be useful, but WITHOUT ANY WARRANTY.
+ *
+ * USE RESTRICTION:
+ * This distribution of the Hershey Fonts may be used by anyone for
+ * any purpose, commercial or otherwise, providing that:
+ *
+ * - The Hershey Fonts were originally created by Dr. A. V. Hershey while working at
+ *   the U. S. National Bureau of Standards.
+ *
+ * - The format of the Font data in this distribution was originally created by
+ *   James Hurt
+ *   Cognition, Inc.
+ *   900 Technology Park Drive
+ *   Billerica, MA 01821
+ *   (mit-eddie!ci-dandelion!hurt)
+ *
+ * This SPIERS version of the Rowman (Hershey Font) was modified from code by
+ * Sam Hocevar under the following license:
+ *
+ * DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+ *                    Version 2, December 2004
+ *
+ * Copyright (C) 2004 Sam Hocevar <sam@hocevar.net>
+ *
+ * Everyone is permitted to copy and distribute verbatim or modified
+ * copies of this license document, and changing it is allowed as long
+ * as the name is changed.
+ *
+ *            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+ *   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+ *
+ *  0. You just DO WHAT THE FUCK YOU WANT TO.
+ */
 
-            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
-                    Version 2, December 2004
-
- Copyright (C) 2004 Sam Hocevar <sam@hocevar.net>
-
- Everyone is permitted to copy and distribute verbatim or modified
- copies of this license document, and changing it is allowed as long
- as the name is changed.
-
-            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
-   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
-
-  0. You just DO WHAT THE FUCK YOU WANT TO.
-
---------------------------------------------------------------------
-
-USE RESTRICTION:
-This distribution of the Hershey Fonts may be used by anyone for
-any purpose, commercial or otherwise, providing that:
-    1. The following acknowledgements must be distributed with
-        the font data:
-        - The Hershey Fonts were originally created by Dr.
-            A. V. Hershey while working at the U. S.
-            National Bureau of Standards.
-        - The format of the Font data in this distribution
-            was originally created by
-                James Hurt
-                Cognition, Inc.
-                900 Technology Park Drive
-                Billerica, MA 01821
-                (mit-eddie!ci-dandelion!hurt)
-    2. The font data in this distribution may be converted into
-        any other format *EXCEPT* the format distributed by
-        the U.S. NTIS (which organization holds the rights
-        to the distribution and use of the font data in that
-        particular format). Not that anybody would really
-        *want* to use their format... each point is described
-        in eight bytes as "xxx yyy:", where xxx and yyy are
-        the coordinate values as ASCII numbers.
-
---------------------------------------------------------------------
-
-(And yes, I know the format output here is rather
-ironic looking at the comments above)
-*/
-
-// idx: 0
-// Glyph: 699
-// Pairs: 1
-// Left/right/width: -8/8/16
-// idx: 1
-// Glyph: 714
-// Pairs: 9
-// Left/right/width: -5/5/10
-// idx: 2
-// Glyph: 717
-// Pairs: 6
-// Left/right/width: -8/8/16
-// idx: 3
-// Glyph: 733
-// Pairs: 12
-// Left/right/width: -10/11/21
-// idx: 4
-// Glyph: 719
-// Pairs: 27
-// Left/right/width: -10/10/20
-// idx: 5
-// Glyph: 2271
-// Pairs: 32
-// Left/right/width: -12/12/24
-// idx: 6
-// Glyph: 734
-// Pairs: 35
-// Left/right/width: -13/13/26
-// idx: 7
-// Glyph: 731
-// Pairs: 8
-// Left/right/width: -5/5/10
-// idx: 8
-// Glyph: 721
-// Pairs: 11
-// Left/right/width: -7/7/14
-// idx: 9
-// Glyph: 722
-// Pairs: 11
-// Left/right/width: -7/7/14
-// idx: 10
-// Glyph: 2219
-// Pairs: 9
-// Left/right/width: -8/8/16
-// idx: 11
-// Glyph: 725
-// Pairs: 6
-// Left/right/width: -13/13/26
-// idx: 12
-// Glyph: 711
-// Pairs: 9
-// Left/right/width: -5/5/10
-// idx: 13
-// Glyph: 724
-// Pairs: 3
-// Left/right/width: -13/13/26
-// idx: 14
-// Glyph: 710
-// Pairs: 6
-// Left/right/width: -5/5/10
-// idx: 15
-// Glyph: 720
-// Pairs: 3
-// Left/right/width: -11/11/22
-// idx: 16
-// Glyph: 700
-// Pairs: 18
-// Left/right/width: -10/10/20
-// idx: 17
-// Glyph: 701
-// Pairs: 5
-// Left/right/width: -10/10/20
-// idx: 18
-// Glyph: 702
-// Pairs: 15
-// Left/right/width: -10/10/20
-// idx: 19
-// Glyph: 703
-// Pairs: 16
-// Left/right/width: -10/10/20
-// idx: 20
-// Glyph: 704
-// Pairs: 7
-// Left/right/width: -10/10/20
-// idx: 21
-// Glyph: 705
-// Pairs: 18
-// Left/right/width: -10/10/20
-// idx: 22
-// Glyph: 706
-// Pairs: 24
-// Left/right/width: -10/10/20
-// idx: 23
-// Glyph: 707
-// Pairs: 6
-// Left/right/width: -10/10/20
-// idx: 24
-// Glyph: 708
-// Pairs: 30
-// Left/right/width: -10/10/20
-// idx: 25
-// Glyph: 709
-// Pairs: 24
-// Left/right/width: -10/10/20
-// idx: 26
-// Glyph: 712
-// Pairs: 12
-// Left/right/width: -5/5/10
-// idx: 27
-// Glyph: 713
-// Pairs: 15
-// Left/right/width: -5/5/10
-// idx: 28
-// Glyph: 2241
-// Pairs: 4
-// Left/right/width: -12/12/24
-// idx: 29
-// Glyph: 726
-// Pairs: 6
-// Left/right/width: -13/13/26
-// idx: 30
-// Glyph: 2242
-// Pairs: 4
-// Left/right/width: -12/12/24
-// idx: 31
-// Glyph: 715
-// Pairs: 21
-// Left/right/width: -9/9/18
-// idx: 32
-// Glyph: 2273
-// Pairs: 56
-// Left/right/width: -13/14/27
-// idx: 33
-// Glyph: 501
-// Pairs: 9
-// Left/right/width: -9/9/18
-// idx: 34
-// Glyph: 502
-// Pairs: 24
-// Left/right/width: -11/10/21
-// idx: 35
-// Glyph: 503
-// Pairs: 19
-// Left/right/width: -10/11/21
-// idx: 36
-// Glyph: 504
-// Pairs: 16
-// Left/right/width: -11/10/21
-// idx: 37
-// Glyph: 505
-// Pairs: 12
-// Left/right/width: -10/9/19
-// idx: 38
-// Glyph: 506
-// Pairs: 9
-// Left/right/width: -10/8/18
-// idx: 39
-// Glyph: 507
-// Pairs: 23
-// Left/right/width: -10/11/21
-// idx: 40
-// Glyph: 508
-// Pairs: 9
-// Left/right/width: -11/11/22
-// idx: 41
-// Glyph: 509
-// Pairs: 3
-// Left/right/width: -4/4/8
-// idx: 42
-// Glyph: 510
-// Pairs: 11
-// Left/right/width: -8/8/16
-// idx: 43
-// Glyph: 511
-// Pairs: 9
-// Left/right/width: -11/10/21
-// idx: 44
-// Glyph: 512
-// Pairs: 6
-// Left/right/width: -10/7/17
-// idx: 45
-// Glyph: 513
-// Pairs: 12
-// Left/right/width: -12/12/24
-// idx: 46
-// Glyph: 514
-// Pairs: 9
-// Left/right/width: -11/11/22
-// idx: 47
-// Glyph: 515
-// Pairs: 22
-// Left/right/width: -11/11/22
-// idx: 48
-// Glyph: 516
-// Pairs: 14
-// Left/right/width: -11/10/21
-// idx: 49
-// Glyph: 517
-// Pairs: 25
-// Left/right/width: -11/11/22
-// idx: 50
-// Glyph: 518
-// Pairs: 17
-// Left/right/width: -11/10/21
-// idx: 51
-// Glyph: 519
-// Pairs: 21
-// Left/right/width: -10/10/20
-// idx: 52
-// Glyph: 520
-// Pairs: 6
-// Left/right/width: -8/8/16
-// idx: 53
-// Glyph: 521
-// Pairs: 11
-// Left/right/width: -11/11/22
-// idx: 54
-// Glyph: 522
-// Pairs: 6
-// Left/right/width: -9/9/18
-// idx: 55
-// Glyph: 523
-// Pairs: 12
-// Left/right/width: -12/12/24
-// idx: 56
-// Glyph: 524
-// Pairs: 6
-// Left/right/width: -10/10/20
-// idx: 57
-// Glyph: 525
-// Pairs: 7
-// Left/right/width: -9/9/18
-// idx: 58
-// Glyph: 526
-// Pairs: 9
-// Left/right/width: -10/10/20
-// idx: 59
-// Glyph: 2223
-// Pairs: 12
-// Left/right/width: -7/7/14
-// idx: 60
-// Glyph: 804
-// Pairs: 3
-// Left/right/width: -7/7/14
-// idx: 61
-// Glyph: 2224
-// Pairs: 12
-// Left/right/width: -7/7/14
-// idx: 62
-// Glyph: 2262
-// Pairs: 11
-// Left/right/width: -8/8/16
-// idx: 63
-// Glyph: 999
-// Pairs: 3
-// Left/right/width: -8/8/16
-// idx: 64
-// Glyph: 730
-// Pairs: 8
-// Left/right/width: -5/5/10
-// idx: 65
-// Glyph: 601
-// Pairs: 18
-// Left/right/width: -9/10/19
-// idx: 66
-// Glyph: 602
-// Pairs: 18
-// Left/right/width: -10/9/19
-// idx: 67
-// Glyph: 603
-// Pairs: 15
-// Left/right/width: -9/9/18
-// idx: 68
-// Glyph: 604
-// Pairs: 18
-// Left/right/width: -9/10/19
-// idx: 69
-// Glyph: 605
-// Pairs: 18
-// Left/right/width: -9/9/18
-// idx: 70
-// Glyph: 606
-// Pairs: 9
-// Left/right/width: -5/7/12
-// idx: 71
-// Glyph: 607
-// Pairs: 23
-// Left/right/width: -9/10/19
-// idx: 72
-// Glyph: 608
-// Pairs: 11
-// Left/right/width: -9/10/19
-// idx: 73
-// Glyph: 609
-// Pairs: 9
-// Left/right/width: -4/4/8
-// idx: 74
-// Glyph: 610
-// Pairs: 12
-// Left/right/width: -5/5/10
-// idx: 75
-// Glyph: 611
-// Pairs: 9
-// Left/right/width: -9/8/17
-// idx: 76
-// Glyph: 612
-// Pairs: 3
-// Left/right/width: -4/4/8
-// idx: 77
-// Glyph: 613
-// Pairs: 19
-// Left/right/width: -15/15/30
-// idx: 78
-// Glyph: 614
-// Pairs: 11
-// Left/right/width: -9/10/19
-// idx: 79
-// Glyph: 615
-// Pairs: 18
-// Left/right/width: -9/10/19
-// idx: 80
-// Glyph: 616
-// Pairs: 18
-// Left/right/width: -10/9/19
-// idx: 81
-// Glyph: 617
-// Pairs: 18
-// Left/right/width: -9/10/19
-// idx: 82
-// Glyph: 618
-// Pairs: 9
-// Left/right/width: -7/6/13
-// idx: 83
-// Glyph: 619
-// Pairs: 18
-// Left/right/width: -8/9/17
-// idx: 84
-// Glyph: 620
-// Pairs: 9
-// Left/right/width: -5/7/12
-// idx: 85
-// Glyph: 621
-// Pairs: 11
-// Left/right/width: -9/10/19
-// idx: 86
-// Glyph: 622
-// Pairs: 6
-// Left/right/width: -8/8/16
-// idx: 87
-// Glyph: 623
-// Pairs: 12
-// Left/right/width: -11/11/22
-// idx: 88
-// Glyph: 624
-// Pairs: 6
-// Left/right/width: -8/9/17
-// idx: 89
-// Glyph: 625
-// Pairs: 10
-// Left/right/width: -8/8/16
-// idx: 90
-// Glyph: 626
-// Pairs: 9
-// Left/right/width: -8/9/17
-// idx: 91
-// Glyph: 2225
-// Pairs: 40
-// Left/right/width: -7/7/14
-// idx: 92
-// Glyph: 723
-// Pairs: 3
-// Left/right/width: -4/4/8
-// idx: 93
-// Glyph: 2226
-// Pairs: 40
-// Left/right/width: -7/7/14
-// idx: 94
-// Glyph: 2246
-// Pairs: 24
-// Left/right/width: -12/12/24
-// idx: 95
-// Glyph: 718
-// Pairs: 14
-// Left/right/width: -7/7/14
 // Glyph 699
 static const char rowmans_1_width = 16;
 static const char rowmans_1_realwidth = 16;
@@ -1643,13 +1256,18 @@ static const char rowmans_96[48] =
 
 // Number of glyphs
 const int rowmans_count = 96;
+
 // Font height
 const char rowmans_height = 32;
+
 // Widths of the glyphs
 const char rowmans_width[96] = {rowmans_1_width, rowmans_2_width, rowmans_3_width, rowmans_4_width, rowmans_5_width, rowmans_6_width, rowmans_7_width, rowmans_8_width, rowmans_9_width, rowmans_10_width, rowmans_11_width, rowmans_12_width, rowmans_13_width, rowmans_14_width, rowmans_15_width, rowmans_16_width, rowmans_17_width, rowmans_18_width, rowmans_19_width, rowmans_20_width, rowmans_21_width, rowmans_22_width, rowmans_23_width, rowmans_24_width, rowmans_25_width, rowmans_26_width, rowmans_27_width, rowmans_28_width, rowmans_29_width, rowmans_30_width, rowmans_31_width, rowmans_32_width, rowmans_33_width, rowmans_34_width, rowmans_35_width, rowmans_36_width, rowmans_37_width, rowmans_38_width, rowmans_39_width, rowmans_40_width, rowmans_41_width, rowmans_42_width, rowmans_43_width, rowmans_44_width, rowmans_45_width, rowmans_46_width, rowmans_47_width, rowmans_48_width, rowmans_49_width, rowmans_50_width, rowmans_51_width, rowmans_52_width, rowmans_53_width, rowmans_54_width, rowmans_55_width, rowmans_56_width, rowmans_57_width, rowmans_58_width, rowmans_59_width, rowmans_60_width, rowmans_61_width, rowmans_62_width, rowmans_63_width, rowmans_64_width, rowmans_65_width, rowmans_66_width, rowmans_67_width, rowmans_68_width, rowmans_69_width, rowmans_70_width, rowmans_71_width, rowmans_72_width, rowmans_73_width, rowmans_74_width, rowmans_75_width, rowmans_76_width, rowmans_77_width, rowmans_78_width, rowmans_79_width, rowmans_80_width, rowmans_81_width, rowmans_82_width, rowmans_83_width, rowmans_84_width, rowmans_85_width, rowmans_86_width, rowmans_87_width, rowmans_88_width, rowmans_89_width, rowmans_90_width, rowmans_91_width, rowmans_92_width, rowmans_93_width, rowmans_94_width, rowmans_95_width, rowmans_96_width};
+
 // Real widths of the glyphs (calculated from data)
 const char rowmans_realwidth[96] = {rowmans_1_realwidth, rowmans_2_realwidth, rowmans_3_realwidth, rowmans_4_realwidth, rowmans_5_realwidth, rowmans_6_realwidth, rowmans_7_realwidth, rowmans_8_realwidth, rowmans_9_realwidth, rowmans_10_realwidth, rowmans_11_realwidth, rowmans_12_realwidth, rowmans_13_realwidth, rowmans_14_realwidth, rowmans_15_realwidth, rowmans_16_realwidth, rowmans_17_realwidth, rowmans_18_realwidth, rowmans_19_realwidth, rowmans_20_realwidth, rowmans_21_realwidth, rowmans_22_realwidth, rowmans_23_realwidth, rowmans_24_realwidth, rowmans_25_realwidth, rowmans_26_realwidth, rowmans_27_realwidth, rowmans_28_realwidth, rowmans_29_realwidth, rowmans_30_realwidth, rowmans_31_realwidth, rowmans_32_realwidth, rowmans_33_realwidth, rowmans_34_realwidth, rowmans_35_realwidth, rowmans_36_realwidth, rowmans_37_realwidth, rowmans_38_realwidth, rowmans_39_realwidth, rowmans_40_realwidth, rowmans_41_realwidth, rowmans_42_realwidth, rowmans_43_realwidth, rowmans_44_realwidth, rowmans_45_realwidth, rowmans_46_realwidth, rowmans_47_realwidth, rowmans_48_realwidth, rowmans_49_realwidth, rowmans_50_realwidth, rowmans_51_realwidth, rowmans_52_realwidth, rowmans_53_realwidth, rowmans_54_realwidth, rowmans_55_realwidth, rowmans_56_realwidth, rowmans_57_realwidth, rowmans_58_realwidth, rowmans_59_realwidth, rowmans_60_realwidth, rowmans_61_realwidth, rowmans_62_realwidth, rowmans_63_realwidth, rowmans_64_realwidth, rowmans_65_realwidth, rowmans_66_realwidth, rowmans_67_realwidth, rowmans_68_realwidth, rowmans_69_realwidth, rowmans_70_realwidth, rowmans_71_realwidth, rowmans_72_realwidth, rowmans_73_realwidth, rowmans_74_realwidth, rowmans_75_realwidth, rowmans_76_realwidth, rowmans_77_realwidth, rowmans_78_realwidth, rowmans_79_realwidth, rowmans_80_realwidth, rowmans_81_realwidth, rowmans_82_realwidth, rowmans_83_realwidth, rowmans_84_realwidth, rowmans_85_realwidth, rowmans_86_realwidth, rowmans_87_realwidth, rowmans_88_realwidth, rowmans_89_realwidth, rowmans_90_realwidth, rowmans_91_realwidth, rowmans_92_realwidth, rowmans_93_realwidth, rowmans_94_realwidth, rowmans_95_realwidth, rowmans_96_realwidth};
+
 // Number of chars in each glyph
 const int rowmans_size[96] = {rowmans_1_size, rowmans_2_size, rowmans_3_size, rowmans_4_size, rowmans_5_size, rowmans_6_size, rowmans_7_size, rowmans_8_size, rowmans_9_size, rowmans_10_size, rowmans_11_size, rowmans_12_size, rowmans_13_size, rowmans_14_size, rowmans_15_size, rowmans_16_size, rowmans_17_size, rowmans_18_size, rowmans_19_size, rowmans_20_size, rowmans_21_size, rowmans_22_size, rowmans_23_size, rowmans_24_size, rowmans_25_size, rowmans_26_size, rowmans_27_size, rowmans_28_size, rowmans_29_size, rowmans_30_size, rowmans_31_size, rowmans_32_size, rowmans_33_size, rowmans_34_size, rowmans_35_size, rowmans_36_size, rowmans_37_size, rowmans_38_size, rowmans_39_size, rowmans_40_size, rowmans_41_size, rowmans_42_size, rowmans_43_size, rowmans_44_size, rowmans_45_size, rowmans_46_size, rowmans_47_size, rowmans_48_size, rowmans_49_size, rowmans_50_size, rowmans_51_size, rowmans_52_size, rowmans_53_size, rowmans_54_size, rowmans_55_size, rowmans_56_size, rowmans_57_size, rowmans_58_size, rowmans_59_size, rowmans_60_size, rowmans_61_size, rowmans_62_size, rowmans_63_size, rowmans_64_size, rowmans_65_size, rowmans_66_size, rowmans_67_size, rowmans_68_size, rowmans_69_size, rowmans_70_size, rowmans_71_size, rowmans_72_size, rowmans_73_size, rowmans_74_size, rowmans_75_size, rowmans_76_size, rowmans_77_size, rowmans_78_size, rowmans_79_size, rowmans_80_size, rowmans_81_size, rowmans_82_size, rowmans_83_size, rowmans_84_size, rowmans_85_size, rowmans_86_size, rowmans_87_size, rowmans_88_size, rowmans_89_size, rowmans_90_size, rowmans_91_size, rowmans_92_size, rowmans_93_size, rowmans_94_size, rowmans_95_size, rowmans_96_size};
+
 // Pointers to glyph data
 const char *rowmans[96] = {&rowmans_1[0], &rowmans_2[0], &rowmans_3[0], &rowmans_4[0], &rowmans_5[0], &rowmans_6[0], &rowmans_7[0], &rowmans_8[0], &rowmans_9[0], &rowmans_10[0], &rowmans_11[0], &rowmans_12[0], &rowmans_13[0], &rowmans_14[0], &rowmans_15[0], &rowmans_16[0], &rowmans_17[0], &rowmans_18[0], &rowmans_19[0], &rowmans_20[0], &rowmans_21[0], &rowmans_22[0], &rowmans_23[0], &rowmans_24[0], &rowmans_25[0], &rowmans_26[0], &rowmans_27[0], &rowmans_28[0], &rowmans_29[0], &rowmans_30[0], &rowmans_31[0], &rowmans_32[0], &rowmans_33[0], &rowmans_34[0], &rowmans_35[0], &rowmans_36[0], &rowmans_37[0], &rowmans_38[0], &rowmans_39[0], &rowmans_40[0], &rowmans_41[0], &rowmans_42[0], &rowmans_43[0], &rowmans_44[0], &rowmans_45[0], &rowmans_46[0], &rowmans_47[0], &rowmans_48[0], &rowmans_49[0], &rowmans_50[0], &rowmans_51[0], &rowmans_52[0], &rowmans_53[0], &rowmans_54[0], &rowmans_55[0], &rowmans_56[0], &rowmans_57[0], &rowmans_58[0], &rowmans_59[0], &rowmans_60[0], &rowmans_61[0], &rowmans_62[0], &rowmans_63[0], &rowmans_64[0], &rowmans_65[0], &rowmans_66[0], &rowmans_67[0], &rowmans_68[0], &rowmans_69[0], &rowmans_70[0], &rowmans_71[0], &rowmans_72[0], &rowmans_73[0], &rowmans_74[0], &rowmans_75[0], &rowmans_76[0], &rowmans_77[0], &rowmans_78[0], &rowmans_79[0], &rowmans_80[0], &rowmans_81[0], &rowmans_82[0], &rowmans_83[0], &rowmans_84[0], &rowmans_85[0], &rowmans_86[0], &rowmans_87[0], &rowmans_88[0], &rowmans_89[0], &rowmans_90[0], &rowmans_91[0], &rowmans_92[0], &rowmans_93[0], &rowmans_94[0], &rowmans_95[0], &rowmans_96[0]};

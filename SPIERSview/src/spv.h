@@ -1,3 +1,20 @@
+/**
+ * @file
+ * Header: SPV
+ *
+ * All SPIERSview code is released under the GNU General Public License.
+ * See LICENSE.md files in the programme directory.
+ *
+ * All SPIERSview code is Copyright 2008-2018 by Mark D. Sutton, Russell J. Garwood,
+ * and Alan R.T. Spencer.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version. This program is distributed in the
+ * hope that it will be useful, but WITHOUT ANY WARRANTY.
+ */
+
 #ifndef SPV_H
 #define SPV_H
 
@@ -14,17 +31,29 @@ class SPV
 public:
     SPV(int index, int FileVersion, int iDim, int jDim, int kDim);
     ~SPV();
-    QList <SVObject *> ComponentObjects;
-    float bright;
-    QString filename, filenamenopath;
-    int FileVersion;
-    double *stretches;
-    double PixPerMM, SlicePerMM, SkewDown, SkewLeft;
-    int iDim, jDim, kDim;
-    int size;
-    int GridSize;
-    int index;
+
     bool MirrorFlag;
+
+    float bright;
+
+    double *stretches;
+    double PixPerMM;
+    double SlicePerMM;
+    double SkewDown;
+    double SkewLeft;
+
+    int FileVersion;
+    int GridSize;
+    int iDim;
+    int jDim;
+    int kDim;
+    int index;
+    int size;
+
+    QList <SVObject *> ComponentObjects;
+    QString filename;
+    QString filenamenopath;
+
     unsigned char *fullarray;
     unsigned char *AllData;
 };

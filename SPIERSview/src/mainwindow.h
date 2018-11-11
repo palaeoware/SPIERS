@@ -1,3 +1,20 @@
+/**
+ * @file
+ * Header: Main Window
+ *
+ * All SPIERSview code is released under the GNU General Public License.
+ * See LICENSE.md files in the programme directory.
+ *
+ * All SPIERSview code is Copyright 2008-2018 by Mark D. Sutton, Russell J. Garwood,
+ * and Alan R.T. Spencer.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version. This program is distributed in the
+ * hope that it will be useful, but WITHOUT ANY WARRANTY.
+ */
+
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
@@ -27,27 +44,30 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
     void resizeEvent(QResizeEvent *event);
     void moveEvent(QMoveEvent *event);
     void changeEvent( QEvent *event );
     void UpdateGL();
     void RefreshObjects();
-    Ui::MainWindow *ui;
     void EnableRenderCommands();
     void DisableRenderCommands();
-    //SVGlWidget *widget;
-    GlWidget *gl3widget;
-    QHBoxLayout *gllayout;
     void RefreshInfo();
     void setSamples(int i);
     void setSpecificProgress(int p);
     void setSpecificLabel(QString t);
     void updateScreenRatio();
 
+    Ui::MainWindow *ui;
+    GlWidget *gl3widget;
+    QHBoxLayout *gllayout;
+
 public slots:
     void showSpecificProgress();
+
 protected:
     bool eventFilter(QObject *object, QEvent *event);
+
 private:
 
     bool mainWindowReady = false;
