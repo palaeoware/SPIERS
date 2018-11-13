@@ -9,7 +9,6 @@ Also some output-related non-OO functions
 
 **********************************************/
 
-
 #include "output.h"
 #include "globals.h"
 #include "curves.h"
@@ -141,7 +140,7 @@ void PopulateOutputArray (int *FullOutArrayCount, QByteArray *FullOutArray, int 
                         for (int x = 0; x < fwidth; x++)
                         {
                             //work out segment - not in a function for speed
-                            if ((UseMasks[(quint8)Masks[y * fwidth + x]]))
+                            if ((UseMasks[static_cast<quint8>(Masks[y * fwidth + x])]))
                             {
                                 int high = 128;
                                 seg = -1;
@@ -192,7 +191,7 @@ void PopulateOutputArray (int *FullOutArrayCount, QByteArray *FullOutArray, int 
                         for (int x = 0; x < fwidth; x++)
                             //work out segment - not in a function for speed
                         {
-                            if ((UseMasks[(quint8)Masks[y * fwidth + x]]))
+                            if ((UseMasks[static_cast<quint8>(Masks[y * fwidth + x])]))
                             {
                                 int high = 128;
                                 seg = -1;

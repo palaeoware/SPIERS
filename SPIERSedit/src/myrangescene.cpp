@@ -18,7 +18,7 @@ handling range generation
 #include <QBrush>
 
 
-myrangescene *rangescene = 0;
+myrangescene *rangescene = nullptr;
 
 myrangescene::myrangescene() : QGraphicsScene()
 {
@@ -218,8 +218,8 @@ void myrangescene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     QPointF position = event->scenePos();
     int x, y;
 
-    x = (int)position.x();
-    y = (int)position.y();
+    x = static_cast<int>(position.x());
+    y = static_cast<int>(position.y());
     DoMouse(x, y, button); //pass existing button value
 }
 
@@ -229,8 +229,8 @@ void myrangescene::mousePressEvent(QGraphicsSceneMouseEvent *event )
     QPointF position = event->scenePos();
     int x, y;
 
-    x = (int)position.x();
-    y = (int)position.y();
+    x = static_cast<int>(position.x());
+    y = static_cast<int>(position.y());
 
     int but = 0;
     if (event->button() == Qt::LeftButton) but = 1;
@@ -255,8 +255,8 @@ void myrangescene::mouseReleaseEvent ( QGraphicsSceneMouseEvent *event )
     Q_UNUSED(x);
     Q_UNUSED(y);
 
-    x = (int)position.x();
-    y = (int)position.y();
+    x = static_cast<int>(position.x());
+    y = static_cast<int>(position.y());
     MouseUp();
 
 }
