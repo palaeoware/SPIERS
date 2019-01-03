@@ -3,7 +3,7 @@
 Coded by:
 
  - Mark Sutton (m.sutton@imperial.ac.uk)
- - Russell J. Garwood (russell.garwood@manchester.ac.uk)
+ - Russell J. Garwood (russell.garwood@gmail.com)
  - Alan R.T. Spencer (alan.spencer@imperial.ac.uk)
 
 <p align="center">
@@ -15,14 +15,28 @@ ______
 ## Relevant references:
 <b>Sutton, M.D., Garwood, R.J., Siveter, D.J. &amp; Siveter, D.J.</b> 2012. Spiers and VAXML; A software toolkit for tomographic visualisation, and a format for virtual specimen interchange. <a href="http://palaeo-electronica.org/content/issue-2-2012-technical-articles/226-virtual-palaeontology-toolkit"><i>Palaeontologia Electronica</i> 15(2): 15.2.5T</a>
 
-______
+_____
+
+## 1. Copyright and Licence
+
+All SPIERS code is released under the GNU General Public License. See LICENSE.md files in the programme directories.
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version. This program is distributed in the hope that it will be useful, but **without any warranty**.
+
+_____
+
+## 2. Introduction
 
 SPIERS (Serial Palaeontological Image Editing and Rendering System) is a package of three programs for the reconstruction and analysis of tomographic (serial image) datasets, such as those obtained from serial-grinding of specimens, or from CT scanning. More details are available in the documentation for each program.
 ______
 
-## Compiling from source:
+## 3. Installation
 
-### Windows 64-bit - QT Creator + QT v5.x and VTK v8.1 using MSYS2 (64-bit) and MinGW (64-bit)
+SPIERS may be compiled using QT from the source code or installed from the binary releases on our [GitHub](https://github.com/palaeoware).
+
+### Compiling from source
+
+#### Windows 64-bit - QT Creator + QT v5.x and VTK v8.1 using MSYS2 (64-bit) and MinGW (64-bit)
 We recommend you install and use MSYS2 (64-bit) a Windows package manager, based on modern Cygwin (POSIX compatibility layer) and MinGW-w64, that allows easy installation of QT v5.x 64-bit and VTK v8.1.
 
 1. Download and run the latest version of MSYS2 https://www.msys2.org/ for 64-bit Windows. This will be name "mysys2-x86_64-..." for the 64-bit installer.
@@ -40,9 +54,44 @@ We recommend you install and use MSYS2 (64-bit) a Windows package manager, based
 8. You should now be able to find the required libraries under "{install location}/mingw64/bin" and the required header (.h) files for QT v5.x and VTK v8.1 under "{install location}/mingw64/include".
 9. Use the information above to setup a new 64-bit ming64 kit under QT creator and follow standard QT Creator debug/release procedure.
 
-### Ubuntu 18.04 64-bit - QT Creator + QT v5.x and VTK v7.1 using GCC (64-bit)
+#### Ubuntu 18.04 64-bit - QT Creator + QT v5.x and VTK v7.1 using GCC (64-bit)
 
 1. The simplest way to install Q5.X on your system is to download and run the installer from Qt: https://www.qt.io/download Further instructions are available here: https://wiki.qt.io/Install_Qt_5_on_Ubuntu
 2. SPIERSview requires VTK: The Linux version of SPIERSview is currently employs VTK7.1, installed from the Ubuntu package (e.g. sudo apt-get install libvtk7-qt-dev)
 3. Using the above package, you should be able to find the required VTK libraries under /usr/include/vtk-7.1/ they can also be included, if needed, in the working directory, and added to the executable at link time using the QMAKE_RPATHDIR variable - e.g. #QMAKE_RPATHDIR += $$PWD/vtk-7.X/
 4. You should then be able to compile SPIERS by opening the .pro file in QT creator and following standard debug/release procedure.
+
+_____
+
+## 4. Minimum Requirements
+
+SPIERS is designed to run on a wide range of hardware, rather than being restricted to workstations. The exact requirements for use depend on the data being processed.
+
+_____
+
+## 5. Documentation
+
+All documentation for SPIERS is online at Read the Docs. Links are found on the [SPIERS website](https://spiers-software.org/). This is a version controlled user manual automatically parsed from the .rst found under the docs folders in our software folders.
+
+_____
+
+## 6. Contributing to the code
+
+Contribution to the code in this repository is welcome. Please read the [Repository Contribution](https://github.com/palaeoware/repoconventions)  document for a guide to our coding style and repository structure before submitting any code updates.
+
+_____
+
+
+## 7. Bug reporting and feature requests
+
+Bug reporting and feature requests should be made through the [GitHub Issues](../../issues) page for this repository. We will aim to respond to all issues and feature requests in a timely manner.
+
+_____
+
+w:spiers-software.org/
+
+t:@palaeoware
+
+e:palaeoware@gmail.com
+
+w:https://github.com/palaeoware
