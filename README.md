@@ -17,6 +17,19 @@ ______
 
 _____
 
+
+CONTENTS:
+
+1. Copyright and Licence
+2. Introduction
+3. Installation
+4. Minimum Requirements
+5. Documentation
+6. Contributing to the code
+7. Bug reporting and feature requests
+
+_____
+
 ## 1. Copyright and Licence
 
 All SPIERS code is released under the GNU General Public License. See LICENSE.md files in the programme directories.
