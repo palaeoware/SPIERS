@@ -117,6 +117,7 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     myActionGroup->addAction(actionMask);
     myActionGroup->addAction(actionSegment);
     myActionGroup->addAction(actionRecalc);
+    myActionGroup->addAction(actionWatershed);
 
     QObject::connect(myActionGroup, SIGNAL(triggered(QAction *)), this, SLOT(Mode_Changed(QAction *)));
 
@@ -205,6 +206,7 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     actionMask->setIcon(QIcon(":/icons/Masks.bmp"));
     actionUndo->setIcon(QIcon(":/icons/undo.bmp"));
     actionRedo->setIcon(QIcon(":/icons/redo.bmp"));
+    actionWatershed->setIcon(QIcon(":/icons/watershed.bmp"));
 
     bodgeflag = false;
 
@@ -589,6 +591,7 @@ void MainWindowImpl::Mode_Changed(QAction *temp2)
     if (actionLock->isChecked()) CurrentMode = 3;
     if (actionSegment->isChecked()) CurrentMode = 4;
     if (actionRecalc->isChecked()) CurrentMode = 5;
+    if (actionWatershed->isChecked()) CurrentMode = 6;
     //0=bright, 1=masks, 2=curves, 3=lock, 4=segment, 5=recalc
     ShowImage(graphicsView);
 }

@@ -253,7 +253,7 @@
      <x>0</x>
      <y>0</y>
      <width>962</width>
-     <height>20</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -3074,6 +3074,7 @@ Interpreted Images:</string>
    <addaction name="actionCurve"/>
    <addaction name="actionLock"/>
    <addaction name="actionMask"/>
+   <addaction name="actionWatershed"/>
    <addaction name="separator"/>
    <addaction name="actionUndo"/>
    <addaction name="actionRedo"/>
@@ -4154,6 +4155,14 @@ Interpreted Images:</string>
   <action name="actionCode_on_GitHub">
    <property name="text">
     <string>Code on GitHub</string>
+   </property>
+  </action>
+  <action name="actionWatershed">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Watershed</string>
    </property>
   </action>
  </widget>

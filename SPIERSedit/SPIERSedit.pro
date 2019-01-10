@@ -38,6 +38,13 @@ MOC_DIR += build
 
 OBJECTS_DIR += build
 
+    INCLUDEPATH += "$$PWD/../../../../../msys64/mingw64/include/opencv2"
+
+    LIBS += -L$$PWD/../../../../../msys64/mingw64/lib \
+    # OpenCV
+    -llibopencv_core \
+    -llibopencv_imgproc
+
 FORMS += ui/import.ui \
     ui/mainwindow.ui \
     ui/Copying.ui \
@@ -87,7 +94,8 @@ HEADERS += src/display.h \
     ../SPIERScommon/src/darkstyletheme.h \
     ../SPIERScommon/src/netmodule.h \
     ../SPIERScommon/src/semanticversion.h \
-    ../SPIERScommon/src/prereleasecomponent.h
+    ../SPIERScommon/src/prereleasecomponent.h \
+    src/watershed.h
 
 SOURCES += src/display.cpp \
     src/brush.cpp \
@@ -126,4 +134,5 @@ SOURCES += src/display.cpp \
     ../SPIERScommon/src/darkstyletheme.cpp \
     ../SPIERScommon/src/netmodule.cpp \
     ../SPIERScommon/src/semanticversion.cpp \
-    ../SPIERScommon/src//prereleasecomponent.cpp
+    ../SPIERScommon/src//prereleasecomponent.cpp \
+    src/watershed.cpp

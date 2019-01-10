@@ -28,6 +28,7 @@ Functions (non-OO) relating to graphical manipulation
 #include "curves.h"
 #include "myscene.h"
 #include "brush.h"
+#include "watershed.h"
 
 QGraphicsPixmapItem *MainImage;
 double LastZoom;
@@ -494,6 +495,10 @@ void AlterImage(QImage *myimage)
 
             }
     }
+
+    // Watershed image (only runs if CurrentMode == 6)
+    watershed(myimage);
+
     //myimage->save("d:/test/threstest-myimage.bmp");
     return;
 }

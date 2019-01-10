@@ -25,5 +25,6 @@
         <file alias="square.bmp">resources/icons/square.bmp</file>
         <file alias="TODO.bmp">resources/icons/TODO.bmp</file>
         <file alias="undo.bmp">resources/icons/undo.bmp</file>
+        <file alias="watershed.bmp">resources/icons/watershed.bmp</file>
     </qresource>
 </RCC>
