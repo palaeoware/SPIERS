@@ -22,13 +22,13 @@ import sphinx_rtd_theme
 # -- Project information -----------------------------------------------------
 
 project = 'SPIERSalign'
-copyright = '2018, Russell Garwood, Mark Sutton, Alan R.T. Spencer'
+copyright = '2018-2019, Russell Garwood, Mark Sutton, Alan R.T. Spencer'
 author = 'Russell Garwood, Mark Sutton, Alan R.T. Spencer'
 
 # The short X.Y version
 version = '3.0.0'
 # The full version, including alpha/beta/rc tags
-release = '3.0.0-rc.1'
+release = '3.0.0'
 
 
 # -- General configuration ---------------------------------------------------

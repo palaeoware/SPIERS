@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Creator: CorelDRAW X7 -->
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="90.311mm" height="90.311mm" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+viewBox="0 0 9031 9031"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <style type="text/css">
+   <![CDATA[
+    .str3 {stroke:red;stroke-width:564.44}
+    .str1 {stroke:black;stroke-width:35.28}
+    .str0 {stroke:black;stroke-width:20}
+    .str2 {stroke:#FFCF3D;stroke-width:7.62}
+    .fil3 {fill:none}
+    .fil0 {fill:black}
+    .fil2 {fill:#FFCF3D}
+    .fil1 {fill:white}
+   ]]>
+  </style>
+ </defs>
+ <g id="Layer_x0020_1">
+  <metadata id="CorelCorpID_0Corel-Layer"/>
+  <rect class="fil0" width="9031" height="9031" rx="1764" ry="1764"/>
+  <rect class="fil1 str0" x="741" y="5715" width="529" height="529"/>
+  <rect class="fil1 str0" x="3193" y="7796" width="564" height="529"/>
+  <rect class="fil1 str1" x="6924" y="7549" width="862" height="811"/>
+  <rect class="fil1 str0" x="7514" y="5309" width="600" height="564"/>
+  <rect class="fil1 str0" x="2267" y="1526" width="864" height="864"/>
+  <rect class="fil1 str0" x="776" y="794" width="600" height="564"/>
+  <polygon class="fil1 str0" points="3608,3162 5570,3162 5570,3781 6230,3781 6230,3809 6230,5103 6891,5103 6891,5805 6272,5805 6272,6465 4950,6465 4950,5805 4290,5805 4290,6465 2968,6465 2968,5805 2308,5805 2308,5144 2968,5144 2968,3823 3608,3823 "/>
+  <polygon class="fil2 str2" points="4246,3192 5707,3192 5707,3637 6196,3637 6196,5098 5709,4987 5110,4633 4623,4101 4379,3569 "/>
+  <ellipse class="fil3 str3" cx="6207" cy="3027" rx="2058" ry="2112"/>
+  <polyline class="fil3 str0" points="6227,3810 6227,3616 5733,3616 5733,3157 5539,3157 "/>
+ </g>
+</svg>
