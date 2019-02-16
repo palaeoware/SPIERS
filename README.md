@@ -76,6 +76,7 @@ We recommend you install and use MSYS2 (64-bit) a Windows package manager, based
 `sudo apt install qt5-default`
 
 Or by downloading and running the installer from Qt: https://www.qt.io/download Further instructions are available here: https://wiki.qt.io/Install_Qt_5_on_Ubuntu
+
 2. SPIERSview requires VTK: The Linux version of SPIERSview is currently employs VTK7.1. This can also be installed from the Ubuntu packages:
 
 `sudo apt-get install libvtk7-qt-dev`
