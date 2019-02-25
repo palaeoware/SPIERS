@@ -18,12 +18,12 @@
         <file alias="not_merged.bmp">resources/icons/not_merged.bmp</file>
         <file alias="padlock.bmp">resources/icons/padlock.bmp</file>
         <file alias="padlock_off.bmp">resources/icons/padlock_off.bmp</file>
-        <file alias="ProgramIcon.bmp">resources/icons/ProgramIcon.bmp</file>
         <file alias="Recalc.bmp">resources/icons/Recalc.bmp</file>
         <file alias="redo.bmp">resources/icons/redo.bmp</file>
         <file alias="segment.bmp">resources/icons/segment.bmp</file>
         <file alias="square.bmp">resources/icons/square.bmp</file>
         <file alias="TODO.bmp">resources/icons/TODO.bmp</file>
-        <file alias="undo.bmp">resources/icons/undo.bmp</file>
+        <file>resources/icons/undo.bmp</file>
+        <file>resources/SPIERSeditIcon.svg</file>
     </qresource>
 </RCC>

@@ -28,7 +28,7 @@ DESTDIR \
     bin
 
 RC_FILE = resources/icon.rc
-ICON = resources/icon.icns
+#ICON = resources/icon.icns
 
 DISTFILES += \
     LICENSE.md \

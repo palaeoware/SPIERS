@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>SPIERSview</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../view.qrc">
+    <normaloff>:/resources/SPIERSviewIcon.svg</normaloff>:/resources/SPIERSviewIcon.svg</iconset>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <property name="sizePolicy">
     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -106,7 +110,7 @@
      <x>0</x>
      <y>0</y>
      <width>1071</width>
-     <height>24</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuSPIERSview">
@@ -2360,6 +2364,8 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="../view.qrc"/>
+ </resources>
  <connections/>
 </ui>

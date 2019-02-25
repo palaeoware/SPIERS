@@ -65,7 +65,6 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     setupUi(this);
     setStatusBar(nullptr);
 
-    setWindowIcon(QIcon(":/icons/ProgramIcon.bmp"));
     showMaximized();
 
     SetUpDocks();

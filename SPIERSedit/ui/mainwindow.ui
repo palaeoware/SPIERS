@@ -25,6 +25,10 @@
   <property name="windowTitle">
    <string>SPIERSEdit - Version 2.21 - No files loaded</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../SPIERSedit.qrc">
+    <normaloff>:/icons/resources/SPIERSeditIcon.svg</normaloff>:/icons/resources/SPIERSeditIcon.svg</iconset>
+  </property>
   <property name="dockNestingEnabled">
    <bool>true</bool>
   </property>
@@ -4169,7 +4173,9 @@ Interpreted Images:</string>
    <header>src/mainview.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../SPIERSedit.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>verticalSlider</sender>

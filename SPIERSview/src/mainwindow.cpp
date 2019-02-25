@@ -140,7 +140,6 @@ MainWindow::MainWindow(QWidget *parent)
     time = new QTime(); //used by spin timer
     time->start();
 
-    setWindowIcon(QIcon(":/ViewIcon.bmp"));
     ui->dockWidgetPieces->setVisible(false);
     ui->InfoDock->setVisible(false);
     ui->ProgressDock->setVisible(true);

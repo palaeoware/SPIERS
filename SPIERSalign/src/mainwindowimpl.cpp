@@ -72,7 +72,6 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
 {
     //Set up initial variables
     setupUi(this);
-    setWindowIcon(QIcon (":/alignicon.png"));
 
     setWindowTitle(QString(PRODUCTNAME) + " v" + QString(SOFTWARE_VERSION) );
 
