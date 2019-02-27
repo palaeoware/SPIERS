@@ -2238,6 +2238,18 @@ void ReadSettings()
     if (dummy != SettingsFileName) Message("Warning - settings file name has been changed (from " + dummy + ") - it will be reset to " + SettingsFileName + ".spe when next saved");
 
 
+    // At this point we assume the file is valid, so we make a backupcopy (xxxxx.spe_backup) before going anyfuther.
+    // This is to give an option to recover back to a last known working .spe - and hopefull allow the recovery of the curves etc...
+    // this does not protect the mask and segment files from being damaged
+    QString temp = FullSettingsFileName;
+    QString backupFilePath = temp.replace(QString("%1.spe").arg(SettingsFileName), QString("%1.spe_backup").arg(SettingsFileName));
+    if (QFile(backupFilePath).exists())
+    {
+        QFile(backupFilePath).remove();
+    }
+    //qDebug() << "COPY " << FullSettingsFileName << " TO " << backupFilePath;
+    QFile::copy(FullSettingsFileName, backupFilePath);
+
     //Do all the simple stuff first
     in >> FileNotes;
     in >> FileCount >> CurrentFile >> cwidth >> cheight;
