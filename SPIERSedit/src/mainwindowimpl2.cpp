@@ -3122,6 +3122,7 @@ void MainWindowImpl::on_actionMeasure_Volumes_triggered()
 
 void MainWindowImpl::on_actionInterpolate_over_selected_slices_triggered()
 {
+
     //Interpolate selected curve(s) from first to last selected slice
     QList <QTreeWidgetItem *> selitems = CurvesTreeWidget->selectedItems();
 
@@ -3132,6 +3133,7 @@ void MainWindowImpl::on_actionInterpolate_over_selected_slices_triggered()
         for (int i = 0; i < CurveCount; i++)
             if (Curves[i]->widgetitem == selitems[0]) c = i;
 
+        qDebug() << "0";
         if (c == -1) Error("Oops, didn't find the selected curve!");
         QList <QListWidgetItem *> selitems2 = SliceSelectorList->selectedItems();
         if (selitems2.count() < 2) Message ("Select at least two slices to interpolate between");
@@ -3160,7 +3162,8 @@ void MainWindowImpl::on_actionInterpolate_over_selected_slices_triggered()
             else
             {
                 if (QMessageBox::question(this, "Interpolate Curves",
-                                          "This will interpolate selected curves between first and last selected slices - any data in intervening slices will be overwritten. Are you sure?", QMessageBox::Yes | QMessageBox::Cancel)
+                                          "This will interpolate selected curves between first and last selected slices - any data in intervening slices will be overwritten. Are you sure?", QMessageBox::Yes | QMessageBox::Cancel,
+                                          QMessageBox::Yes)
                         == QMessageBox::Yes)
                 {
                     //OK, do the interpolation
@@ -3177,7 +3180,6 @@ void MainWindowImpl::on_actionInterpolate_over_selected_slices_triggered()
                         //qDebug()<<"Dirtying "<<i<<" Files(i) is "<<Files[i];
                         if (Curves[c]->Segment != 0) FilesDirty[i / zsparsity] = true;
                     }
-
                     for (int j = 0; j < Curves[c]->SplinePoints[FirstFile]->Count; j++)
                     {
                         double x = Curves[c]->SplinePoints[FirstFile]->X[j];
@@ -3196,8 +3198,8 @@ void MainWindowImpl::on_actionInterpolate_over_selected_slices_triggered()
             }
         }
     }
+
     //ResetUndo();
     ShowImage(graphicsView);
     RefreshCurves();
-
 }
