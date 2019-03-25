@@ -2169,6 +2169,8 @@ void MainWindow::on_actionSave_Changes_triggered()
     SPVWriter w;
     w.writeFile(flag);
     isFileDirty = false;
+
+    ui->OutputLabelOverall->setText("Saved");
 }
 
 /**
@@ -2191,6 +2193,7 @@ void MainWindow::on_actionSave_As_triggered()
     FilterKeys = true;
 
     if (f.isEmpty()) return;
+    if (!f.endsWith(".spv"))f.append(".spv");
     fname = f;
     QString shortfname = "SPIERSview - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
     this->setWindowTitle(shortfname);
@@ -2199,6 +2202,8 @@ void MainWindow::on_actionSave_As_triggered()
     w.writeFile(false);
 
     isFileDirty = false;
+
+    ui->OutputLabelOverall->setText("Saved");
 }
 
 /**
@@ -2220,6 +2225,7 @@ void MainWindow::on_actionSave_Presurfaced_triggered()
     FilterKeys = true;
 
     if (f.isEmpty()) return;
+    if (!f.endsWith(".spv"))f.append(".spv");
     fname = f;
     QString shortfname = "SPIERSview - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
     this->setWindowTitle(shortfname);
@@ -2230,6 +2236,9 @@ void MainWindow::on_actionSave_Presurfaced_triggered()
     containsPresurfaced = true;
     containsNonPresurfaced = false;
     isFileDirty = false;
+
+    ui->OutputLabelOverall->setText("Saved");
+
 }
 
 /**
@@ -2248,6 +2257,7 @@ void MainWindow::on_actionDXF_triggered()
 
     //Now we do a whole load of initialisation!
     if (filename.isNull()) return; //if nothing there, cancel
+    if (!filename.endsWith(".dxf"))filename.append(".dxf");
 
     DisableRenderCommands();
 
@@ -2324,8 +2334,8 @@ void MainWindow::on_actionSave_Finalised_As_triggered()
     FilterKeys = true;
 
     if (f.isEmpty()) return;
+    if (!f.endsWith(".spvf"))f.append(".spvf");
     fname = f;
-
 
     DisableRenderCommands();
 
@@ -2362,8 +2372,9 @@ void MainWindow::on_actionSave_Finalised_As_triggered()
             count += static_cast<long>(SVObjects[i]->AppendCompressedFaces(fname, fname2, &(v.dataout)));
         }
 
-    ui->OutputLabelOverall->setText("SPVF finalised export complete");
+    ui->OutputLabelOverall->setText("SPVF export complete");
     ui->ProgBarOverall->setValue(100);
+    setSpecificProgress(100);
 
     EnableRenderCommands();
     QString shortfname = "SPIERSview - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
@@ -2386,6 +2397,7 @@ void MainWindow::on_actionSTL_triggered()
                                              tr("VAXML files (*.vaxml)"));
     FilterKeys = true;
     if (f.isEmpty()) return;
+    if (!f.endsWith(".vaxml"))f.append(".vaxml");
     fname = f;
 
 

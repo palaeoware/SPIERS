@@ -195,7 +195,8 @@ static void ErrorHandler(vtkObject *, unsigned long, void *, void *progress)
 {
     Q_UNUSED(progress)
 
-    QMessageBox::critical(mainWindow, "Error", "Fatal VTK error: This is likely an 'out of memory' issue - if however you see this message when working with small objects please ttact the software author");
+    QMessageBox::critical(mainWindow, "Error",
+                          "Fatal VTK error: This is likely an 'out of memory' issue - if however you see this message when working with small objects please contact the software author");
 }
 
 /**
