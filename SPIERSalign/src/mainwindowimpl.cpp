@@ -506,7 +506,7 @@ void readSuperGlobals()
     //Clear recentfilelist just in case already exists
     recentFileList.clear();
     //New settings to be read from the registry
-    QSettings settings("Mark Sutton", "SPIERSalign 2.0");
+    QSettings settings("Palaeoware", "SPIERSalign");
     int size = settings.beginReadArray("RecentFiles");
     //Read files from registry
     for (int i = 0; i < size; ++i)
