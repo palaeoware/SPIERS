@@ -692,13 +692,11 @@ void MainWindowImpl::on_ZoomSpinBox_valueChanged(int zoom)
 {
     if (DontRedoZoom) return;
     //handle converting the slider to the value typed
-
-    //work out what slider value should be
-    double t = log10(static_cast<double>(zoom)); //t=(slider/500)+1
-    int slider = (static_cast<int>(t) - 1) * 500;
-    CurrentZoom = (pow(10.0, (static_cast<double>(slider)) / 500 + 1)) / 100;
+    double t = log10(static_cast<double>(zoom));
+    int slider = static_cast<int>((t - 1.00) * 500.00);
+    CurrentZoom = zoom / 100;
     DontRedoZoom = true;
-    ZoomSpinBox->setValue(static_cast<int>(CurrentZoom * 100.));
+    ZoomSpinBox->setValue(static_cast<int>(CurrentZoom * 100.00));
     ZoomSlider->setValue(slider);
     DontRedoZoom = false;
     ShowImage(graphicsView);

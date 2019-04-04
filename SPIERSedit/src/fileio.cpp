@@ -2177,7 +2177,6 @@ void WriteSettings()
     out << MasksMoveForward;
     out << MenuInfoChecked;
     out << CurrentZoom;
-    qDebug() << "Settings saved zoom as" << CurrentZoom;
 
     out << ShowSlicePosition;
     for (int i = 0; i < FullStretches.count(); i++)
