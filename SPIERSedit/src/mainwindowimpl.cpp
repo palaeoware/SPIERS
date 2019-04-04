@@ -680,13 +680,7 @@ void MainWindowImpl::Zoom_Slider_Changed(int zoom)
 //Zoom slider changed - convert to real zoom, set zoom box
 {
     if (DontRedoZoom) return;
-
-    qDebug() << "In zoom change function" << zoom;
-
     CurrentZoom = (pow(10.0, (static_cast<double>(zoom)) / 500 + 1)) / 100;
-
-    qDebug() << "Current Zoom" << CurrentZoom;
-
     DontRedoZoom = true;
     ZoomSpinBox->setValue(static_cast<int>(CurrentZoom * 100));
     DontRedoZoom = false;
