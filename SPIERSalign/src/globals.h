@@ -29,6 +29,7 @@
 #include <QPushButton>
 #include <QString>
 #include <QTransform>
+#include <QSettings>
 
 //Legal Stuff
 #define COPYRIGHT "Copyright © 2018 Mark D. Sutton, Russell J. Garwood, Alan R.T.Spencer"

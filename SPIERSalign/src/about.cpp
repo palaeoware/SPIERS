@@ -36,7 +36,7 @@ About::About(QWidget *parent) :
 
     ui->header->setVisible(false);
 
-    ui->textLabel_1->setText(theMainWindow->windowTitle());
+    ui->textLabel_1->setText(QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION));
     ui->textLabel_1->setObjectName("aboutTextLabel1");
     ui->textLabel_1->setAlignment(Qt::AlignCenter);
 

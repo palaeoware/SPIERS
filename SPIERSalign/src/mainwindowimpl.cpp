@@ -73,7 +73,7 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     //Set up initial variables
     setupUi(this);
 
-    setWindowTitle(QString(PRODUCTNAME) + " v" + QString(SOFTWARE_VERSION) );
+    setWindowTitle(QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION));
 
     showMaximized();
 
@@ -526,7 +526,7 @@ void readSuperGlobals()
 void writeSuperGlobals()
 {
     //New settings to be written
-    QSettings settings("Mark Sutton", "SPIERSalign 2.0");
+    QSettings settings("Palaeoware", "SPIERSalign");
     settings.beginWriteArray("RecentFiles");
     int loop;
     if (recentFileList.size() > 20) loop = 20;
@@ -1926,7 +1926,7 @@ void MainWindowImpl::on_actionOpen_triggered()
 
         notes->clear();
 
-        this->setWindowTitle(QString(PRODUCTNAME) + " v" + QString(SOFTWARE_VERSION));
+        this->setWindowTitle(QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION));
     }
     currentImage = 0;
 
@@ -2205,10 +2205,10 @@ void  MainWindowImpl::redrawImage()
     LogText("*6\t");
 
     //Title bar
-    QString output = QString(SOFTWARE_VERSION) + imageList[currentImage]->fileName;
+    QString output = " - " + imageList[currentImage]->fileName;
     QString output2;
     output2.sprintf(" - (%d/%d)", currentImage + 1, imageList.count());
-    this->setWindowTitle(QString(PRODUCTNAME) + " v" + output + output2);
+    this->setWindowTitle(QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION) + output + output2);
 
     LogText("*7\t");
     //Rescale view
