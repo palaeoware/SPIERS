@@ -75,6 +75,8 @@ MainWindow::MainWindow(QWidget *parent)
     mainWindow = this; //set global pointer to this window
     showMaximized();
 
+    setWindowTitle(QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION));
+
     FilterKeys = true; //set to true to turn off interception of keys needed for type-in boxes
 
     //set up action group
@@ -292,7 +294,7 @@ agin:
         VAXML v;
         if (v.readVAXML(fname))
         {
-            QString shortfname = QString(PRODUCTNAME) + " v" + QString(SOFTWARE_VERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
+            QString shortfname = QString(PRODUCTNAME) + "  - Version " + QString(SOFTWARE_VERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
             this->setWindowTitle(shortfname);
             EnableRenderCommands();
             RefreshObjects();
@@ -313,7 +315,7 @@ agin:
         VAXML v;
         if (v.readSPVF(fname))
         {
-            QString shortfname = QString(PRODUCTNAME) + " v" + QString(SOFTWARE_VERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
+            QString shortfname = QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
             this->setWindowTitle(shortfname);
             EnableRenderCommands();
             RefreshObjects();
@@ -331,7 +333,7 @@ agin:
     {
         //qDebug() << "[Where I'm I?] In StartTimer_fired - file is SPV OR SP2";
 
-        QString shortfname = QString(PRODUCTNAME) + " v" + QString(SOFTWARE_VERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
+        QString shortfname = QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
         this->setWindowTitle(shortfname);
         SPVReader reader;
         reader.processFile(fname);
@@ -1098,10 +1100,10 @@ void MainWindow::RefreshInfo()
 
     //First - if there is a title use it for window title
     if (infoTitle.count() == 1)
-        setWindowTitle(QString(PRODUCTNAME) + ": " + infoTitle[0]);
+        setWindowTitle(QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION) + " - " + infoTitle[0]);
     else
     {
-        QString shortfname = QString(PRODUCTNAME) + " v" + QString(SOFTWARE_VERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
+        QString shortfname = QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
         setWindowTitle(shortfname);
     }
     ui->infoTreeWidget->clear();
@@ -2195,7 +2197,7 @@ void MainWindow::on_actionSave_As_triggered()
     if (f.isEmpty()) return;
     if (!f.endsWith(".spv"))f.append(".spv");
     fname = f;
-    QString shortfname = "SPIERSview - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
+    QString shortfname = QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
     this->setWindowTitle(shortfname);
 
     SPVWriter w;
@@ -2227,7 +2229,7 @@ void MainWindow::on_actionSave_Presurfaced_triggered()
     if (f.isEmpty()) return;
     if (!f.endsWith(".spv"))f.append(".spv");
     fname = f;
-    QString shortfname = "SPIERSview - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
+    QString shortfname = QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
     this->setWindowTitle(shortfname);
 
     SPVWriter w;
@@ -2377,7 +2379,7 @@ void MainWindow::on_actionSave_Finalised_As_triggered()
     setSpecificProgress(100);
 
     EnableRenderCommands();
-    QString shortfname = "SPIERSview - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
+    QString shortfname = QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
     this->setWindowTitle(shortfname);
     fname = oldfname; //restore fname for use in save as
 }
