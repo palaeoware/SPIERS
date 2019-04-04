@@ -314,7 +314,7 @@ QString DefaultPath;
 
 void WriteSuperGlobals()
 {
-    QSettings settings("Mark Sutton", "SPIERSedit 2.0");
+    QSettings settings("Palaeoware", "SPIERSedit");
     settings.beginWriteArray("RecentFiles");
     for (int i = 0; i < RecentFileList.size(); ++i)
     {
@@ -331,14 +331,14 @@ void WriteSuperGlobals()
     settings.setValue("CacheCompressionLevel", CacheCompressionLevel);
     settings.setValue("FileCompressionLevel", FileCompressionLevel);
     settings.setValue("RenderCache", RenderCache);
-    settings.setValue("DefaultFilePath", RenderCache);
+    settings.setValue("DefaultFilePath", DefaultPath);
 }
 
 void ReadSuperGlobals()
 {
     RecentFileList.clear(); //just in case
     QString t1;
-    QSettings settings("Mark Sutton", "SPIERSedit 2.0");
+    QSettings settings("Palaeoware", "SPIERSedit");
     int size = settings.beginReadArray("RecentFiles");
     for (int i = 0; i < size; ++i)
     {
@@ -357,7 +357,7 @@ void ReadSuperGlobals()
     CacheCompressionLevel = settings.value("CacheCompressionLevel", 0).toInt();
     FileCompressionLevel = settings.value("FileCompressionLevel", 0).toInt();
     RenderCache = settings.value("RenderCache", false).toBool();
-    DefaultPath = settings.value("DefaultFilePath", "c:/").toString();
+    DefaultPath = settings.value("DefaultFilePath", QDir::homePath()).toString();
 }
 
 void RecentFile(QString fname)

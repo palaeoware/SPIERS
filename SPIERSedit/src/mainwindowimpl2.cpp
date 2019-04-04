@@ -865,9 +865,8 @@ void MainWindowImpl::SetUpGUIFromSettings()
     //work out slider etc settings from currentzoom
 
     DontRedoZoom = true; //avoid cascades on updating controls
-    double t2 = log10(CurrentZoom * 100); //t=(slider/500)+1
-    int slider = (static_cast<int>(t2) - 1) * 500;
-    CurrentZoom = (pow(10.0, (static_cast <double>(slider)) / 500 + 1)) / 100; //fix CurrentZoom to nearest correct value
+    double t2 = log10(CurrentZoom * 100);
+    int slider = static_cast<int>((t2 - 1.0) * 500.00);
     ZoomSpinBox->setValue(static_cast<int>(CurrentZoom * 100));
     ZoomSlider->setValue(slider);
     DontRedoZoom = false;

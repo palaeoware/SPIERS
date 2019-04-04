@@ -35,7 +35,7 @@
 #include "mainwindowimpl.h"
 
 // Internal versions for input/output file purposes
-#define SPEFILEVERSION 2
+#define SPEFILEVERSION 3
 #define SPVFILEVERSION 1010
 
 //Legal Stuff

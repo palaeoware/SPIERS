@@ -1476,6 +1476,7 @@ void GetSettingsMinus5(QDataStream *in)
 
 void GetSettingsMinus6(QDataStream *in)
 {
+
     //Import from last VB version of SPIERS. This is a painful series of bodges, but if it works it works!
     int n, m, o;
     bool temp;
@@ -1895,8 +1896,6 @@ void GetSettingsMinus6(QDataStream *in)
     return;
 }
 
-
-
 bool GetSettings(QDir srcdir)
 //This is old Vb import one
 {
@@ -2178,6 +2177,8 @@ void WriteSettings()
     out << MasksMoveForward;
     out << MenuInfoChecked;
     out << CurrentZoom;
+    qDebug() << "Settings saved zoom as" << CurrentZoom;
+
     out << ShowSlicePosition;
     for (int i = 0; i < FullStretches.count(); i++)
         out << FullStretches[i];
@@ -2192,25 +2193,23 @@ void WriteSettings()
     file.close();
 }
 
+/**
+ * @brief ReadSettings Read Settings File - QT version (i.e. the spe file)
+ */
 void ReadSettings()
-//Read Settings File - QT version (i.e. the spe file
 {
-    //initially SettingsFileName has full name and path
+    // Initially SettingsFileName has full name and path
     QString dummy;
     int version, dummy_int;
     int n, i;
     double dummy_double;
     QString path = FullSettingsFileName.left(qMax(FullSettingsFileName.lastIndexOf("\\"), FullSettingsFileName.lastIndexOf("/")));
-    //qDebug()<<"Path is :"<<path<<":";
-    //qDebug()<<"Reading"<<FullSettingsFileName;
     QFile file(FullSettingsFileName);
 
     int lastsep = qMax(FullSettingsFileName.lastIndexOf("\\"), FullSettingsFileName.lastIndexOf("/")); //this is last separator in path
     QString sfname = FullSettingsFileName.mid(lastsep + 1);
     int lastsep2 = sfname.lastIndexOf("."); //this is last separator in path
     SettingsFileName = sfname.left(lastsep2);
-    //qDebug()<<"Trimmed name="<<SettingsFileName;
-    //qDebug()<<"SFN"<<SettingsFileName;
     if (!file.open(QIODevice::ReadOnly))
     {
         Message("Warning - can't open settings file " + SettingsFileName + ".spe to read from");
@@ -2219,7 +2218,6 @@ void ReadSettings()
     QDataStream in(&file);
     in.setVersion(QDataStream::Qt_4_3);
     in.setByteOrder(QDataStream::LittleEndian);
-
 
     //First header - check it has standard text, appropriate v number, then SettingsFileName=myname
     in >> dummy;
@@ -2230,11 +2228,9 @@ void ReadSettings()
     }
 
     in >> version;
-
     if (version > SPEFILEVERSION) Message("Warning - settings file " + SettingsFileName + " is too recent for this version of SPIERSedit. Will try to read anyway...");
 
     in >> dummy;
-    //qDebug()<<"Read"<<dummy;
     if (dummy != SettingsFileName) Message("Warning - settings file name has been changed (from " + dummy + ") - it will be reset to " + SettingsFileName + ".spe when next saved");
 
 
@@ -2247,7 +2243,6 @@ void ReadSettings()
     {
         QFile(backupFilePath).remove();
     }
-    //qDebug() << "COPY " << FullSettingsFileName << " TO " << backupFilePath;
     QFile::copy(FullSettingsFileName, backupFilePath);
 
     //Do all the simple stuff first
@@ -2271,10 +2266,10 @@ void ReadSettings()
     in >> RangeHardFill >> RangeSelectedOnly >> OutputMirroring;
     in >> PixSens >> XYDownsample >> ZDownsample >> SquareBrush;
     in >> SegmentCount;
+
     //Read sample array
     SampleArray.resize(SampleArraySize * 4);
     in.readRawData(SampleArray.data(), SampleArraySize * 4);
-
 
     //Read Filenames
     Files.clear();
@@ -2290,7 +2285,6 @@ void ReadSettings()
     }
 
     //fix path if necessary
-
     FullFiles = Files; //back it up - needed for curve import
 
     //Segments
@@ -2317,7 +2311,6 @@ void ReadSettings()
         in >> seg->Activated;
     }
 
-    //qDebug("RS3");
     //Masks
     qDeleteAll(MasksSettings.begin(), MasksSettings.end());
     MasksSettings.clear();
@@ -2337,20 +2330,12 @@ void ReadSettings()
         in >> m->ListOrder;
     }
 
-    //qDebug("RS4");
-    //Curves - delete the internal lists, then all existing curves.
-//  qDebug()<<"RS4b1"<<CurveCount;
-//  qDebug()<<"RS4b2"<<CurveCount<<Curves.count();
-    //for (i=0; i<Curves.count(); i++) {qDebug()<<"Removing spline points"; qDeleteAll(Curves[i]->SplinePoints); Curves[i]->SplinePoints.clear(); qDebug()<<"Curve"<<i<<Curves[i]; delete Curves[i];}
     qDeleteAll(Curves);
-//  qDebug()<<"RS4b3"<<CurveCount;
     Curves.clear();
-//  qDebug()<<"RS4b4"<<CurveCount;
     Curve *c;
-//  qDebug()<<"RS4b5"<<CurveCount;
+
     for (i = 0; i < CurveCount; i++)
     {
-//      qDebug()<<"RS4b-in loop"<<i;
         c = new Curve("Default");
         Curves.append(c);
         in >> c->Name;
@@ -2361,8 +2346,6 @@ void ReadSettings()
         in >> c->ListOrder;
 
         //now the hard stuff
-//      qDebug()<<"RS4b-in loop 2"<<i;
-
         for (int j = 0; j < Files.count(); j++)
         {
             in >> c->SplinePoints[j]->Count;
@@ -2375,13 +2358,9 @@ void ReadSettings()
                 c->SplinePoints[j]->Y.append(dummy);
             }
         }
-
-//      qDebug()<<"RS4b-in loop 3"<<i;
-
     }
 
     //OutputObjects
-    //qDebug("RS5");
     qDeleteAll(OutputObjects.begin(), OutputObjects.end());
     OutputObjects.clear();
     OutputObject *o;
@@ -2424,10 +2403,6 @@ void ReadSettings()
         in >> o->Merge;
     }
 
-    //the QByteArray for
-    //qDebug("RS6");
-    //if (in.atEnd()) {file.close(); return;} //possible finishing point!
-
     QByteArray b;
     in >> b;
     AppMainWindow->restoreState(b, SPEFILEVERSION);
@@ -2451,18 +2426,22 @@ void ReadSettings()
     if (!in.atEnd()) in >> CurrentZoom;
     if (!in.atEnd()) in >> ShowSlicePosition;
     FullStretches.clear();
-    if (!in.atEnd()) for (int i = 0; i < FileCount; i++)
+    if (!in.atEnd())
+        for (int i = 0; i < FileCount; i++)
         {
             in >> dummy_double;
             FullStretches.append(dummy_double);
         }
 
+    // Fix for zoom factors that are wrongly saved as 0.1
+    if (CurrentZoom == 0.1 && version <= 2)
+    {
+        CurrentZoom = 1.0;
+    }
 
-    //now a bodge
     //Filenames are stored as absolute files - means can't relocate SPEs
     //To fix and retain back-compatibility, code belows fixes path of files
     //to path of SPE
-
     QString PathOfSPE = FullSettingsFileName.left(qMax(FullSettingsFileName.lastIndexOf("\\"), FullSettingsFileName.lastIndexOf("/")));
     for (int i = 0; i < FileCount; i++)
         Files[i] = PathOfSPE + Files[i].mid
@@ -2499,6 +2478,5 @@ void ReadSettings()
     }
     else Stretches = FullStretches;
     file.close();
-
 }
 

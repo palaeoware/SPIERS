@@ -681,7 +681,12 @@ void MainWindowImpl::Zoom_Slider_Changed(int zoom)
 {
     if (DontRedoZoom) return;
 
+    qDebug() << "In zoom change function" << zoom;
+
     CurrentZoom = (pow(10.0, (static_cast<double>(zoom)) / 500 + 1)) / 100;
+
+    qDebug() << "Current Zoom" << CurrentZoom;
+
     DontRedoZoom = true;
     ZoomSpinBox->setValue(static_cast<int>(CurrentZoom * 100));
     DontRedoZoom = false;
@@ -861,25 +866,11 @@ void MainWindowImpl::Menu_Window_Generate()
 void MainWindowImpl::FileOpen()
 {
     QMutexLocker locker(&mutex);
-    //Select file
-
-    /*QFileDialog dialog(this);
-    dialog.setFileMode(QFileDialog::ExistingFile);
-    dialog.setNameFilter("SPIERSedit files (*.spe)");
-    dialog.setViewMode(QFileDialog::Detail);
-
-    QStringList files;
-    if (dialog.exec())
-         files = dialog.selectedFiles();
-    else return;
-
-    QString file=files[0];
-    */
 
     QString file = QFileDialog::getOpenFileName(
                        this,
                        "Select SPIERSedit settings file",
-                       "D:/Research/3dFiles/Grinding/Acaen/5-2/Cut",
+                       QDir::homePath(),
                        "SPIERSedit files (*.spe)");
 
 
@@ -889,6 +880,7 @@ void MainWindowImpl::FileOpen()
     FullSettingsFileName = file;
 
     ReadSettings();
+
     //Now do set up - same as for
     if (Active)
     {
@@ -993,9 +985,7 @@ void MainWindowImpl::Start()
     else fwidth4 = (fwidth / 4) * 4 + 4;
     fheight = cheight / ColMonoScale;
 
-
     LoadAllData(CurrentFile);
-
 
     cwidth4 = cwidth;
     if (GreyImage)
