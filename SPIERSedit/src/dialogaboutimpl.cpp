@@ -36,7 +36,7 @@ DialogAboutImpl::DialogAboutImpl(QWidget *parent, Qt::WindowFlags f)
 
     header->setVisible(false);
 
-    textLabel_1->setText(AppMainWindow->windowTitle());
+    textLabel_1->setText(QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION));
     textLabel_1->setObjectName("aboutTextLabel1");
     textLabel_1->setAlignment(Qt::AlignCenter);
 

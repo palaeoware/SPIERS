@@ -266,7 +266,7 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
 
     // Makes sure you can see tab labels when docked with decent size font
     mainwin->setTabPosition(Qt::LeftDockWidgetArea, QTabWidget::West);
-    mainwin->setWindowTitle("SPIERSEdit - Version " + QString(SOFTWARE_VERSION) + " - No files loaded");
+    mainwin->setWindowTitle(QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION) + " - No files loaded");
 
     pausetimers = false;
 
@@ -988,7 +988,7 @@ void MainWindowImpl::Start()
     BuildRecentFiles();
     dirty.resize(fheight * fwidth);
 
-    setWindowTitle("SPIERSEdit - " + SettingsFileName + " - " + Files[CurrentFile]);
+    setWindowTitle(QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION) + " - " + SettingsFileName + " - " + Files[CurrentFile]);
     Active = true; //flag that we are GO
 
     ShowImage(graphicsView);
@@ -1128,7 +1128,7 @@ void MainWindowImpl::SaveAs()
     RecentFile(FullSettingsFileName);
     BuildRecentFiles();
     WriteSuperGlobals();
-    setWindowTitle("SPIERSEdit - " + SettingsFileName + " - " + Files[CurrentFile]);
+    setWindowTitle(QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION) + " - " + SettingsFileName + " - " + Files[CurrentFile]);
 }
 
 void MainWindowImpl::Menu_File_Import()
