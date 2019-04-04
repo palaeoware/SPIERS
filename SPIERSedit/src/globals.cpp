@@ -202,8 +202,6 @@ Curve::Curve(QString name)
     Closed = false;
     Filled = false;
     Segment = 0;
-//  qDebug()<<"Constructing curve "<<name<<"Files.count is "<<Files.count();
-//  qDebug()<<Files;
 
     for (int i = 0; i < FullFiles.count(); i++)
     {
