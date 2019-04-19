@@ -221,7 +221,7 @@ bool VAXML::readSPVF(QString fname)
                                 {
                                     QString text = xml.readElementText();
                                     if (text.length() > 1) xmlError("invalid key for group");
-                                    if (new_group->key > nullptr) return xmlError("multiple keys for a group");
+                                    if (new_group->key != nullptr) return xmlError("multiple keys for a group");
                                     QByteArray b = text.toUpper().toLatin1();
                                     new_group->key = QChar(b.at(0));
                                 }
@@ -345,7 +345,7 @@ bool VAXML::readSPVF(QString fname)
                                 {
                                     QString text = xml.readElementText();
                                     if (text.length() > 1) xmlError("invalid key for object");
-                                    if (new_obj->key > nullptr) return xmlError("multiple keys for a object");
+                                    if (new_obj->key != nullptr) return xmlError("multiple keys for a object");
                                     QByteArray b = text.toUpper().toLatin1();
                                     new_obj->key = QChar(b.at(0));
                                 }
@@ -710,7 +710,7 @@ bool VAXML::readVAXML(QString fname)
                                     {
                                         xmlError("invalid key for group");
                                     }
-                                    if (new_group->key > nullptr)
+                                    if (new_group->key != nullptr)
                                     {
                                         return xmlError("multiple keys for a group");
                                     }
@@ -837,7 +837,7 @@ bool VAXML::readVAXML(QString fname)
                                 {
                                     QString text = xml.readElementText();
                                     if (text.length() > 1) xmlError("invalid key for object");
-                                    if (new_obj->key > nullptr) return xmlError("multiple keys for a object");
+                                    if (new_obj->key != nullptr) return xmlError("multiple keys for a object");
                                     QByteArray b = text.toUpper().toLatin1();
                                     new_obj->key = QChar(b.at(0));
                                 }
