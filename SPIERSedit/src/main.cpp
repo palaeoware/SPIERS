@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 
 QString fname;
 
-main::main(int argc, char *argv[]) : QApplication(argc, argv)
+main::main(int &argc, char *argv[]) : QApplication(argc, argv)
 {
     //do nothing
     donthandlefileevent = false;
