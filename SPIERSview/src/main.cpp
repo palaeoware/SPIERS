@@ -156,6 +156,8 @@ int main(int argc, char *argv[])
 #include "main.h"
 #include "mainwindow.h"
 #include "globals.h"
+#include "../SPIERScommon/src/netmodule.h"
+#include "../SPIERScommon/src/darkstyletheme.h"
 
 /**
  * @brief qMain::qMain
