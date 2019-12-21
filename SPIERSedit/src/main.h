@@ -35,7 +35,7 @@ public:
 
 
 private:
-    bool event(QEvent *);
+    // bool event(QEvent *);
 };
 
 #endif // MAIN_H
