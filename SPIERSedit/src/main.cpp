@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
     myapp a(argc, argv);
 
     NetModule n;
-    n.CheckForNew();
+    n.checkForNew();
 
     a.fn = "";
     a.namereceived = false;

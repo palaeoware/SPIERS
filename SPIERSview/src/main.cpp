@@ -164,7 +164,8 @@ int main(int argc, char *argv[])
  * @param argc
  * @param argv
  */
-main::main(int argc, char *argv[]) : QApplication(argc, argv)
+
+main::main(int &argc, char *argv[]) : QApplication(argc, argv)
 {
     //do nothing
     donthandlefileevent = false;
@@ -215,12 +216,10 @@ int main(int argc, char *argv[])
     if (argc == 2) if (QString(argv[1]).length() < 2) argc = 1; //this to cure weird mac crash
     argc = 1;
 
-    main a(argc, argv);
-
-
+    class main a(argc, argv);
 
     NetModule n;
-    n.CheckForNew();
+    n.checkForNew();
 
     a.fn = "";
     a.namereceived = false;
