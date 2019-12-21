@@ -25,7 +25,7 @@
  * @brief mainview::mainview
  * @param parent
  */
-mainview::mainview(QObject *parent = nullptr) : QGraphicsView()
+mainview::mainview(QObject *parent) : QGraphicsView()
 {
     Q_UNUSED(parent);
     return;

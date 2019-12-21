@@ -27,7 +27,7 @@ class mainview : public QGraphicsView
 {
     Q_OBJECT
 public:
-    explicit mainview(QObject *parent);
+    explicit mainview(QObject *parent = nullptr);
 
 protected:
     void wheelEvent(QWheelEvent *event);

@@ -234,8 +234,8 @@ macx {
         -lvtkjpeg \
         -lvtkexpat \
         -lvtksys \
-        -lstdc++ \
-        -mlibz.a
+        -lstdc++
+        #-mlibz.a
         INCLUDEPATH += "/usr/local/Cellar/vtk/8.2.0_5/include/vtk-8.2"
 }
 
