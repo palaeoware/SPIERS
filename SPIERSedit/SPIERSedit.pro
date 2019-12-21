@@ -87,6 +87,7 @@ HEADERS += src/display.h \
     src/dialogaboutimpl.h \
     src/keysafespinbox.h \
     src/mainview.h \
+    src/main.h \
     ../SPIERScommon/src/darkstyletheme.h \
     ../SPIERScommon/src/netmodule.h \
     ../SPIERScommon/src/semanticversion.h \

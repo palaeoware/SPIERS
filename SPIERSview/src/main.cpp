@@ -12,17 +12,17 @@
 #include <QDesktopWidget>
 #include <QScreen>
 
-#ifndef __APPLE__
-
-#ifdef _WIN64
-#include <windows.h>
-#endif
-
 #include "main.h"
 #include "mainwindow.h"
 #include "globals.h"
 #include "../SPIERScommon/src/netmodule.h"
 #include "../SPIERScommon/src/darkstyletheme.h"
+
+#ifndef __APPLE__
+
+#ifdef _WIN64
+#include <windows.h>
+#endif
 
 /**
  * @brief logMessageOutput
@@ -152,12 +152,6 @@ int main(int argc, char *argv[])
 
 
 #ifdef __APPLE__
-
-#include "main.h"
-#include "mainwindow.h"
-#include "globals.h"
-#include "../SPIERScommon/src/netmodule.h"
-#include "../SPIERScommon/src/darkstyletheme.h"
 
 /**
  * @brief qMain::qMain
