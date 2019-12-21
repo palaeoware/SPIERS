@@ -18,6 +18,8 @@
 #ifndef MAIN_H
 #define MAIN_H
 
+#ifdef __APPLE__
+
 #include <QApplication>
 #include <QString>
 #include <QEvent>
@@ -35,7 +37,9 @@ public:
 
 
 private:
-    // bool event(QEvent *);
+    bool event(QEvent *);
 };
+
+#endif
 
 #endif // MAIN_H
