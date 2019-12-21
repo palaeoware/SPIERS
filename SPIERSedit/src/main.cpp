@@ -81,13 +81,13 @@ int main(int argc, char **argv)
 
 QString fname;
 
-myapp::myapp(int argc, char *argv[]) : QApplication(argc, argv)
+main::main(int argc, char *argv[]) : QApplication(argc, argv)
 {
     //do nothing
     donthandlefileevent = false;
 }
 
-bool myapp::event(QEvent *event)
+bool main::event(QEvent *event)
 {
     //we don't do anything if we were passed and argv1 - i.e. if we are a child process of first one
     if (donthandlefileevent == true) return QApplication::event(event);
@@ -115,7 +115,7 @@ bool myapp::event(QEvent *event)
 
 int main(int argc, char *argv[])
 {
-    myapp a(argc, argv);
+    main a(argc, argv);
 
     NetModule n;
     n.checkForNew();
