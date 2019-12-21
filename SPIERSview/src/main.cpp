@@ -154,6 +154,8 @@ int main(int argc, char *argv[])
 #ifdef __APPLE__
 
 #include "main.h"
+#include "mainwindow.h"
+#include "globals.h"
 
 /**
  * @brief qMain::qMain

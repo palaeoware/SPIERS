@@ -218,25 +218,25 @@ unix {
 
 # MacOS common build here (not currently tested or supported)
 macx {
-	LIBS += -L/Users/{user}/VTK-bin/lib/vtk-5.2 \
-    -lvtkRendering \
-    -lvtkGraphics \
-    -lvtkImaging \
-    -lvtkIO \
-    -lvtkFiltering \
-    -lvtkCommon \
-    -lvtkftgl \
-    -lvtkfreetype \
-    -lvtkDICOMParser \
-    -lvtkpng \
-    -lvtktiff \
-    -lvtkzlib \
-    -lvtkjpeg \
-    -lvtkexpat \
-    -lvtksys \
-    -lstdc++ \
-    -mlibz.a
-	INCLUDEPATH += "/Users/{user}/VTK-bin/include/vtk-5.2"
+        LIBS += -L/usr/local/Cellar/vtk/8.2.0_5/include/vtk-8.2 \
+        -lvtkRendering \
+        -lvtkGraphics \
+        -lvtkImaging \
+        -lvtkIO \
+        -lvtkFiltering \
+        -lvtkCommon \
+        -lvtkftgl \
+        -lvtkfreetype \
+        -lvtkDICOMParser \
+        -lvtkpng \
+        -lvtktiff \
+        -lvtkzlib \
+        -lvtkjpeg \
+        -lvtkexpat \
+        -lvtksys \
+        -lstdc++ \
+        -mlibz.a
+        INCLUDEPATH += "/usr/local/Cellar/vtk/8.2.0_5/include/vtk-8.2"
 }
 
 SOURCES += src/main.cpp \
