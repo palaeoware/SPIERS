@@ -714,6 +714,9 @@ void CopyingImpl::CompressAllSourceFiles(int level)
 
     bool GSflag = false;
     image.load(FullFiles[0]);
+
+    image.load(FullFiles[0]);
+
     if (image.allGray() && image.format() != QImage::Format_Indexed8)
         if (QMessageBox::question(this, "Convert to Greyscale?",
                                   "The first image at least appears to be a greyscale image saved as colour.\nDo you want to convert all images to greyscale? This slow the conversion process, but will save space and increase performance.\nClick 'Yes' if you want to convert all images to greyscale, or 'No' to proceed as normal.\n"

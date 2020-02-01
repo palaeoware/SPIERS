@@ -49,6 +49,7 @@
 #include <QFileInfo>
 #include <QMutexLocker>
 #include <QTextStream>
+#include <QStandardPaths>
 
 bool temptestflag = false;
 
@@ -1280,10 +1281,14 @@ void MainWindowImpl::Menu_File_New()  //create from scratch
     QStringList files = QFileDialog::getOpenFileNames(
                             nullptr,
                             "Select source images for dataset",
-                            "D:\\Research\\3dFiles\\Grinding\\Acaen\\5-2\\Test",
-                            "Images (*.png *.jpg *.jpeg *.bmp)");
+                            QString(QStandardPaths::DesktopLocation),
+                            "Images (*.png *.jpg *.jpeg *.bmp *.tif *.tiff)");
 
     qSort(files.begin(), files.end());
+
+    if (files[0].endsWith(".tif")
+            || files[0].endsWith(".tiff"))
+        Message("Tiff support is a relatively recent addition to SPIERSedit, and has not been extensively tested. Please can you submit an issue on the Palaeoware SPIERS GitHub repository should you encounter any issues.");
 
     //Now we do a whole load of initialisation!
     if (files.count() == 0) return; //if nothing there, cancel
