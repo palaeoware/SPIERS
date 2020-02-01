@@ -75,6 +75,7 @@ int main(int argc, char **argv)
 }
 #endif
 
+
 #ifdef __APPLE__
 #include "main.h"
 
@@ -115,7 +116,7 @@ bool main::event(QEvent *event)
 
 int main(int argc, char *argv[])
 {
-    main a(argc, argv);
+    class main a(argc, argv);
 
     NetModule n;
     n.checkForNew();
@@ -164,5 +165,4 @@ int main(int argc, char *argv[])
 }
 
 #endif
-
 
