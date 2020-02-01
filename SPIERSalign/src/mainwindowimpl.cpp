@@ -43,6 +43,7 @@
 #include <QUrl>
 #include <QVBoxLayout>
 #include <QFont>
+#include <QStandardPaths>
 
 #include <math.h>
 #include <qbitmap.h>
@@ -1932,8 +1933,8 @@ void MainWindowImpl::on_actionOpen_triggered()
 
     if (fullSettingsFileName.isEmpty())
     {
-        filesDirectoryString = QFileDialog::getExistingDirectory(this, tr("Select folder containing image files"),
-                                                                 "d:/", QFileDialog::ShowDirsOnly);
+        filesDirectoryString = QFileDialog::getExistingDirectory(this, tr("Select folder containing image files; note the files within a folder will not be listed if you are using Windows."),
+                                                                 QString(QStandardPaths::DesktopLocation), QFileDialog::ShowDirsOnly);
         if (filesDirectoryString == "") return; //dialogue cancelled
         filesDirectory = filesDirectoryString; //construct directory object
     }
@@ -4266,8 +4267,8 @@ void MainWindowImpl::on_actionLoad_Settings_File_triggered()
 
     int i, j = 0;
     if ((QMessageBox::question(nullptr, "Confirm", "Are you sure you want to load a settings file? This will overwrite the current settings and apply the new ones to the currently open dataset.",
-                               QMessageBox::Ok, QMessageBox::Cancel)) == QMessageBox::Cancel)return;
-    QString settingsFile = QFileDialog::getOpenFileName(this, tr("Select settings file"), "d:/");
+                               QMessageBox::Ok, QMessageBox::Cancel)) == QMessageBox::Cancel) return;
+    QString settingsFile = QFileDialog::getOpenFileName(this, tr("Select settings file"), QString(QStandardPaths::DesktopLocation));
     if (settingsFile == "") return;
 
     QFile settings(settingsFile);
