@@ -74,6 +74,8 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     //Set up initial variables
     setupUi(this);
 
+    qDebug() << QImageWriter::supportedImageFormats();
+
     setWindowTitle(QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION));
 
     showMaximized();
@@ -1949,7 +1951,7 @@ void MainWindowImpl::on_actionOpen_triggered()
     recentFile(filesDirectoryString);
 
     QStringList FilterList;
-    FilterList << "*.bmp" << "*.jpg" << "*.jpeg" << "*.png";
+    FilterList << "*.bmp" << "*.jpg" << "*.jpeg" << "*.png" << "*.tiff" << "*.tif";
     drectoryFileList = filesDirectory.entryList(FilterList, QDir::Files, QDir::Name);
 
     if (drectoryFileList.count() == 0)
@@ -2101,12 +2103,14 @@ void MainWindowImpl::on_actionOpen_triggered()
     for (i = 0; i < imageList.count(); i++)
     {
         imageList[i]->format = -1;
+        if (imageList[i]->fileName.endsWith(".tif", Qt::CaseInsensitive) || imageList[i]->fileName.endsWith(".tiff", Qt::CaseInsensitive))imageList[i]->format = 3;
         if (imageList[i]->fileName.endsWith(".png", Qt::CaseInsensitive))imageList[i]->format = 2;
         if (imageList[i]->fileName.endsWith(".jpg", Qt::CaseInsensitive) || imageList[i]->fileName.endsWith(".jpeg", Qt::CaseInsensitive))imageList[i]->format = 1;
         if (imageList[i]->fileName.endsWith(".bmp", Qt::CaseInsensitive))imageList[i]->format = 0;
+
         if (imageList[i]->format == -1)
         {
-            QMessageBox::warning(this, "Error", "Please check extensions - should be either .jpg, .jpeg, .bmp or .png", QMessageBox::Ok);
+            QMessageBox::warning(this, "Error", "Please check extensions - should be either .jpg, .jpeg, .bmp, .tif, .tiff or .png", QMessageBox::Ok);
             return;
         }
     }
@@ -3442,6 +3446,7 @@ void MainWindowImpl::on_actionApply_Propogation_triggered()
             if (imageList[i]->format == 0)imageToDraw.save(savename, "BMP", 100);
             if (imageList[i]->format == 1)imageToDraw.save(savename, "JPG", 100);
             if (imageList[i]->format == 2)imageToDraw.save(savename, "PNG", 50);
+            if (imageList[i]->format == 3)imageToDraw.save(savename, "TIFF");
         }
     }
     else if (actionLock_Back->isChecked())
@@ -3552,6 +3557,7 @@ void MainWindowImpl::on_actionApply_Propogation_triggered()
             if (imageList[i]->format == 0)imageToDraw.save(savename, "BMP", 100);
             if (imageList[i]->format == 1)imageToDraw.save(savename, "JPG", 100);
             if (imageList[i]->format == 2)imageToDraw.save(savename, "PNG", 50);
+            if (imageList[i]->format == 3)imageToDraw.save(savename, "TIFF");
         }
     }
     else QMessageBox::warning(this, "Error", "You should never see this - propagation failed, email me.", QMessageBox::Ok);
@@ -4356,6 +4362,7 @@ void MainWindowImpl::on_actionLoad_Settings_File_triggered()
     for (i = 0; i < imageList.count(); i++)
     {
         imageList[i]->format = -1;
+        if (imageList[i]->fileName.endsWith(".tif", Qt::CaseInsensitive) || imageList[i]->fileName.endsWith(".tiff", Qt::CaseInsensitive))imageList[i]->format = 3;
         if (imageList[i]->fileName.endsWith(".png", Qt::CaseInsensitive))imageList[i]->format = 2;
         if (imageList[i]->fileName.endsWith(".jpg", Qt::CaseInsensitive) || imageList[i]->fileName.endsWith(".jpeg", Qt::CaseInsensitive))imageList[i]->format = 1;
         if (imageList[i]->fileName.endsWith(".bmp", Qt::CaseInsensitive))imageList[i]->format = 0;
@@ -4430,6 +4437,7 @@ void MainWindowImpl::on_actionLoad_Settings_File_triggered()
             if (imageList[i]->format == 0)imageToDraw.save(savename, "BMP", 100);
             if (imageList[i]->format == 1)imageToDraw.save(savename, "JPG", 100);
             if (imageList[i]->format == 2)imageToDraw.save(savename, "PNG", 50);
+            if (imageList[i]->format == 3)imageToDraw.save(savename, "TIFF");
 
             redrawImage();
         }
