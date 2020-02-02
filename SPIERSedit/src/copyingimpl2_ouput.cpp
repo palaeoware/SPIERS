@@ -1371,7 +1371,16 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
 #ifdef __APPLE__
         //qDebug()<<"file:" + outputfile;
         //QMessageBox::information(0,"","file:" + outputfile);
-        QDesktopServices::openUrl(QUrl("file:" + outputfile, QUrl::TolerantMode));
+        //QDesktopServices::openUrl(QUrl("file:" + outputfile, QUrl::TolerantMode));
+
+        //RJG - sorting luanch spiersview on MAC export.
+        //At first going to try same as linux - old code above
+        QString program = qApp->applicationFilePath();
+        program.replace("/SPIERSedit", "/SPIERSview");
+        QStringList arguments;
+        arguments << outputfile;
+        QProcess::startDetached (program, arguments, qApp->applicationDirPath());
+
 #endif
 
 #ifdef __linux__
