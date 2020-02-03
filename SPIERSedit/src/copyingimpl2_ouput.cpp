@@ -1374,7 +1374,7 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
         //QDesktopServices::openUrl(QUrl("file:" + outputfile, QUrl::TolerantMode));
 
         //RJG - sorting luanch spiersview on MAC export.
-        //At first going to try same as linux - old code above
+        //Old code above - new approach below is same as Linux, and works just fine
         QString program = qApp->applicationFilePath();
         program.replace("/SPIERSedit", "/SPIERSview");
         QStringList arguments;
