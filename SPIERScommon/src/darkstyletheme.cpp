@@ -16,6 +16,8 @@
  */
 
 #include "darkstyletheme.h"
+#include <QRect>
+#include <QDesktopWidget>
 
 /**
  * @brief DarkStyleTheme::DarkStyleTheme
@@ -91,10 +93,15 @@ void DarkStyleTheme::polish(QApplication *app)
 {
     if (!app) return;
 
-    //ARTS - Increase font size for better reading,
-    QFont defaultFont = QApplication::font();
-    defaultFont.setPointSize(defaultFont.pointSize() + 1);
-    QApplication::setFont(defaultFont);
+    QRect screenGeometry = QApplication::desktop()->screenGeometry();
+    if (screenGeometry.width() > 1920)
+    {
+        //ARTS - Increase font size for better reading,
+        //RJG - Best to only do this at high screen resolutions, based on testing
+        QFont defaultFont = QApplication::font();
+        defaultFont.setPointSize(defaultFont.pointSize() + 1);
+        QApplication::setFont(defaultFont);
+    }
 
     // Load CSS Stylesheet from resources
     QFile darkstyleQSS(QStringLiteral(":/darkstyle/stylesheet_dark.qss"));
