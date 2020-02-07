@@ -106,6 +106,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->actionNo_Stereo->setChecked(true);
 
     gl3widget = new GlWidget(ui->frameVTK);
+
     gllayout = new QHBoxLayout;
     gllayout->addWidget(gl3widget);
     gllayout->setSpacing(2);

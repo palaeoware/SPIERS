@@ -62,6 +62,7 @@ GlWidget::GlWidget(QWidget *parent)
 #endif
 
     surfaceFormat.setRenderableType(QSurfaceFormat::OpenGL);
+    surfaceFormat.setProfile(QSurfaceFormat::CoreProfile);
     setFormat(surfaceFormat);
 
     // Create new GL scale grid
