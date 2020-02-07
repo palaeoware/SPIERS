@@ -133,7 +133,7 @@ win32 {
 }
 
 # Unix/Linux common build here
-unix!macx {
+unix:!macx {
         #Libraries from VTK package (e.g. sudo apt-get install libvtk7-qt-dev).
 	INCLUDEPATH +=/usr/include/vtk-7.1/
 	LIBS += -L/usr/include/vtk-7.1/ \

@@ -18,12 +18,6 @@
 #include "../SPIERScommon/src/netmodule.h"
 #include "../SPIERScommon/src/darkstyletheme.h"
 
-#ifndef __APPLE__
-
-#ifdef _WIN64
-#include <windows.h>
-#endif
-
 /**
  * @brief logMessageOutput
  * @param type
@@ -53,6 +47,12 @@ void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const Q
         txt = QString("Info: %1 (%2:%3, %4)").arg(localMsg.constData()).arg(context.file).arg(context.line).arg(context.function);
         break;
     }
+
+#ifndef __APPLE__
+
+#ifdef _WIN64
+#include <windows.h>
+#endif
 
 #ifdef QT_DEBUG
     // Save to debug.log
