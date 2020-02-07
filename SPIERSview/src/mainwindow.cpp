@@ -3509,15 +3509,6 @@ void MainWindow::on_SingleStepButton_pressed()
 }
 
 /**
- * @brief MainWindow::on_SingleStepSaveButton_pressed
- */
-void MainWindow::on_SingleStepSaveButton_pressed()
-{
-    animationSaveImage();
-    animationApplyStep();
-}
-
-/**
  * @brief MainWindow::on_MultipleStepButton_pressed
  */
 void MainWindow::on_MultipleStepButton_pressed()

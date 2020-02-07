@@ -218,7 +218,6 @@ private slots:
     void on_actionApply_Steps_triggered();
     void on_actionApply_Multiple_Steps_Saving_Images_triggered();
     void on_SingleStepButton_pressed();
-    void on_SingleStepSaveButton_pressed();
     void on_actionReset_to_default_position_triggered();
     void on_actionSet_new_default_position_triggered();
     void on_actionMatte_triggered();
