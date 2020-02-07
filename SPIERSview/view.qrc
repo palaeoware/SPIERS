@@ -5,5 +5,9 @@
         <file alias="lightingFragmentShaderTextured.fsh">resources/lightingFragmentShaderTextured.fsh</file>
         <file alias="lightingVertexShaderTextured.vsh">resources/lightingVertexShaderTextured.vsh</file>
         <file>resources/SPIERSviewIcon.svg</file>
+        <file alias="lightingVertexShaderTextured_mac.vsh">resources/lightingVertexShaderTextured_mac.vsh</file>
+        <file alias="lightingVertexShader_mac.vsh">resources/lightingVertexShader_mac.vsh</file>
+        <file alias="lightingFragmentShaderTextured_mac.fsh">resources/lightingFragmentShaderTextured_mac.fsh</file>
+        <file alias="lightingFragmentShader_mac.fsh">resources/lightingFragmentShader_mac.fsh</file>
     </qresource>
 </RCC>

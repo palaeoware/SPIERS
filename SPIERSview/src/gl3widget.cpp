@@ -50,8 +50,17 @@ GlWidget::GlWidget(QWidget *parent)
 
     // Set GL surface format
     QSurfaceFormat surfaceFormat;
+
+#ifdef __APPLE__
+    surfaceFormat.setMajorVersion(3);
+    surfaceFormat.setMinorVersion(2);
+#endif
+
+#ifndef __APPLE__
     surfaceFormat.setMajorVersion(GL_MAJOR);
     surfaceFormat.setMinorVersion(GL_MINOR);
+#endif
+
     surfaceFormat.setRenderableType(QSurfaceFormat::OpenGL);
     setFormat(surfaceFormat);
 
@@ -83,12 +92,21 @@ void GlWidget::initializeGL()
     glfunctions->glEnable(GL_BLEND);
     glfunctions->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+#ifdef __APPLE__
+    lightingShaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/lightingVertexShader_mac.vsh");
+    lightingShaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/lightingFragmentShader_mac.fsh");
+    lightingShaderProgramForColour.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/lightingVertexShaderTextured_mac.vsh");
+    lightingShaderProgramForColour.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/lightingFragmentShaderTextured_mac.fsh");
+#endif
+
+#ifndef __APPLE__
     lightingShaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/lightingVertexShader.vsh");
     lightingShaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/lightingFragmentShader.fsh");
-    lightingShaderProgram.link();
-
     lightingShaderProgramForColour.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/lightingVertexShaderTextured.vsh");
     lightingShaderProgramForColour.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/lightingFragmentShaderTextured.fsh");
+#endif
+
+    lightingShaderProgram.link();
     lightingShaderProgramForColour.link();
 
     // Initalize the GL Scale grid

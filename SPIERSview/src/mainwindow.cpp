@@ -105,12 +105,6 @@ MainWindow::MainWindow(QWidget *parent)
     StereoGroup->addAction(ui->actionOrthographic_View);
     ui->actionNo_Stereo->setChecked(true);
 
-    QGLFormat f;
-    f.setVersion(GL_MAJOR, GL_MINOR);
-    f.setSampleBuffers(true);
-    f.setSampleBuffers(true);
-    f.setSamples(1);
-
     gl3widget = new GlWidget(ui->frameVTK);
     gllayout = new QHBoxLayout;
     gllayout->addWidget(gl3widget);
