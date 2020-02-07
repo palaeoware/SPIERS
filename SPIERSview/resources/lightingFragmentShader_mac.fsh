@@ -1,4 +1,4 @@
-#version 150
+#version 330
 
 uniform vec4 ambientColor;
 uniform vec4 diffuseColor;
