@@ -20,6 +20,10 @@
 GlWidget::GlWidget(QWidget *parent)
     : QOpenGLWidget(parent)
 {
+    // Set the widget format to the same as the global surface format
+    // @see globals.h and main.cpp
+    setFormat(surfaceFormat);
+
     // default mouse position X/Y
     LastMouseXpos = -1;
     LastMouseYpos = -1;
@@ -47,24 +51,6 @@ GlWidget::GlWidget(QWidget *parent)
     QList<Qt::GestureType> gestures;
     gestures << Qt::PinchGesture;
     grabGestures(gestures);
-
-    // Set GL surface format
-    QSurfaceFormat surfaceFormat;
-
-#ifdef __APPLE__
-    surfaceFormat.setMajorVersion(3);
-    surfaceFormat.setMinorVersion(2);
-#endif
-
-#ifndef __APPLE__
-    surfaceFormat.setMajorVersion(GL_MAJOR);
-    surfaceFormat.setMinorVersion(GL_MINOR);
-#endif
-
-    surfaceFormat.setRenderableType(QSurfaceFormat::OpenGL);
-    surfaceFormat.setProfile(QSurfaceFormat::CoreProfile);
-    setFormat(surfaceFormat);
-    QSurfaceFormat::setDefaultFormat(surfaceFormat);
 
     // Create new GL scale grid
     scaleGrid = new DrawGLScaleGrid(this);

@@ -24,6 +24,7 @@
 #include <QStringList>
 #include <QLabel>
 #include <QProgressBar>
+#include <QSurfaceFormat>
 
 class MainWindow;
 
@@ -57,6 +58,8 @@ class MainWindow;
 #define SPVFILEVERSION 11
 #define GL_MAJOR 2
 #define GL_MINOR 1
+#define GL_MAJOR_MAC 3
+#define GL_MINOR_MAC 2
 #define STEREO_SEPARATION_MODIFIER 15.0
 #define SHININESS 0.0
 #define FONT_SCALE_FACTOR 24.0 // Eqates to roughtly the same font size as the default used by the QT GUI
@@ -116,6 +119,7 @@ extern int fontSizeGrid;
 
 extern QList<QScreen *> availableScreens;
 extern QMatrix4x4 globalMatrix;
+extern QSurfaceFormat surfaceFormat;
 extern QOpenGLBuffer cubeBuffer;
 extern QScreen *currentScreen;
 extern QString fname;

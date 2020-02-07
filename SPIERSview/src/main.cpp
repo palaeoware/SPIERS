@@ -101,6 +101,14 @@ int main(int argc, char *argv[])
     // This has the app draw at HiDPI scaling on HiDPI displays, usually two pixels for every one logical pixel
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
+    // Set OpenGL surface format as global
+    // @see global.h and global.cpp
+    surfaceFormat.setMajorVersion(GL_MAJOR);
+    surfaceFormat.setMinorVersion(GL_MINOR);
+    surfaceFormat.setRenderableType(QSurfaceFormat::OpenGL);
+    surfaceFormat.setProfile(QSurfaceFormat::CoreProfile);
+    QSurfaceFormat::setDefaultFormat(surfaceFormat);
+
     // Set to allow the OpenGL context (ie. the same threads) to be shared between normal and full screen mode
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 
@@ -206,23 +214,41 @@ int main(int argc, char *argv[])
 {
     macClickedNoForUpdateDownload = false;
 
+    // This has the app draw at HiDPI scaling on HiDPI displays, usually two pixels for every one logical pixel
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
-    if (argc == 2) if (QString(argv[1]).length() < 2) argc = 1; //this to cure weird mac crash
+    // Set OpenGL surface format as global
+    // @see global.h and global.cpp
+    surfaceFormat.setMajorVersion(GL_MAJOR_MAC);
+    surfaceFormat.setMinorVersion(GL_MINOR_MAC);
+    surfaceFormat.setRenderableType(QSurfaceFormat::OpenGL);
+    surfaceFormat.setProfile(QSurfaceFormat::CoreProfile);
+    QSurfaceFormat::setDefaultFormat(surfaceFormat);
+
+    // Set to allow the OpenGL context (ie. the same threads) to be shared between normal and full screen mode
+    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+
+    if (argc == 2)
+        if (QString(argv[1]).length() < 2)
+            argc = 1; //this to cure weird mac crash
     argc = 1;
 
-    class main a(argc, argv);
+    // Create main class
+    class main app(argc, argv);
 
-    NetModule n;
-    n.checkForNew();
+    // Install the message handler to log to file
+    qInstallMessageHandler(logMessageOutput);
 
-    a.fn = "";
-    a.namereceived = false;
+    // Check for any version updates
+    NetModule netModule;
+    netModule.checkForNew();
 
-    a.setQuitOnLastWindowClosed(true);
+    app.fn = "";
+    app.namereceived = false;
+
+    app.setQuitOnLastWindowClosed(true);
+
     //set the fname global from argument
-
-
-
     if (argc != 2)
     {
         fname = "";
@@ -243,15 +269,13 @@ int main(int argc, char *argv[])
     }
 
     //Do nothing until event is received
+    app.processEvents();
 
-    a.processEvents();
+    if (app.namereceived)
+        fname = a.fn;
 
-    if (a.namereceived) fname = a.fn;
-
-    //a.spawn=true;
     MainWindow w;
-    //deal with any incoming events - i.e. file open ones
-
+    app.installEventFilter(&mainWindow);
     w.show();
 
     return a.exec();
