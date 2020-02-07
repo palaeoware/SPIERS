@@ -263,7 +263,7 @@ int main(int argc, char *argv[])
         {
             fname = argv[1];
             //Make sure we don't handle file event at all
-            a.donthandlefileevent = true;
+            app.donthandlefileevent = true;
 
         }
     }
@@ -272,12 +272,13 @@ int main(int argc, char *argv[])
     app.processEvents();
 
     if (app.namereceived)
-        fname = a.fn;
+        fname = app.fn;
 
-    MainWindow w;
+    // MainWindow with Event filter - deals with glitchy keyboard shortcuts
+    MainWindow mainWindow;
     app.installEventFilter(&mainWindow);
-    w.show();
+    mainWindow.show();
 
-    return a.exec();
+    return app.exec();
 }
 #endif
