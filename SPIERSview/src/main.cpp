@@ -18,6 +18,10 @@
 #include "../SPIERScommon/src/netmodule.h"
 #include "../SPIERScommon/src/darkstyletheme.h"
 
+#ifdef _WIN64
+#include <windows.h>
+#endif
+
 /**
  * @brief logMessageOutput
  * @param type
@@ -49,11 +53,6 @@ void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const Q
     }
 
 #ifndef __APPLE__
-
-#ifdef _WIN64
-#include <windows.h>
-#endif
-
 #ifdef QT_DEBUG
 // Save to debug.log
     QFile outFile("debug.log");
@@ -69,8 +68,10 @@ void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const Q
     QTextStream console(stdout);
     console << txt << endl;
 #endif
+#endif
 }
 
+#ifndef __APPLE__
 /**
  * @brief qMain::qMain
  * @param argc

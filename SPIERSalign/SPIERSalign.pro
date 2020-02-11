@@ -41,7 +41,7 @@ FORMS += ui/mainwindow.ui \
     ui/about.ui
 
 #Mac icon
-ICON = resources/SPIERSalign.icns
+ICON = resources/SPIERSalignIcon.icns
 
 HEADERS += src/mainwindowimpl.h \
     src/globals.h \
