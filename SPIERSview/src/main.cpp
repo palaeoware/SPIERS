@@ -47,7 +47,6 @@ void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const Q
         txt = QString("Info: %1 (%2:%3, %4)").arg(localMsg.constData()).arg(context.file).arg(context.line).arg(context.function);
         break;
     }
-}
 
 #ifndef __APPLE__
 
@@ -57,19 +56,20 @@ void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const Q
 
 #ifdef QT_DEBUG
 // Save to debug.log
-QFile outFile("debug.log");
-outFile.open(QIODevice::WriteOnly | QIODevice::Append);
-QTextStream log(&outFile);
-log << txt << endl;
+    QFile outFile("debug.log");
+    outFile.open(QIODevice::WriteOnly | QIODevice::Append);
+    QTextStream log(&outFile);
+    log << txt << endl;
 
 // Now print to stout too
-QTextStream console(stdout);
-console << txt << endl;
+    QTextStream console(stdout);
+    console << txt << endl;
 #else
 // Print to stout only
-QTextStream console(stdout);
-console << txt << endl;
+    QTextStream console(stdout);
+    console << txt << endl;
 #endif
+}
 
 /**
  * @brief qMain::qMain

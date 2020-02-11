@@ -40,6 +40,9 @@ OBJECTS_DIR = build
 FORMS += ui/mainwindow.ui \
     ui/about.ui
 
+#Mac icon
+ICON = resources/SPIERSalign.icns
+
 HEADERS += src/mainwindowimpl.h \
     src/globals.h \
     src/scene.h \
