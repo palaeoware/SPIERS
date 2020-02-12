@@ -41,6 +41,9 @@ MOC_DIR += build
 
 OBJECTS_DIR += build
 
+#Mac icon
+ICON = resources/SPIERSeditIcon.icns
+
 FORMS += ui/import.ui \
     ui/mainwindow.ui \
     ui/Copying.ui \
