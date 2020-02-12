@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
         <file>resources/SPIERSalignIcon.svg</file>
-        <file>resources/SPIERSalignIcon.icns</file>
     </qresource>
 </RCC>

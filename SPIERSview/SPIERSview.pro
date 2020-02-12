@@ -309,10 +309,8 @@ macx {
     #DEPENDPATH += $$PWD/../../../../SPIERS/VTK-8.2.0/build
     #I have left this in case an alternative is ever required
 
-
     #Mac icon
     ICON = resources/SPIERSviewIcon.icns
-
 }
 
 SOURCES += src/main.cpp \
