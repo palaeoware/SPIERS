@@ -2,6 +2,5 @@
     <qresource prefix="/">
         <file>resources/SPIERSalignIcon.svg</file>
         <file>resources/SPIERSalignIcon.icns</file>
-        <file alias="icon.png">resources/SPIERSalignIcon128x128.png</file>
     </qresource>
 </RCC>

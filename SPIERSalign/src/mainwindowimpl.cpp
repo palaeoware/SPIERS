@@ -77,7 +77,6 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     qDebug() << QImageWriter::supportedImageFormats();
 
     setWindowTitle(QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION));
-    setWindowIcon(QIcon (":/icon.png"));
 
     showMaximized();
 
