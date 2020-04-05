@@ -59,7 +59,7 @@ class MainWindow;
 #define GL_MAJOR 2
 #define GL_MINOR 1
 #define GL_MAJOR_MAC 3
-#define GL_MINOR_MAC 2
+#define GL_MINOR_MAC 3
 #define STEREO_SEPARATION_MODIFIER 15.0
 #define SHININESS 0.0
 #define FONT_SCALE_FACTOR 24.0 // Eqates to roughtly the same font size as the default used by the QT GUI
