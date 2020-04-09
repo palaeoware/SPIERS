@@ -1,4 +1,4 @@
-#version 330
+#version 330 core
 
 uniform float ambientReflection;
 uniform float diffuseReflection;

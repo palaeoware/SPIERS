@@ -23,12 +23,15 @@
 #include <QOpenGLBuffer>
 #include <QOpenGLFunctions>
 #include <QGestureEvent>
+#include <QOpenGLVertexArrayObject>
+#include <QOpenGLDebugLogger>
+#include <QOpenGLContext>
 
 #include "globals.h"
 #include "drawglscalegrid.h"
 #include "drawglscaleball.h"
 
-class GlWidget : public QOpenGLWidget
+class GlWidget : public QOpenGLWidget, protected QOpenGLFunctions
 {
     Q_OBJECT
 
@@ -36,6 +39,8 @@ public:
     GlWidget(QWidget *parent);
     ~GlWidget();
     void grabGestures(const QList<Qt::GestureType> &gestures);
+
+    void glDebug(QString string);
 
     float cameraX;
     float cameraY;
@@ -54,6 +59,7 @@ public:
     int xdim;
     int ydim;
 
+    QOpenGLVertexArrayObject m_vao;
     QOpenGLFunctions *glfunctions;
     QOpenGLShaderProgram lightingShaderProgram;
     QOpenGLShaderProgram lightingShaderProgramForColour;
@@ -79,11 +85,11 @@ public:
 
 protected:
     // Overrides
-    bool event(QEvent *event);
-    void initializeGL();
-    void resizeGL(int width, int height);
-    void paintGL();
-    void mouseMoveEvent(QMouseEvent *event);
+    bool event(QEvent *event) override;
+    void initializeGL() override;
+    void resizeGL(int width, int height) override;
+    void paintGL() override;
+    void mouseMoveEvent(QMouseEvent *event) override;
 
 private:
     bool gestureEvent(QGestureEvent *event);

@@ -104,6 +104,7 @@ int main(int argc, char *argv[])
 
     // Set OpenGL surface format as global
     // @see global.h and global.cpp
+
     surfaceFormat.setMajorVersion(GL_MAJOR);
     surfaceFormat.setMinorVersion(GL_MINOR);
     surfaceFormat.setRenderableType(QSurfaceFormat::OpenGL);
@@ -220,10 +221,12 @@ int main(int argc, char *argv[])
 
     // Set OpenGL surface format as global
     // @see global.h and global.cpp
+    surfaceFormat.setDepthBufferSize(24);
     surfaceFormat.setMajorVersion(GL_MAJOR_MAC);
     surfaceFormat.setMinorVersion(GL_MINOR_MAC);
     surfaceFormat.setRenderableType(QSurfaceFormat::OpenGL);
     surfaceFormat.setProfile(QSurfaceFormat::CoreProfile);
+    //surfaceFormat.setOption(QSurfaceFormat::DebugContext);
     QSurfaceFormat::setDefaultFormat(surfaceFormat);
 
     // Set to allow the OpenGL context (ie. the same threads) to be shared between normal and full screen mode
@@ -238,7 +241,7 @@ int main(int argc, char *argv[])
     class main app(argc, argv);
 
     // Install the message handler to log to file
-    qInstallMessageHandler(logMessageOutput);
+    //qInstallMessageHandler(logMessageOutput);
 
     // Check for any version updates
     NetModule netModule;

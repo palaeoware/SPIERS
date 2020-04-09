@@ -132,6 +132,8 @@ void DrawGLScaleGrid::initializeGL()
     occBuffer.write(offset, occNormals.constData(), numOccVertices * 3 * static_cast<int>(sizeof(GLfloat)));
 
     occBuffer.release();
+
+    //glWidget->glDebug(" DrawScaleGrid Line 139");
 }
 
 /**
@@ -143,12 +145,17 @@ void DrawGLScaleGrid::draw(QMatrix4x4 vMatrix, QVector3D lPosition)
 {
     //qDebug() << "[Where I'm I?] In DrawScaleGrid";
 
+
     glWidget->lightingShaderProgram.bind();
+
+
     glWidget->lightingShaderProgram.setUniformValue("lightPosition", lPosition);
     glWidget->lightingShaderProgram.setUniformValue("ambientReflection", static_cast<GLfloat>(1.0));
     glWidget->lightingShaderProgram.setUniformValue("diffuseReflection", static_cast<GLfloat>(1.0));
     glWidget->lightingShaderProgram.setUniformValue("specularReflection", static_cast<GLfloat>(1.0));
     glWidget->lightingShaderProgram.setUniformValue("shininess", static_cast<GLfloat>(1000.0));
+
+    //glWidget->glDebug(" DrawScaleGrid Line 153");
 
     // Draw occlusion box to darken parts of the model that are past the scale grid drawing point in the z-axis
     glWidget->lightingShaderProgram.setUniformValue("mvpMatrix", glWidget->pMatrix * vMatrix);
@@ -159,17 +166,51 @@ void DrawGLScaleGrid::draw(QMatrix4x4 vMatrix, QVector3D lPosition)
     glWidget->lightingShaderProgram.setUniformValue("specularColor", QColor(0, 0.0, 0.0));
     glWidget->lightingShaderProgram.setUniformValue("alpha", static_cast<GLfloat>(0.6));
 
+    //glWidget->glDebug(" DrawScaleGrid Line 169");
+
     occBuffer.bind();
-    glWidget->lightingShaderProgram.setAttributeBuffer("vertex", GL_FLOAT, 0, 3, 0);
-    glWidget->lightingShaderProgram.enableAttributeArray("vertex");
-    glWidget->lightingShaderProgram.setAttributeBuffer("normal", GL_FLOAT, 3 * numOccVertices * static_cast<int>(sizeof(GLfloat)), 3, 0);
-    glWidget->lightingShaderProgram.enableAttributeArray("normal");
+
+    //glWidget->glDebug(" DrawScaleGrid Line 173");
+
+    int vertexLocation = glWidget->lightingShaderProgram.attributeLocation("vertex");
+    qDebug() << vertexLocation;
+
+    //glWidget->glDebug(" DrawScaleGrid Line 178");
+
+    glWidget->lightingShaderProgram.setAttributeBuffer(vertexLocation, GL_FLOAT, 0, 3, 0);
+
+    //glWidget->glDebug(" DrawScaleGrid Line 182");
+
+    glWidget->lightingShaderProgram.enableAttributeArray(vertexLocation);
+
+    //glWidget->glDebug(" DrawScaleGrid Line 186");
+
+    int normalLocation = glWidget->lightingShaderProgram.attributeLocation("normal");
+    //qDebug() << normalLocation;
+
+    glWidget->lightingShaderProgram.setAttributeBuffer(normalLocation, GL_FLOAT, 3 * numOccVertices * static_cast<int>(sizeof(GLfloat)), 3, 0);
+
+    //glWidget->glDebug(" DrawScaleGrid Line 193");
+
+    glWidget->lightingShaderProgram.enableAttributeArray(normalLocation);
+
+    //glWidget->glDebug(" DrawScaleGrid Line 197");
+
     occBuffer.release();
+
+    //glWidget->glDebug(" DrawScaleGrid Line 201");
 
     glWidget->glfunctions->glDrawArrays(GL_TRIANGLES, 0, numOccVertices);
 
+    //glWidget->glDebug(" DrawScaleGrid Line 205");
+
     glWidget->lightingShaderProgram.setUniformValue("alpha", static_cast<GLfloat>(1.0));
+
+    //glWidget->glDebug(" DrawScaleGrid Line 209");
+
     glWidget->glfunctions->glClear(GL_DEPTH_BUFFER_BIT);
+
+    //glWidget->glDebug(" DrawScaleGrid Line 213");
 
     // OK, work out correct scale in mm
     // Look at fov and find coarse level to use
@@ -368,7 +409,6 @@ void DrawGLScaleGrid::drawLine(QMatrix4x4 vMatrix, QVector3D lPosition, float po
     // Set Line width if major line
     if (major)
     {
-
         glWidget->glfunctions->glLineWidth(2 * ((applicationScaleX + applicationScaleY) / 2));
     }
 

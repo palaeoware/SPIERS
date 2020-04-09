@@ -221,7 +221,7 @@ macx {
 
      #RJG - Below vtk installation achieved using installation via homebrew
      #eg. brew install vtk
-     LIBS += -L$$PWD/../../../../../../usr/local/Cellar/vtk/8.2.0_7/lib/ \
+     LIBS += -L$$PWD/../../../../../../usr/local/Cellar/vtk/8.2.0_10/lib/ \
     -lvtkCommonExecutionModel-8.2.1 \
     -lvtkCommonDataModel-8.2.1 \
     -lvtkCommonColor-8.2.1 \
@@ -300,8 +300,8 @@ macx {
     -lstdc++ \
     -lz
 
-     INCLUDEPATH += $$PWD/../../../../../../usr/local/Cellar/vtk/8.2.0_7/include/vtk-8.2/
-     DEPENDPATH += $$PWD/../../../../../../usr/local/Cellar/vtk/8.2.0_7/include/vtk-8.2/
+     INCLUDEPATH += $$PWD/../../../../../../usr/local/Cellar/vtk/8.2.0_10/include/vtk-8.2/
+     DEPENDPATH += $$PWD/../../../../../../usr/local/Cellar/vtk/8.2.0_10/include/vtk-8.2/
 
     #RJG - Note also the virtual machine has a VTK version built on the box:
     #LIBS += -L$$PWD/../../../../SPIERS/VTK-8.2.0/build/lib/ \

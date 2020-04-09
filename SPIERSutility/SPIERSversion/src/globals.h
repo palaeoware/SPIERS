@@ -21,7 +21,7 @@
 class MainWindow;
 
 //Legal Stuff
-#define COPYRIGHT "Copyright © 2018-2019 Alan R.T. Spencer, Mark D. Sutton, Russell J. Garwood"
+#define COPYRIGHT "Copyright © 2018-2020 Alan R.T. Spencer, Mark D. Sutton, Russell J. Garwood"
 #define LICENCE "This program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under the conditions of the GPL v3 license"
 
 //Programme Name
