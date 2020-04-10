@@ -67,6 +67,11 @@ GlWidget::~GlWidget()
     lightingShaderProgramForColour.release();
     lightingShaderProgram.deleteLater();
     lightingShaderProgramForColour.deleteLater();
+
+#ifdef __APPLE__
+    vao.release();
+    vao.deleteLater();
+#endif
 }
 
 /**
@@ -87,8 +92,8 @@ void GlWidget::initializeGL()
 #ifdef __APPLE__
     // OpenGL version 3.x+ requires the VertexArrayBuffer to be created and bound at initialization.
     // Current only needed for macOS
-    m_vao.create();
-    m_vao.bind();
+    vao.create();
+    vao.bind();
 #endif
 
 #ifdef __APPLE__

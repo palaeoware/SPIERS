@@ -59,7 +59,7 @@ public:
     int xdim;
     int ydim;
 
-    QOpenGLVertexArrayObject m_vao;
+    QOpenGLVertexArrayObject vao;
     QOpenGLFunctions *glfunctions;
     QOpenGLShaderProgram lightingShaderProgram;
     QOpenGLShaderProgram lightingShaderProgramForColour;
