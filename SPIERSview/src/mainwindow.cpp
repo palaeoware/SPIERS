@@ -3981,6 +3981,21 @@ void MainWindow::on_actionFull_Screen_triggered()
 #ifdef __linux__
         fullScreenDialog->setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
         fullScreenDialog->show();
+
+#elif __APPLE__
+        // MacOS is anoying! Need to get the mainn window geomtry when it is at full screen
+        // so need to know if it is already at full screen to return to it previous state on
+        // glwidget full screen close.
+        wasFullScreen = false;
+        if(isFullScreen()) {
+            wasFullScreen = true;
+        } else {
+            lastGeometry = geometry();
+            showFullScreen();
+        }
+        fullScreenDialog->setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
+        fullScreenDialog->setGeometry(geometry());
+        fullScreenDialog->showFullScreen();
 #else
         fullScreenDialog->showFullScreen();
 #endif
@@ -3992,6 +4007,14 @@ void MainWindow::on_actionFull_Screen_triggered()
         ui->frameVTK->layout()->addWidget(gl3widget);
         fullScreenDialog->close();
         gl3widget->update();
+
+#ifdef __APPLE__
+        // Return the main window back to it previosu state if needed
+        if(wasFullScreen == false) {
+            showNormal();
+            setGeometry(lastGeometry);
+#endif
+
         isGLFullScreen = false;
 
         //qDebug() << "[Full Screen Mode] Closing full screen mode";

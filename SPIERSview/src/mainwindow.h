@@ -72,6 +72,8 @@ private:
 
     bool mainWindowReady = false;
     bool isGLFullScreen = false;
+    bool wasFullScreen = false;
+    QRect lastGeometry;
 
     int specificprogress;
     QString specificlabel;
