@@ -1135,20 +1135,10 @@ void MainWindowImpl::SaveAs()
 void MainWindowImpl::Menu_File_Import()
 {
     QMutexLocker locker(&mutex);
+
     //Select files
-    if (Active) WriteSettings();
-
-    /*
-    QFileDialog dialog(this);
-    dialog.setFileMode(QFileDialog::ExistingFiles);
-    dialog.setNameFilter("Images (*.bmp)");
-    dialog.setViewMode(QFileDialog::Detail);
-
-    QStringList files;
-    if (dialog.exec())
-         files = dialog.selectedFiles();
-    else return;
-    */
+    if (Active)
+        WriteSettings();
 
     QStringList files = QFileDialog::getOpenFileNames(
                             this,
@@ -1156,16 +1146,20 @@ void MainWindowImpl::Menu_File_Import()
                             "D:/Research/3dFiles/Grinding/Acaen/5-2/Cut",
                             "Images (*.bmp)");
 
-    qSort(files.begin(), files.end());
-    //Now we do a whole load of initialisation!
-    if (files.count() == 0) return; //if nothing there, cancel
+    // If nothing there, cancel
+    if (files.isEmpty() || files.count() == 0)
+        return;
 
-    //Show the 2nd stage dialog
+    // Now we do a whole load of initialisation!
+    std::sort(files.begin(), files.end());
+
+    // Show the 2nd stage dialog
     ImportDialogImpl impdialog;
     impdialog.exec();
 
-    //do some error checking and ways out!
-    if (impdialog.Cancelled == true) return;
+    // Do some error checking and ways out!
+    if (impdialog.Cancelled == true)
+        return;
 
     //check to see if dataset actually exists - look for settings.dat
     QString Fname = files.at(0);
@@ -1261,37 +1255,25 @@ void MainWindowImpl::Menu_File_Import()
 void MainWindowImpl::Menu_File_New()  //create from scratch
 
 {
-
-    if (Active) WriteSettings();
+    if (Active)
+        WriteSettings();
 
     //Select files
-
-    //Non-native dialog code to replace non-functioning native dialog
-    /*  QFileDialog dialog(this);
-        dialog.setFileMode(QFileDialog::ExistingFiles);
-        dialog.setNameFilter("Images (*.png *.jpg *.jpeg *.bmp)");
-        dialog.setViewMode(QFileDialog::Detail);
-        dialog.setDirectory("D:\\Research\\3dFiles\\Grinding\\Acaen\\5-2\\Test");
-
-        QStringList files;
-        if (dialog.exec())
-             files = dialog.selectedFiles();
-        else return;
-    */
     QStringList files = QFileDialog::getOpenFileNames(
                             nullptr,
                             "Select source images for dataset",
                             QString(QStandardPaths::DesktopLocation),
-                            "Images (*.png *.jpg *.jpeg *.bmp *.tif *.tiff)");
+                            "Images (*.png *.jpg *.jpeg *.bmp *.tif *.tiff)"); 
 
-    qSort(files.begin(), files.end());
+    // If nothing there, cancel
+    if (files.isEmpty() || files.count() == 0)
+        return;
 
-    if (files[0].endsWith(".tif")
-            || files[0].endsWith(".tiff"))
+    if (files[0].endsWith(".tif") || files[0].endsWith(".tiff"))
         Message("Tiff support is a relatively recent addition to SPIERSedit, and has not been extensively tested. Please can you submit an issue on the Palaeoware SPIERS GitHub repository should you encounter any issues.");
 
-    //Now we do a whole load of initialisation!
-    if (files.count() == 0) return; //if nothing there, cancel
+    // Now we do a whole load of initialisation!
+    std::sort(files.begin(), files.end());
 
     //OK, no more caching
     //Show the 2nd stage dialog
@@ -1300,7 +1282,8 @@ void MainWindowImpl::Menu_File_New()  //create from scratch
     impdialog.exec();
 
     //do some error checking and ways out!
-    if (impdialog.Cancelled == true) return;
+    if (impdialog.Cancelled == true)
+        return;
 
     QString Fname = files.at(0);
     int lastsep = qMax(Fname.lastIndexOf("\\"), Fname.lastIndexOf("/")); //this is last separator in path
