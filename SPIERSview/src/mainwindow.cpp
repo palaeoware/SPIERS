@@ -4013,6 +4013,7 @@ void MainWindow::on_actionFull_Screen_triggered()
         if(wasFullScreen == false) {
             showNormal();
             setGeometry(lastGeometry);
+        }
 #endif
 
         isGLFullScreen = false;
