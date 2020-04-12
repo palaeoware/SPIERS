@@ -226,7 +226,6 @@ int main(int argc, char *argv[])
     surfaceFormat.setMinorVersion(GL_MINOR_MAC);
     surfaceFormat.setRenderableType(QSurfaceFormat::OpenGL);
     surfaceFormat.setProfile(QSurfaceFormat::CoreProfile);
-    //surfaceFormat.setOption(QSurfaceFormat::DebugContext);
     QSurfaceFormat::setDefaultFormat(surfaceFormat);
 
     // Set to allow the OpenGL context (ie. the same threads) to be shared between normal and full screen mode
@@ -240,8 +239,8 @@ int main(int argc, char *argv[])
     // Create main class
     class main app(argc, argv);
 
-    // Install the message handler to log to file
-    //qInstallMessageHandler(logMessageOutput);
+    //Style program with our dark style
+    QApplication::setStyle(new DarkStyleTheme);
 
     // Check for any version updates
     NetModule netModule;

@@ -118,6 +118,9 @@ int main(int argc, char *argv[])
 {
     class main a(argc, argv);
 
+    //Style program with our dark style
+    QApplication::setStyle(new DarkStyleTheme);
+
     NetModule n;
     n.checkForNew();
 
