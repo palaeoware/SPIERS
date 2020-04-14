@@ -22,6 +22,9 @@
 histgv *GVHist;
 #include <QResizeEvent>
 
+/**
+ * @brief histgv::histgv
+ */
 histgv::histgv()
 {
     histscene = new QGraphicsScene();
@@ -39,19 +42,29 @@ histgv::histgv()
     Refresh();
 }
 
+/**
+ * @brief histgv::resizeEvent
+ * @param event
+ */
 void histgv::resizeEvent ( QResizeEvent *event )
 {
     Q_UNUSED(event);
+
     fitInView(QRectF(0, 0, 256, 256), Qt::IgnoreAspectRatio);
 }
 
+/**
+ * @brief histgv::Refresh
+ */
 void histgv::Refresh()
 {
 
     if (!Active) return;
     int bins[256];
 
-    for (int i = 0; i < 256; i++) bins[i] = 0;
+    for (int i = 0; i < 256; i++)
+        bins[i] = 0;
+
     uchar *data;
     data = GA[CurrentSegment]->bits();
     int max = fwidth * fheight;
@@ -70,7 +83,9 @@ void histgv::Refresh()
 
 
     int bmax = 0;
-    for (int i = 0; i < 256; i++) if (bins[i] > bmax) bmax = bins[i];
+    for (int i = 0; i < 256; i++)
+        if (bins[i] > bmax)
+            bmax = bins[i];
 
     bmax /= 240;
     if (bmax == 0) bmax = 1;
