@@ -1263,15 +1263,16 @@ bool VAXML::writeVAXML(QString fname, bool mode) //mode true means this is part 
             out << "<position>" << o->Position << "</position>\n";
 
 
-            QString fname2;
-            fname2.sprintf("%d", o->Index + 1);
+            QString fname2 = QString("%1").arg(o->Index + 1);
             if (!(o->Name.isEmpty()))
             {
                 fname2.append("-");
                 fname2.append(o->Name);
             }
             fname2.append(".stl");
+
             out << ("<file>" + encode(f.baseName() + "_stl/" + fname2) + "</file>\n");
+
             //DON'T write a matrix - should all be identity now, as export to STL matrixes them...
             //DON'T write a URL (obviously)
             //out<<"<matrix>";
