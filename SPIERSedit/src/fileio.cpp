@@ -209,15 +209,14 @@ int Errors;
 void LoadAllData(int fnum)
 //Load all info for currentfile into arrays
 {
-    QTime t;
-    t.start();
     int n;
     if (fnum < 0)
     {
         fnum += 10000;
         LoadColourData(fnum);
 
-        for (n = 0; n < SegmentCount; n++) LoadGreyData(fnum, n);
+        for (n = 0; n < SegmentCount; n++)
+            LoadGreyData(fnum, n);
 
         LoadMasks(fnum);
 

@@ -25,7 +25,7 @@
 #include <QImage>
 #include <QColor>
 #include <QTime>
-#include <math.h> //for the pow
+#include <math.h>
 #include "curves.h"
 #include "myscene.h"
 #include "brush.h"
@@ -572,9 +572,6 @@ QByteArray DoMaskLocking()
 
 void MakeLinearGreyScale(int seg, int fnum, bool flag = false)
 {
-    QTime t;
-    t.start();
-
     //load data for file - can and should assume existing data is safe
     if (!flag) LoadAllData(fnum);
 
