@@ -86,17 +86,18 @@ Or by downloading and running the installer from Qt: https://www.qt.io/download 
 
 #### macOS Catalina 64-bit - QT Creator + QT v5.x and VTK v8.2 (via Homebrew) using Clang 64-bit/XCode 11 toolchain
 
-1. Install QT5.x/QT Creator, XCode 11 from Apple App Store.
-2. Install Homebrew (https://brew.sh/).
-3. Install VTK 8.2 via Homebrew - you may need to force Homebrew to install a specific VTK version see Homebrew instruction on how to do so: 
+1. Install XCode 11 from Apple App Store.
+2. Install QT5.x/QT Creator from https://www.qt.io/download.
+3. Install Homebrew (https://brew.sh/).
+4. Get VTK 8.2 package via Homebrew - you may need to force Homebrew to install a specific VTK version see Homebrew instruction on how to do so: 
 
 `brew install vtk`
 
-4. Check/Update the path to the VTK installation in the ./SPIERSview/SPIERSview.pro file, where "8.2.0_10" is your installed version number:
+5. Check/Update the path to the VTK package in the ./SPIERSview/SPIERSview.pro file, where "8.2.0_10" is your installed version number:
 
 'LIBS += -L$$PWD/../../../../../../usr/local/Cellar/vtk/8.2.0_10/lib/ \'
 
-5. You should then be able to compile SPIERS by opening the .pro file in QT creator and following standard debug/release procedure.
+6. You should then be able to compile SPIERS by opening the .pro file in QT creator and following standard debug/release procedure.
 
 Note: it may be possible to install QT5.x/QT Creator via Homebrew rather than via the Apple App Store.
 _____
