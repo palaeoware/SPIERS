@@ -1263,7 +1263,7 @@ void MainWindowImpl::Menu_File_New()  //create from scratch
                             nullptr,
                             "Select source images for dataset",
                             QString(QStandardPaths::DesktopLocation),
-                            "Images (*.png *.jpg *.jpeg *.bmp *.tif *.tiff)"); 
+                            "Images (*.png *.jpg *.jpeg *.bmp *.tif *.tiff)");
 
     // If nothing there, cancel
     if (files.isEmpty() || files.count() == 0)

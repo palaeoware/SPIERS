@@ -1310,7 +1310,7 @@ void ApplyDefaultSettings()
     MenuMasksChecked = true;
     MenuSegsChecked = false;
     MenuCurvesChecked = false;
-    MenuOutputChecked = false;
+    MenuOutputChecked = true;
     MenuToolboxChecked = true;
     MenuSliceSelectorChecked = true;
     MenuHistSelectedOnly = false;
