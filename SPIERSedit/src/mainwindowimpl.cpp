@@ -70,21 +70,65 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
 
     SetUpDocks();
 
-    //return;
-    //connect all the menu commands
-
+    //Connect all the menu commands
+    //For commands which rely on F keys that are non functional on macOS define backup shortcuts
     QList<QKeySequence> shortcuts;
     shortcuts.append(QKeySequence(Qt::Key_F1));
     shortcuts.append(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_1));
     actionMain_Toolbox->setShortcuts(shortcuts);
     QObject::connect(actionMain_Toolbox, SIGNAL(triggered()), this, SLOT(Menu_Window_MainToolbox()));
 
-    QObject::connect(actionGeneration, SIGNAL(triggered()), this, SLOT(Menu_Window_Generate()));
+    shortcuts.clear();
+    shortcuts.append(QKeySequence(Qt::Key_F2));
+    shortcuts.append(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_2));
+    actionSlice_Selector->setShortcuts(shortcuts);
     QObject::connect(actionSlice_Selector, SIGNAL(triggered()), this, SLOT(Menu_Window_SliceSelector()));
+
+    shortcuts.clear();
+    shortcuts.append(QKeySequence(Qt::Key_F3));
+    shortcuts.append(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_3));
+    actionGeneration->setShortcuts(shortcuts);
+    QObject::connect(actionGeneration, SIGNAL(triggered()), this, SLOT(Menu_Window_Generate()));
+
+    shortcuts.clear();
+    shortcuts.append(QKeySequence(Qt::Key_F4));
+    shortcuts.append(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_4));
+    actionMasks->setShortcuts(shortcuts);
     QObject::connect(actionMasks, SIGNAL(triggered()), this, SLOT(Menu_Window_Masks()));
-    QObject::connect(actionCurves, SIGNAL(triggered()), this, SLOT(Menu_Window_Curves()));
+
+    shortcuts.clear();
+    shortcuts.append(QKeySequence(Qt::Key_F5));
+    shortcuts.append(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_5));
+    actionSegments->setShortcuts(shortcuts);
     QObject::connect(actionSegments, SIGNAL(triggered()), this, SLOT(Menu_Window_Segments()));
+
+    shortcuts.clear();
+    shortcuts.append(QKeySequence(Qt::Key_F6));
+    shortcuts.append(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_6));
+    actionCurves->setShortcuts(shortcuts);
+    QObject::connect(actionCurves, SIGNAL(triggered()), this, SLOT(Menu_Window_Curves()));
+
+    shortcuts.clear();
+    shortcuts.append(QKeySequence(Qt::Key_F7));
+    shortcuts.append(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_7));
+    actionOutput->setShortcuts(shortcuts);
     QObject::connect(actionOutput, SIGNAL(triggered()), this, SLOT(Menu_Window_Output()));
+
+    shortcuts.clear();
+    shortcuts.append(QKeySequence(Qt::Key_F8));
+    shortcuts.append(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_8));
+    actionHistorgram->setShortcuts(shortcuts);
+
+    shortcuts.clear();
+    shortcuts.append(QKeySequence(Qt::Key_F9));
+    shortcuts.append(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_9));
+    actionInfo->setShortcuts(shortcuts);
+
+    shortcuts.clear();
+    shortcuts.append(QKeySequence(Qt::Key_F12));
+    shortcuts.append(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_R));
+    actionView_in_SPIERSview->setShortcuts(shortcuts);
+
     QObject::connect(actionImport, SIGNAL(triggered()), this, SLOT(Menu_File_Import())); //file/open
     QObject::connect(actionExit, SIGNAL(triggered()), qApp, SLOT(quit())); //quit
     QObject::connect(actionToggle_Source, SIGNAL(triggered()), this, SLOT(TransToggled())); //quit
