@@ -487,8 +487,8 @@ bool Brush_class::draw(int x, int y)
     if (Active == false) return false;
     QGraphicsLineItem *temp;
     MyPen.setCosmetic(true);
-    MyPen.setColor(QColor(255, 0, 0));
-    MyPen.setWidth(1);
+    MyPen.setColor(QColor(102, 153, 255));
+    MyPen.setWidth(2);
 
     //first check to see if we need to recreate or just move lines
     if (LineList.count() == TopLinesCount + BottomLinesCount + LeftLinesCount + RightLinesCount) NoRecreateFlag = true;
