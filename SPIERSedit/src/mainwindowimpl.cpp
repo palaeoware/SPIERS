@@ -578,7 +578,16 @@ void MainWindowImpl::left_pressed()
 
 void MainWindowImpl:: MouseZoom(int delta)
 {
-    ZoomSlider->setValue(ZoomSlider->value() + delta / 5);
+    if ( QGuiApplication::keyboardModifiers() == Qt::CTRL)
+    {
+        QList<QListWidgetItem *> selected = SliceSelectorList->selectedItems();
+        int selectedRow = SliceSelectorList->row(selected[0]);
+        int newRow = selectedRow - (delta / 10);
+        if (newRow < 0) newRow = 0;
+        if (newRow > SliceSelectorList->count() - 1) newRow = SliceSelectorList->count() - 1;
+        SliceSelectorList->setCurrentRow(newRow, QItemSelectionModel::ClearAndSelect);
+    }
+    else ZoomSlider->setValue(ZoomSlider->value() + delta / 5);
 }
 
 void MainWindowImpl::SetMasksFlag()

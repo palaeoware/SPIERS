@@ -21,6 +21,7 @@
 #include <QAction>
 #include <QEvent>
 #include <QTime>
+#include <QList>
 #include <QTreeWidgetItem>
 #include <QSpinBox>
 #include <QGraphicsView>
