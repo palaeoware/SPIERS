@@ -72,7 +72,13 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
 
     //return;
     //connect all the menu commands
+
+    QList<QKeySequence> shortcuts;
+    shortcuts.append(QKeySequence(Qt::Key_F1));
+    shortcuts.append(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_1));
+    actionMain_Toolbox->setShortcuts(shortcuts);
     QObject::connect(actionMain_Toolbox, SIGNAL(triggered()), this, SLOT(Menu_Window_MainToolbox()));
+
     QObject::connect(actionGeneration, SIGNAL(triggered()), this, SLOT(Menu_Window_Generate()));
     QObject::connect(actionSlice_Selector, SIGNAL(triggered()), this, SLOT(Menu_Window_SliceSelector()));
     QObject::connect(actionMasks, SIGNAL(triggered()), this, SLOT(Menu_Window_Masks()));
