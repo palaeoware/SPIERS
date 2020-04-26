@@ -1038,6 +1038,7 @@ void MainWindowImpl::Start()
     fheight = cheight / ColMonoScale;
 
     LoadAllData(CurrentFile);
+    SliceSelectorList->setCurrentRow(CurrentFile);
 
     cwidth4 = cwidth;
     if (GreyImage)
