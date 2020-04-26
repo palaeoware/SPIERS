@@ -2,10 +2,10 @@
  * @file
  * NetModule
  *
- * All SPIERScommon code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSview code is Copyright 2008-2018 by Russell J. Garwood, Mark D. Sutton,
+ * All SPIERS code is Copyright 2008-2019 by Russell J. Garwood, Mark D. Sutton,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -81,13 +81,7 @@ void NetModule::checkForNew()
     doingCheck = true;
     manager = new QNetworkAccessManager(this);
 
-#ifdef __APPLE__
-    request.setUrl(QUrl("https://www.spiers-software.org/SPIERSstatus-mac.txt"));
-#endif
-
-#ifndef __APPLE__
-    request.setUrl(QUrl("https://www.spiers-software.org/SPIERSstatus-win64.txt"));
-#endif
+    request.setUrl(QUrl("https://www.spiers-software.org/SPIERSUpdateStatus.txt"));
 
     request.setRawHeader("User-Agent", "SPIERS");
     reply = manager->get(request);
@@ -206,62 +200,19 @@ void NetModule::slotReadyRead()
 
         if (versionOnline > versionCurrent)
         {
-            macClickedNoForUpdateDownload = true;
             downloadURL = reply->readLine();
 
             QMessageBox *popupMessage = new QMessageBox;
             popupMessage->setParent(nullptr);
-            popupMessage->setWindowTitle("SPIERS update");
-            popupMessage->setText("A new version of SPIERS is available.\nDo you want to download it?\n\nNote that after downloading this program will close before running the new installer.");
-            popupMessage->setStandardButtons(QMessageBox::Yes);
-            popupMessage->addButton(QMessageBox::No);
-            popupMessage->setDefaultButton(QMessageBox::No);
+            popupMessage->setWindowTitle("SPIERS Update Available");
+            popupMessage->setTextFormat(Qt::RichText);
+            popupMessage->setText("<p>A new version of SPIERS (v" + versionOnline.str() +
+                                  ") is available for download.</p><p>Please visit <a href=\"https://github.com/palaeoware/SPIERS/releases\"><span style=\"color: white\">https://github.com/palaeoware/SPIERS/releases</span></a>.</p>");
+            popupMessage->setStandardButtons(QMessageBox::Close);
+            popupMessage->setDefaultButton(QMessageBox::Close);
             popupMessage->setWindowFlags(Qt::WindowStaysOnTopHint);
             popupMessage->raise();
-            int popupMessageReturn = popupMessage->exec();
-
-            if (popupMessageReturn == QMessageBox::Yes)
-            {
-#ifndef __APPLE__
-                NetModule netModule;
-
-                QString saveFile = QDir::tempPath() + "SPIERSupdate.exe";
-                // qDebug()<<SaveFile;
-                netModule.getUpdate(downloadURL, saveFile);
-                do
-                {
-                    qApp->processEvents();
-                    //ProgressDialog->setWindowFlags(Qt::WindowStaysOnTopHint);
-                    //n2.ProgressDialog->raise();
-                }
-                while (netModule.downloadDone == false);
-
-                //qDebug()<<n2.DownloadDone;
-                //qDebug()<<n2.DownloadError;
-
-                if (netModule.downloadError) return;
-
-                QFileInfo fileInfo(saveFile);
-                //If < 1Mb definately something up
-                if (fileInfo.size() < 1000000)
-                {
-                    QMessageBox::warning(nullptr, "SPIERS update error",
-                                         "File does not appear to have downloaded properly - this may be a virus-checker/firewall issue. Visit the SPIERS website (www.spiers-software.org) to manually download the latest version");
-                    return;
-                }
-                //run the thing, and quit
-                QMessageBox::information(nullptr, "Update", "Updater downloaded - click OK to close this program and start the updater");
-                QProcess::startDetached(saveFile);
-
-                //The openUrl method may work on PC, but this definately does, so stick with it
-                QCoreApplication::quit();
-#endif
-#ifdef __APPLE__
-                QMessageBox::information(nullptr, "Update",
-                                         "Updater wil be downloaded via your web-browser. Once downloaded run it manually if it does not start automatically. Close all SPIERS applications before installing!");
-                QDesktopServices::openUrl(QUrl(downloadURL, QUrl::TolerantMode));
-#endif
-            }
+            popupMessage->exec();
         }
     }
     else if (doingHash)

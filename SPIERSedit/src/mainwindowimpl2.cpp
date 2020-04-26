@@ -1,12 +1,19 @@
-/*********************************************
-
-SPIERSedit 2: mainwindowimpl2.cpp
-
-Overspill from mainwindowimpl - which was getting big
-and slow to compile! This contains 'service' functions
-mostly
-- setup/manipulation of mask and segment dockers
-**********************************************/
+/**
+ * @file
+ * Source: MainWindowImpl2
+ *
+ * All SPIERSversion code is released under the GNU General Public License.
+ * See LICENSE.md files in the programme directory.
+ *
+ * All SPIERSversion code is Copyright 2008-2019 by Mark D. Sutton, Russell J. Garwood,
+ * and Alan R.T. Spencer.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version. This program is distributed in the
+ * hope that it will be useful, but WITHOUT ANY WARRANTY.
+ */
 
 #include <math.h>
 #include "keysafespinbox.h"
@@ -858,9 +865,8 @@ void MainWindowImpl::SetUpGUIFromSettings()
     //work out slider etc settings from currentzoom
 
     DontRedoZoom = true; //avoid cascades on updating controls
-    double t2 = log10(CurrentZoom * 100); //t=(slider/500)+1
-    int slider = (static_cast<int>(t2) - 1) * 500;
-    CurrentZoom = (pow(10.0, (static_cast <double>(slider)) / 500 + 1)) / 100; //fix CurrentZoom to nearest correct value
+    double t2 = log10(CurrentZoom * 100);
+    int slider = static_cast<int>((t2 - 1.0) * 500.00);
     ZoomSpinBox->setValue(static_cast<int>(CurrentZoom * 100));
     ZoomSlider->setValue(slider);
     DontRedoZoom = false;
@@ -3115,6 +3121,7 @@ void MainWindowImpl::on_actionMeasure_Volumes_triggered()
 
 void MainWindowImpl::on_actionInterpolate_over_selected_slices_triggered()
 {
+
     //Interpolate selected curve(s) from first to last selected slice
     QList <QTreeWidgetItem *> selitems = CurvesTreeWidget->selectedItems();
 
@@ -3125,6 +3132,7 @@ void MainWindowImpl::on_actionInterpolate_over_selected_slices_triggered()
         for (int i = 0; i < CurveCount; i++)
             if (Curves[i]->widgetitem == selitems[0]) c = i;
 
+        qDebug() << "0";
         if (c == -1) Error("Oops, didn't find the selected curve!");
         QList <QListWidgetItem *> selitems2 = SliceSelectorList->selectedItems();
         if (selitems2.count() < 2) Message ("Select at least two slices to interpolate between");
@@ -3153,7 +3161,8 @@ void MainWindowImpl::on_actionInterpolate_over_selected_slices_triggered()
             else
             {
                 if (QMessageBox::question(this, "Interpolate Curves",
-                                          "This will interpolate selected curves between first and last selected slices - any data in intervening slices will be overwritten. Are you sure?", QMessageBox::Yes | QMessageBox::Cancel)
+                                          "This will interpolate selected curves between first and last selected slices - any data in intervening slices will be overwritten. Are you sure?", QMessageBox::Yes | QMessageBox::Cancel,
+                                          QMessageBox::Yes)
                         == QMessageBox::Yes)
                 {
                     //OK, do the interpolation
@@ -3170,7 +3179,6 @@ void MainWindowImpl::on_actionInterpolate_over_selected_slices_triggered()
                         //qDebug()<<"Dirtying "<<i<<" Files(i) is "<<Files[i];
                         if (Curves[c]->Segment != 0) FilesDirty[i / zsparsity] = true;
                     }
-
                     for (int j = 0; j < Curves[c]->SplinePoints[FirstFile]->Count; j++)
                     {
                         double x = Curves[c]->SplinePoints[FirstFile]->X[j];
@@ -3189,8 +3197,8 @@ void MainWindowImpl::on_actionInterpolate_over_selected_slices_triggered()
             }
         }
     }
+
     //ResetUndo();
     ShowImage(graphicsView);
     RefreshCurves();
-
 }

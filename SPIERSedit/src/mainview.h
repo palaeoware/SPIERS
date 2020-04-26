@@ -5,7 +5,7 @@
  * All SPIERSedit code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSview code is Copyright 2008-2018 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERSview code is Copyright 2008-2019 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@ class mainview : public QGraphicsView
 {
     Q_OBJECT
 public:
-    explicit mainview(QObject *parent);
+    explicit mainview(QObject *parent = nullptr);
 
 protected:
     void wheelEvent(QWheelEvent *event);

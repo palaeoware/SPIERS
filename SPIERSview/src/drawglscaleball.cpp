@@ -20,7 +20,8 @@ void DrawGLScaleBall::initializeGL()
  */
 void DrawGLScaleBall::draw(QMatrix4x4 vMatrix, QVector3D lPosition)
 {
-
+    Q_UNUSED(vMatrix);
+    Q_UNUSED(lPosition);
 }
 
 

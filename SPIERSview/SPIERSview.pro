@@ -29,6 +29,9 @@ UI_DIR += ui
 # Load the SPIERS version number
 include(../version.pri)
 
+#Needed to make binaries launchable from file in Ubuntu - GCC default link flag -pie on newer Ubuntu versions this so otherwise recognised as shared library
+QMAKE_LFLAGS += -no-pie
+
 RC_FILE = resources/icon.rc
 
 DISTFILES += \
@@ -130,7 +133,7 @@ win32 {
 }
 
 # Unix/Linux common build here
-unix {
+unix:!macx {
         #Libraries from VTK package (e.g. sudo apt-get install libvtk7-qt-dev).
 	INCLUDEPATH +=/usr/include/vtk-7.1/
 	LIBS += -L/usr/include/vtk-7.1/ \
@@ -215,25 +218,99 @@ unix {
 
 # MacOS common build here (not currently tested or supported)
 macx {
-	LIBS += -L/Users/{user}/VTK-bin/lib/vtk-5.2 \
-    -lvtkRendering \
-    -lvtkGraphics \
-    -lvtkImaging \
-    -lvtkIO \
-    -lvtkFiltering \
-    -lvtkCommon \
-    -lvtkftgl \
-    -lvtkfreetype \
-    -lvtkDICOMParser \
-    -lvtkpng \
-    -lvtktiff \
-    -lvtkzlib \
-    -lvtkjpeg \
-    -lvtkexpat \
-    -lvtksys \
+
+     #RJG - Below vtk installation achieved using installation via homebrew
+     #eg. brew install vtk
+     LIBS += -L$$PWD/../../../../../../usr/local/Cellar/vtk/8.2.0_10/lib/ \
+    -lvtkCommonExecutionModel-8.2.1 \
+    -lvtkCommonDataModel-8.2.1 \
+    -lvtkCommonColor-8.2.1 \
+    -lvtkCommonComputationalGeometry-8.2.1 \
+    -lvtkCommonMisc-8.2.1 \
+    -lvtkCommonSystem-8.2.1 \
+    -lvtkCommonTransforms-8.2.1 \
+    -lvtkCommonMath-8.2.1 \
+    -lvtkDICOMParser-8.2.1 \
+    -lvtkDomainsChemistry-8.2.1 \
+    -lvtkDomainsChemistryOpenGL2-8.2.1 \
+    -lvtkFiltersAMR-8.2.1 \
+    -lvtkFiltersExtraction-8.2.1 \
+    -lvtkFiltersFlowPaths-8.2.1 \
+    -lvtkFiltersGeneral-8.2.1 \
+    -lvtkFiltersGeneric-8.2.1 \
+    -lvtkFiltersGeometry-8.2.1 \
+    -lvtkFiltersHybrid-8.2.1 \
+    -lvtkFiltersHyperTree-8.2.1 \
+    -lvtkFiltersImaging-8.2.1 \
+    -lvtkFiltersModeling-8.2.1 \
+    -lvtkFiltersParallel-8.2.1 \
+    -lvtkFiltersParallelImaging-8.2.1 \
+    -lvtkFiltersProgrammable-8.2.1 \
+    -lvtkFiltersSelection-8.2.1 \
+    -lvtkFiltersSMP-8.2.1 \
+    -lvtkFiltersSources-8.2.1 \
+    -lvtkFiltersStatistics-8.2.1 \
+    -lvtkFiltersTexture-8.2.1 \
+    -lvtkFiltersVerdict-8.2.1 \
+    -lvtkglew-8.2.1 \
+    -lvtkImagingColor-8.2.1 \
+    -lvtkImagingFourier-8.2.1 \
+    -lvtkImagingGeneral-8.2.1 \
+    -lvtkImagingHybrid-8.2.1 \
+    -lvtkImagingMath-8.2.1 \
+    -lvtkImagingMorphological-8.2.1 \
+    -lvtkImagingSources-8.2.1 \
+    -lvtkImagingStatistics-8.2.1 \
+    -lvtkImagingStencil-8.2.1 \
+    -lvtkInfovisLayout-8.2.1 \
+    -lvtkIOAMR-8.2.1 \
+    -lvtkIOEnSight-8.2.1 \
+    -lvtkIOExodus-8.2.1 \
+    -lvtkIOGeometry-8.2.1 \
+    -lvtkIOImage-8.2.1 \
+    -lvtkIOImport-8.2.1 \
+    -lvtkIOInfovis-8.2.1 \
+    -lvtkIOLegacy-8.2.1 \
+    -lvtkIOLSDyna-8.2.1 \
+    -lvtkIOMINC-8.2.1 \
+    -lvtkIOMovie-8.2.1 \
+    -lvtkIONetCDF-8.2.1 \
+    -lvtkIOParallel-8.2.1 \
+    -lvtkIOParallelXML-8.2.1 \
+    -lvtkIOPLY-8.2.1 \
+    -lvtkIOSQL-8.2.1 \
+    -lvtkIOVideo-8.2.1 \
+    -lvtkIOXML-8.2.1 \
+    -lvtkIOXMLParser-8.2.1 \
+    -lvtkmetaio-8.2.1 \
+    -lvtkRenderingContext2D-8.2.1 \
+    -lvtkRenderingContextOpenGL2-8.2.1 \
+    -lvtkRenderingFreeType-8.2.1 \
+    -lvtkRenderingOpenGL2-8.2.1 \
+    -lvtksqlite-8.2.1 \
+    -lvtkverdict-8.2.1 \
+    -lvtkCommonCore-8.2.1 \
+    -lvtkChartsCore-8.2.1 \
+    -lvtkImagingCore-8.2.1 \
+    -lvtkIOCore-8.2.1 \
+    -lvtkParallelCore-8.2.1 \
+    -lvtkRenderingCore-8.2.1 \
+    -lvtkFiltersCore-8.2.1 \
+    -lvtksys-8.2.1 \
     -lstdc++ \
-    -mlibz.a
-	INCLUDEPATH += "/Users/{user}/VTK-bin/include/vtk-5.2"
+    -lz
+
+     INCLUDEPATH += $$PWD/../../../../../../usr/local/Cellar/vtk/8.2.0_10/include/vtk-8.2/
+     DEPENDPATH += $$PWD/../../../../../../usr/local/Cellar/vtk/8.2.0_10/include/vtk-8.2/
+
+    #RJG - Note also the virtual machine has a VTK version built on the box:
+    #LIBS += -L$$PWD/../../../../SPIERS/VTK-8.2.0/build/lib/ \
+    #INCLUDEPATH += $$PWD/../../../../SPIERS/VTK-8.2.0/build
+    #DEPENDPATH += $$PWD/../../../../SPIERS/VTK-8.2.0/build
+    #I have left this in case an alternative is ever required
+
+    #Mac icon
+    ICON = resources/SPIERSviewIcon.icns
 }
 
 SOURCES += src/main.cpp \

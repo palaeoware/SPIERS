@@ -2,10 +2,10 @@
  * @file
  * About Dialog
  *
- * All SPIERSview code is released under the GNU General Public License.
+ * All SPIERSalign code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSview code is Copyright 2008-2018 by Russell J. Garwood, Mark D. Sutton,
+ * All SPIERSalign code is Copyright 2008-2019 by Russell J. Garwood, Mark D. Sutton,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -36,7 +36,7 @@ About::About(QWidget *parent) :
 
     ui->header->setVisible(false);
 
-    ui->textLabel_1->setText(theMainWindow->windowTitle());
+    ui->textLabel_1->setText(QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION));
     ui->textLabel_1->setObjectName("aboutTextLabel1");
     ui->textLabel_1->setAlignment(Qt::AlignCenter);
 

@@ -1,3 +1,20 @@
+/**
+ * @file
+ * Source: CopyingImpl 2
+ *
+ * All SPIERSversion code is released under the GNU General Public License.
+ * See LICENSE.md files in the programme directory.
+ *
+ * All SPIERSversion code is Copyright 2008-2019 by Mark D. Sutton, Russell J. Garwood,
+ * and Alan R.T. Spencer.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version. This program is distributed in the
+ * hope that it will be useful, but WITHOUT ANY WARRANTY.
+ */
+
 #include "copyingimpl.h"
 #include "globals.h"
 #include "fileio.h"
@@ -1354,7 +1371,16 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
 #ifdef __APPLE__
         //qDebug()<<"file:" + outputfile;
         //QMessageBox::information(0,"","file:" + outputfile);
-        QDesktopServices::openUrl(QUrl("file:" + outputfile, QUrl::TolerantMode));
+        //QDesktopServices::openUrl(QUrl("file:" + outputfile, QUrl::TolerantMode));
+
+        //RJG - sorting luanch spiersview on MAC export.
+        //Old code above - new approach below is same as Linux, and works just fine
+        QString program = qApp->applicationFilePath();
+        program.replace("/SPIERSedit", "/SPIERSview");
+        QStringList arguments;
+        arguments << outputfile;
+        QProcess::startDetached (program, arguments, qApp->applicationDirPath());
+
 #endif
 
 #ifdef __linux__

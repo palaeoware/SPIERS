@@ -23,12 +23,15 @@ UI_DIR += ui
 # Load the SPIERS version number
 include(../version.pri)
 
+#Needed to make binaries launchable from file in Ubuntu - GCC default link flag -pie on newer Ubuntu versions this so otherwise recognised as shared library
+QMAKE_LFLAGS += -no-pie
+
 DESTDIR \
     += \
     bin
 
 RC_FILE = resources/icon.rc
-ICON = resources/icon.icns
+#ICON = resources/icon.icns
 
 DISTFILES += \
     LICENSE.md \
@@ -37,6 +40,9 @@ DISTFILES += \
 MOC_DIR += build
 
 OBJECTS_DIR += build
+
+#Mac icon
+ICON = resources/SPIERSeditIcon.icns
 
 FORMS += ui/import.ui \
     ui/mainwindow.ui \
@@ -84,6 +90,7 @@ HEADERS += src/display.h \
     src/dialogaboutimpl.h \
     src/keysafespinbox.h \
     src/mainview.h \
+    src/main.h \
     ../SPIERScommon/src/darkstyletheme.h \
     ../SPIERScommon/src/netmodule.h \
     ../SPIERScommon/src/semanticversion.h \

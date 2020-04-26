@@ -12,17 +12,15 @@
 #include <QDesktopWidget>
 #include <QScreen>
 
-#ifndef __APPLE__
-
-#ifdef _WIN64
-#include <windows.h>
-#endif
-
 #include "main.h"
 #include "mainwindow.h"
 #include "globals.h"
 #include "../SPIERScommon/src/netmodule.h"
 #include "../SPIERScommon/src/darkstyletheme.h"
+
+#ifdef _WIN64
+#include <windows.h>
+#endif
 
 /**
  * @brief logMessageOutput
@@ -54,23 +52,26 @@ void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const Q
         break;
     }
 
+#ifndef __APPLE__
 #ifdef QT_DEBUG
-    // Save to debug.log
+// Save to debug.log
     QFile outFile("debug.log");
     outFile.open(QIODevice::WriteOnly | QIODevice::Append);
     QTextStream log(&outFile);
     log << txt << endl;
 
-    // Now print to stout too
+// Now print to stout too
     QTextStream console(stdout);
     console << txt << endl;
 #else
-    // Print to stout only
+// Print to stout only
     QTextStream console(stdout);
     console << txt << endl;
 #endif
+#endif
 }
 
+#ifndef __APPLE__
 /**
  * @brief qMain::qMain
  * @param argc
@@ -101,6 +102,15 @@ int main(int argc, char *argv[])
     // This has the app draw at HiDPI scaling on HiDPI displays, usually two pixels for every one logical pixel
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
+    // Set OpenGL surface format as global
+    // @see global.h and global.cpp
+
+    surfaceFormat.setMajorVersion(GL_MAJOR);
+    surfaceFormat.setMinorVersion(GL_MINOR);
+    surfaceFormat.setRenderableType(QSurfaceFormat::OpenGL);
+    surfaceFormat.setProfile(QSurfaceFormat::CoreProfile);
+    QSurfaceFormat::setDefaultFormat(surfaceFormat);
+
     // Set to allow the OpenGL context (ie. the same threads) to be shared between normal and full screen mode
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 
@@ -123,7 +133,7 @@ int main(int argc, char *argv[])
     splash->show();
     splash->showMessage("<font><b>" + QString(PRODUCTNAME) + " v" + QString(SOFTWARE_VERSION) + " </b></font>", Qt::AlignHCenter, Qt::white);
     app.processEvents();
-    QTimer::singleShot(3000, splash, SLOT(close()));
+    QTimer::singleShot(2000, splash, SLOT(close()));
 
     app.setQuitOnLastWindowClosed(true);
 
@@ -153,14 +163,13 @@ int main(int argc, char *argv[])
 
 #ifdef __APPLE__
 
-#include "main.h"
-
 /**
  * @brief qMain::qMain
  * @param argc
  * @param argv
  */
-main::main(int argc, char *argv[]) : QApplication(argc, argv)
+
+main::main(int &argc, char *argv[]) : QApplication(argc, argv)
 {
     //do nothing
     donthandlefileevent = false;
@@ -207,25 +216,42 @@ int main(int argc, char *argv[])
 {
     macClickedNoForUpdateDownload = false;
 
+    // This has the app draw at HiDPI scaling on HiDPI displays, usually two pixels for every one logical pixel
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
-    if (argc == 2) if (QString(argv[1]).length() < 2) argc = 1; //this to cure weird mac crash
+    // Set OpenGL surface format as global
+    // @see global.h and global.cpp
+    surfaceFormat.setDepthBufferSize(24);
+    surfaceFormat.setMajorVersion(GL_MAJOR_MAC);
+    surfaceFormat.setMinorVersion(GL_MINOR_MAC);
+    surfaceFormat.setRenderableType(QSurfaceFormat::OpenGL);
+    surfaceFormat.setProfile(QSurfaceFormat::CoreProfile);
+    QSurfaceFormat::setDefaultFormat(surfaceFormat);
+
+    // Set to allow the OpenGL context (ie. the same threads) to be shared between normal and full screen mode
+    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+
+    if (argc == 2)
+        if (QString(argv[1]).length() < 2)
+            argc = 1; //this to cure weird mac crash
     argc = 1;
 
-    main a(argc, argv);
+    // Create main class
+    class main app(argc, argv);
 
+    //Style program with our dark style
+    QApplication::setStyle(new DarkStyleTheme);
 
+    // Check for any version updates
+    NetModule netModule;
+    netModule.checkForNew();
 
-    NetModule n;
-    n.CheckForNew();
+    app.fn = "";
+    app.namereceived = false;
 
-    a.fn = "";
-    a.namereceived = false;
+    app.setQuitOnLastWindowClosed(true);
 
-    a.setQuitOnLastWindowClosed(true);
     //set the fname global from argument
-
-
-
     if (argc != 2)
     {
         fname = "";
@@ -240,23 +266,22 @@ int main(int argc, char *argv[])
         {
             fname = argv[1];
             //Make sure we don't handle file event at all
-            a.donthandlefileevent = true;
+            app.donthandlefileevent = true;
 
         }
     }
 
     //Do nothing until event is received
+    app.processEvents();
 
-    a.processEvents();
+    if (app.namereceived)
+        fname = app.fn;
 
-    if (a.namereceived) fname = a.fn;
+    // MainWindow with Event filter - deals with glitchy keyboard shortcuts
+    MainWindow mainWindow;
+    app.installEventFilter(&mainWindow);
+    mainWindow.show();
 
-    //a.spawn=true;
-    MainWindow w;
-    //deal with any incoming events - i.e. file open ones
-
-    w.show();
-
-    return a.exec();
+    return app.exec();
 }
 #endif

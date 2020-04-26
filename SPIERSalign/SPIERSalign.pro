@@ -24,6 +24,9 @@ DESTDIR \
     += \
     bin
 
+#Needed to make binaries launchable from file in Ubuntu - GCC default link flag -pie on newer Ubuntu versions this so otherwise recognised as shared library
+QMAKE_LFLAGS += -no-pie
+
 RC_FILE += resources/icon.rc
 
 DISTFILES += \
@@ -36,6 +39,9 @@ OBJECTS_DIR = build
 
 FORMS += ui/mainwindow.ui \
     ui/about.ui
+
+#Mac icon
+ICON = resources/SPIERSalignIcon.icns
 
 HEADERS += src/mainwindowimpl.h \
     src/globals.h \

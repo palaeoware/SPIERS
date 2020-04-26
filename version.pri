@@ -2,4 +2,4 @@
 # This sets the version string for all SPIERS executables.
 #
 
-DEFINES += SOFTWARE_VERSION='\\"3.0.0-rc.2\\"'
+DEFINES += SOFTWARE_VERSION='\\"3.1.0\\"'

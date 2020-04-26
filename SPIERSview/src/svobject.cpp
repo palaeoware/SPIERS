@@ -157,14 +157,15 @@ void SVObject::ForceUpdates(int thisobj, int totalobj)
     {
         //qDebug() << "[Where I'm I?] In ForceUpdates - thisobj >= 0";
 
-        QString status;
-        status.sprintf("Reprocessing %d of %d", thisobj + 1, totalobj);
-        mainWindow->ui->OutputLabelOverall->setText(status);
-        if (totalobj == 0)
-            mainWindow->ui->ProgBarOverall->setValue(100);
-        else
-            mainWindow->ui->ProgBarOverall->setValue((thisobj * 100) / totalobj);
+        QString status = QString("Reprocessing %1 of %2").arg(thisobj + 1).arg(totalobj);
 
+        mainWindow->ui->OutputLabelOverall->setText(status);
+
+        if (totalobj == 0) {
+            mainWindow->ui->ProgBarOverall->setValue(100);
+        } else {
+            mainWindow->ui->ProgBarOverall->setValue((thisobj * 100) / totalobj);
+        }
     }
 
     //qDebug() << "[Where I'm I?] In ForceUpdates calling MakeDlists();";
@@ -195,7 +196,8 @@ static void ErrorHandler(vtkObject *, unsigned long, void *, void *progress)
 {
     Q_UNUSED(progress)
 
-    QMessageBox::critical(mainWindow, "Error", "Fatal VTK error: This is likely an 'out of memory' issue - if however you see this message when working with small objects please ttact the software author");
+    QMessageBox::critical(mainWindow, "Error",
+                          "Fatal VTK error: This is likely an 'out of memory' issue - if however you see this message when working with small objects please contact the software author");
 }
 
 /**
@@ -956,20 +958,34 @@ QString SVObject::DoMatrixDXFoutput(int v, float x, float y, float z)
 
     float *M = matrix;
     float x1, y1, z1;
-    QString S;
 
     x1 = x * M[0] + y * M[4] + z * M[8] + M[12];
     y1 = x * M[1] + y * M[5] + z * M[9] + M[13];
     z1 = x * M[2] + y * M[6] + z * M[10] + M[14];
 
-    S.sprintf("1%d\n%f\n2%d\n%f\n3%d\n%f\n", v, static_cast<double>(x1), v, static_cast<double>(y1), v, static_cast<double>(z1));
-    if (v < 2) return S;
+    QString string = QString("1%1\n%2\n2%3\n%4\n3%5\n%6\n")
+            .arg(v)
+            .arg(static_cast<double>(x1))
+            .arg(v)
+            .arg(static_cast<double>(y1))
+            .arg(v)
+            .arg(static_cast<double>(z1));
+    //string.sprintf("1%d\n%f\n2%d\n%f\n3%d\n%f\n", v, static_cast<double>(x1), v, static_cast<double>(y1), v, static_cast<double>(z1));
 
-    QString T;
-    T.sprintf("1%d\n%f\n2%d\n%f\n3%d\n%f\n", v + 1, static_cast<double>(x1), v + 1, static_cast<double>(y1), v + 1, static_cast<double>(z1));
+    if (v < 2)
+        return string;
 
-    S += T;
-    return S;
+    QString string2 = QString("1%d\n%f\n2%d\n%f\n3%d\n%f\n")
+            .arg(v + 1)
+            .arg(static_cast<double>(x1))
+            .arg(v + 1)
+            .arg(static_cast<double>(y1))
+            .arg(v + 1)
+            .arg(static_cast<double>(z1));
+    //string2.sprintf("1%d\n%f\n2%d\n%f\n3%d\n%f\n", v + 1, static_cast<double>(x1), v + 1, static_cast<double>(y1), v + 1, static_cast<double>(z1));
+
+    string.append(string2);
+    return string;
 }
 
 /**
@@ -983,12 +999,15 @@ int SVObject::WriteDXFfaces(QFile *outfile)
 
     QString header, name;
 
-    //work out object number
+    // Work out object number
     int ocount = 1;
     for (int i = 0; i < SVObjects.count(); i++) if (!(SVObjects[i]->IsGroup) && i < Index) ocount++;
     QTextStream ts(&header);
-    if (Name.isEmpty()) name.sprintf("%d", ocount);
-    else name = Name;
+
+    if (Name.isEmpty())
+        name = QString("%1").arg(ocount);
+    else
+        name = Name;
 
     ts << "0\n3DFACE\n8\n" << name.toLatin1() << "\n62\n" << ocount << "\n";
 

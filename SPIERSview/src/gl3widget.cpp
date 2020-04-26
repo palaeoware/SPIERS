@@ -10,6 +10,7 @@
 #include <QWheelEvent>
 #include <QVector4D>
 #include <QGesture>
+#include <QDebug>
 
 #include "globals.h"
 
@@ -20,6 +21,10 @@
 GlWidget::GlWidget(QWidget *parent)
     : QOpenGLWidget(parent)
 {
+    // Set the widget format to the same as the global surface format
+    // @see globals.h and main.cpp
+    setFormat(surfaceFormat);
+
     // default mouse position X/Y
     LastMouseXpos = -1;
     LastMouseYpos = -1;
@@ -48,13 +53,6 @@ GlWidget::GlWidget(QWidget *parent)
     gestures << Qt::PinchGesture;
     grabGestures(gestures);
 
-    // Set GL surface format
-    QSurfaceFormat surfaceFormat;
-    surfaceFormat.setMajorVersion(GL_MAJOR);
-    surfaceFormat.setMinorVersion(GL_MINOR);
-    surfaceFormat.setRenderableType(QSurfaceFormat::OpenGL);
-    setFormat(surfaceFormat);
-
     // Create new GL scale grid
     scaleGrid = new DrawGLScaleGrid(this);
     scaleBall = new DrawGLScaleBall(this);
@@ -69,6 +67,11 @@ GlWidget::~GlWidget()
     lightingShaderProgramForColour.release();
     lightingShaderProgram.deleteLater();
     lightingShaderProgramForColour.deleteLater();
+
+#ifdef __APPLE__
+    vao.release();
+    vao.deleteLater();
+#endif
 }
 
 /**
@@ -78,17 +81,37 @@ void GlWidget::initializeGL()
 {
     //qDebug() << "[Where I'm I?] In initializeGL";
 
-    glfunctions = this->context()->functions();
-    glfunctions->glEnable(GL_DEPTH_TEST);
-    glfunctions->glEnable(GL_BLEND);
-    glfunctions->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    // Make the current context current
+    makeCurrent();
 
+    initializeOpenGLFunctions();
+
+    // To allow access to the context function from outside this class
+    glfunctions = this->context()->functions();
+
+#ifdef __APPLE__
+    // OpenGL version 3.x+ requires the VertexArrayBuffer to be created and bound at initialization.
+    // Current only needed for macOS
+    vao.create();
+    vao.bind();
+#endif
+
+#ifdef __APPLE__
+    // We have slightly different shaders for macOS as OpenGL is version 3.3 Core
+    lightingShaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/lightingVertexShader_mac.vsh");
+    lightingShaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/lightingFragmentShader_mac.fsh");
+    lightingShaderProgramForColour.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/lightingVertexShaderTextured_mac.vsh");
+    lightingShaderProgramForColour.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/lightingFragmentShaderTextured_mac.fsh");
+#endif
+
+#ifndef __APPLE__
     lightingShaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/lightingVertexShader.vsh");
     lightingShaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/lightingFragmentShader.fsh");
-    lightingShaderProgram.link();
-
     lightingShaderProgramForColour.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/lightingVertexShaderTextured.vsh");
     lightingShaderProgramForColour.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/lightingFragmentShaderTextured.fsh");
+#endif
+
+    lightingShaderProgram.link();
     lightingShaderProgramForColour.link();
 
     // Initalize the GL Scale grid
@@ -117,7 +140,7 @@ void GlWidget::resizeGL(int width, int height)
 
     DoPMatrix(xdim, ydim);
 
-    glfunctions->glViewport(0, 0, xdim, ydim);
+    glViewport(0, 0, xdim, ydim);
 
     update();
 }
@@ -165,7 +188,8 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
 
     QOpenGLShaderProgram *useshader;
 
-    glfunctions->glDepthMask(true);
+    glDepthMask(true);
+
 
     for (int trans = 0; trans < 2; trans++) //two runs - opaques first
     {
@@ -320,10 +344,14 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
                 }
         }
     }
-    glfunctions->glDepthMask(true);
+
+
+    glDepthMask(true);
 
     // Update the stored FOV
     updateFOV();
+
+    //glDebug("Line 358");
 
     // Show/Hide GL Scale Ball
     scaleBall->draw(vMatrix, vMatrix * camera);
@@ -331,6 +359,8 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
     // Show/Hide GL Scale Grid
     if (mainWindow->ui->actionShow_Scale_Grid->isChecked())
         scaleGrid->draw(vMatrix, vMatrix * camera);
+
+    //glDebug("Line 367");
 }
 
 /**
@@ -340,13 +370,17 @@ void GlWidget::paintGL()
 {
     //qDebug() << "[Where I'm I?] In paintGL";
 
-    glfunctions->glClearColor(
+    glClearColor(
         static_cast<float>(colorBackgroundRed) / static_cast<float>(255),
         static_cast<float>(colorBackgroundGreen) / static_cast<float>(255),
         static_cast<float>(colorBackgroundBlue) / static_cast<float>(255),
         0.5f
     );
-    glfunctions->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     if (mainWindow->ui->actionSplit_Stereo->isChecked())
     {
@@ -359,7 +393,9 @@ void GlWidget::paintGL()
         return;
     }
 
-    glfunctions->glViewport(0, 0, xdim, ydim);
+
+    glViewport(0, 0, xdim, ydim);
+
 
     if (mainWindow->ui->actionAnaglyph_Stereo->isChecked())
     {
@@ -387,6 +423,8 @@ void GlWidget::paintGL()
     //default - normal draw
     DoPMatrix(xdim, ydim);
     DrawObjects(false, false);
+
+
 }
 
 //Functions from old widget
@@ -932,4 +970,42 @@ void GlWidget::updateFOV()
     float divider = (this->height() * globalRescale) / static_cast<float>(30.0);
 
     currentFOV = static_cast<double>(ClipAngle / (divider * scale));
+}
+
+void GlWidget::glDebug(QString string = QString())
+{
+    GLenum err;
+    QString errMess;
+    while((err = glGetError()) != GL_NO_ERROR) {
+        // Process errors
+        switch(err)
+        {
+        case GL_INVALID_ENUM:
+            errMess = "Invalid Enum";
+            break;
+        case GL_INVALID_VALUE:
+            errMess = "Invalid Value";
+            break;
+        case GL_INVALID_OPERATION:
+            errMess = "Invalid Operation";
+            break;
+        case GL_STACK_OVERFLOW:
+            errMess = "Stack Overflow";
+            break;
+        case GL_STACK_UNDERFLOW:
+            errMess = "Stack Underflow";
+            break;
+        case GL_OUT_OF_MEMORY:
+            errMess = "Out of Menory";
+            break;
+        case GL_INVALID_FRAMEBUFFER_OPERATION:
+            errMess = "Invalid Frame Buffer Opperation";
+            break;
+        case GL_TABLE_TOO_LARGE:
+            errMess = "Table too large";
+            break;
+        }
+
+        qDebug() << QString("[GL Error] %1 - %2").arg(errMess).arg(string);
+    }
 }

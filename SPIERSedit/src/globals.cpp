@@ -1,13 +1,19 @@
-/*********************************************
-
-SPIERSedit 2: globals.cpp
-
-- Defines for global variables (of which there are lots - so sue me)
-- Constructors for four primary classes (Masks, Segs, OutObjects, Curves)
-- A few global service functions, e.g. output errors and messages in messageboxes
-
-**********************************************/
-
+/**
+ * @file
+ * Source: Globals
+ *
+ * All SPIERSversion code is released under the GNU General Public License.
+ * See LICENSE.md files in the programme directory.
+ *
+ * All SPIERSversion code is Copyright 2008-2019 by Mark D. Sutton, Russell J. Garwood,
+ * and Alan R.T. Spencer.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version. This program is distributed in the
+ * hope that it will be useful, but WITHOUT ANY WARRANTY.
+ */
 
 #include "globals.h"
 #include <stdio.h>
@@ -196,8 +202,6 @@ Curve::Curve(QString name)
     Closed = false;
     Filled = false;
     Segment = 0;
-//  qDebug()<<"Constructing curve "<<name<<"Files.count is "<<Files.count();
-//  qDebug()<<Files;
 
     for (int i = 0; i < FullFiles.count(); i++)
     {
@@ -308,7 +312,7 @@ QString DefaultPath;
 
 void WriteSuperGlobals()
 {
-    QSettings settings("Mark Sutton", "SPIERSedit 2.0");
+    QSettings settings("Palaeoware", "SPIERSedit");
     settings.beginWriteArray("RecentFiles");
     for (int i = 0; i < RecentFileList.size(); ++i)
     {
@@ -325,14 +329,14 @@ void WriteSuperGlobals()
     settings.setValue("CacheCompressionLevel", CacheCompressionLevel);
     settings.setValue("FileCompressionLevel", FileCompressionLevel);
     settings.setValue("RenderCache", RenderCache);
-    settings.setValue("DefaultFilePath", RenderCache);
+    settings.setValue("DefaultFilePath", DefaultPath);
 }
 
 void ReadSuperGlobals()
 {
     RecentFileList.clear(); //just in case
     QString t1;
-    QSettings settings("Mark Sutton", "SPIERSedit 2.0");
+    QSettings settings("Palaeoware", "SPIERSedit");
     int size = settings.beginReadArray("RecentFiles");
     for (int i = 0; i < size; ++i)
     {
@@ -351,7 +355,7 @@ void ReadSuperGlobals()
     CacheCompressionLevel = settings.value("CacheCompressionLevel", 0).toInt();
     FileCompressionLevel = settings.value("FileCompressionLevel", 0).toInt();
     RenderCache = settings.value("RenderCache", false).toBool();
-    DefaultPath = settings.value("DefaultFilePath", "c:/").toString();
+    DefaultPath = settings.value("DefaultFilePath", QDir::homePath()).toString();
 }
 
 void RecentFile(QString fname)

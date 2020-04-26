@@ -69,11 +69,37 @@ We recommend you install and use MSYS2 (64-bit) a Windows package manager, based
 
 #### Ubuntu 18.04 64-bit - QT Creator + QT v5.x and VTK v7.1 using GCC (64-bit)
 
-1. The simplest way to install Q5.X on your system is to download and run the installer from Qt: https://www.qt.io/download Further instructions are available here: https://wiki.qt.io/Install_Qt_5_on_Ubuntu
-2. SPIERSview requires VTK: The Linux version of SPIERSview is currently employs VTK7.1, installed from the Ubuntu package (e.g. sudo apt-get install libvtk7-qt-dev)
-3. Using the above package, you should be able to find the required VTK libraries under /usr/include/vtk-7.1/ they can also be included, if needed, in the working directory, and added to the executable at link time using the QMAKE_RPATHDIR variable - e.g. #QMAKE_RPATHDIR += $$PWD/vtk-7.X/
+1. Install GCC and QT5.X on your system. You can do this two ways, by using system packages:
+
+`sudo apt-get install build-essential libgl1-mesa-dev`
+
+`sudo apt install qt5-default`
+
+Or by downloading and running the installer from Qt: https://www.qt.io/download Further instructions are available here: https://wiki.qt.io/Install_Qt_5_on_Ubuntu
+
+2. SPIERSview requires VTK: The Linux version of SPIERSview is currently employs VTK7.1. This can also be installed from the Ubuntu packages:
+
+`sudo apt-get install libvtk7-qt-dev`
+
+3. Using the above package, you should be able to find the required VTK libraries under /usr/include/vtk-7.1/ They can also be included, if needed, in the working directory, and added to the executable at link time using the QMAKE_RPATHDIR variable - e.g. #QMAKE_RPATHDIR += $$PWD/vtk-7.X/
 4. You should then be able to compile SPIERS by opening the .pro file in QT creator and following standard debug/release procedure.
 
+#### macOS Catalina 64-bit - QT Creator + QT v5.x and VTK v8.2 (via Homebrew) using Clang 64-bit/XCode 11 toolchain
+
+1. Install XCode 11 from Apple App Store.
+2. Install QT5.x/QT Creator from https://www.qt.io/download.
+3. Install Homebrew (https://brew.sh/).
+4. Get VTK 8.2 package via Homebrew - you may need to force Homebrew to install a specific VTK version see Homebrew instruction on how to do so: 
+
+`brew install vtk`
+
+5. Check/Update the path to the VTK package in the ./SPIERSview/SPIERSview.pro file, where "8.2.0_10" is your installed version number:
+
+'LIBS += -L$$PWD/../../../../../../usr/local/Cellar/vtk/8.2.0_10/lib/ \'
+
+6. You should then be able to compile SPIERS by opening the .pro file in QT creator and following standard debug/release procedure.
+
+Note: it may be possible to install QT5.x/QT Creator via Homebrew rather than via the Apple App Store.
 _____
 
 ## 4. Minimum Requirements

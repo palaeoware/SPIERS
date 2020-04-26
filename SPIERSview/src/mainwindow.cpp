@@ -5,7 +5,7 @@
  * All SPIERSview code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSview code is Copyright 2008-2018 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERSview code is Copyright 2008-2019 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -75,6 +75,8 @@ MainWindow::MainWindow(QWidget *parent)
     mainWindow = this; //set global pointer to this window
     showMaximized();
 
+    setWindowTitle(QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION));
+
     FilterKeys = true; //set to true to turn off interception of keys needed for type-in boxes
 
     //set up action group
@@ -103,13 +105,8 @@ MainWindow::MainWindow(QWidget *parent)
     StereoGroup->addAction(ui->actionOrthographic_View);
     ui->actionNo_Stereo->setChecked(true);
 
-    QGLFormat f;
-    f.setVersion(GL_MAJOR, GL_MINOR);
-    f.setSampleBuffers(true);
-    f.setSampleBuffers(true);
-    f.setSamples(1);
-
     gl3widget = new GlWidget(ui->frameVTK);
+
     gllayout = new QHBoxLayout;
     gllayout->addWidget(gl3widget);
     gllayout->setSpacing(2);
@@ -140,7 +137,6 @@ MainWindow::MainWindow(QWidget *parent)
     time = new QTime(); //used by spin timer
     time->start();
 
-    setWindowIcon(QIcon(":/ViewIcon.bmp"));
     ui->dockWidgetPieces->setVisible(false);
     ui->InfoDock->setVisible(false);
     ui->ProgressDock->setVisible(true);
@@ -293,7 +289,7 @@ agin:
         VAXML v;
         if (v.readVAXML(fname))
         {
-            QString shortfname = QString(PRODUCTNAME) + " v" + QString(SOFTWARE_VERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
+            QString shortfname = QString(PRODUCTNAME) + "  - Version " + QString(SOFTWARE_VERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
             this->setWindowTitle(shortfname);
             EnableRenderCommands();
             RefreshObjects();
@@ -314,7 +310,7 @@ agin:
         VAXML v;
         if (v.readSPVF(fname))
         {
-            QString shortfname = QString(PRODUCTNAME) + " v" + QString(SOFTWARE_VERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
+            QString shortfname = QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
             this->setWindowTitle(shortfname);
             EnableRenderCommands();
             RefreshObjects();
@@ -332,7 +328,7 @@ agin:
     {
         //qDebug() << "[Where I'm I?] In StartTimer_fired - file is SPV OR SP2";
 
-        QString shortfname = QString(PRODUCTNAME) + " v" + QString(SOFTWARE_VERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
+        QString shortfname = QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
         this->setWindowTitle(shortfname);
         SPVReader reader;
         reader.processFile(fname);
@@ -1099,10 +1095,10 @@ void MainWindow::RefreshInfo()
 
     //First - if there is a title use it for window title
     if (infoTitle.count() == 1)
-        setWindowTitle(QString(PRODUCTNAME) + ": " + infoTitle[0]);
+        setWindowTitle(QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION) + " - " + infoTitle[0]);
     else
     {
-        QString shortfname = QString(PRODUCTNAME) + " v" + QString(SOFTWARE_VERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
+        QString shortfname = QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
         setWindowTitle(shortfname);
     }
     ui->infoTreeWidget->clear();
@@ -2170,6 +2166,8 @@ void MainWindow::on_actionSave_Changes_triggered()
     SPVWriter w;
     w.writeFile(flag);
     isFileDirty = false;
+
+    ui->OutputLabelOverall->setText("Saved");
 }
 
 /**
@@ -2192,14 +2190,17 @@ void MainWindow::on_actionSave_As_triggered()
     FilterKeys = true;
 
     if (f.isEmpty()) return;
+    if (!f.endsWith(".spv"))f.append(".spv");
     fname = f;
-    QString shortfname = "SPIERSview - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
+    QString shortfname = QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
     this->setWindowTitle(shortfname);
 
     SPVWriter w;
     w.writeFile(false);
 
     isFileDirty = false;
+
+    ui->OutputLabelOverall->setText("Saved");
 }
 
 /**
@@ -2221,8 +2222,9 @@ void MainWindow::on_actionSave_Presurfaced_triggered()
     FilterKeys = true;
 
     if (f.isEmpty()) return;
+    if (!f.endsWith(".spv"))f.append(".spv");
     fname = f;
-    QString shortfname = "SPIERSview - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
+    QString shortfname = QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
     this->setWindowTitle(shortfname);
 
     SPVWriter w;
@@ -2231,6 +2233,9 @@ void MainWindow::on_actionSave_Presurfaced_triggered()
     containsPresurfaced = true;
     containsNonPresurfaced = false;
     isFileDirty = false;
+
+    ui->OutputLabelOverall->setText("Saved");
+
 }
 
 /**
@@ -2249,6 +2254,7 @@ void MainWindow::on_actionDXF_triggered()
 
     //Now we do a whole load of initialisation!
     if (filename.isNull()) return; //if nothing there, cancel
+    if (!filename.endsWith(".dxf"))filename.append(".dxf");
 
     DisableRenderCommands();
 
@@ -2325,8 +2331,8 @@ void MainWindow::on_actionSave_Finalised_As_triggered()
     FilterKeys = true;
 
     if (f.isEmpty()) return;
+    if (!f.endsWith(".spvf"))f.append(".spvf");
     fname = f;
-
 
     DisableRenderCommands();
 
@@ -2363,11 +2369,12 @@ void MainWindow::on_actionSave_Finalised_As_triggered()
             count += static_cast<long>(SVObjects[i]->AppendCompressedFaces(fname, fname2, &(v.dataout)));
         }
 
-    ui->OutputLabelOverall->setText("SPVF finalised export complete");
+    ui->OutputLabelOverall->setText("SPVF export complete");
     ui->ProgBarOverall->setValue(100);
+    setSpecificProgress(100);
 
     EnableRenderCommands();
-    QString shortfname = "SPIERSview - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
+    QString shortfname = QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION) + " - " + fname.mid(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")) + 1);
     this->setWindowTitle(shortfname);
     fname = oldfname; //restore fname for use in save as
 }
@@ -2387,6 +2394,7 @@ void MainWindow::on_actionSTL_triggered()
                                              tr("VAXML files (*.vaxml)"));
     FilterKeys = true;
     if (f.isEmpty()) return;
+    if (!f.endsWith(".vaxml"))f.append(".vaxml");
     fname = f;
 
 
@@ -3501,15 +3509,6 @@ void MainWindow::on_SingleStepButton_pressed()
 }
 
 /**
- * @brief MainWindow::on_SingleStepSaveButton_pressed
- */
-void MainWindow::on_SingleStepSaveButton_pressed()
-{
-    animationSaveImage();
-    animationApplyStep();
-}
-
-/**
  * @brief MainWindow::on_MultipleStepButton_pressed
  */
 void MainWindow::on_MultipleStepButton_pressed()
@@ -3982,6 +3981,21 @@ void MainWindow::on_actionFull_Screen_triggered()
 #ifdef __linux__
         fullScreenDialog->setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
         fullScreenDialog->show();
+
+#elif __APPLE__
+        // MacOS is anoying! Need to get the mainn window geomtry when it is at full screen
+        // so need to know if it is already at full screen to return to it previous state on
+        // glwidget full screen close.
+        wasFullScreen = false;
+        if(isFullScreen()) {
+            wasFullScreen = true;
+        } else {
+            lastGeometry = geometry();
+            showFullScreen();
+        }
+        fullScreenDialog->setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
+        fullScreenDialog->setGeometry(geometry());
+        fullScreenDialog->showFullScreen();
 #else
         fullScreenDialog->showFullScreen();
 #endif
@@ -3993,6 +4007,15 @@ void MainWindow::on_actionFull_Screen_triggered()
         ui->frameVTK->layout()->addWidget(gl3widget);
         fullScreenDialog->close();
         gl3widget->update();
+
+#ifdef __APPLE__
+        // Return the main window back to it previosu state if needed
+        if(wasFullScreen == false) {
+            showNormal();
+            setGeometry(lastGeometry);
+        }
+#endif
+
         isGLFullScreen = false;
 
         //qDebug() << "[Full Screen Mode] Closing full screen mode";

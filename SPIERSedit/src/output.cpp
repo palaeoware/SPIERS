@@ -1,13 +1,19 @@
-/*********************************************
-
-SPIERSedit 2: mainwindowimpl-output.cpp
-
-Overspill from mainwindowimpl - functions that relate
-to producing output (output GUI in mainwindow2 though)
-
-Also some output-related non-OO functions
-
-**********************************************/
+/**
+ * @file
+ * Source: Output
+ *
+ * All SPIERSversion code is released under the GNU General Public License.
+ * See LICENSE.md files in the programme directory.
+ *
+ * All SPIERSversion code is Copyright 2008-2019 by Mark D. Sutton, Russell J. Garwood,
+ * and Alan R.T. Spencer.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version. This program is distributed in the
+ * hope that it will be useful, but WITHOUT ANY WARRANTY.
+ */
 
 #include "output.h"
 #include "globals.h"

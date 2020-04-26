@@ -1,20 +1,19 @@
-/*********************************************
-
-SPIERSedit 2: mainwindowimpl.cpp
-
-Main Window class - lots of functions to
-//- handle GUI actions
-- update GUI from globals
-
-//Constructor is in mainwindow3.cpp for speed
-
-//RJG to do :
---Need to sort out about
--- And also icons to match new theme
--- check runs with actual files
--- Then clean up code
-
-**********************************************/
+/**
+ * @file
+ * Source: MainWindowImpl
+ *
+ * All SPIERSversion code is released under the GNU General Public License.
+ * See LICENSE.md files in the programme directory.
+ *
+ * All SPIERSversion code is Copyright 2008-2019 by Mark D. Sutton, Russell J. Garwood,
+ * and Alan R.T. Spencer.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version. This program is distributed in the
+ * hope that it will be useful, but WITHOUT ANY WARRANTY.
+ */
 
 #include <math.h>
 #include "dialogaboutimpl.h"
@@ -50,6 +49,7 @@ Main Window class - lots of functions to
 #include <QFileInfo>
 #include <QMutexLocker>
 #include <QTextStream>
+#include <QStandardPaths>
 
 bool temptestflag = false;
 
@@ -66,20 +66,69 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     setupUi(this);
     setStatusBar(nullptr);
 
-    setWindowIcon(QIcon(":/icons/ProgramIcon.bmp"));
     showMaximized();
 
     SetUpDocks();
 
-    //return;
-    //connect all the menu commands
+    //Connect all the menu commands
+    //For commands which rely on F keys that are non functional on macOS define backup shortcuts
+    QList<QKeySequence> shortcuts;
+    shortcuts.append(QKeySequence(Qt::Key_F1));
+    shortcuts.append(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_1));
+    actionMain_Toolbox->setShortcuts(shortcuts);
     QObject::connect(actionMain_Toolbox, SIGNAL(triggered()), this, SLOT(Menu_Window_MainToolbox()));
-    QObject::connect(actionGeneration, SIGNAL(triggered()), this, SLOT(Menu_Window_Generate()));
+
+    shortcuts.clear();
+    shortcuts.append(QKeySequence(Qt::Key_F2));
+    shortcuts.append(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_2));
+    actionSlice_Selector->setShortcuts(shortcuts);
     QObject::connect(actionSlice_Selector, SIGNAL(triggered()), this, SLOT(Menu_Window_SliceSelector()));
+
+    shortcuts.clear();
+    shortcuts.append(QKeySequence(Qt::Key_F3));
+    shortcuts.append(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_3));
+    actionGeneration->setShortcuts(shortcuts);
+    QObject::connect(actionGeneration, SIGNAL(triggered()), this, SLOT(Menu_Window_Generate()));
+
+    shortcuts.clear();
+    shortcuts.append(QKeySequence(Qt::Key_F4));
+    shortcuts.append(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_4));
+    actionMasks->setShortcuts(shortcuts);
     QObject::connect(actionMasks, SIGNAL(triggered()), this, SLOT(Menu_Window_Masks()));
-    QObject::connect(actionCurves, SIGNAL(triggered()), this, SLOT(Menu_Window_Curves()));
+
+    shortcuts.clear();
+    shortcuts.append(QKeySequence(Qt::Key_F5));
+    shortcuts.append(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_5));
+    actionSegments->setShortcuts(shortcuts);
     QObject::connect(actionSegments, SIGNAL(triggered()), this, SLOT(Menu_Window_Segments()));
+
+    shortcuts.clear();
+    shortcuts.append(QKeySequence(Qt::Key_F6));
+    shortcuts.append(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_6));
+    actionCurves->setShortcuts(shortcuts);
+    QObject::connect(actionCurves, SIGNAL(triggered()), this, SLOT(Menu_Window_Curves()));
+
+    shortcuts.clear();
+    shortcuts.append(QKeySequence(Qt::Key_F7));
+    shortcuts.append(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_7));
+    actionOutput->setShortcuts(shortcuts);
     QObject::connect(actionOutput, SIGNAL(triggered()), this, SLOT(Menu_Window_Output()));
+
+    shortcuts.clear();
+    shortcuts.append(QKeySequence(Qt::Key_F8));
+    shortcuts.append(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_8));
+    actionHistorgram->setShortcuts(shortcuts);
+
+    shortcuts.clear();
+    shortcuts.append(QKeySequence(Qt::Key_F9));
+    shortcuts.append(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_9));
+    actionInfo->setShortcuts(shortcuts);
+
+    shortcuts.clear();
+    shortcuts.append(QKeySequence(Qt::Key_F12));
+    shortcuts.append(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_R));
+    actionView_in_SPIERSview->setShortcuts(shortcuts);
+
     QObject::connect(actionImport, SIGNAL(triggered()), this, SLOT(Menu_File_Import())); //file/open
     QObject::connect(actionExit, SIGNAL(triggered()), qApp, SLOT(quit())); //quit
     QObject::connect(actionToggle_Source, SIGNAL(triggered()), this, SLOT(TransToggled())); //quit
@@ -268,7 +317,7 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
 
     // Makes sure you can see tab labels when docked with decent size font
     mainwin->setTabPosition(Qt::LeftDockWidgetArea, QTabWidget::West);
-    mainwin->setWindowTitle("SPIERSEdit - Version " + QString(SOFTWARE_VERSION) + " - No files loaded");
+    mainwin->setWindowTitle(QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION) + " - No files loaded");
 
     pausetimers = false;
 
@@ -529,7 +578,16 @@ void MainWindowImpl::left_pressed()
 
 void MainWindowImpl:: MouseZoom(int delta)
 {
-    ZoomSlider->setValue(ZoomSlider->value() + delta / 5);
+    if ( QGuiApplication::keyboardModifiers() == Qt::CTRL)
+    {
+        QList<QListWidgetItem *> selected = SliceSelectorList->selectedItems();
+        int selectedRow = SliceSelectorList->row(selected[0]);
+        int newRow = selectedRow - (delta / 10);
+        if (newRow < 0) newRow = 0;
+        if (newRow > SliceSelectorList->count() - 1) newRow = SliceSelectorList->count() - 1;
+        SliceSelectorList->setCurrentRow(newRow, QItemSelectionModel::ClearAndSelect);
+    }
+    else ZoomSlider->setValue(ZoomSlider->value() + delta / 5);
 }
 
 void MainWindowImpl::SetMasksFlag()
@@ -682,7 +740,6 @@ void MainWindowImpl::Zoom_Slider_Changed(int zoom)
 //Zoom slider changed - convert to real zoom, set zoom box
 {
     if (DontRedoZoom) return;
-
     CurrentZoom = (pow(10.0, (static_cast<double>(zoom)) / 500 + 1)) / 100;
     DontRedoZoom = true;
     ZoomSpinBox->setValue(static_cast<int>(CurrentZoom * 100));
@@ -695,13 +752,11 @@ void MainWindowImpl::on_ZoomSpinBox_valueChanged(int zoom)
 {
     if (DontRedoZoom) return;
     //handle converting the slider to the value typed
-
-    //work out what slider value should be
-    double t = log10(static_cast<double>(zoom)); //t=(slider/500)+1
-    int slider = (static_cast<int>(t) - 1) * 500;
-    CurrentZoom = (pow(10.0, (static_cast<double>(slider)) / 500 + 1)) / 100;
+    double t = log10(static_cast<double>(zoom));
+    int slider = static_cast<int>((t - 1.00) * 500.00);
+    CurrentZoom = zoom / 100;
     DontRedoZoom = true;
-    ZoomSpinBox->setValue(static_cast<int>(CurrentZoom * 100.));
+    ZoomSpinBox->setValue(static_cast<int>(CurrentZoom * 100.00));
     ZoomSlider->setValue(slider);
     DontRedoZoom = false;
     ShowImage(graphicsView);
@@ -863,25 +918,11 @@ void MainWindowImpl::Menu_Window_Generate()
 void MainWindowImpl::FileOpen()
 {
     QMutexLocker locker(&mutex);
-    //Select file
-
-    /*QFileDialog dialog(this);
-    dialog.setFileMode(QFileDialog::ExistingFile);
-    dialog.setNameFilter("SPIERSedit files (*.spe)");
-    dialog.setViewMode(QFileDialog::Detail);
-
-    QStringList files;
-    if (dialog.exec())
-         files = dialog.selectedFiles();
-    else return;
-
-    QString file=files[0];
-    */
 
     QString file = QFileDialog::getOpenFileName(
                        this,
                        "Select SPIERSedit settings file",
-                       "D:/Research/3dFiles/Grinding/Acaen/5-2/Cut",
+                       QDir::homePath(),
                        "SPIERSedit files (*.spe)");
 
 
@@ -891,6 +932,7 @@ void MainWindowImpl::FileOpen()
     FullSettingsFileName = file;
 
     ReadSettings();
+
     //Now do set up - same as for
     if (Active)
     {
@@ -995,9 +1037,7 @@ void MainWindowImpl::Start()
     else fwidth4 = (fwidth / 4) * 4 + 4;
     fheight = cheight / ColMonoScale;
 
-
     LoadAllData(CurrentFile);
-
 
     cwidth4 = cwidth;
     if (GreyImage)
@@ -1008,7 +1048,7 @@ void MainWindowImpl::Start()
     BuildRecentFiles();
     dirty.resize(fheight * fwidth);
 
-    setWindowTitle("SPIERSEdit - " + SettingsFileName + " - " + Files[CurrentFile]);
+    setWindowTitle(QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION) + " - " + SettingsFileName + " - " + Files[CurrentFile]);
     Active = true; //flag that we are GO
 
     ShowImage(graphicsView);
@@ -1148,26 +1188,16 @@ void MainWindowImpl::SaveAs()
     RecentFile(FullSettingsFileName);
     BuildRecentFiles();
     WriteSuperGlobals();
-    setWindowTitle("SPIERSEdit - " + SettingsFileName + " - " + Files[CurrentFile]);
+    setWindowTitle(QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION) + " - " + SettingsFileName + " - " + Files[CurrentFile]);
 }
 
 void MainWindowImpl::Menu_File_Import()
 {
     QMutexLocker locker(&mutex);
+
     //Select files
-    if (Active) WriteSettings();
-
-    /*
-    QFileDialog dialog(this);
-    dialog.setFileMode(QFileDialog::ExistingFiles);
-    dialog.setNameFilter("Images (*.bmp)");
-    dialog.setViewMode(QFileDialog::Detail);
-
-    QStringList files;
-    if (dialog.exec())
-         files = dialog.selectedFiles();
-    else return;
-    */
+    if (Active)
+        WriteSettings();
 
     QStringList files = QFileDialog::getOpenFileNames(
                             this,
@@ -1175,16 +1205,20 @@ void MainWindowImpl::Menu_File_Import()
                             "D:/Research/3dFiles/Grinding/Acaen/5-2/Cut",
                             "Images (*.bmp)");
 
-    qSort(files.begin(), files.end());
-    //Now we do a whole load of initialisation!
-    if (files.count() == 0) return; //if nothing there, cancel
+    // If nothing there, cancel
+    if (files.isEmpty() || files.count() == 0)
+        return;
 
-    //Show the 2nd stage dialog
+    // Now we do a whole load of initialisation!
+    std::sort(files.begin(), files.end());
+
+    // Show the 2nd stage dialog
     ImportDialogImpl impdialog;
     impdialog.exec();
 
-    //do some error checking and ways out!
-    if (impdialog.Cancelled == true) return;
+    // Do some error checking and ways out!
+    if (impdialog.Cancelled == true)
+        return;
 
     //check to see if dataset actually exists - look for settings.dat
     QString Fname = files.at(0);
@@ -1280,33 +1314,25 @@ void MainWindowImpl::Menu_File_Import()
 void MainWindowImpl::Menu_File_New()  //create from scratch
 
 {
-
-    if (Active) WriteSettings();
+    if (Active)
+        WriteSettings();
 
     //Select files
-
-    //Non-native dialog code to replace non-functioning native dialog
-    /*  QFileDialog dialog(this);
-        dialog.setFileMode(QFileDialog::ExistingFiles);
-        dialog.setNameFilter("Images (*.png *.jpg *.jpeg *.bmp)");
-        dialog.setViewMode(QFileDialog::Detail);
-        dialog.setDirectory("D:\\Research\\3dFiles\\Grinding\\Acaen\\5-2\\Test");
-
-        QStringList files;
-        if (dialog.exec())
-             files = dialog.selectedFiles();
-        else return;
-    */
     QStringList files = QFileDialog::getOpenFileNames(
                             nullptr,
                             "Select source images for dataset",
-                            "D:\\Research\\3dFiles\\Grinding\\Acaen\\5-2\\Test",
-                            "Images (*.png *.jpg *.jpeg *.bmp)");
+                            QString(QStandardPaths::DesktopLocation),
+                            "Images (*.png *.jpg *.jpeg *.bmp *.tif *.tiff)");
 
-    qSort(files.begin(), files.end());
+    // If nothing there, cancel
+    if (files.isEmpty() || files.count() == 0)
+        return;
 
-    //Now we do a whole load of initialisation!
-    if (files.count() == 0) return; //if nothing there, cancel
+    if (files[0].endsWith(".tif") || files[0].endsWith(".tiff"))
+        Message("Tiff support is a relatively recent addition to SPIERSedit, and has not been extensively tested. Please can you submit an issue on the Palaeoware SPIERS GitHub repository should you encounter any issues.");
+
+    // Now we do a whole load of initialisation!
+    std::sort(files.begin(), files.end());
 
     //OK, no more caching
     //Show the 2nd stage dialog
@@ -1315,7 +1341,8 @@ void MainWindowImpl::Menu_File_New()  //create from scratch
     impdialog.exec();
 
     //do some error checking and ways out!
-    if (impdialog.Cancelled == true) return;
+    if (impdialog.Cancelled == true)
+        return;
 
     QString Fname = files.at(0);
     int lastsep = qMax(Fname.lastIndexOf("\\"), Fname.lastIndexOf("/")); //this is last separator in path

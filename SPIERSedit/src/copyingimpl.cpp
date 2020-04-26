@@ -1,11 +1,19 @@
-/*********************************************
-
-SPIERSedit 2: copyingimpl.cpp
-A simple progress bar pop up -
-Originally just for file copying on import
-Now used in several other circumstances too
-
-**********************************************/
+/**
+ * @file
+ * Source: CopyImpl
+ *
+ * All SPIERSversion code is released under the GNU General Public License.
+ * See LICENSE.md files in the programme directory.
+ *
+ * All SPIERSversion code is Copyright 2008-2019 by Mark D. Sutton, Russell J. Garwood,
+ * and Alan R.T. Spencer.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version. This program is distributed in the
+ * hope that it will be useful, but WITHOUT ANY WARRANTY.
+ */
 
 #include "globals.h"
 #include "copyingimpl.h"
@@ -27,9 +35,12 @@ Now used in several other circumstances too
 #include <QListWidget>
 #include <QFileDialog>
 #include <QShortcut>
-//#include <zlib.h>
 
-
+/**
+ * @brief CopyingImpl::CopyingImpl
+ * @param parent
+ * @param f
+ */
 CopyingImpl::CopyingImpl(QWidget *parent, Qt::WindowFlags f)
     : QDialog(parent, f)
 {
@@ -42,6 +53,10 @@ CopyingImpl::CopyingImpl(QWidget *parent, Qt::WindowFlags f)
 
 }
 
+/**
+ * @brief CopyingImpl::closeEvent
+ * @param event
+ */
 void CopyingImpl::closeEvent(QCloseEvent *event)
 {
     // in case close button hit
@@ -51,7 +66,11 @@ void CopyingImpl::closeEvent(QCloseEvent *event)
         event->accept();
 }
 
-
+/**
+ * @brief CopyingImpl::Copy
+ * @param source
+ * @param dest
+ */
 void CopyingImpl::Copy(QDir source, QDir dest)
 {
     //this does file copying
@@ -168,15 +187,16 @@ void CopyingImpl::Copy(QDir source, QDir dest)
 
 }
 
+/**
+ * @brief CopyingImpl::MakeNewSegFiles create new files - snum is the new segment index (add 1 for filename index)
+ * @param snum
+ */
 void CopyingImpl::MakeNewSegFiles(int snum)
-//create new files - snum is the new segment index (add 1 for filename index)
 {
     show();
     this->setWindowTitle("Creating Files...");
     copying = true;
-    progressBar->setMaximum(Files.count());
-
-    int lastsep, lastdot;
+    progressBar->setMaximum(Files.count());    
 
     QImage tempimage(fwidth, fheight, QImage::Format_Indexed8);
 
@@ -187,23 +207,20 @@ void CopyingImpl::MakeNewSegFiles(int snum)
 
     tempimage.setColorTable(ctable);
     tempimage.setColor(0, 1);
-
     tempimage.fill(0);
 
+    int lastsep, lastdot;
     for (int i = 0; i < Files.count(); i++)
     {
         QString Fname = Files.at(i);
         lastsep = qMax(Fname.lastIndexOf("\\"), Fname.lastIndexOf("/")); //this is last separator in path
         lastdot = Fname.lastIndexOf(".");
-        QString sfname = Fname.left(lastsep);
-        QString actfn = Fname.mid(lastsep + 1, lastdot - lastsep - 1);
-        QString temp = "/" + SettingsFileName + "/" + "s";
-        QString t2;
-        t2.sprintf("%d_", snum + 1);
-        temp.append(t2);
-        temp.append(actfn);
-        temp.append(".bmp");
-        sfname.append(temp);
+
+        QString sfname = QString("%1/%2/s%3_%4.bmp")
+                .arg(Fname.left(lastsep))
+                .arg(SettingsFileName)
+                .arg(snum + 1)
+                .arg(Fname.mid(lastsep + 1, lastdot - lastsep - 1));
 
         tempimage.save(sfname);
         progressBar->setValue(i);
@@ -214,6 +231,10 @@ void CopyingImpl::MakeNewSegFiles(int snum)
     return;
 }
 
+/**
+ * @brief CopyingImpl::DeleteSegments
+ * @param list
+ */
 void CopyingImpl::DeleteSegments(QList <int> list)
 {
     //1. Assemble a before and after list
@@ -252,16 +273,13 @@ void CopyingImpl::DeleteSegments(QList <int> list)
                 QString Fname = FullFiles.at(i);
                 lastsep = qMax(Fname.lastIndexOf("\\"), Fname.lastIndexOf("/")); //this is last separator in path
                 lastdot = Fname.lastIndexOf(".");
-                QString sfname = Fname.left(lastsep);
-                QString actfn = Fname.mid(lastsep + 1, lastdot - lastsep - 1);
-                QString temp = "/" + SettingsFileName + "/" + "s";
-                QString t2;
-                t2.sprintf("%d_", seg + 1);
-                temp.append(t2);
-                temp.append(actfn);
 
-                //temp.append(".bmp");
-                sfname.append(temp); //sfname is now from name WITHOUT extension
+                // sfname is now from name WITHOUT extension
+                QString sfname = QString("%1/%2/s%3_%4")
+                        .arg(Fname.left(lastsep))
+                        .arg(SettingsFileName)
+                        .arg(seg + 1)
+                        .arg(Fname.mid(lastsep + 1, lastdot - lastsep - 1));
 
                 bool png = false;
                 QFile oldfile(sfname + ".bmp");
@@ -279,22 +297,25 @@ void CopyingImpl::DeleteSegments(QList <int> list)
                     }
                     else
                     {
-                        //rename
+                        // Rename
                         int lastsep, lastdot;
                         QString Fname = FullFiles.at(i);
                         lastsep = qMax(Fname.lastIndexOf("\\"), Fname.lastIndexOf("/")); //this is last separator in path
                         lastdot = Fname.lastIndexOf(".");
-                        QString sfname2 = Fname.left(lastsep);
-                        QString actfn = Fname.mid(lastsep + 1, lastdot - lastsep - 1);
-                        QString temp = "/" + SettingsFileName + "/" + "s";
-                        QString t2;
-                        t2.sprintf("%d_", ToSegs[seg] + 1);
-                        temp.append(t2);
-                        temp.append(actfn); // temp.append(".bmp");
-                        sfname2.append(temp); //sfname2 is now to name
-                        if (png) sfname2.append(".png");
-                        else sfname2.append(".bmp");
-                        if (!oldfile.rename(sfname2)) Error("Failed to rename segment file from " + sfname + " to " + sfname2);
+
+                        QString sfname2 = QString("%1/%2/s%3_%4")
+                                .arg(Fname.left(lastsep))
+                                .arg(SettingsFileName)
+                                .arg(ToSegs[seg] + 1)
+                                .arg(Fname.mid(lastsep + 1, lastdot - lastsep - 1));
+
+                        if (png)
+                            sfname2.append(".png");
+                        else
+                            sfname2.append(".bmp");
+
+                        if (!oldfile.rename(sfname2))
+                            Error("Failed to rename segment file from " + sfname + " to " + sfname2);
                     }
                 }
             }
@@ -343,6 +364,10 @@ void CopyingImpl::DeleteSegments(QList <int> list)
     close();
 }
 
+/**
+ * @brief CopyingImpl::GenerateLinear
+ * @param SliceSelectorList
+ */
 void CopyingImpl::GenerateLinear(QListWidget *SliceSelectorList)
 {
     int c = SliceSelectorList->selectedItems().count();
@@ -363,7 +388,10 @@ void CopyingImpl::GenerateLinear(QListWidget *SliceSelectorList)
     if (c > 1) close();
 }
 
-
+/**
+ * @brief CopyingImpl::GeneratePoly
+ * @param SliceSelectorList
+ */
 void CopyingImpl::GeneratePoly(QListWidget *SliceSelectorList)
 {
     int c = SliceSelectorList->selectedItems().count();
@@ -383,6 +411,10 @@ void CopyingImpl::GeneratePoly(QListWidget *SliceSelectorList)
     if (c > 1) close();
 }
 
+/**
+ * @brief CopyingImpl::GenerateRange
+ * @param SliceSelectorList
+ */
 void CopyingImpl::GenerateRange(QListWidget *SliceSelectorList)
 {
     int c = SliceSelectorList->selectedItems().count();
@@ -405,8 +437,9 @@ void CopyingImpl::GenerateRange(QListWidget *SliceSelectorList)
     if (c > 1) close();
 }
 
-
-
+/**
+ * @brief CopyingImpl::GenerateAllLinear
+ */
 void CopyingImpl::GenerateAllLinear()
 {
 
@@ -428,6 +461,9 @@ void CopyingImpl::GenerateAllLinear()
     close();
 }
 
+/**
+ * @brief CopyingImpl::GenerateAllBlank
+ */
 void CopyingImpl::GenerateAllBlank()
 {
 
@@ -449,7 +485,12 @@ void CopyingImpl::GenerateAllBlank()
     close();
 }
 
-
+/**
+ * @brief CopyingImpl::ReverseStretches
+ * @param stretches
+ * @param Sstart
+ * @param Sstop
+ */
 void CopyingImpl::ReverseStretches(QList <double> *stretches, int Sstart, int Sstop)
 {
     int n;
@@ -469,6 +510,11 @@ void CopyingImpl::ReverseStretches(QList <double> *stretches, int Sstart, int Ss
     }
 }
 
+/**
+ * @brief CopyingImpl::DoIHaveChildren
+ * @param parent
+ * @return
+ */
 bool CopyingImpl::DoIHaveChildren(int parent)
 //Yes, I do!
 {
@@ -481,32 +527,11 @@ bool CopyingImpl::DoIHaveChildren(int parent)
     return false;
 }
 
-//OLD VERSION (QByteArray QList)
-/*
-void CopyingImpl::WriteSPVData(QList <QByteArray *> fullarray, QVector<double>*TrigArray, int TrigCount, QDataStream *out)
-//output data to the file
-{
-
-    qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
-
-    //do a count of on pixels in fullarray
-
-    (*out)<<fullarray.count(); //commence with number of fullarrays to decompress - though should know this already
-    for (int i=0; i<fullarray.count(); i++)
-    {
-        (*out)<<fullarray[i]->size()-4;
-        //Strip off 4 byte header and write
-        out->writeRawData((fullarray[i]->constData())+4,fullarray[i]->size()-4);
-    }
-
-    //and output any triangles
-    (*out)<<TrigCount;
-    for (int z=0; z<TrigCount; z++)
-        (*out) <<(*TrigArray)[z];
-}
-*/
-
-
+/**
+ * @brief CopyingImpl::MaskCopy
+ * @param fromfile
+ * @param mw
+ */
 void CopyingImpl::MaskCopy(int fromfile, MainWindowImpl *mw)
 {
     bool IsShow = false;
@@ -567,6 +592,11 @@ void CopyingImpl::MaskCopy(int fromfile, MainWindowImpl *mw)
     }
 }
 
+/**
+ * @brief CopyingImpl::MaskCopy2
+ * @param fromfile
+ * @param mw
+ */
 void CopyingImpl::MaskCopy2(int fromfile, MainWindowImpl *mw) //this is copy from selected TO currentfile
 {
     QList <QTreeWidgetItem *> selitems = mw->MasksTreeWidget->selectedItems();
@@ -594,6 +624,10 @@ void CopyingImpl::MaskCopy2(int fromfile, MainWindowImpl *mw) //this is copy fro
     }
 }
 
+/**
+ * @brief CopyingImpl::CurvesToMasks
+ * @param mw
+ */
 void CopyingImpl::CurvesToMasks(MainWindowImpl *mw) //create a mask from a curve
 {
     QList <QTreeWidgetItem *> selitems = mw->CurvesTreeWidget->selectedItems();
@@ -662,7 +696,10 @@ void CopyingImpl::CurvesToMasks(MainWindowImpl *mw) //create a mask from a curve
     }
 }
 
-
+/**
+ * @brief CopyingImpl::CompressAllWorkingFiles
+ * @param level
+ */
 void CopyingImpl::CompressAllWorkingFiles(int level)
 {
     int before = FileCompressionLevel;
@@ -694,6 +731,10 @@ void CopyingImpl::CompressAllWorkingFiles(int level)
     copying = false;
 }
 
+/**
+ * @brief CopyingImpl::CompressAllSourceFiles
+ * @param level
+ */
 void CopyingImpl::CompressAllSourceFiles(int level)
 {
     show();
@@ -706,6 +747,9 @@ void CopyingImpl::CompressAllSourceFiles(int level)
 
     bool GSflag = false;
     image.load(FullFiles[0]);
+
+    image.load(FullFiles[0]);
+
     if (image.allGray() && image.format() != QImage::Format_Indexed8)
         if (QMessageBox::question(this, "Convert to Greyscale?",
                                   "The first image at least appears to be a greyscale image saved as colour.\nDo you want to convert all images to greyscale? This slow the conversion process, but will save space and increase performance.\nClick 'Yes' if you want to convert all images to greyscale, or 'No' to proceed as normal.\n"
@@ -750,9 +794,6 @@ void CopyingImpl::CompressAllSourceFiles(int level)
 
             if (level == 0) imageGS.save(sfname, "BMP", 0);
             if (level == 1) imageGS.save(sfname, "PNG", 50);
-            if (level == 2) imageGS.save(sfname, "JPG", 100);
-//          image=image.convertToFormat(QImage::Format_Indexed8);
-//          if (!(image.isGrayscale())) qDebug()<<"Ooops, conversion somehow didn't produce a greyscale";
         }
         else
         {
@@ -795,6 +836,10 @@ void CopyingImpl::CompressAllSourceFiles(int level)
     WriteSettings();
 }
 
+/**
+ * @brief CopyingImpl::Apply3DBrush
+ * @param button
+ */
 void CopyingImpl::Apply3DBrush(int button)
 {
     show();
@@ -881,5 +926,4 @@ past:
     copying = false;
     LoadAllData(CurrentFile);
     Brush.resize(Brush_Size, 2, 0);
-
 }

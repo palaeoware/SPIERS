@@ -2,10 +2,10 @@
  * @file
  * Dark Style Theme
  *
- * All SPIERSview code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSview code is Copyright 2008-2018 by Russell J. Garwood, Mark D. Sutton,
+ * All SPIERS code is Copyright 2008-2019 by Russell J. Garwood, Mark D. Sutton,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,6 +16,8 @@
  */
 
 #include "darkstyletheme.h"
+#include <QRect>
+#include <QDesktopWidget>
 
 /**
  * @brief DarkStyleTheme::DarkStyleTheme
@@ -91,10 +93,15 @@ void DarkStyleTheme::polish(QApplication *app)
 {
     if (!app) return;
 
-    //ARTS - Increase font size for better reading,
-    QFont defaultFont = QApplication::font();
-    defaultFont.setPointSize(defaultFont.pointSize() + 1);
-    QApplication::setFont(defaultFont);
+    QRect screenGeometry = QApplication::desktop()->screenGeometry();
+    if (screenGeometry.width() > 1920)
+    {
+        //ARTS - Increase font size for better reading,
+        //RJG - Best to only do this at high screen resolutions, based on testing
+        QFont defaultFont = QApplication::font();
+        defaultFont.setPointSize(defaultFont.pointSize() + 1);
+        QApplication::setFont(defaultFont);
+    }
 
     // Load CSS Stylesheet from resources
     QFile darkstyleQSS(QStringLiteral(":/darkstyle/stylesheet_dark.qss"));

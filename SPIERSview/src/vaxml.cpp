@@ -79,10 +79,8 @@ bool VAXML::readSPVF(QString fname)
 
     QString xmlstring;
 
-    //qDebug()<<"H2";
     //Set up string as a buffer so same code can read it!
     in >> xmlstring; //read the XML
-    //qDebug()<<"XML:"<<xmlstring;
     QByteArray xmlbytearray;
     xmlbytearray.append(xmlstring);
     QBuffer buffer(&xmlbytearray);
@@ -94,7 +92,6 @@ bool VAXML::readSPVF(QString fname)
 
     bool flag;
 
-    //qDebug()<<"H3";
     if (xml.readNextStartElement())
     {
         if (xml.name() == "vaxml")
@@ -224,7 +221,7 @@ bool VAXML::readSPVF(QString fname)
                                 {
                                     QString text = xml.readElementText();
                                     if (text.length() > 1) xmlError("invalid key for group");
-                                    if (new_group->key > nullptr) return xmlError("multiple keys for a group");
+                                    if (new_group->key != nullptr) return xmlError("multiple keys for a group");
                                     QByteArray b = text.toUpper().toLatin1();
                                     new_group->key = QChar(b.at(0));
                                 }
@@ -348,7 +345,7 @@ bool VAXML::readSPVF(QString fname)
                                 {
                                     QString text = xml.readElementText();
                                     if (text.length() > 1) xmlError("invalid key for object");
-                                    if (new_obj->key > nullptr) return xmlError("multiple keys for a object");
+                                    if (new_obj->key != nullptr) return xmlError("multiple keys for a object");
                                     QByteArray b = text.toUpper().toLatin1();
                                     new_obj->key = QChar(b.at(0));
                                 }
@@ -398,11 +395,9 @@ bool VAXML::readSPVF(QString fname)
                         }
                     };
                 }
-                //else return xmlError("invalid element in <objects> section: " + xml.name().toString());
             };
         }
     }
-    //qDebug()<<"H4";
 
     //Now attempt to read all the STLs.
     QList <vtkPolyData *> localPolyData;
@@ -410,7 +405,7 @@ bool VAXML::readSPVF(QString fname)
     mainWindow->setSpecificLabel("Setting up objects");
     qApp->processEvents();
 
-    float f = 0.0;
+    double f = 0.0;
     //Now read all the STL stuff
     for (int i = 0; i < objects.count(); i++)
     {
@@ -418,7 +413,6 @@ bool VAXML::readSPVF(QString fname)
         in >> b1;
         b2 = qUncompress(b1);
         //b2 now holds the STL-style data
-        //qDebug()<<"Original "<<b1.count()<<"Uncompressed to "<<b2.count();
         //buffer to act as streamer for this
         QBuffer stlbuffer(&b2);
         stlbuffer.open(QIODevice::ReadOnly);
@@ -442,7 +436,6 @@ bool VAXML::readSPVF(QString fname)
 
         int vcount, tcount;
         stl_in >> vcount;
-        //qDebug()<<"Read "<<vcount<<"vertices";
         verts->SetNumberOfPoints(vcount);
         for (int i = 0; i < vcount; i++)
         {
@@ -452,13 +445,8 @@ bool VAXML::readSPVF(QString fname)
             stl_in >> y;
             stl_in >> z;
             verts->InsertPoint(i, x, y, z);
-            if ((i % 1000) == 0)
-            {
-//                qDebug()<<"Point"<<i<<"xyz:"<<x<<y<<z;
-            }
         }
 
-//        qDebug()<<"H5";
         stl_in >> tcount;
         actualarray->SetNumberOfValues(tcount * 4);
         int pos = 0;
@@ -473,23 +461,17 @@ bool VAXML::readSPVF(QString fname)
             actualarray->SetValue(pos++, t2);
             actualarray->SetValue(pos++, t3);
         }
-//        qDebug()<<"Read "<<tcount<<"triangles";
 
         cellarray->SetCells(tcount, actualarray);
         polydata->SetPolys(cellarray);
         polydata->SetPoints(verts);
-        //Do actual reading
-
-
-        //done - code from here on is as in normal VAXML reader
 
         localPolyData.append(polydata);
         f += (100.0 / objects.count());
-        mainWindow->setSpecificProgress(static_cast<int>(f / static_cast<float>(2.0)));
+        mainWindow->setSpecificProgress(static_cast<int>(f / static_cast<double>(2.0)));
         qApp->processEvents();
     }
     isVaxmlMode = true;
-    //qDebug()<<"H6";
 
     //All OK - create the local objects
     //Create a 'dummy' spv
@@ -557,7 +539,7 @@ bool VAXML::readSPVF(QString fname)
         svo->MakeDlists();
         mainWindow->UpdateGL();
         f += (100.0 / objects.count());
-        mainWindow->ui->ProgBarOverall->setValue(50 + static_cast<int>(f / static_cast<float>(2.0)));
+        mainWindow->ui->ProgBarOverall->setValue(50 + static_cast<int>(f / static_cast<double>(2.0)));
     }
 
     return true;
@@ -589,7 +571,6 @@ bool VAXML::readVAXML(QString fname)
     //setup XML reader
     QXmlStreamReader xml;
     xml.setDevice(file);
-    //qDebug()<<"Error 1"<<xml.errorString();
 
     bool flag;
 
@@ -729,7 +710,7 @@ bool VAXML::readVAXML(QString fname)
                                     {
                                         xmlError("invalid key for group");
                                     }
-                                    if (new_group->key > nullptr)
+                                    if (new_group->key != nullptr)
                                     {
                                         return xmlError("multiple keys for a group");
                                     }
@@ -856,7 +837,7 @@ bool VAXML::readVAXML(QString fname)
                                 {
                                     QString text = xml.readElementText();
                                     if (text.length() > 1) xmlError("invalid key for object");
-                                    if (new_obj->key > nullptr) return xmlError("multiple keys for a object");
+                                    if (new_obj->key != nullptr) return xmlError("multiple keys for a object");
                                     QByteArray b = text.toUpper().toLatin1();
                                     new_obj->key = QChar(b.at(0));
                                 }
@@ -910,11 +891,9 @@ bool VAXML::readVAXML(QString fname)
             };
         }
     }
-    //qDebug()<<"Error 2"<<xml.errorString();
-    //qDebug()<<"Past";
+
     //some more error checking
     //1. Do all groups referred to by ingroup exist?
-    //qDebug()<<"Groups"<<groups.count();
     foreach (VAXMLGroup *g, groups)
     {
         if (g->ingroup != "") //if it's in a group
@@ -964,7 +943,7 @@ bool VAXML::readVAXML(QString fname)
     mainWindow->ui->OutputLabelOverall->setText("Importing objects");
     qApp->processEvents();
 
-    float f = 0.0;
+    double f = 0.0;
     foreach (VAXMLObject *o, objects)
     {
 
@@ -1011,7 +990,7 @@ bool VAXML::readVAXML(QString fname)
             polydata = reader->GetOutput();
             localPolyData.append(polydata);
             f += (100.0 / objects.count());
-            mainWindow->ui->ProgBarOverall->setValue(static_cast<int>(f / static_cast<float>(2.0)));
+            mainWindow->ui->ProgBarOverall->setValue(static_cast<int>(f / static_cast<double>(2.0)));
             qApp->processEvents();
 
             //now add some bytes from the STL to the hash - pick 50 bytes scattered through file.
@@ -1038,7 +1017,7 @@ bool VAXML::readVAXML(QString fname)
             polydata = reader->GetOutput();
             localPolyData.append(polydata);
             f += (100.0 / objects.count());
-            mainWindow->ui->ProgBarOverall->setValue(static_cast<int>(f / static_cast<float>(2.0)));
+            mainWindow->ui->ProgBarOverall->setValue(static_cast<int>(f / static_cast<double>(2.0)));
             qApp->processEvents();
 
             //now add some bytes from the PLY to the hash - pick 50 bytes scattered through file.
@@ -1137,7 +1116,7 @@ bool VAXML::readVAXML(QString fname)
         svo->MakeDlists();
         mainWindow->UpdateGL();
         f += (100.0 / objects.count());
-        mainWindow->ui->ProgBarOverall->setValue(50 + static_cast<int>(f / static_cast<float>(2.0)));
+        mainWindow->ui->ProgBarOverall->setValue(50 + static_cast<int>(f / static_cast<double>(2.0)));
     }
 
     //qDebug()<<"Final ` box is "<<minX<<maxX<<minY<<maxY<<minZ<<maxZ;
@@ -1284,15 +1263,16 @@ bool VAXML::writeVAXML(QString fname, bool mode) //mode true means this is part 
             out << "<position>" << o->Position << "</position>\n";
 
 
-            QString fname2;
-            fname2.sprintf("%d", o->Index + 1);
+            QString fname2 = QString("%1").arg(o->Index + 1);
             if (!(o->Name.isEmpty()))
             {
                 fname2.append("-");
                 fname2.append(o->Name);
             }
             fname2.append(".stl");
+
             out << ("<file>" + encode(f.baseName() + "_stl/" + fname2) + "</file>\n");
+
             //DON'T write a matrix - should all be identity now, as export to STL matrixes them...
             //DON'T write a URL (obviously)
             //out<<"<matrix>";
@@ -1379,7 +1359,7 @@ float VAXML::convTransExport(int t)
     if (t == 1) return static_cast<float>(.3);
     if (t == 2) return static_cast<float>(.6);
     if (t == 3) return static_cast<float>(.8);
-    if (t == 4) return static_cast<float>(.95);
+    else return static_cast<float>(.95);
 }
 
 /**

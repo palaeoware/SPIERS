@@ -53,6 +53,7 @@ int scaleBallColour[3]; //info stuff
 int fontSizeGrid = 3;
 
 QList<QScreen *> availableScreens;
+QSurfaceFormat surfaceFormat;
 QOpenGLBuffer cubeBuffer;
 QScreen *currentScreen;
 QString fname; //filename passed in argv

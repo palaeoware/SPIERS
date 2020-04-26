@@ -1,21 +1,22 @@
-/*********************************************
-
-SPIERSedit 2: Display.cpp
-
-Functions (non-OO) relating to graphical manipulation
-- Generate Threshold images
-- Initialise image objects
-- Combine colour/Thresh images
-- Refresh main image
-- delete associated objects
-
-- Also has generation functions
-
-**********************************************/
+/**
+ * @file
+ * Source: Display
+ *
+ * All SPIERSversion code is released under the GNU General Public License.
+ * See LICENSE.md files in the programme directory.
+ *
+ * All SPIERSversion code is Copyright 2008-2019 by Mark D. Sutton, Russell J. Garwood,
+ * and Alan R.T. Spencer.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version. This program is distributed in the
+ * hope that it will be useful, but WITHOUT ANY WARRANTY.
+ */
 
 #include "display.h"
 #include "globals.h"
-//#include "memory.h"
 #include "fileio.h"
 #include "mainwindowimpl.h"
 #include "histogram.h"
@@ -24,7 +25,7 @@ Functions (non-OO) relating to graphical manipulation
 #include <QImage>
 #include <QColor>
 #include <QTime>
-#include <math.h> //for the pow
+#include <math.h>
 #include "curves.h"
 #include "myscene.h"
 #include "brush.h"
@@ -571,9 +572,6 @@ QByteArray DoMaskLocking()
 
 void MakeLinearGreyScale(int seg, int fnum, bool flag = false)
 {
-    QTime t;
-    t.start();
-
     //load data for file - can and should assume existing data is safe
     if (!flag) LoadAllData(fnum);
 

@@ -5,7 +5,7 @@
  * All SPIERSview code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSview code is Copyright 2008-2018 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERSview code is Copyright 2008-2019 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -72,6 +72,8 @@ private:
 
     bool mainWindowReady = false;
     bool isGLFullScreen = false;
+    bool wasFullScreen = false;
+    QRect lastGeometry;
 
     int specificprogress;
     QString specificlabel;
@@ -218,7 +220,6 @@ private slots:
     void on_actionApply_Steps_triggered();
     void on_actionApply_Multiple_Steps_Saving_Images_triggered();
     void on_SingleStepButton_pressed();
-    void on_SingleStepSaveButton_pressed();
     void on_actionReset_to_default_position_triggered();
     void on_actionSet_new_default_position_triggered();
     void on_actionMatte_triggered();

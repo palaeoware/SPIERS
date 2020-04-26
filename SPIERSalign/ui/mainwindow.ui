@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>SPIERSalign</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../align.qrc">
+    <normaloff>:/resources/SPIERSalignIcon.svg</normaloff>:/resources/SPIERSalignIcon.svg</iconset>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout">
     <item>
@@ -73,7 +77,7 @@
      <x>0</x>
      <y>0</y>
      <width>598</width>
-     <height>24</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuDsvdsvdasv">
@@ -961,7 +965,9 @@
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="../align.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>horizontalSlider</sender>
