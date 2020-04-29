@@ -39,6 +39,7 @@ void mainview::wheelEvent(QWheelEvent *event)
 {
     //event->ignore();
     AppMainWindow->MouseZoom(event->delta());
+
 }
 
 /**

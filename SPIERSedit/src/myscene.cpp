@@ -27,6 +27,8 @@
 
 myscene *scene;
 int Counter2;
+int dx, dy;
+QPointF mouseDownViewCenter;
 
 
 myscene::myscene() : QGraphicsScene()
@@ -39,6 +41,7 @@ myscene::myscene() : QGraphicsScene()
 
 void myscene::DoMouse(int x, int y, int PressedButton)
 {
+
     if (x != LastMouseX || y != LastMouseY) // an actual move
     {
 
@@ -76,6 +79,20 @@ void myscene::DoMouse(int x, int y, int PressedButton)
         {
             Counter2 = 0;
             button = 2;
+            DoAction(LastMouseX, LastMouseY);
+            return;
+        }
+
+        if (PressedButton == 3 && button == 0)
+        {
+            Counter2 = 0;
+            button = 3;
+            dx = LastMouseX;
+            dy = LastMouseY;
+
+            mouseDownViewCenter = mainwin->graphicsView->mapToScene(mainwin->graphicsView->viewport()->rect().center());
+            qDebug() << mouseDownViewCenter << mainwin->graphicsView->viewport()->rect().center();
+
             DoAction(LastMouseX, LastMouseY);
             return;
         }
@@ -126,6 +143,16 @@ void myscene::DoAction(int x, int y)
         ChangeFlag = true;
         MouseUp();
     }
+    else if (button == 3)
+    {
+        //Translate here
+
+        //int xmove = dx - x;
+        // qDebug() << dx << x << xmove << mouseDownViewCenter;
+        //mainwin->graphicsView->centerOn(mouseDownView.x() + xmove, mouseDownView.y());
+        //mainwin->graphicsView->show();
+        // mainwin->graphicsView->horizontalScrollBar()->setValue(newX);
+    }
     else
     {
         //CurrentMode; //0=bright, 1=masks, 2=curves, 3=lock, 4=segment, 5=recalc
@@ -175,7 +202,6 @@ void myscene::DoAction(int x, int y)
             else Brush.segment(LastMouseX, LastMouseY,  0);
             break;
         case 5:
-
             if (tabwidget->currentIndex() < 2 || RangeSelectedOnly)
                 Brush.recalc(LastMouseX, LastMouseY, CurrentSegment);
             else
@@ -183,6 +209,7 @@ void myscene::DoAction(int x, int y)
                 for (int i = 0; i < SegmentCount; i++) if (Segments[i]->Activated) Brush.recalc(LastMouseX, LastMouseY, i);
             break;
         }
+
         ChangeFlag = true;
     }
 }
@@ -199,6 +226,7 @@ void myscene::mousePressEvent(QGraphicsSceneMouseEvent *event )
     int but = 0;
     if (event->button() == Qt::LeftButton) but = 1;
     if (event->button() == Qt::RightButton) but = 2;
+    if (event->button() == Qt::MiddleButton) but = 3;
 
     DoMouse(x, y, but);
     return;
