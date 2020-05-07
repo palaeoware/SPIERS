@@ -90,8 +90,8 @@ void myscene::DoMouse(int x, int y, int PressedButton)
             dx = LastMouseX;
             dy = LastMouseY;
 
-            mouseDownViewCenter = mainwin->graphicsView->mapToScene(mainwin->graphicsView->viewport()->rect().center());
-            qDebug() << mouseDownViewCenter << mainwin->graphicsView->viewport()->rect().center();
+            //mouseDownViewCenter = mainwin->graphicsView->mapFromScene(mainwin->graphicsView->viewport()->rect().center());
+            //qDebug() << mouseDownViewCenter << mainwin->graphicsView->viewport()->rect().center();
 
             DoAction(LastMouseX, LastMouseY);
             return;
@@ -143,15 +143,18 @@ void myscene::DoAction(int x, int y)
         ChangeFlag = true;
         MouseUp();
     }
+    //RJG - If middle mouse drag and viewport has scroll bars - scroll view
     else if (button == 3)
     {
-        //Translate here
 
-        //int xmove = dx - x;
-        // qDebug() << dx << x << xmove << mouseDownViewCenter;
-        //mainwin->graphicsView->centerOn(mouseDownView.x() + xmove, mouseDownView.y());
-        //mainwin->graphicsView->show();
-        // mainwin->graphicsView->horizontalScrollBar()->setValue(newX);
+        int newX = mainwin->graphicsView->horizontalScrollBar()->value()-(x-dx);
+        mainwin->graphicsView->horizontalScrollBar()->setValue(newX);
+
+        int newY =  mainwin->graphicsView->verticalScrollBar()->value()-(y-dy);
+        mainwin->graphicsView->verticalScrollBar()->setValue(newY);
+
+        dx=x;
+        dy=y;
     }
     else
     {
