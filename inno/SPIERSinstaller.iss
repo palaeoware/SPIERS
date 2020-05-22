@@ -7,23 +7,23 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{828FC6D2-8B81-4A6A-A162-B9602721CCAE}
 AppName=SPIERS
-AppVersion=3.0.0-rc.2
-;AppVerName=SPIERS 3.0.0-rc.2
+AppVersion=3.1.0
+;AppVerName=SPIERS 3.1.0
 AppPublisher=SPIERS Software by Palaeoware
 AppPublisherURL=https://spiers-software.org/
 AppSupportURL=https://spiers-software.org/
 AppUpdatesURL=https://spiers-software.org/
-DefaultDirName={pf}\Palaeoware\SPIERS\v3.0.0-rc.2
+DefaultDirName={pf}\Palaeoware\SPIERS\v3.1.0
 DefaultGroupName=Palaeoware\SPIERS
 ArchitecturesAllowed=x64
 ArchitecturesInstallIn64BitMode=x64
 LicenseFile=.\bin\LICENSE.md
 OutputDir=.\build
-OutputBaseFilename=SPIERSinstaller_v3.0.0-rc.2_win_x64
+OutputBaseFilename=SPIERSinstaller_v3.1.0_win_x64
 Compression=lzma
 SolidCompression=yes
 ChangesAssociations=yes
-AppCopyright=Copyright (C) 2008-2018 by Mark D. Sutton, Russell J. Garwood, and Alan R.T. Spencer
+AppCopyright=Copyright (C) 2008-2020 by Mark D. Sutton, Russell J. Garwood, and Alan R.T. Spencer
 AppContact=palaeoware@gmail.com
 AppComments=SPIERS (Serial Palaeontological Image Editing and Rendering System) is a package of three programs for the reconstruction and analysis of tomographic (serial image) datasets, such as those obtained from serial-grinding of specimens, or from CT scanning. More details are available in the documentation for each program.
 BackColor=$3e3e3e
@@ -37,10 +37,10 @@ Source: ".\bin\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createa
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "{group}\SPIERSalign (v3.0.0-rc.2)"; Filename: "{app}\SPIERSalign64.exe";
-Name: "{group}\SPIERSedit (v3.0.0-rc.2)"; Filename: "{app}\SPIERSedit64.exe";
-Name: "{group}\SPIERSview (v3.0.0-rc.2)"; Filename: "{app}\SPIERSview64.exe";
-Name: "{group}\Uninstall SPIERS (v3.0.0-rc.2)"; Filename: "{uninstallexe}"
+Name: "{group}\SPIERSalign (v3.1.0)"; Filename: "{app}\SPIERSalign64.exe";
+Name: "{group}\SPIERSedit (v3.1.0)"; Filename: "{app}\SPIERSedit64.exe";
+Name: "{group}\SPIERSview (v3.1.0)"; Filename: "{app}\SPIERSview64.exe";
+Name: "{group}\Uninstall SPIERS (v3.1.0)"; Filename: "{uninstallexe}"
 
 [Registry]
 Root: HKCR; Subkey: ".spv"; ValueType: string; ValueName: ""; ValueData: "SPIERSviewfile"; Flags: uninsdeletevalue
