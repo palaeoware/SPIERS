@@ -32,8 +32,8 @@
 *.app
 
 # QT stuff
-*.pro.user
-*.pro.user.21
+SPIERS.pro.user
+SPIERS.pro.user.*
 
 # Docs
 /docs/_build
@@ -45,3 +45,5 @@
 make.bat
 Makefile
 .DS_Store
+
+SPIERS.pro.user
