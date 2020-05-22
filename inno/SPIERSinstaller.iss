@@ -5,7 +5,7 @@
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{828FC6D2-8B81-4A6A-A162-B9602721CCAE}
+AppId={{5697A906-8437-4059-B440-37D00BAA0C0F}
 AppName=SPIERS
 AppVersion=3.1.0
 ;AppVerName=SPIERS 3.1.0
