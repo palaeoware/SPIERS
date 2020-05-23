@@ -82,14 +82,47 @@ Or by downloading and running the installer from Qt: https://www.qt.io/download 
 `sudo apt-get install libvtk7-qt-dev`
 
 3. Using the above package, you should be able to find the required VTK libraries under /usr/include/vtk-7.1/ They can also be included, if needed, in the working directory, and added to the executable at link time using the QMAKE_RPATHDIR variable - e.g. #QMAKE_RPATHDIR += $$PWD/vtk-7.X/
-4. You should then be able to compile SPIERS by opening the .pro file in QT creator and following standard debug/release procedure.
+
+4. Download source code, or clone using Git:
+
+`git clone https://github.com/palaeoware/SPIERS.git`
+
+You can then be able to compile SPIERS by opening the .pro file in QT creator and following standard debug/release procedure. The resulting executables will be placed in their individual bin folders: copy these to a single directory to allow SPIERSedit to launch SPIERSview.
+
+5. Alternatively you can build using the following commands -  navigate into the SPIERS source folder in a terminal window:
+
+`cd SPIERS`
+
+Create a makefile:
+
+`qmake ./SPIERS.pro`
+
+Build by running the make command:
+
+`make`
+
+You can then copy the executable files to your desired location, for example, the below will place the files in the SPIERS root directory:
+
+`cp SPIERSalign/bin/SPIERSalign64 ./`
+`cp SPIERSedit/bin/SPIERSedit64 ./`
+`cp SPIERSview/bin/SPIERSview64 ./`
+
+The executables need to be in the same folder to allow SPIERSedit to launch SPIERSview.
+
+6. Should you wish to create desktop icons or for SPIERS to appear in your launcher, we provide exemplar desktop entries in the SPIERS/examples folder of the repository, coupled with icons for these. Place the icons in the same folder alongside the executable files, and place this folder wherever you would like it to live on your system. The edit the paths to the executables and icons by replacing XXXXX in the example files with your path. Double clicking on the desktop entry will ask you to trust and launch the program. Placing the entry on your desktop will create an icon that launches the software. Additionally, if you open a terminal at the location where the desktop entry is stored, and copy it from there to /usr/share/applications/ using this command
+
+`sudo cp SPIERSalign.desktop /usr/share/applications/`
+`sudo cp SPIERSedit.desktop /usr/share/applications/`
+`sudo cp SPIERSview.desktop /usr/share/applications/`
+
+This will create entries for each package in the GNOME activities overview / launcher.
 
 #### macOS Catalina 64-bit - QT Creator + QT v5.x and VTK v8.2 (via Homebrew) using Clang 64-bit/XCode 11 toolchain
 
 1. Install XCode 11 from Apple App Store.
 2. Install QT5.x/QT Creator from https://www.qt.io/download.
 3. Install Homebrew (https://brew.sh/).
-4. Get VTK 8.2 package via Homebrew - you may need to force Homebrew to install a specific VTK version see Homebrew instruction on how to do so: 
+4. Get VTK 8.2 package via Homebrew - you may need to force Homebrew to install a specific VTK version see Homebrew instruction on how to do so:
 
 `brew install vtk`
 
