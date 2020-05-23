@@ -73,7 +73,7 @@ rectangle will appear. This is the *threshold image* (see Fig. 2).
 
 .. figure:: _static/figure_1.png
     :align: center
-	
+
     Figure 1. The new dataset window
 
 
@@ -92,8 +92,10 @@ mirrored!
 
 .. figure:: _static/figure_2.png
     :align: center
-	
-    Figure 2. The SPIERSedit default window layout
+
+    Figure 2. The SPIERSedit default window layout. Note that the GUI and layout shown corresponds
+    to SPIERS 2.X.X. The GUI for 3.X.X employs a dark theme, and has a slightly modified layout, but
+    all instructions in the documentation applies to 3.X.X.   
 
 Window Layout, Zoom, and Navigation
 -----------------------------------
@@ -110,16 +112,18 @@ shown/hidden using commands in the *Window* Menu, or by using the
 keyboard shorcuts, which are: *F1* - *Main* Toolbox; *F2* - *Slice*
 *selector* panel; *F3* – *Generation* panel; *F4* – *Masks* panel; *F5*
 – *Segments* panel; *F6* – *Curves* panel; *F7* – *Output* panel; *F8* –
-*Histogram* panel; *F9* – *Info* panel.
+*Histogram* panel; *F9* – *Info* panel. An alternative shortcut - shift + control/
+command + the numbers 1-9 - is also available for these panels.
 
 The large initially black box in the centre of the screen is the
 *Threshold image* (see below); this may or may not incorporate scroll
 bars depending on the size of the image relative to the SPIERSedit
-window. To its left is the *Zoom level* slider, and below is the
+window. If scroll bars are present, middle mouse drag translates the image.
+To its left is the *Zoom level* slider, and below is the
 *Position in dataset* slider. The former controls the magnification of
 the images shown; shortcut keys *Q* and *A* also zoom in and out
 respectively, and zoom values can be typed into the associated
-‘spinbox’.
+‘spinbox’. Middle mouse scroll also adjust the zoom.
 
 SPIERSedit only displays one image at a time from the dataset. The ','
 (back, <) and '.' (forward, >) keys are used to move forward or backward
@@ -131,7 +135,8 @@ displays the current dataset, and image file path. The *Slice Selector*
 Panel, if visible, will also show the current file, as moving to a slice
 automatically selects it. Note however that changing selections in this
 panel does not move to a different image, but selects images for various
-operations discussed later.
+operations discussed later. Control + mouse scroll modifies the selected
+slice.
 
 At the top of the window, below the menus, is a permanently visible
 toolbar – this contains buttons for selecting/indicating which of its
@@ -255,7 +260,7 @@ material is present.
 
 .. figure:: _static/figure_3.png
     :align: center
-	
+
     Figure 3. Linear Generation examples. A; source image. B; too dark.(to few white pixels) C; too light (too many white pixels). D; about right.
 
 Generating Multiple Slices
@@ -292,7 +297,7 @@ editing.
 
 .. figure:: _static/figure_4.png
     :align: center
-	
+
     Figure 4. An image requiring editing. Source image is shown on right and thresholded image on left.  A; lighter than normal structure not fully picked out. B; Thin structure not picked out at all. C; lighter area of fossil-fill identified as matrix. D; dark blob in the matrix (noise) identified as fossil (this identified by eye as non-fossil by tracing it through several images, and confirming that it does not attach to the rest of the specimen). E; set of structures appearing a ‘fatter’ than they should and merged into each other. F; darker background material misidentified as fossil. G; edge-padding introduced during alignment misidentified as fossil.
 
 *Figure 4. An image requiring editing*. Source image is shown on right
@@ -353,7 +358,7 @@ Curve, Lock/selection and Mask modes is given later in this document.
 
 .. figure:: _static/figure_5.png
     :align: center
-	
+
     Figure 5. Mode selection toggle buttons.
 
 *Brightness mode:* allows manual cleaning of data by locally adjusting
@@ -371,7 +376,7 @@ material is ‘on’ (e.g. error E in Fig. 4).
 
 .. figure:: _static/figure_6.png
     :align: center
-	
+
     Figure 6. Effects of brightness brush.
 
 The strength of the brightening and darkening effect from a single

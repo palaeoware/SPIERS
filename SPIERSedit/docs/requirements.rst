@@ -31,15 +31,12 @@ SPIERSedit can work with any dataset consisting of serial ‘slice’
 images, so long as the resolution and scale of each image is the same,
 and no images are missing from the sequence. Datasets should comprise
 registered (aligned) serial images, ideally in uncompressed Windows
-Bitmap (.bmp) format. SPIERSedit can also work with datasets in Portable
-Network Graphic (.png) or JPEG (.jpg) format; these take up less
-hard-disk space, but will normally result in slower processing; JPEG
-datasets will be considerably more compact than Portable Network Graphic
-datasets, but are not recommended as JPEG compression causes artefacts
-which can degrade data and hence final models.
+Bitmap (.bmp) format or Portable Network Graphic (.png). SPIERSedit also supports
+TIIFF (.tif/.tiff) and JPEG (.jpg) format; JPEG datasets are not recommended
+as JPEG compression causes artefacts which can degrade data and hence final models.
 
-*Format*: Images can be 8-bit grayscale (.png, .bmp) or 24-bit colour
-(.bmp, .png, .jpg). Images that lack colour information (e.g. CT data)
+*Format*: Images can be 8-bit grayscale (.png, .bmp, .tiff) or 24-bit colour
+(.bmp, .png, .jpg, .tiff). Images that lack colour information (e.g. CT data)
 should be converted to an 8-bit rather than 24-bit format – you will not
 see a difference visually, but the software will run substantially
 faster.
