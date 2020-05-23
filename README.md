@@ -104,7 +104,9 @@ Build by running the make command:
 You can then copy the executable files to your desired location, for example, the below will place the files in the SPIERS root directory:
 
 `cp SPIERSalign/bin/SPIERSalign64 ./`
+
 `cp SPIERSedit/bin/SPIERSedit64 ./`
+
 `cp SPIERSview/bin/SPIERSview64 ./`
 
 The executables need to be in the same folder to allow SPIERSedit to launch SPIERSview.
@@ -112,7 +114,9 @@ The executables need to be in the same folder to allow SPIERSedit to launch SPIE
 6. Should you wish to create desktop icons or for SPIERS to appear in your launcher, we provide exemplar desktop entries in the SPIERS/examples folder of the repository, coupled with icons for these. Place the icons in the same folder alongside the executable files, and place this folder wherever you would like it to live on your system. The edit the paths to the executables and icons by replacing XXXXX in the example files with your path. Double clicking on the desktop entry will ask you to trust and launch the program. Placing the entry on your desktop will create an icon that launches the software. Additionally, if you open a terminal at the location where the desktop entry is stored, and copy it from there to /usr/share/applications/ using this command
 
 `sudo cp SPIERSalign.desktop /usr/share/applications/`
+
 `sudo cp SPIERSedit.desktop /usr/share/applications/`
+
 `sudo cp SPIERSview.desktop /usr/share/applications/`
 
 This will create entries for each package in the GNOME activities overview / launcher.

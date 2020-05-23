@@ -1,0 +1,12 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Name=SPIERSedit
+Version=3.1.0
+GenericName=Tomographic reconstruction software
+Comment=Visualise slice-based data
+Exec=/XXXXXXXXXXXXXX/SPIERSedit64
+Icon=/XXXXXXXXXXXXXX/SPIERSedit64.png
+Terminal=false
+Type=Application
+Categories=Science;Graphics;
+Name[en_GB]=SPIERSedit
