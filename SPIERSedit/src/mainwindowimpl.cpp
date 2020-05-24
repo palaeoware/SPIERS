@@ -587,6 +587,11 @@ void MainWindowImpl:: MouseZoom(int delta)
         if (newRow > SliceSelectorList->count() - 1) newRow = SliceSelectorList->count() - 1;
         SliceSelectorList->setCurrentRow(newRow, QItemSelectionModel::ClearAndSelect);
     }
+    else if (QGuiApplication::keyboardModifiers() == Qt::SHIFT)
+    {
+        CurrentFile += delta / 10;
+        SliderPos->setValue(CurrentFile);
+    }
     else ZoomSlider->setValue(ZoomSlider->value() + delta / 5);
 }
 

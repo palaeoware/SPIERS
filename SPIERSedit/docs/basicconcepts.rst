@@ -95,7 +95,7 @@ mirrored!
 
     Figure 2. The SPIERSedit default window layout. Note that the GUI and layout shown corresponds
     to SPIERS 2.X.X. The GUI for 3.X.X employs a dark theme, and has a slightly modified layout, but
-    all instructions in the documentation applies to 3.X.X.   
+    all instructions in the documentation apply to 3.X.X.
 
 Window Layout, Zoom, and Navigation
 -----------------------------------
@@ -130,13 +130,14 @@ SPIERSedit only displays one image at a time from the dataset. The ','
 through the dataset one slice at time. The *Position in Dataset* slider
 allows the user to move through the dataset at will; the current slice
 number is displayed in the associated spinbox (labelled Slice number in
-Fig. 2); values can be entered in here to jump to slices. The title bar
+Fig. 2); values can be entered in here to jump to slices. Shift and missle mouse
+zoom also allows you to scroll through the dataset. The title bar
 displays the current dataset, and image file path. The *Slice Selector*
 Panel, if visible, will also show the current file, as moving to a slice
 automatically selects it. Note however that changing selections in this
 panel does not move to a different image, but selects images for various
-operations discussed later. Control + mouse scroll modifies the selected
-slice.
+operations discussed later. Control + mouse scroll modifies the slice selected
+in the  *Slice Selector*.
 
 At the top of the window, below the menus, is a permanently visible
 toolbar – this contains buttons for selecting/indicating which of its
