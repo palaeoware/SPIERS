@@ -183,26 +183,34 @@ main::main(int &argc, char *argv[]) : QApplication(argc, argv)
 bool main::event(QEvent *event)
 {
     //we don't do anything if we were passed and argv1 - i.e. if we are a child process of first one
-    if (donthandlefileevent == true) return QApplication::event(event);
+    if (donthandlefileevent == true)
+        return QApplication::event(event);
 
     switch (event->type())
     {
+    default:
+        return QApplication::event(event);
+        break;
+
     case QEvent::FileOpen:
 
-        fn = static_cast<QFileOpenEvent *>(
-                 event)->file();
+        QFileOpenEvent *openEvent = static_cast<QFileOpenEvent *>(event);
+        fn = openEvent->file();
+
         if (fname != "")
         {
             QString program = qApp->applicationFilePath();
             QStringList arguments;
             arguments << fn;
 
-            QProcess::startDetached (program, arguments, qApp->applicationDirPath());
+            QProcess::startDetached(program, arguments, qApp->applicationDirPath());
         }
+
         namereceived = true;
+
         return true;
-    default:
-        return QApplication::event(event);
+
+        break;
     }
 }
 
@@ -231,10 +239,14 @@ int main(int argc, char *argv[])
     // Set to allow the OpenGL context (ie. the same threads) to be shared between normal and full screen mode
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 
-    if (argc == 2)
+    if (argc == 2) {
+        // Check that the passed file name has at least 2 characters
         if (QString(argv[1]).length() < 2)
             argc = 1; //this to cure weird mac crash
-    argc = 1;
+    }
+
+    // WFT is this doing here? This is forcing the program to NEVER look for a filename passed by int argc!
+    //argc = 1;
 
     // Create main class
     class main app(argc, argv);
@@ -251,7 +263,7 @@ int main(int argc, char *argv[])
 
     app.setQuitOnLastWindowClosed(true);
 
-    //set the fname global from argument
+    // Set the fname global from argument if the argc value is === 2, also check for - and x to quit hte application, anything else we ignore and set the global fname to null.
     if (argc != 2)
     {
         fname = "";
@@ -265,15 +277,17 @@ int main(int argc, char *argv[])
         else
         {
             fname = argv[1];
-            //Make sure we don't handle file event at all
+
+            // Make sure we don't handle file event at all
             app.donthandlefileevent = true;
 
         }
     }
 
-    //Do nothing until event is received
+    // Do nothing until event is received
     app.processEvents();
 
+    // At this point if we had a filename set QFileOpenEvent then set the global fname variable.
     if (app.namereceived)
         fname = app.fn;
 

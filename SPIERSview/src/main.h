@@ -29,13 +29,11 @@ class main : public QApplication
 public:
     main(int &argc, char *argv[]);
 
+    bool event(QEvent *) override;
+
     QString fn;
     bool namereceived;
     bool donthandlefileevent;
-
-
-private:
-    bool event(QEvent *);
 };
 
 #endif // MAIN_H
