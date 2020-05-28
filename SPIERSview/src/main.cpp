@@ -11,6 +11,7 @@
 #include <QTimer>
 #include <QDesktopWidget>
 #include <QScreen>
+#include <QFileOpenEvent>
 
 #include "main.h"
 #include "mainwindow.h"
@@ -32,6 +33,7 @@ void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const Q
 {
     QByteArray localMsg = msg.toLocal8Bit();
     QString txt;
+    bool logToFile = true;
 
     switch (type)
     {
@@ -51,24 +53,22 @@ void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const Q
         txt = QString("Info: %1 (%2:%3, %4)").arg(localMsg.constData()).arg(context.file).arg(context.line).arg(context.function);
         break;
     }
+    if (logToFile) {
+        // Save to debug.log
+        QString path = QString("%1/SPIERSView_debug.log").arg(QDir::homePath());
+        QFile outFile(path);
+        outFile.open(QIODevice::WriteOnly | QIODevice::Append);
+        QTextStream log(&outFile);
+        log << txt << endl;
 
-#ifndef __APPLE__
-#ifdef QT_DEBUG
-// Save to debug.log
-    QFile outFile("debug.log");
-    outFile.open(QIODevice::WriteOnly | QIODevice::Append);
-    QTextStream log(&outFile);
-    log << txt << endl;
-
-// Now print to stout too
-    QTextStream console(stdout);
-    console << txt << endl;
-#else
-// Print to stout only
-    QTextStream console(stdout);
-    console << txt << endl;
-#endif
-#endif
+        // Now print to stout too
+        QTextStream console(stdout);
+        console << txt << endl;
+    } else {
+        // Print to stout only
+        QTextStream console(stdout);
+        console << txt << endl;
+    }
 }
 
 #ifndef __APPLE__
@@ -183,8 +183,10 @@ main::main(int &argc, char *argv[]) : QApplication(argc, argv)
 bool main::event(QEvent *event)
 {
     //we don't do anything if we were passed and argv1 - i.e. if we are a child process of first one
-    if (donthandlefileevent == true)
+    if (donthandlefileevent == true) {
+        qDebug() << "Don't handle file open event";
         return QApplication::event(event);
+    }
 
     switch (event->type())
     {
@@ -193,6 +195,8 @@ bool main::event(QEvent *event)
         break;
 
     case QEvent::FileOpen:
+
+        qDebug() << "File Open Event";
 
         QFileOpenEvent *openEvent = static_cast<QFileOpenEvent *>(event);
         fn = openEvent->file();
@@ -238,6 +242,9 @@ int main(int argc, char *argv[])
 
     // Set to allow the OpenGL context (ie. the same threads) to be shared between normal and full screen mode
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+
+    // Install the message handler to log to file
+    qInstallMessageHandler(logMessageOutput);
 
     if (argc == 2) {
         // Check that the passed file name has at least 2 characters

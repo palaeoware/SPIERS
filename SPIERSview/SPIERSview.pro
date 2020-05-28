@@ -9,9 +9,9 @@ TEMPLATE = app
 QT += network xml gui core widgets opengl
 
 # Allow debug in release
-#QMAKE_CXXFLAGS_RELEASE += -g
-#QMAKE_CFLAGS_RELEASE += -g
-#QMAKE_LFLAGS_RELEASE =
+QMAKE_CXXFLAGS_RELEASE += -g
+QMAKE_CFLAGS_RELEASE += -g
+QMAKE_LFLAGS_RELEASE =
 
 CONFIG += qt \
     release \
@@ -216,7 +216,7 @@ unix:!macx {
 		-lz \
 }
 
-# MacOS common build here (not currently tested or supported)
+# MacOS common build here
 macx {
 
      #RJG - Below vtk installation achieved using installation via homebrew
