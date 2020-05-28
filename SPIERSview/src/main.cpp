@@ -201,14 +201,9 @@ bool main::event(QEvent *event)
         QFileOpenEvent *openEvent = static_cast<QFileOpenEvent *>(event);
         fn = openEvent->file();
 
-        if (fname != "")
-        {
-            QString program = qApp->applicationFilePath();
-            QStringList arguments;
-            arguments << fn;
+        qDebug() << "File name passed is: " << fn;
 
-            QProcess::startDetached(program, arguments, qApp->applicationDirPath());
-        }
+        fname = fn;
 
         namereceived = true;
 
@@ -247,10 +242,14 @@ int main(int argc, char *argv[])
     qInstallMessageHandler(logMessageOutput);
 
     if (argc == 2) {
+        qDebug() << "argc == 2";
         // Check that the passed file name has at least 2 characters
         if (QString(argv[1]).length() < 2)
             argc = 1; //this to cure weird mac crash
+
+        qDebug() << "argc == " << argc << " argv = " << QString(argv[1]) << "argv[2]" << QString(argv[1]);
     }
+
 
     // WFT is this doing here? This is forcing the program to NEVER look for a filename passed by int argc!
     //argc = 1;
@@ -261,10 +260,6 @@ int main(int argc, char *argv[])
     //Style program with our dark style
     QApplication::setStyle(new DarkStyleTheme);
 
-    // Check for any version updates
-    NetModule netModule;
-    netModule.checkForNew();
-
     app.fn = "";
     app.namereceived = false;
 
@@ -273,16 +268,20 @@ int main(int argc, char *argv[])
     // Set the fname global from argument if the argc value is === 2, also check for - and x to quit hte application, anything else we ignore and set the global fname to null.
     if (argc != 2)
     {
+        qDebug() << "fname = null";
         fname = "";
     }
     else
     {
+        qDebug() << "argc is 2 so we do stuff...";
         if ((*(argv[1]) == '-') && (*(argv[1] + 1) == 'x'))
         {
             QCoreApplication::quit();
         }
         else
         {
+            qDebug() << "Setting fname to argv[1]";
+
             fname = argv[1];
 
             // Make sure we don't handle file event at all
@@ -294,9 +293,12 @@ int main(int argc, char *argv[])
     // Do nothing until event is received
     app.processEvents();
 
-    // At this point if we had a filename set QFileOpenEvent then set the global fname variable.
-    if (app.namereceived)
-        fname = app.fn;
+
+    qDebug() << "Moving to start application mainwindow...";
+
+    // Check for any version updates
+    NetModule netModule;
+    netModule.checkForNew();
 
     // MainWindow with Event filter - deals with glitchy keyboard shortcuts
     MainWindow mainWindow;
