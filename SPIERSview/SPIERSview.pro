@@ -219,7 +219,7 @@ unix:!macx {
 # MacOS common build here
 macx {
 
-     #RJG - Below vtk installation achieved using installation via homebrew
+     #Below vtk installation achieved using installation via homebrew
      #eg. brew install vtk
      LIBS += -L$$PWD/../../../../../../usr/local/Cellar/vtk/8.2.0_10/lib/ \
     -lvtkCommonExecutionModel-8.2.1 \
@@ -303,14 +303,20 @@ macx {
      INCLUDEPATH += $$PWD/../../../../../../usr/local/Cellar/vtk/8.2.0_10/include/vtk-8.2/
      DEPENDPATH += $$PWD/../../../../../../usr/local/Cellar/vtk/8.2.0_10/include/vtk-8.2/
 
-    #RJG - Note also the virtual machine has a VTK version built on the box:
+    # RJG - Note also the virtual machine has a VTK version built on the box:
     #LIBS += -L$$PWD/../../../../SPIERS/VTK-8.2.0/build/lib/ \
     #INCLUDEPATH += $$PWD/../../../../SPIERS/VTK-8.2.0/build
     #DEPENDPATH += $$PWD/../../../../SPIERS/VTK-8.2.0/build
-    #I have left this in case an alternative is ever required
+    # I have left this in case an alternative is ever required
 
-    #Mac icon
+    # Mac icon
     ICON = resources/SPIERSviewIcon.icns
+
+    # macOS file associations are done through the Info.plist files under the application pakages
+    # QT/qmake should be able to overwrite the default generated file with this custom file
+    # We need to make sure that the custom Info.plist (below) is in XML format and not binary
+    # as qmake uses sed for string replacements within it.
+    QMAKE_INFO_PLIST = Info.plist
 }
 
 SOURCES += src/main.cpp \
