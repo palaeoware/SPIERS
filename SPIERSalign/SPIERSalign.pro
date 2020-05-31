@@ -24,7 +24,7 @@ DESTDIR \
     += \
     bin
 
-#Needed to make binaries launchable from file in Ubuntu - GCC default link flag -pie on newer Ubuntu versions this so otherwise recognised as shared library
+# Needed to make binaries launchable from file in Ubuntu - GCC default link flag -pie on newer Ubuntu versions this so otherwise recognised as shared library
 QMAKE_LFLAGS += -no-pie
 
 RC_FILE += resources/icon.rc
@@ -39,9 +39,6 @@ OBJECTS_DIR = build
 
 FORMS += ui/mainwindow.ui \
     ui/about.ui
-
-#Mac icon
-ICON = resources/SPIERSalignIcon.icns
 
 HEADERS += src/mainwindowimpl.h \
     src/globals.h \
@@ -62,3 +59,15 @@ SOURCES += src/mainwindowimpl.cpp \
     ../SPIERScommon/src/semanticversion.cpp \
     ../SPIERScommon/src/prereleasecomponent.cpp
 
+# MacOS common build here
+macx {
+    #Mac icon
+    ICON = resources/SPIERSalignIcon.icns
+
+
+    # macOS file associations are done through the Info.plist files under the application pakages
+    # QT/qmake should be able to overwrite the default generated file with this custom file
+    # We need to make sure that the custom Info.plist (below) is in XML format and not binary
+    # as qmake uses sed for string replacements within it.
+    QMAKE_INFO_PLIST = Info.plist
+}
