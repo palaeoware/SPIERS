@@ -32,6 +32,54 @@
 #include "../../SPIERScommon/src/darkstyletheme.h"
 #include "../../SPIERScommon/src/netmodule.h"
 
+/**
+ * @brief logMessageOutput
+ * @param type
+ * @param context
+ * @param msg
+ */
+void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+    QByteArray localMsg = msg.toLocal8Bit();
+    QString txt;
+    bool logToFile = true;
+
+    switch (type)
+    {
+    case QtDebugMsg:
+        txt = QString("Debug: %1 (%2:%3, %4)").arg(localMsg.constData()).arg(context.file).arg(context.line).arg(context.function);
+        break;
+    case QtWarningMsg:
+        txt = QString("Info: %1 (%2:%3, %4)").arg(localMsg.constData()).arg(context.file).arg(context.line).arg(context.function);
+        break;
+    case QtCriticalMsg:
+        txt = QString("Critical: %1 (%2:%3, %4)").arg(localMsg.constData()).arg(context.file).arg(context.line).arg(context.function);
+        break;
+    case QtFatalMsg:
+        txt = QString("Fatal: %1 (%2:%3, %4)").arg(localMsg.constData()).arg(context.file).arg(context.line).arg(context.function);
+        break;
+    case QtInfoMsg:
+        txt = QString("Info: %1 (%2:%3, %4)").arg(localMsg.constData()).arg(context.file).arg(context.line).arg(context.function);
+        break;
+    }
+    if (logToFile) {
+        // Save to debug.log
+        QString path = QString("%1/SPIERSEdit_debug.log").arg(QDir::homePath());
+        QFile outFile(path);
+        outFile.open(QIODevice::WriteOnly | QIODevice::Append);
+        QTextStream log(&outFile);
+        log << txt << endl;
+
+        // Now print to stout too
+        QTextStream console(stdout);
+        console << txt << endl;
+    } else {
+        // Print to stout only
+        QTextStream console(stdout);
+        console << txt << endl;
+    }
+}
+
 #ifndef __APPLE__
 int main(int argc, char **argv)
 {
@@ -79,44 +127,66 @@ int main(int argc, char **argv)
 #ifdef __APPLE__
 #include "main.h"
 
-
-QString fname;
-
 main::main(int &argc, char *argv[]) : QApplication(argc, argv)
 {
     //do nothing
     donthandlefileevent = false;
 }
 
+/**
+ * @brief main::event
+ * @param event
+ * @return
+ */
 bool main::event(QEvent *event)
 {
     //we don't do anything if we were passed and argv1 - i.e. if we are a child process of first one
-    if (donthandlefileevent == true) return QApplication::event(event);
+    if (donthandlefileevent == true) {
+        qDebug() << "Don't handle file open event";
+        return QApplication::event(event);
+    }
 
     switch (event->type())
     {
-    case QEvent::FileOpen:
-
-        fn = static_cast<QFileOpenEvent *>(
-                 event)->file();
-        if (fname != "")
-        {
-            QString program = qApp->applicationFilePath();
-            QStringList arguments;
-            arguments << fn;
-
-            QProcess::startDetached (program, arguments, qApp->applicationDirPath());
-        }
-        namereceived = true;
-        return true;
     default:
         return QApplication::event(event);
+        break;
+
+    case QEvent::FileOpen:
+
+        qDebug() << "File Open Event";
+
+        QFileOpenEvent *openEvent = static_cast<QFileOpenEvent *>(event);
+        fn = openEvent->file();
+
+        qDebug() << "File name passed is: " << fn;
+
+        openfile = fn;
+
+        namereceived = true;
+
+        return true;
+
+        break;
     }
 }
 
 int main(int argc, char *argv[])
 {
-    class main a(argc, argv);
+    // Install the message handler to log to file
+    qInstallMessageHandler(logMessageOutput);
+
+    if (argc == 2) {
+        qDebug() << "argc == 2";
+        // Check that the passed file name has at least 2 characters
+        if (QString(argv[1]).length() < 2)
+            argc = 1; //this to cure weird mac crash
+
+        qDebug() << "argc == " << argc << " argv = " << QString(argv[1]) << "argv[2]" << QString(argv[1]);
+    }
+
+
+    class main app(argc, argv);
 
     //Style program with our dark style
     QApplication::setStyle(new DarkStyleTheme);
@@ -124,47 +194,46 @@ int main(int argc, char *argv[])
     NetModule n;
     n.checkForNew();
 
-    a.fn = "";
-    a.namereceived = false;
+    app.fn = "";
+    app.namereceived = false;
 
-    a.setQuitOnLastWindowClosed(true);
-    //set the fname global from argument
-    if (argc != 2) openfile = "";
-    else openfile = argv[1];
+    app.setQuitOnLastWindowClosed(true);
 
-
-    if (argc == 2) if (QString(argv[1]).length() == 0) argc = 1; //this to cure weird mac crash
-
+    // Set the fname global from argument if the argc value is === 2, also check for - and x to quit hte application, anything else we ignore and set the global fname to null.
     if (argc != 2)
     {
-        fname = "";
+        qDebug() << "openfile = null";
+        openfile = "";
     }
     else
     {
+        qDebug() << "argc is 2 so we do stuff...";
         if ((*(argv[1]) == '-') && (*(argv[1] + 1) == 'x'))
         {
-            exit(0);
+            QCoreApplication::quit();
         }
         else
         {
-            fname = argv[1];
-            //Make sure we don't handle file event at all
-            a.donthandlefileevent = true;
+            qDebug() << "Setting fname to argv[1]";
+
+            openfile = argv[1];
+
+            // Make sure we don't handle file event at all
+            app.donthandlefileevent = true;
+
         }
     }
 
-    //Do nothing until event is received
-    a.processEvents();
-    if (a.namereceived) openfile = a.fn;
+    // Do nothing until event is received
+    app.processEvents();
 
-    //a.spawn=true;
+
+    qDebug() << "Moving to start application mainwindow...";
+
     MainWindowImpl win;
-
-    //deal with any incoming events - i.e. file open ones
-
     win.show();
 
-    return a.exec();
+    return app.exec();
 }
 
 #endif
