@@ -31,7 +31,6 @@ DESTDIR \
     bin
 
 RC_FILE = resources/icon.rc
-#ICON = resources/icon.icns
 
 DISTFILES += \
     LICENSE.md \
@@ -40,9 +39,6 @@ DISTFILES += \
 MOC_DIR += build
 
 OBJECTS_DIR += build
-
-#Mac icon
-ICON = resources/SPIERSeditIcon.icns
 
 FORMS += ui/import.ui \
     ui/mainwindow.ui \
@@ -134,3 +130,16 @@ SOURCES += src/display.cpp \
     ../SPIERScommon/src/netmodule.cpp \
     ../SPIERScommon/src/semanticversion.cpp \
     ../SPIERScommon/src//prereleasecomponent.cpp
+
+# MacOS common build here
+macx {
+    #Mac icon
+    ICON = resources/SPIERSeditIcon.icns
+
+
+    # macOS file associations are done through the Info.plist files under the application pakages
+    # QT/qmake should be able to overwrite the default generated file with this custom file
+    # We need to make sure that the custom Info.plist (below) is in XML format and not binary
+    # as qmake uses sed for string replacements within it.
+    QMAKE_INFO_PLIST = Info.plist
+}
