@@ -26,6 +26,8 @@
         <array>
             <string>spv</string>
             <string>vaxml</string>
+            <string>spvf</string>
+            <string>sp2</string>
         </array>
         <key>CFBundleTypeMIMETypes</key>
         <string>application/octet-stream</string>
