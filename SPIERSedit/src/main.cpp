@@ -42,7 +42,7 @@ void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const Q
 {
     QByteArray localMsg = msg.toLocal8Bit();
     QString txt;
-    bool logToFile = true;
+    bool logToFile = false;
 
     switch (type)
     {
@@ -62,7 +62,8 @@ void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const Q
         txt = QString("Info: %1 (%2:%3, %4)").arg(localMsg.constData()).arg(context.file).arg(context.line).arg(context.function);
         break;
     }
-    if (logToFile) {
+    if (logToFile)
+    {
         // Save to debug.log
         QString path = QString("%1/SPIERSEdit_debug.log").arg(QDir::homePath());
         QFile outFile(path);
@@ -73,7 +74,9 @@ void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const Q
         // Now print to stout too
         QTextStream console(stdout);
         console << txt << endl;
-    } else {
+    }
+    else
+    {
         // Print to stout only
         QTextStream console(stdout);
         console << txt << endl;
@@ -141,7 +144,8 @@ main::main(int &argc, char *argv[]) : QApplication(argc, argv)
 bool main::event(QEvent *event)
 {
     //we don't do anything if we were passed and argv1 - i.e. if we are a child process of first one
-    if (donthandlefileevent == true) {
+    if (donthandlefileevent == true)
+    {
         qDebug() << "Don't handle file open event";
         return QApplication::event(event);
     }
@@ -176,7 +180,8 @@ int main(int argc, char *argv[])
     // Install the message handler to log to file
     qInstallMessageHandler(logMessageOutput);
 
-    if (argc == 2) {
+    if (argc == 2)
+    {
         qDebug() << "argc == 2";
         // Check that the passed file name has at least 2 characters
         if (QString(argv[1]).length() < 2)
