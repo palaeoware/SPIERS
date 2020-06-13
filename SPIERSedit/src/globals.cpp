@@ -67,6 +67,7 @@ QByteArray Masks, Locks;
 QByteArray dirty;  //will hold flags for brighten mode - avoid doing same pixel twice in one stroke.
 
 QString openfile;
+QString currentOpenFileName;
 bool MasksDirty, LocksDirty, CurvesDirty;
 bool MasksUndoDirty, LocksUndoDirty, CurvesUndoDirty;
 int CurrentMode; //0=bright, 1=masks, 2=curves, 3=lock, 4=segment, 5=recalc

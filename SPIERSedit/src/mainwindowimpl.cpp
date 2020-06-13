@@ -65,6 +65,7 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     AppMainWindow = this;
     setupUi(this);
     setStatusBar(nullptr);
+    currentOpenFileName = "";
 
     showMaximized();
 
@@ -551,6 +552,7 @@ void MainWindowImpl::ScreenUpdate()
 
             Start();
 
+            currentOpenFileName = openfile;
             openfile = "";
         }
     }
@@ -1309,6 +1311,9 @@ void MainWindowImpl::Menu_File_Import()
 
     RecentFile(FullSettingsFileName);
     FullFiles = Files;
+
+    // Almostly certainly could be cleaned up here!
+    currentOpenFileName = FullSettingsFileName;
 
     Start();
 

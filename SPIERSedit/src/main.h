@@ -29,15 +29,37 @@ class main : public QApplication
 {
     Q_OBJECT
 public:
+    /**
+     * @brief main
+     * @param argc
+     * @param argv
+     */
     main(int &argc, char *argv[]);
 
-    QString fn;
-    bool namereceived;
-    bool donthandlefileevent;
+    /**
+     * @brief Override of the main event function
+     * @note This only does stuff on macOS, all other OS just pass the QEvent to the application.
+     * @return
+     */
+    bool event(QEvent *) override;
 
+    /**
+     * @brief Flag to ignore subsequent FileOpenEvent
+     * @note This is a macOS only flag
+     */
+    bool ignoreFileOpenEvent;
 
-private:
-    bool event(QEvent *);
+    /**
+     * @brief Flag stating if a file name has been recieved
+     * @note This is a macOS only flag
+     */
+    bool hasReceivedFileName;
+
+    /**
+     * @brief Holds the received file name to open
+     * @note This is a macOS only flag
+     */
+    QString receivedFileName;
 };
 
 #endif

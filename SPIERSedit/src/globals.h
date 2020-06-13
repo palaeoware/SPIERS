@@ -58,6 +58,7 @@
 
 extern QList<bool> FilesDirty; //for re-rendering.
 extern QString openfile;
+extern QString currentOpenFileName; // stores the currently open file name/path
 extern bool bodgeflag;
 extern bool ThreeDmode;
 extern int BrushY, BrushZ;
