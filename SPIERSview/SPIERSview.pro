@@ -9,9 +9,9 @@ TEMPLATE = app
 QT += network xml gui core widgets opengl
 
 # Allow debug in release
-#QMAKE_CXXFLAGS_RELEASE += -g
-#QMAKE_CFLAGS_RELEASE += -g
-#QMAKE_LFLAGS_RELEASE =
+QMAKE_CXXFLAGS_RELEASE += -g
+QMAKE_CFLAGS_RELEASE += -g
+QMAKE_LFLAGS_RELEASE =
 
 CONFIG += qt \
     release \

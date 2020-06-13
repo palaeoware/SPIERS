@@ -33,7 +33,7 @@ void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const Q
 {
     QByteArray localMsg = msg.toLocal8Bit();
     QString txt;
-    bool logToFile = false;
+    bool logToFile = true;
 
     switch (type)
     {
