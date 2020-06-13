@@ -2811,6 +2811,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     if (isVaxmlMode == true)
     {
         event->accept();
+        QCoreApplication::quit();
         return;
     }
 
@@ -2823,7 +2824,11 @@ void MainWindow::closeEvent(QCloseEvent *event)
         msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
         msgBox.setDefaultButton(QMessageBox::Cancel);
         int ret = msgBox.exec();
-        if (ret == QMessageBox::Yes) QCoreApplication::quit();
+
+        if (ret == QMessageBox::Yes) {
+            QCoreApplication::quit();
+        }
+
         event->ignore();
         return;
     }
@@ -2842,13 +2847,20 @@ void MainWindow::closeEvent(QCloseEvent *event)
             event->accept();
             QCoreApplication::quit();
         }
-        else if (ret == QMessageBox::Cancel) event->ignore();
+        else if (ret == QMessageBox::Cancel) {
+            event->ignore();
+            return;
+        }
         else if (ret == QMessageBox::Discard)
         {
             event->accept();
             QCoreApplication::quit();
         }
     }
+
+    // If this has not been caught above then let close the application
+    event->accept();
+    QCoreApplication::quit();
 }
 
 /**
