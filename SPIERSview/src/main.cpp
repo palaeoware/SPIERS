@@ -33,7 +33,7 @@ void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const Q
 {
     QByteArray localMsg = msg.toLocal8Bit();
     QString txt;
-    bool logToFile = true;
+    bool logToFile = false;
 
     switch (type)
     {
@@ -334,8 +334,11 @@ int main(int argc, char *argv[])
         }
     }
 
-    // Do nothing until all events are received
+    // Do nothing until all events are received for the appllication start
     app.processEvents();
+
+    // We then check again, as if seems that the QEvent::FileOpen event doesn't get picked up in the first check,
+    // but does seem to be picked up on a second check! This is a real bodge, there must be a better way to do this...
     app.processEvents();
 
     // If we have got this far then we are trying to load a file by name that has been caught in the QEvent::FileOpen
