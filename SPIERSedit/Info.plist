@@ -1,86 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-    <dict>
+<dict>
         <key>CFBundleExecutable</key>
         <string>SPIERSedit64</string>
-
         <key>CFBundleIconFile</key>
         <string>SPIERSeditIcon.icns</string>
-
         <key>CFBundleIdentifier</key>
         <string>com.palaeoware.spiers.edit</string>
-
         <key>CFBundlePackageType</key>
         <string>APPL</string>
-
         <key>CFBundleSignature</key>
         <string>????</string>
-
         <key>CFBundleVersion</key>
         <string>3.1.2</string>
-
         <key>CFBundleSpokenName</key>
         <string>Spiers Edit</string>
-
         <key>CFBundleInfoDictionaryVersion</key>
         <string>6.0</string>
-
         <key>LSMinimumSystemVersion</key>
         <string>10.13</string>
-
         <key>NSPrincipalClass</key>
         <string>NSApplication</string>
-
         <key>NSSupportsAutomaticGraphicsSwitching</key>
         <true/>
-
         <key>CFBundleDocumentTypes</key>
         <array>
-            <dict>
-                <key>CFBundleTypeName</key>
-                <string>SPIERSedit</string>
-                <key>CFBundleTypeIconFile</key>
-                <string>SPIERSeditIcon.icns</string>
-                <key>CFBundleTypeRole</key>
-                <string>Editor</string>
-                <key>CFBundleTypeExtensions</key>
-                <array>
-                    <string>spe</string>
-                </array>
-                <key>CFBundleTypeMIMETypes</key>
-                <string>application/octet-stream</string>
-                <key>LSItemContentTypes</key>
-                <array>
-                    <string>com.palaeoware.spiers.spe</string>
-                </array>
-                <key>LSHandlerRank</key>
-                <string>Owner</string>
-            </dict>
+                <dict>
+                        <key>CFBundleTypeName</key>
+                        <string>SPIERSedit</string>
+                        <key>CFBundleTypeIconFile</key>
+                        <string>SPIERSeditIcon.icns</string>
+                        <key>CFBundleTypeRole</key>
+                        <string>Editor</string>
+                        <key>CFBundleTypeMIMETypes</key>
+                        <string>application/octet-stream</string>
+                        <key>LSItemContentTypes</key>
+                        <array>
+                                <string>com.palaeoware.spiers.spe</string>
+                        </array>
+                        <key>LSHandlerRank</key>
+                        <string>Owner</string>
+                </dict>
         </array>
-
         <key>UTExportedTypeDeclarations</key>
         <array>
-            <dict>
-                <key>UTTypeIdentifier</key>
-                <string>com.palaeoware.spiers.spe</string>
-                <key>UTTypeTagSpecifications</key>
                 <dict>
-                    <key>public.filename-extension</key>
-                    <array>
-                        <string>spe</string>
-                    </array>
+                        <key>UTTypeIdentifier</key>
+                        <string>com.palaeoware.spiers.spe</string>
+                        <key>UTTypeTagSpecification</key>
+                        <dict>
+                                <key>public.filename-extension</key>
+                                <array>
+                                        <string>spe</string>
+                                </array>
+                        </dict>
+                        <key>UTTypeConformsTo</key>
+                        <array>
+                                <string>public.data</string>
+                        </array>
+                        <key>UTTypeDescription</key>
+                        <string>SPIERSedit file</string>
+                        <key>UTTypeIconFile</key>
+                        <string>SPIERSeditIcon.icns</string>
                 </dict>
-                <key>UTTypeConformsTo</key>
-                <array>
-                    <string>public.data</string>
-                </array>
-                <key>UTTypeDescription</key>
-                <string>SPIERSedit file</string>
-                <key>UTTypeIconFile</key>
-                <string>SPIERSeditIcon.icns</string>
-            </dict>
         </array>
-    </dict>
+</dict>
 </plist>
-

@@ -1,150 +1,131 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-    <dict>
+<dict>
         <key>CFBundleExecutable</key>
         <string>SPIERSview64</string>
-
         <key>CFBundleIconFile</key>
         <string>SPIERSviewIcon.icns</string>
-
         <key>CFBundleIdentifier</key>
         <string>com.palaeoware.spiers.view</string>
-
         <key>CFBundlePackageType</key>
         <string>APPL</string>
-
         <key>CFBundleSignature</key>
         <string>????</string>
-
         <key>CFBundleVersion</key>
         <string>3.1.2</string>
-
         <key>CFBundleSpokenName</key>
         <string>Spiers View</string>
-
         <key>CFBundleInfoDictionaryVersion</key>
         <string>6.0</string>
-
         <key>LSMinimumSystemVersion</key>
         <string>10.13</string>
-
         <key>NSPrincipalClass</key>
         <string>NSApplication</string>
-
         <key>NSSupportsAutomaticGraphicsSwitching</key>
         <true/>
-
         <key>CFBundleDocumentTypes</key>
         <array>
-            <dict>
-                <key>CFBundleTypeName</key>
-                <string>SPIERSview</string>
-                <key>CFBundleTypeIconFile</key>
-                <string>SPIERSviewIcon.icns</string>
-                <key>CFBundleTypeRole</key>
-                <string>Editor</string>
-                <key>CFBundleTypeExtensions</key>
-                <array>
-                    <string>spv</string>
-                    <string>vaxml</string>
-                    <string>spvf</string>
-                    <string>sp2</string>
-                </array>
-                <key>CFBundleTypeMIMETypes</key>
-                <string>application/octet-stream</string>
-                <key>LSItemContentTypes</key>
-                <array>
-                    <string>com.palaeoware.spiers.spv</string>
-                    <string>com.palaeoware.spiers.spv2</string>
-                    <string>com.palaeoware.spiers.spvf</string>
-                    <string>com.palaeoware.spiers.vaxml</string>
-                </array>
-                <key>LSHandlerRank</key>
-                <string>Owner</string>
-            </dict>
+                <dict>
+                        <key>CFBundleTypeName</key>
+                        <string>SPIERSview</string>
+                        <key>CFBundleTypeIconFile</key>
+                        <string>SPIERSviewIcon.icns</string>
+                        <key>CFBundleTypeRole</key>
+                        <string>Editor</string>
+                        <key>CFBundleTypeMIMETypes</key>
+                        <string>application/octet-stream</string>
+                        <key>LSItemContentTypes</key>
+                        <array>
+                                <string>com.palaeoware.spiers.spv</string>
+                                <string>com.palaeoware.spiers.spv2</string>
+                                <string>com.palaeoware.spiers.spvf</string>
+                                <string>com.palaeoware.spiers.vaxml</string>
+                        </array>
+                        <key>LSHandlerRank</key>
+                        <string>Owner</string>
+                </dict>
         </array>
-
         <key>UTExportedTypeDeclarations</key>
         <array>
-            <dict>
-                <key>UTTypeIdentifier</key>
-                <string>com.palaeoware.spiers.spv</string>
-                <key>UTTypeTagSpecifications</key>
                 <dict>
-                    <key>public.filename-extension</key>
-                    <array>
-                        <string>spv</string>
-                    </array>
+                        <key>UTTypeIdentifier</key>
+                        <string>com.palaeoware.spiers.spv</string>
+                        <key>UTTypeTagSpecification</key>
+                        <dict>
+                                <key>public.filename-extension</key>
+                                <array>
+                                        <string>spv</string>
+                                </array>
+                        </dict>
+                        <key>UTTypeConformsTo</key>
+                        <array>
+                                <string>public.data</string>
+                        </array>
+                        <key>UTTypeDescription</key>
+                        <string>SPIERSview file</string>
+                        <key>UTTypeIconFile</key>
+                        <string>SPIERSviewIcon.icns</string>
                 </dict>
-                <key>UTTypeConformsTo</key>
-                <array>
-                    <string>public.data</string>
-                </array>
-                <key>UTTypeDescription</key>
-                <string>SPIERSview file</string>
-                <key>UTTypeIconFile</key>
-                <string>SPIERSviewIcon.icns</string>
-            </dict>
-            <dict>
-                <key>UTTypeIdentifier</key>
-                <string>com.palaeoware.spiers.spv2</string>
-                <key>UTTypeTagSpecifications</key>
                 <dict>
-                    <key>public.filename-extension</key>
-                    <array>
-                        <string>sp2</string>
-                    </array>
+                        <key>UTTypeIdentifier</key>
+                        <string>com.palaeoware.spiers.spv2</string>
+                        <key>UTTypeTagSpecification</key>
+                        <dict>
+                                <key>public.filename-extension</key>
+                                <array>
+                                        <string>sp2</string>
+                                </array>
+                        </dict>
+                        <key>UTTypeConformsTo</key>
+                        <array>
+                                <string>public.data</string>
+                        </array>
+                        <key>UTTypeDescription</key>
+                        <string>SPIERSview (v2) file</string>
+                        <key>UTTypeIconFile</key>
+                        <string>SPIERSviewIcon.icns</string>
                 </dict>
-                <key>UTTypeConformsTo</key>
-                <array>
-                    <string>public.data</string>
-                </array>
-                <key>UTTypeDescription</key>
-                <string>SPIERSview (v2) file</string>
-                <key>UTTypeIconFile</key>
-                <string>SPIERSviewIcon.icns</string>
-            </dict>
-            <dict>
-                <key>UTTypeIdentifier</key>
-                <string>com.palaeoware.spiers.spvf</string>
-                <key>UTTypeTagSpecifications</key>
                 <dict>
-                    <key>public.filename-extension</key>
-                    <array>
-                        <string>spvf</string>
-                    </array>
+                        <key>UTTypeIdentifier</key>
+                        <string>com.palaeoware.spiers.spvf</string>
+                        <key>UTTypeTagSpecification</key>
+                        <dict>
+                                <key>public.filename-extension</key>
+                                <array>
+                                        <string>spvf</string>
+                                </array>
+                        </dict>
+                        <key>UTTypeConformsTo</key>
+                        <array>
+                                <string>public.data</string>
+                        </array>
+                        <key>UTTypeDescription</key>
+                        <string>SPIERSview (finalised) file</string>
+                        <key>UTTypeIconFile</key>
+                        <string>SPIERSviewIcon.icns</string>
                 </dict>
-                <key>UTTypeConformsTo</key>
-                <array>
-                    <string>public.data</string>
-                </array>
-                <key>UTTypeDescription</key>
-                <string>SPIERSview (finalised) file</string>
-                <key>UTTypeIconFile</key>
-                <string>SPIERSviewIcon.icns</string>
-            </dict>
-            <dict>
-                <key>UTTypeIdentifier</key>
-                <string>com.palaeoware.spiers.vaxml</string>
-                <key>UTTypeTagSpecifications</key>
                 <dict>
-                    <key>public.filename-extension</key>
-                    <array>
-                        <string>vaxml</string>
-                    </array>
+                        <key>UTTypeIdentifier</key>
+                        <string>com.palaeoware.spiers.vaxml</string>
+                        <key>UTTypeTagSpecification</key>
+                        <dict>
+                                <key>public.filename-extension</key>
+                                <array>
+                                        <string>vaxml</string>
+                                </array>
+                        </dict>
+                        <key>UTTypeConformsTo</key>
+                        <array>
+                                <string>public.xml</string>
+                        </array>
+                        <key>UTTypeDescription</key>
+                        <string>SPIERSview VAXML file</string>
+                        <key>UTTypeIconFile</key>
+                        <string>SPIERSviewIcon.icns</string>
+                        <key>UTTypeReferenceURL</key>
+                        <string>https://spiers-software.org/vaxml.html</string>
                 </dict>
-                <key>UTTypeConformsTo</key>
-                <array>
-                    <string>public.xml</string>
-                </array>
-                <key>UTTypeDescription</key>
-                <string>SPIERSview VAXML file</string>
-                <key>UTTypeIconFile</key>
-                <string>SPIERSviewIcon.icns</string>
-                <key>UTTypeReferenceURL</key>
-                <string>https://spiers-software.org/vaxml.html</string>
-            </dict>
         </array>
-    </dict>
+</dict>
 </plist>
