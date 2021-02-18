@@ -10,9 +10,9 @@ Welcome to SPIERSview's User Manual
 
 **Main Coding:** Mark Sutton
 
-**Additional Coding:** Russell Garwood, Alan R.T. Spencer
+**Additional Coding:** Russell J. Garwood, Alan R.T. Spencer
 
-**Documentation:** Mark Sutton, Russell Garwood, Alan R.T. Spencer
+**Documentation:** Mark Sutton, Russell J. Garwood, Alan R.T. Spencer
 
 SPIERSview is a stand-alone program for viewing and manipulating of
 three-dimensional models. It understands five different file formats,
