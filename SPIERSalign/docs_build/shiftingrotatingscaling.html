@@ -1,0 +1,259 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>11. Shifting, Rotating, And Scaling Images &mdash; SPIERSalign 3.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="12. Panels" href="panels.html" />
+    <link rel="prev" title="10. Zooming the Image" href="zooming.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> SPIERSalign
+          
+
+          
+            
+            <img src="_static/SPIERS.jpg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">2. Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="whatspiersalignproduces.html">3. What SPIERSalign Produces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interface.html">4. Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basicaligningprocedure.html">5. Basic Aligning Procedure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usingctdata.html">6. Using SPIERSalign With CT Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="startingspiersalign.html">7. Starting SPIERSalign</a></li>
+<li class="toctree-l1"><a class="reference internal" href="savingexitingrestarting.html">8. Saving, Exiting, and Restarting a SPIERSalign Session</a></li>
+<li class="toctree-l1"><a class="reference internal" href="navigatingdatasets.html">9. Navigating Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zooming.html">10. Zooming the Image</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">11. Shifting, Rotating, And Scaling Images</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#shifting">11.1. Shifting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rotating">11.2. Rotating</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scaling">11.3. Scaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reset">11.4. Reset</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="panels.html">12. Panels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="automatedalignment.html">13. Automated Alignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advancednavigation.html">14. Advanced Navigation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advancedsettings.html">15. Advanced Settings File Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="updatesystem.html">16. Update System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="keyboardreference.html">17. Keyboard Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SPIERSalign</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>11. Shifting, Rotating, And Scaling Images</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/shiftingrotatingscaling.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="shifting-rotating-and-scaling-images">
+<span id="shiftingrotatingscaling"></span><h1>11. Shifting, Rotating, And Scaling Images<a class="headerlink" href="#shifting-rotating-and-scaling-images" title="Permalink to this headline">¶</a></h1>
+<p>Registration work consists of moving images so they line up properly; this is done by Shifting, Rotating and Scaling. Commands to do this exist on the <em>Transform</em> menu, though normally the keyboard shortcuts (given below and on the menu) should be used rather than the menu commands.</p>
+<div class="section" id="shifting">
+<h2>11.1. Shifting<a class="headerlink" href="#shifting" title="Permalink to this headline">¶</a></h2>
+<p>Each individual image can be shifted (moved) left, right, up or down by using the arrow keys. By default a single key press will move the image by one pixel. Pressing <em>Ctrl</em> and the arrow key will move the image by half a pixel. <em>Ctrl + Shift</em> an arrow key will move it ten pixels.</p>
+</div>
+<div class="section" id="rotating">
+<h2>11.2. Rotating<a class="headerlink" href="#rotating" title="Permalink to this headline">¶</a></h2>
+<p>Each individual image can also be rotated about its centre either clockwise or anticlockwise. To rotate use either ‘0’ (1° clockwise) or ‘1’ (1° anticlockwise). Using <em>Ctrl</em> and these keys will rotate by 0.1°, and <em>Crtl + shift</em> will make the rotation 10°.</p>
+</div>
+<div class="section" id="scaling">
+<h2>11.3. Scaling<a class="headerlink" href="#scaling" title="Permalink to this headline">¶</a></h2>
+<p>Each individual image can be rescaled (made larger or smaller). Ideal datasets should not need scale correction, but in the experience of the authors small scale errors of the order of 1% often occur in some forms of data. Normally the image should be rotated and shifted first, and only then rescaled if it is clear that this is necessary. To increase the size of the image use ‘]’. To decrease it, use ‘[‘. Again, <em>Ctrl</em> will rescale by a smaller factor, and <em>Ctrl-Shift</em> by a larger one.</p>
+</div>
+<div class="section" id="reset">
+<h2>11.4. Reset<a class="headerlink" href="#reset" title="Permalink to this headline">¶</a></h2>
+<p>The Reset Image command on the Transform menu (Ctrl-Shift-Z) resets all rotate, scale and shift operations on the current image. A Reset Image button can also be found on the Auto Align panel (see below). A Reset Scroll Bars around Current Image command is also provided, which may be useful in datasets comprising numerous resolutions; if used frequently this may impede alignment by hampering comparison between slices.</p>
+<p><em>Note: The resampling process involved in rotating/scaling/sub-pixel shifting images will produce slight blurring. This is unavoidable, and is very unlikely to cause a problem. However, repeated rotating, scaling etc. of a single image can in theory cause a build-up of this blur effect. SPIERSalign normally avoids this problem; every time a rotate, scale or shift is performed the program goes back to the original image and does a single operation combining all rotates/scales/shifts specified so far. However, once a cropped dataset has been created (see below) the changes are permanently applied to these images. For this reason, it is NOT good practice to realign images in a dataset which has already been cropped – this may result in some images being rotated/scaled/shifted twice, introducing more substantial blurring. If a user feels that they may want to go back to a dataset to re-align it, compress it and then if necessary reload the settings file. Note that this does not apply to whole-pixel shifting (using the arrow keys), which does not introduce any blur and can be done as often as required.</em></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="panels.html" class="btn btn-neutral float-right" title="12. Panels" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="zooming.html" class="btn btn-neutral float-left" title="10. Zooming the Image" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2018-2021, Russell Garwood, Mark Sutton, Alan R.T. Spencer
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

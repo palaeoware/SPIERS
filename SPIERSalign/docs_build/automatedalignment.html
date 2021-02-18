@@ -1,0 +1,259 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>13. Automated Alignment &mdash; SPIERSalign 3.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="14. Advanced Navigation" href="advancednavigation.html" />
+    <link rel="prev" title="12. Panels" href="panels.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> SPIERSalign
+          
+
+          
+            
+            <img src="_static/SPIERS.jpg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">2. Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="whatspiersalignproduces.html">3. What SPIERSalign Produces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interface.html">4. Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basicaligningprocedure.html">5. Basic Aligning Procedure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usingctdata.html">6. Using SPIERSalign With CT Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="startingspiersalign.html">7. Starting SPIERSalign</a></li>
+<li class="toctree-l1"><a class="reference internal" href="savingexitingrestarting.html">8. Saving, Exiting, and Restarting a SPIERSalign Session</a></li>
+<li class="toctree-l1"><a class="reference internal" href="navigatingdatasets.html">9. Navigating Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zooming.html">10. Zooming the Image</a></li>
+<li class="toctree-l1"><a class="reference internal" href="shiftingrotatingscaling.html">11. Shifting, Rotating, And Scaling Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="panels.html">12. Panels</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">13. Automated Alignment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#semi-automated-align">13.1. Semi-automated Align</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#true-automated-align-auto-align">13.2. True Automated Align (Auto Align)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="advancednavigation.html">14. Advanced Navigation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advancedsettings.html">15. Advanced Settings File Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="updatesystem.html">16. Update System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="keyboardreference.html">17. Keyboard Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SPIERSalign</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>13. Automated Alignment</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/automatedalignment.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="automated-alignment">
+<span id="automatedalignment"></span><h1>13. Automated Alignment<a class="headerlink" href="#automated-alignment" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="semi-automated-align">
+<h2>13.1. Semi-automated Align<a class="headerlink" href="#semi-automated-align" title="Permalink to this headline">¶</a></h2>
+<p>The <em>Semi-automated Align</em>, or automated markers system is a fast way of aligning images using the markers system. To do this markers should be placed to pick out fiduciary markings and features of interest, as outlined above, on the datum image. Automated markers should then be toggled by clicking the <em>Auto Markers</em> button in the <em>Markers</em> panel. This places a grid over the markers and underlying images (Fig. 4A). The user can then navigate through the dataset. When viewing an image requiring alignment, clicking and dragging the mouse can manipulate the automarker grid. Dragging the corners will rotate the grid, and anywhere near the centre will physically drag it (Fig. 4B). The markers will be move with the grid, allowing them to be aligned with the features of interest or fiduciary marks in the underlying image. When the markers lie in the correct position relative to the fossil, the button <em>AM:Align</em> (keyboard shortcut Alt-A) aligns the slice (Fig. 4C). This is done by returning the grid and markers to their original positions – which were defined on the datum image – and applying the same ‘correcting’ transformation to the current image. This process can then be repeated moving through the dataset.</p>
+<p>Semi-automated alignment is best suited to datasets with drilled fiduciary holes or no fiduciary features; markers can be placed over each hole or parts of the specimen and the slice corrected; an entire dataset can be rapidly in this way, although subsequent finer adjustments are likely to be required.</p>
+<div class="figure align-center" id="id1">
+<img alt="_images/figure_4.png" src="_images/figure_4.png" />
+<p class="caption"><span class="caption-text">Figure 4. The default user interface of SPIERSalign with semi-automated alignment toggled. Note the grid in addition to the markers; this is shown superimposed on the reference tomogram. B. An unaligned tomogram, with the grid rotated (white arrow) to align the markers with the boundaries of the fossil. C. The same tomogram, aligned by resetting the grid and transforming the underlying image.</span></p>
+</div>
+<p>Clicking <em>AM:Edit Grid</em> in the <em>Markers</em> panel allows the user to change the size, position and line thickness of the grid, in addition to the number of cells. Clicking the <em>Auto Markers</em> button in the <em>Markers</em> panel will turn off automated markers, allowing markers to be readjusted and used as usual. While using <em>Auto Markers</em> it is not possible to add or remove, or adjust the position, colour thickness or shape of the markers.</p>
+</div>
+<div class="section" id="true-automated-align-auto-align">
+<h2>13.2. True Automated Align (Auto Align)<a class="headerlink" href="#true-automated-align-auto-align" title="Permalink to this headline">¶</a></h2>
+<p>SPIERSalign provides a facility for the automated alignment of images based upon straight edges within the image. This algorithm will only work on datasets which possess two non-parallel fiduciary edges throughout the zone to be aligned. The system has its own panel (<em>Auto Align</em>, F3) showing the options for auto aligning - the panel should open in the left docking area when a dataset is loaded. Before alignment can occur, the user should click the <em>Setup</em> button; this displays two boxes on the image, one horizontal and one vertical. These should be placed over the edges upon on which the alignment is to be performed by resizing, dragging and rotating the boxes. These ‘edge zones’ should cover as much of the fiduciary edges as possible, on every image to be aligned, but without overshooting the edge on any image. Neither box should be rotated more than sixty degrees from their original position. They can go over the edge of the image (i.e. the top, bottom left or right boundary of the file) but should not be placed entirely off the image (Fig 5).</p>
+<div class="figure align-center" id="id2">
+<img alt="_images/figure_4.png" src="_images/figure_4.png" />
+<p class="caption"><span class="caption-text">Figure 5. Auto align in setup mode showing the correct placement of setup boxes.</span></p>
+</div>
+<p>Once these zones are correctly positioned, the user can exit by clicking setup again. An instruction box will appear, explaining the next steps and giving the option of a <em>Verbose Mode</em>. This is usually not necessary – if chosen it will display the line equations for the detected edges on both datum and subsequent images, and the required adjustment of the current image. The user can then highlight the slices to be aligned in the <em>Auto Align</em> selection box. <em>Clicking Align</em> in the <em>Auto Align</em> panel will then align selected slices against the currently displayed, datum image. Often the setup boxes will have to be quite large on the initial align to satisfy the conditions above, providing sub-optimal aligning. <em>Auto Align</em> can be run repeatedly, however, with increasingly tighter setup boxes around the fiduciary edges. This will allow a more accurate alignment, and can align many datasets so they only need minor corrections after three such iterations.</p>
+<p>This algorithm only works on straight edges (more details on how it works are available: <a class="reference external" href="https://spiral.imperial.ac.uk/handle/10044/1/6334">https://spiral.imperial.ac.uk/handle/10044/1/6334</a>). It does not take into account any scale errors in images. If any of the images are very poorly aligned, the <em>Reset Image</em> button will return the image to its original position. Very noisy images could hinder its performance, as can poorly positioned setup boxes – i.e. those which feature a large area without an edge, and those at a low angle to each other.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="advancednavigation.html" class="btn btn-neutral float-right" title="14. Advanced Navigation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="panels.html" class="btn btn-neutral float-left" title="12. Panels" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2018-2021, Russell Garwood, Mark Sutton, Alan R.T. Spencer
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
