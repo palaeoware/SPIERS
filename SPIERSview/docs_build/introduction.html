@@ -1,0 +1,271 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>1. Introduction and File Formats &mdash; SPIERSview 3.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="2. System Requirements and Triangle Count" href="requirements.html" />
+    <link rel="prev" title="Welcome to SPIERSview’s User Manual" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> SPIERSview
+          
+
+          
+            
+            <img src="_static/SPIERS.jpg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">1. Introduction and File Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">2. System Requirements and Triangle Count</a></li>
+<li class="toctree-l1"><a class="reference internal" href="startingspiersview.html">3. Starting SPIERSview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basicviewing.html">4. Basic viewing and manipulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="antialiasing.html">5. Anti-aliasing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="objectpannel.html">6. Object Panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advobjectproperties.html">7. Advanced Object properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manipulatingobjectsindependently.html">8. Manipulating objects independently</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multipiecedatasets.html">9. Multi-piece datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clippingpanel.html">10. Clipping panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="infopanel.html">11. Info panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="savingexporting.html">12. Saving and exporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animationsystem.html">13. Animation System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scale.html">14. Scale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="updatesystem.html">15. Update system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendixavtkusage.html">16. Appendix A – VTK Usage</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SPIERSview</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>1. Introduction and File Formats</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/introduction.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="introduction-and-file-formats">
+<span id="introduction"></span><h1>1. Introduction and File Formats<a class="headerlink" href="#introduction-and-file-formats" title="Permalink to this headline">¶</a></h1>
+<p>SPIERSview is a stand-alone program for viewing and manipulating of
+three-dimensional models. It understands five different file formats,
+the first four of which it can also output:</p>
+<p>1. <em>Compact SPIERSview files (.spv file extension).</em> These are very
+small in size and intended as a practical way of distributing models
+over the internet; they can however take a long while to load as the
+software must compute isosurfaces for all objects. SPIERSedit generates
+files in this format.</p>
+<p>2. <em>Presurfaced SPIERSview files (.spv file extension).</em> Presurfaced spv
+files allow SPIERSview to skip computation isosurfaces on loading; they
+hence normally load substantially quicker. They are, however, typically
+around an order of magnitude larger than compact files, and are hence
+impractical for moving over the internet. Presurfaced files are
+generated by SPIERSview itself.</p>
+<p>3. <em>Finalised SPIERSview files (.spvf file extension).</em> Finalised files
+load very quickly, but are even larger than presurfaced files. They are
+‘locked’; when a user loads a finalised file, SPIERSview enters a
+stripped-down view-only mode (<em>finalised/VAXML mode</em>), in which the
+model cannot be altered. Use finalised files to produce ‘finished’
+versions of models for viewing by other workers, or as teaching tools.</p>
+<p>4. <em>VAXML datasets</em> (<em>.vaxml extension</em>). VAXML (Virtual Anatomy XML) is
+intended as a simple interchange format for virtual anatomy
+(palaeontological or biogical) datasets. VAXML datasets use one or more
+STL or PLY files to define the geometry of objects that comprise the
+dataset, together with one VAXML file that provides data on the dataset
+as a whole, and specifies how the STL or PLY files are to be assembled.
+If PLY files are used, geometries incorporating surface colour
+information (e.g. from laser scanners) can be imported. SPIERSview can
+generate VAXML/STL datasets from compact or presurfaced SPIERSview files
+(.spv extension). SPIERSview loads VAXML datasets in the same
+stripped-down view-only mode (<em>finalised/VAXML</em> mode) as it uses for
+finalised files (.spvf); the latter are little more than combined and
+compressed combinations of a VAXML file and STL object geometries.</p>
+<p>5. <em>SPIERSview metafiles (.sp2 extension).</em> These are a legacy mechanism
+from earlier versions of SPIERSview for combining .spv files together;
+while SPIERSview can still read them, no currently maintained software
+generates them.</p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="requirements.html" class="btn btn-neutral float-right" title="2. System Requirements and Triangle Count" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to SPIERSview’s User Manual" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2018-2019,  Mark Sutton, Russell J. Garwood, Alan R.T. Spencer
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

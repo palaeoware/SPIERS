@@ -1,0 +1,262 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>11. Info panel &mdash; SPIERSview 3.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="12. Saving and exporting" href="savingexporting.html" />
+    <link rel="prev" title="10. Clipping panel" href="clippingpanel.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> SPIERSview
+          
+
+          
+            
+            <img src="_static/SPIERS.jpg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">1. Introduction and File Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">2. System Requirements and Triangle Count</a></li>
+<li class="toctree-l1"><a class="reference internal" href="startingspiersview.html">3. Starting SPIERSview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basicviewing.html">4. Basic viewing and manipulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="antialiasing.html">5. Anti-aliasing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="objectpannel.html">6. Object Panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advobjectproperties.html">7. Advanced Object properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manipulatingobjectsindependently.html">8. Manipulating objects independently</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multipiecedatasets.html">9. Multi-piece datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clippingpanel.html">10. Clipping panel</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">11. Info panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="savingexporting.html">12. Saving and exporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animationsystem.html">13. Animation System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scale.html">14. Scale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="updatesystem.html">15. Update system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendixavtkusage.html">16. Appendix A – VTK Usage</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SPIERSview</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>11. Info panel</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/infopanel.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="info-panel">
+<span id="infopanel"></span><h1>11. Info panel<a class="headerlink" href="#info-panel" title="Permalink to this headline">¶</a></h1>
+<p>SPIERSview allows models to be supplemented by textual metadata, viewed
+and input through the <em>Info panel</em> (see Fig. 3). This data is broken
+into the following headings: <em>Title</em> (A title for the model – this will
+appear in the title bar of the SPIERSview window)<em>, Classification,
+Authors</em> (intended as authors of this model)<em>, References</em> (either to
+papers or URLs to web resources)<em>, Specimen</em> (Specimen numbers
+etc)<em>, Provenance</em> (where specimen is from, including geological age
+if applicable) and <em>Comments</em> (for miscellaneous notes not falling into
+above categories, including copyright messages). Each of these
+categories can have none, one or more textual notes contained within it,
+the exception being Title which can have at most one. Classification
+also differs in that items consist of two parts, a rank (e.g. Genus) and
+a name (e.g. <em>Homo</em>), which are input separately.</p>
+<div class="figure align-center" id="id1">
+<img alt="_images/figure_4.png" src="_images/figure_4.png" />
+<p class="caption"><span class="caption-text">Figure 4. Default anatomy of the SPIERSview info pannel</span></p>
+</div>
+<p>The upper window of the the Info panel, is known as the <em>Info items</em>
+window. It lists these categories, and if any contain data, these are
+listed subsidiary to the category as items (you will need to expand the
+category to view them). To view the data in a category simply select it:
+all items will then be displayed in order in the lower <em>Info detail</em>
+window of the panel.</p>
+<p>Items can be added by double-clicking on the category heading in the
+<em>Info items</em> window, deleted by selecting the item in <em>Info items</em> then
+using the delete key, or edited by double-clicking on the item itself.
+Attempting to delete a category will delete all items within it, but
+will not remove the category heading.</p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="savingexporting.html" class="btn btn-neutral float-right" title="12. Saving and exporting" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="clippingpanel.html" class="btn btn-neutral float-left" title="10. Clipping panel" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2018-2019,  Mark Sutton, Russell J. Garwood, Alan R.T. Spencer
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,295 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>6. Object Panel &mdash; SPIERSview 3.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="7. Advanced Object properties" href="advobjectproperties.html" />
+    <link rel="prev" title="5. Anti-aliasing" href="antialiasing.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> SPIERSview
+          
+
+          
+            
+            <img src="_static/SPIERS.jpg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">1. Introduction and File Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">2. System Requirements and Triangle Count</a></li>
+<li class="toctree-l1"><a class="reference internal" href="startingspiersview.html">3. Starting SPIERSview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basicviewing.html">4. Basic viewing and manipulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="antialiasing.html">5. Anti-aliasing</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">6. Object Panel</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#groups">6.1. Groups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#position-in-object-panel">6.2. Position in object panel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#object-properties">6.3. Object properties</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="advobjectproperties.html">7. Advanced Object properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manipulatingobjectsindependently.html">8. Manipulating objects independently</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multipiecedatasets.html">9. Multi-piece datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clippingpanel.html">10. Clipping panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="infopanel.html">11. Info panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="savingexporting.html">12. Saving and exporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animationsystem.html">13. Animation System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scale.html">14. Scale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="updatesystem.html">15. Update system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendixavtkusage.html">16. Appendix A – VTK Usage</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SPIERSview</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>6. Object Panel</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/objectpannel.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="object-panel">
+<span id="objectpannel"></span><h1>6. Object Panel<a class="headerlink" href="#object-panel" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="groups">
+<h2>6.1. Groups<a class="headerlink" href="#groups" title="Permalink to this headline">¶</a></h2>
+<p>Objects can be combined into groups; groups can also exist as subgroups
+within other groups (see Fig. 2), enabling the user to build up a
+hierarchy of objects to describe an anatomy. For instance, an arthropod
+model might include a group called ‘appendages’ – this in turn might
+include a subgroup called ‘cephalic’ appendages, which might in turn
+include a ‘mandibles’ group, consisting of a left and right mandible.
+Object grouping not only provides a convenient way to explain
+relationships, but also allows visiblity to be controlled for sets of
+objects – in the above example for instance a key could be assigned to
+the appendages group, allowing the entire appendage set to be quickly
+hidden or shown.</p>
+<p>Groups are indicated in the panel in a standard way (Fig. 2); they can
+be expanded or collapsed to show their contents. Groups only have two
+properties; their shortcut key, and their visibility.</p>
+<p>Groups are created by selecting a number of objects and using the
+<em>Group</em> command (Ctrl-G) on the <em>Objects</em> menu. You should normally
+rename groups after creating them. Groups are removed by selecting the
+group and using the <em>Ungroup</em> command (Ctrl-G) on the <em>Objects</em> menu.
+Selecting objects and using the <em>Ungroup</em> command will remove them from
+the group they are currently in. You can also move an object into an
+existing group with the <em>Move To Group</em> command (Ctrl-G) on the
+<em>Objects</em> menu.</p>
+<div class="figure align-center" id="id1">
+<img alt="_images/figure_2.png" src="_images/figure_2.png" />
+<p class="caption"><span class="caption-text">Figure 2. Default anatomy of a SPIERSview object pannel</span></p>
+</div>
+<p>Turning visibility off for a group does not alter the individual
+visibiity settings of contained objects (or groups), but overrides them
+so they are all hidden. In Figure 2 for instance, all objects in the
+‘Trunk Apps’ group are currently invisible (whatever their individual
+visibility setting), as this group is set to invisible. Once visibililty
+is turned on again for the parent group, the individual visibility
+settings of its contained objects (or groups) are used again.</p>
+</div>
+<div class="section" id="position-in-object-panel">
+<h2>6.2. Position in object panel<a class="headerlink" href="#position-in-object-panel" title="Permalink to this headline">¶</a></h2>
+<p>Objects (and groups) can be moved up and down the list in the objects
+panel using the <em>Move Up</em> and <em>Move Down</em> commands (F12 and F11
+respectively) on the <em>Objects</em> menu. These changes affect only the
+panel, and have no effect on the way the model is displayed.</p>
+</div>
+<div class="section" id="object-properties">
+<h2>6.3. Object properties<a class="headerlink" href="#object-properties" title="Permalink to this headline">¶</a></h2>
+<p>Objects listed in the object panel have seven properties detailed in
+columns to the right of the name (see Fig. 2; not all columns are
+visible at default panel size). The name (1st column), visibility
+(2nd column), shortcut key (3rd column) and display colour
+(4th column) are all modified simply by double-clicking. Note
+that display colour has no effect for VAXML/PLY datasets where the
+imported object has surface colour. The properties in the right hand
+five columns (Fidelity, Transparency, Island Reduction, Smoothing and
+Shininess) are set using commands on the object menu. Of these, only
+transparency and shininess are available in <em>Finalised/VAXML</em> mode.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="advobjectproperties.html" class="btn btn-neutral float-right" title="7. Advanced Object properties" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="antialiasing.html" class="btn btn-neutral float-left" title="5. Anti-aliasing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2018-2019,  Mark Sutton, Russell J. Garwood, Alan R.T. Spencer
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

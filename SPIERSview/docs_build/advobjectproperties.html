@@ -1,0 +1,352 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>7. Advanced Object properties &mdash; SPIERSview 3.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="8. Manipulating objects independently" href="manipulatingobjectsindependently.html" />
+    <link rel="prev" title="6. Object Panel" href="objectpannel.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> SPIERSview
+          
+
+          
+            
+            <img src="_static/SPIERS.jpg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">1. Introduction and File Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">2. System Requirements and Triangle Count</a></li>
+<li class="toctree-l1"><a class="reference internal" href="startingspiersview.html">3. Starting SPIERSview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basicviewing.html">4. Basic viewing and manipulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="antialiasing.html">5. Anti-aliasing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="objectpannel.html">6. Object Panel</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">7. Advanced Object properties</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#fidelity">7.1. Fidelity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#transparency">7.2. Transparency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#shininess">7.3. Shininess</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#island-removal">7.4. Island Removal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#smoothing">7.5. Smoothing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#resurfacing">7.6. Resurfacing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="manipulatingobjectsindependently.html">8. Manipulating objects independently</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multipiecedatasets.html">9. Multi-piece datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clippingpanel.html">10. Clipping panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="infopanel.html">11. Info panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="savingexporting.html">12. Saving and exporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animationsystem.html">13. Animation System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scale.html">14. Scale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="updatesystem.html">15. Update system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendixavtkusage.html">16. Appendix A – VTK Usage</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SPIERSview</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>7. Advanced Object properties</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/advobjectproperties.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="advanced-object-properties">
+<span id="advobjectproperties"></span><h1>7. Advanced Object properties<a class="headerlink" href="#advanced-object-properties" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="fidelity">
+<h2>7.1. Fidelity<a class="headerlink" href="#fidelity" title="Permalink to this headline">¶</a></h2>
+<p>SPIERSview can reduce the number of triangles in an object (referred to
+as its fidelity) using one of two algorithms (see below). Reducing
+triangle-count enables objects to display effectively on lower powered
+systems, and may also help when exporting geometries to other software.
+Fidelity reduction is however computationally expensive, ‘lossy’
+(resultant geometries will not be exactly the same as the original), and
+may require a large amount of system memory to perform successfully. To
+change fidelity select the objects to be affected, and use the ‘<em>Set
+Fidelity’</em> command in the <em>Objects</em> menu to enter a new value – a
+fidelity of 100% represents the original triangle count (no fidelity
+reduction). Objects will then need to be resurfaced (see below).</p>
+<p>By default fidelity-reduction uses a relatively fast and ‘safe’
+algorithm that is normally only able to reduce fidelity by up to 50% -
+settings lower than this will not always result in smaller models.
+Alternatively, a ‘Quadric’ fidelity-reduction algorithm is available,
+selected by ticking the so-named menu item in the Objects menu. This
+alternative algorithm is slower and more memory hungry (it may fail and
+crash for some very complex objects on systems with limited memory), but
+normally produces better results, especially at low fidelities.</p>
+<p>Fidelity reduction is not available in Finalised/VAXML mode.</p>
+<p>Fidelity reduction is performed before Island Removal or Smoothing</p>
+</div>
+<div class="section" id="transparency">
+<h2>7.2. Transparency<a class="headerlink" href="#transparency" title="Permalink to this headline">¶</a></h2>
+<p>SPIERSview can display objects in a translucent form; transparency is by
+default off, but can be set to one of four preset levels by selecting
+object(s) and using the <em>Transparency</em> commands in the <em>Objects</em> menu or
+their keyboard shortcuts (Ctrl-1 is ‘transparency off’, ctrl-2 through
+ctrl-5 are increasingly high levels of translucency). A facility is also
+provided, on the <em>Transparency</em> sub-menu of the <em>Objects</em> menu, to set a
+custom transparency level (0 is opaque, 99, almost transparent).</p>
+<p>Transparency is not easy to implement perfectly, and in all software the
+method used is a trade-off between speed and ‘correctness’. SPIERSview
+provides a relatively fast implementation that is normally sufficient,
+but can in some cases produce unexpected results, especially when
+viewing translucent objects through other translucent objects. If ‘true’
+transparency is required for publication-quality images, export of the
+model to another rendering package (e.g. a ray-tracer) is recommended.</p>
+<p>Changes to transparency do <em>not</em> require objects to be resurfaced (see
+below).</p>
+</div>
+<div class="section" id="shininess">
+<h2>7.3. Shininess<a class="headerlink" href="#shininess" title="Permalink to this headline">¶</a></h2>
+<p>As of version 2.20, SPIERSview renders objects using a ‘phong’ shading
+model, which approximates highlights and reflections from objects. These
+are visually appealing, and can assist in visualizing surface
+morphology. The shininess of objects can be set to one of four preset
+levels by selecting object(s) and using the <em>Shininess</em> sub-menu in the
+<em>Objects</em> menu; levels are ‘Off’, ‘Less’, ‘Default’ and ‘Full’. If more
+precise control is required, a custom shininess level can also be set
+using the appropriate command in the <em>Shininess</em> sub-menu ; values range
+from 0 (Matte, Off) to 100 (equivalent to ‘Full’).</p>
+<p>Changes to shininess do <em>not</em> require objects to be resurfaced (see
+below).</p>
+</div>
+<div class="section" id="island-removal">
+<h2>7.4. Island Removal<a class="headerlink" href="#island-removal" title="Permalink to this headline">¶</a></h2>
+<p>SPIERSview provides a filter to remove ‘islands’ from data – islands are
+groups of triangles not connected with the main object, which often
+represent noise. Island removal level is set using the commands of the
+<em>Island removal</em> sub-menu on the <em>Objects</em> menu. It can either be off
+(the default), ‘all’ (where all islands of triangles not connected to
+the largest object are removed), or one of four intermediate settings
+where increasingly large islands are removed. A custom island-removal
+level can also be specified using the appropriate command on the <em>Island
+removal</em> sub-menu; here the user specifies a minimum size (in triangles)
+for islands; all smaller are removed. Note that it is possible to remove
+all islands, including the largest, by specifying too high a threshold.</p>
+<p>Island removal can be slow and memory hungry; it may fail for some very
+complex objects on systems with limited memory. Note that the remove
+‘all’ option is usually faster and less demanding on the system than the
+intermediate options. Objects will need to be resurfaced (see below)
+after changes are made to Island Removal settings.</p>
+<p>Island removal is not available in Finalised/VAXML mode.</p>
+<p>Island removal is performed after fidelity reduction but before
+smoothing.</p>
+</div>
+<div class="section" id="smoothing">
+<h2>7.5. Smoothing<a class="headerlink" href="#smoothing" title="Permalink to this headline">¶</a></h2>
+<p>Surfaces created by SPIERSview as isosurface from slice-based
+(tomographic) data may be rather ‘blocky’. A smoothing filter may be
+applied to smooth out blockiness artefacts and other fine-scale noise,
+providing what is hopefully a better approximation to an original
+biological surface; excessive smoothing can however modify the geometry
+in unhelpful ways, and hence it should always be used with care.
+Smoothing is by default off for all objects, but the degree applied is
+set using the commands of the <em>Smoothing</em> sub-menu on the <em>Objects</em>
+menu. Seven levels, from ‘off’ to ‘strongest’ are available; the
+stronger the smoothing the slower the process will be. A custom
+smoothing level can also be specified using the appropriate command on
+the <em>Smoothing</em> sub-menu; here the user specifies the number of
+iterations of the smoothing algorithm; the equivalent to ‘strongest’ is
+100, but higher values can be specified if desired.</p>
+<p>Smoothing is not available in Finalised/VAXML mode.</p>
+<p>Smoothing is performed after both fidelity reduction and island removal.</p>
+</div>
+<div class="section" id="resurfacing">
+<h2>7.6. Resurfacing<a class="headerlink" href="#resurfacing" title="Permalink to this headline">¶</a></h2>
+<p>Changes to smoothing, island removal or fidelity can be time consuming,
+and are hence not applied immediately. To manually apply changes and
+force recalculation of objects with new settings, use the <em>Resurface
+Now</em> command on the <em>View</em> menu (F5). This approach is used to save
+time; resurfacing can be slow, and typically a user will want to change
+several settings before triggering a resurface. Alternatively, an
+<em>Auto-Resurface</em> mode is provided (<em>Mode</em> Menu, Shift-F5), turned off by
+default; with this mode enabled resurfacing is triggered after every
+change to smoothing, island removal or fidelity.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="manipulatingobjectsindependently.html" class="btn btn-neutral float-right" title="8. Manipulating objects independently" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="objectpannel.html" class="btn btn-neutral float-left" title="6. Object Panel" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2018-2019,  Mark Sutton, Russell J. Garwood, Alan R.T. Spencer
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

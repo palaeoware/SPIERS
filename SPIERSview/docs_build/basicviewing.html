@@ -1,0 +1,385 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>4. Basic viewing and manipulation &mdash; SPIERSview 3.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="5. Anti-aliasing" href="antialiasing.html" />
+    <link rel="prev" title="3. Starting SPIERSview" href="startingspiersview.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> SPIERSview
+          
+
+          
+            
+            <img src="_static/SPIERS.jpg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">1. Introduction and File Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">2. System Requirements and Triangle Count</a></li>
+<li class="toctree-l1"><a class="reference internal" href="startingspiersview.html">3. Starting SPIERSview</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">4. Basic viewing and manipulation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#moving-rotating-and-zooming">4.1. Moving, rotating and zooming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#touch-screen-support">4.2. Touch screen support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#object-visibility">4.3. Object visibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#stereoscopic-3d-viewing">4.4. Stereoscopic 3D viewing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#full-screen-mode">4.5. Full Screen Mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#background-colour">4.6. Background Colour</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bounding-box-mode">4.7. Bounding Box Mode</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="antialiasing.html">5. Anti-aliasing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="objectpannel.html">6. Object Panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advobjectproperties.html">7. Advanced Object properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manipulatingobjectsindependently.html">8. Manipulating objects independently</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multipiecedatasets.html">9. Multi-piece datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clippingpanel.html">10. Clipping panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="infopanel.html">11. Info panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="savingexporting.html">12. Saving and exporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animationsystem.html">13. Animation System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scale.html">14. Scale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="updatesystem.html">15. Update system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendixavtkusage.html">16. Appendix A – VTK Usage</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SPIERSview</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>4. Basic viewing and manipulation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/basicviewing.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="basic-viewing-and-manipulation">
+<span id="basicviewing"></span><h1>4. Basic viewing and manipulation<a class="headerlink" href="#basic-viewing-and-manipulation" title="Permalink to this headline">¶</a></h1>
+<p>The default SPIERSview screen setup has the main view window (black) on
+the right, the ‘objects panel’ on the left, and progress panel at the
+bottom (see Fig. 1). The Main view window and the Zoom slider (see
+below) are permanently visible – the panels can be hidden, resized,
+repositioned or set to ‘float’ as the user desires. In addition to the
+two initially visible panels there are three more, the Clipping panel,
+Info panel and Pieces panel (discussed later). Panels are switched on
+and off using the view menu, or the keyboard shortcuts indicated in
+their title bars (F1, F2, F3, F4 and F6).</p>
+<div class="figure align-center" id="id1">
+<img alt="_images/figure_1.png" src="_images/figure_1.png" />
+<p class="caption"><span class="caption-text">Figure 1. Default anatomy of a SPIERSview window</span></p>
+</div>
+<p>The status bar at the bottom gives total model size in KTr (1 Ktr = 1000
+triangles). If objects are selected in the objects panel, the size given
+is for the selected objects only. A volume for selected objects is also
+given in cubic millimetres; this is calculated from raw data exported
+from SPIERSedit, and does not take into account any reduction from
+island removal, smoothing, fidelity reduction etc. Note that volume
+calculations are not currently corrected for any inconsistent
+slice-spacings specified in SPIERSedit.</p>
+<p>When viewing models in SPIERSview finalised format (.spvf) or VAXML
+format (.vaxml), the interface is simplified; many menu options will not
+appear, and the pieces panel is not available. Volume measurements (see
+above) are also not available.</p>
+<div class="section" id="moving-rotating-and-zooming">
+<h2>4.1. Moving, rotating and zooming<a class="headerlink" href="#moving-rotating-and-zooming" title="Permalink to this headline">¶</a></h2>
+<p>The model can be moved by dragging using the left mouse button, and
+rotated in three dimensions by dragging with the right mouse button. You
+can also rotate around the z-axis (the viewing direction) using the left
+and right arrow keys (hold shift down to make rotate faster), or by
+holding the shift-key down while dragging with the right mouse button.
+It is also possible to ‘lock’ the viewer into rotate mode by ticking the
+<em>rotate lock</em> command (Ctrl-R) on the Mode menu (this is primarily
+useful on single-button OSX systems). Also see “Touch screens” below.</p>
+<p>The <em>Simple Autospin</em> command (Ctrl-U) on the Animation menu sets the
+model spinning around the y-axis (up/down on the screen) until the
+command is selected a second time. More advanced spins and animation
+exports are covered in the Animation System section (below).</p>
+<p>The <em>Zoom slider</em> (see Fig. 1) is used to zoom the view; the Page Up and
+Page Down keys also perform the same function, as does the mouse-wheel
+(if present). Also see “Touch screens” below.</p>
+<p>The <em>Move closer</em> and <em>Move further</em> commands ([ and ] keys) on the View
+menu are used to move the camera closer to or away from the model; this
+has a similar effect to zooming, but may be preferable if, for instance,
+the model is so close to the camera that perspective distortions are
+unacceptable. Hold shift down ({ and } keys) for larger moves closer or
+away. Note that in Orthographic mode there will be no visible effect of
+moving the model backwards or forwards in this way.</p>
+</div>
+<div class="section" id="touch-screen-support">
+<h2>4.2. Touch screen support<a class="headerlink" href="#touch-screen-support" title="Permalink to this headline">¶</a></h2>
+<p>Modern computers with touch screens should be compatible with SPIERSview for basic object moving,
+roatating, and zooming. The model can be moved by one finger dragging, and
+rotated around around the z-axis (the viewing direction) using two finger rotation.
+Rotated in three dimensions can be achieved by toggling the <em>rotate lock</em> command (Ctrl-R),
+or by holding down Crlt while one finger dragging. Zooming in/out can be achieved
+by using the two finger pinch-to-zoom gesture.</p>
+</div>
+<div class="section" id="object-visibility">
+<h2>4.3. Object visibility<a class="headerlink" href="#object-visibility" title="Permalink to this headline">¶</a></h2>
+<p>SPIERSview models consist of a number of <em>objects</em> and <em>groups</em> of
+objects (see below) which are listed in the <em>Object panel</em> on the left
+of the screen (Fig. 1). Each object is normally given a different
+colour, and each object or group can be independently turned on or off
+(hidden from view), enabling the user to perform ‘virtual dissections’.
+This can be done by double-clicking the ‘eye’ icon for each object in
+the object panel (see Figure 1), or by using the keyboard key assigned
+to the object (the single character A-Z or 0-9 visible to the right of
+the eye icon). Objects are not required to have a key assigned, in which
+case they can only have their visibility toggled with the ‘eye’ icon. If
+a group is hidden then all objects or groups within it, irrespective of
+their visibility setting, are not visible.</p>
+<p>The objects menu has <em>Show All</em> (Shift+H) and <em>Hide All</em> (Ctrl+H) commands which can be
+used to set the visibility of all objects either on or off. An <em>Invert
+Show</em> (Crtl+I) command also exists, which hides all currently shown objects, and
+vice versa.</p>
+<p>Note that transparency (see section on transparency later on) can be used as an alternative to
+simply hiding objects in some situations.</p>
+</div>
+<div class="section" id="stereoscopic-3d-viewing">
+<h2>4.4. Stereoscopic 3D viewing<a class="headerlink" href="#stereoscopic-3d-viewing" title="Permalink to this headline">¶</a></h2>
+<p>SPIERSview can run in several 3D display modes (top five options in the
+Mode menu). These are:</p>
+<p><em>Orthographic (Ctrl-O)</em>: Orthographic rendering without perspective effects
+(distant objects will not appear any smaller than close ones). This is
+mode is useful for measuring specimens, in conjunction with the scale
+grid.</p>
+<p><em>Perspective (Ctrl-P)</em>: Normal display without any form of stereoscopic 3D, but
+with perspective rendering (distant objects will appear smaller). This
+is the default.</p>
+<p><em>Anaglyph Stereo (Ctrl-A)</em>: Anaglyph stereo mode splits the left and
+right eye images using red (left) and cyan (right) filters, and allows
+3D viewing using red/cyan or red/green glasses; the former will work
+better, but the latter are normally adequate. This is intended as a
+cheap and effective means of viewing 3D images, but (unlike <em>Split
+Stereo</em> or <em>QuadBuffer Stereo</em> modes) does not fully preserve colour
+information. Anaglyph stereo viewing may also be hampered if the model
+contains strong colours; the <em>Mute Colours</em> command (Ctrl-M) on the Mode
+menu can help in these cases, as it reduces colour saturation.</p>
+<p><em>Split Stereo (Ctrl-S)</em>: This mode splits the Main view window in two,
+displaying the left and right eye images in the left and right halves.
+Direct viewing in this mode requires viewer to be able to separately
+focus on each image. Screen captures (see below) in this mode can be
+used to generate printed stereo-pairs for viewing with a magnifying
+stereoscope.</p>
+<p><em>QuadBuffer Stereo (Ctrl-Q)</em>: This mode sends the left and right eye images
+separately to the OpenGL rendering system where they can be interpreted
+by dedicated 3D display hardware. Most 3D display systems can handle
+OpenGl QuadBuffer input, and hence SPIERSview should be able to use this
+mode to produce stereoscopic 3D output using most 3D screens and
+projectors. Please note that no guarantee of success for any particular
+hardware can be provided.</p>
+<p>The user may find that the default ‘medium’ stereo-separation (the
+strength of the stereoscopic effect) is too high or too low in some
+situations. Stereo-separation can be set to one of five preset
+strengths, accessed through the View menu or using the keyboard
+shortcuts Alt+1 (very low) through Alt+5 (very high).</p>
+</div>
+<div class="section" id="full-screen-mode">
+<h2>4.5. Full Screen Mode<a class="headerlink" href="#full-screen-mode" title="Permalink to this headline">¶</a></h2>
+<p>SPIERSview can run in a full screen (Crtl+F) mode where the 3D view is maximised to
+the maxiumum monitor height and width. Under Windows a frameless and undecorated
+window is produced. While under Linux a minimal framed and decorated window is used.
+When in full screen mode use (Crtl+F) to toggle back to normal mode.</p>
+<p>Note that under full screen mode only the 3D view is displayed, all other pannels and menus
+are not shown. However, all shortcut key combinations will still work.</p>
+</div>
+<div class="section" id="background-colour">
+<h2>4.6. Background Colour<a class="headerlink" href="#background-colour" title="Permalink to this headline">¶</a></h2>
+<p>By default SPIERSview uses a black background for specimens, but this
+can be changed at will using the <em>Background Colour…</em> command on the
+<em>View</em> menu. Changes to the background colour are saved in SPV files,
+but not in VAXML or SPVF files.</p>
+</div>
+<div class="section" id="bounding-box-mode">
+<h2>4.7. Bounding Box Mode<a class="headerlink" href="#bounding-box-mode" title="Permalink to this headline">¶</a></h2>
+<p>Selecting the <em>Bounding Box Mode</em> command on the Mode menu causes all
+items to render as wireframe boxes. Bounding box rendering is far faster
+than normal rendering, and may, for instance, assist with the initial
+placement of objects when assembling multi-piece models.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="antialiasing.html" class="btn btn-neutral float-right" title="5. Anti-aliasing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="startingspiersview.html" class="btn btn-neutral float-left" title="3. Starting SPIERSview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2018-2019,  Mark Sutton, Russell J. Garwood, Alan R.T. Spencer
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

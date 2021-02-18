@@ -1,0 +1,292 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>16. Appendix A – VTK Usage &mdash; SPIERSview 3.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="15. Update system" href="updatesystem.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> SPIERSview
+          
+
+          
+            
+            <img src="_static/SPIERS.jpg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">1. Introduction and File Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">2. System Requirements and Triangle Count</a></li>
+<li class="toctree-l1"><a class="reference internal" href="startingspiersview.html">3. Starting SPIERSview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basicviewing.html">4. Basic viewing and manipulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="antialiasing.html">5. Anti-aliasing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="objectpannel.html">6. Object Panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advobjectproperties.html">7. Advanced Object properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manipulatingobjectsindependently.html">8. Manipulating objects independently</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multipiecedatasets.html">9. Multi-piece datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clippingpanel.html">10. Clipping panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="infopanel.html">11. Info panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="savingexporting.html">12. Saving and exporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animationsystem.html">13. Animation System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scale.html">14. Scale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="updatesystem.html">15. Update system</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">16. Appendix A – VTK Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">16.1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fidelity-reduction">16.2. Fidelity Reduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#island-removal">16.3. Island Removal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#smoothing">16.4. Smoothing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#stl-reader">16.5. STL reader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ply-reader">16.6. PLY reader</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SPIERSview</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>16. Appendix A – VTK Usage</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/appendixavtkusage.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="appendix-a-vtk-usage">
+<span id="appendixavtkusage"></span><h1>16. Appendix A – VTK Usage<a class="headerlink" href="#appendix-a-vtk-usage" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>16.1. Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>VTK (the Visualisation Toolkit; <a class="reference external" href="http://www.vtk.org/">http://www.vtk.org/</a>) is a an
+open-source, freely available software system for 3D computer graphics,
+image processing and visualisation. SPIERSview makes use of VTK version
+8.1 for some data-processing purposes (although not for visualisation,
+which uses custom code to increase speed and memory efficiency). Certain
+VTK classes used are documented here, where knowing details of
+algorithms used may help a user understand exactly what SPIERSview is
+doing with their data. Interested users are referred to the VTK
+documentation to interpret the notes below.</p>
+</div>
+<div class="section" id="fidelity-reduction">
+<h2>16.2. Fidelity Reduction<a class="headerlink" href="#fidelity-reduction" title="Permalink to this headline">¶</a></h2>
+<p>SPIERSview default ‘fast and safe’ fidelity reduction uses the
+<em>vtkDecimatePro</em> filter. <em>AccumulateError</em> is set to ‘off’,
+<em>PreserveTopology</em> is set to on; no other settings are changed from
+defaults.</p>
+<p>SPIERSview ‘Quadric’ fidelity reduction uses the <em>vtkQuadricDecimation</em>
+filter. No settings are changed from defaults.</p>
+</div>
+<div class="section" id="island-removal">
+<h2>16.3. Island Removal<a class="headerlink" href="#island-removal" title="Permalink to this headline">¶</a></h2>
+<p>Island removal uses the <em>vtkPolyDataConnectivityFilter</em> class.
+<em>ColorRegions</em> is set to off; no other settings are changed from
+defaults. ‘All’ mode uses <em>SetExtractionModeToLargestRegion</em>; otherwise
+the filter is run in <em>SetExtractionModeToAllRegions</em> mode. Tiny, Small,
+Medium and Large settings remove regions of up to 20, 100, 600 and 4000
+triangles in size respectively.</p>
+</div>
+<div class="section" id="smoothing">
+<h2>16.4. Smoothing<a class="headerlink" href="#smoothing" title="Permalink to this headline">¶</a></h2>
+<p>Smoothing uses multiple passes of the <em>vtkWindowedSincPolyDataFilter</em>
+filter. <em>FeatureEdgeSmoothing</em>, <em>BoundarySmoothing</em>,
+<em>GenerateErrorScalars</em> and <em>GenerateErrorVectors</em> are set to off, and
+PassBand is set to 0.05. Very Weak, Weak, Medium, Strongish, Strong, and
+Strongest settings use 5, 10, 20, 40, 60, and 100 iterations
+respectively.</p>
+</div>
+<div class="section" id="stl-reader">
+<h2>16.5. STL reader<a class="headerlink" href="#stl-reader" title="Permalink to this headline">¶</a></h2>
+<p>SPIERSview uses the <em>vtkSTLreader</em> class to import STL triangle meshes
+during VAXML import; its restrictions and capabalities are thus those of
+this VTK class.</p>
+</div>
+<div class="section" id="ply-reader">
+<h2>16.6. PLY reader<a class="headerlink" href="#ply-reader" title="Permalink to this headline">¶</a></h2>
+<p>SPIERSview uses the <em>vtkPLYreader</em> class to import PLY triangle meshes
+and surface colour information during VAXML import; it’s restrictions
+and capabalities are thus those of this VTK class; in particular colour
+information input is restricted to ‘red’, ‘green’ and ‘blue’ properties
+of vertex elements.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="updatesystem.html" class="btn btn-neutral float-left" title="15. Update system" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2018-2019,  Mark Sutton, Russell J. Garwood, Alan R.T. Spencer
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

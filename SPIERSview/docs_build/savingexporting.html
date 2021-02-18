@@ -1,0 +1,299 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>12. Saving and exporting &mdash; SPIERSview 3.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="13. Animation System" href="animationsystem.html" />
+    <link rel="prev" title="11. Info panel" href="infopanel.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> SPIERSview
+          
+
+          
+            
+            <img src="_static/SPIERS.jpg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">1. Introduction and File Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">2. System Requirements and Triangle Count</a></li>
+<li class="toctree-l1"><a class="reference internal" href="startingspiersview.html">3. Starting SPIERSview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basicviewing.html">4. Basic viewing and manipulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="antialiasing.html">5. Anti-aliasing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="objectpannel.html">6. Object Panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advobjectproperties.html">7. Advanced Object properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manipulatingobjectsindependently.html">8. Manipulating objects independently</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multipiecedatasets.html">9. Multi-piece datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clippingpanel.html">10. Clipping panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="infopanel.html">11. Info panel</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">12. Saving and exporting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#spiersview-compact-and-presurfaced-files-spv">12.1. SPIERSview compact and presurfaced files (.spv)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#spiersview-finalised-files-spvf">12.2. SPIERSview finalised files (.spvf)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#vaxml-stl-datasets">12.3. VAXML/STL datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dxf-files">12.4. DXF files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#screen-capture">12.5. Screen Capture</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="animationsystem.html">13. Animation System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scale.html">14. Scale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="updatesystem.html">15. Update system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendixavtkusage.html">16. Appendix A – VTK Usage</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SPIERSview</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>12. Saving and exporting</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/savingexporting.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="saving-and-exporting">
+<span id="savingexporting"></span><h1>12. Saving and exporting<a class="headerlink" href="#saving-and-exporting" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="spiersview-compact-and-presurfaced-files-spv">
+<h2>12.1. SPIERSview compact and presurfaced files (.spv)<a class="headerlink" href="#spiersview-compact-and-presurfaced-files-spv" title="Permalink to this headline">¶</a></h2>
+<p>When viewing an ‘spv’ format file, the <em>Save Changes</em> command (Ctrl-V)
+on the <em>SPIERSview</em> menu will save the file in whatever format (compact
+or presurfaced) it was opened in. SPIERSview will also ask if you want
+to save changes before exiting; this also will use the format the file
+was opened in. The <em>Save Compact As…</em> or <em>Save Presurfaced As…</em>
+commands on the <em>SPIERSview</em> menu are also provided – these force the
+file to save in whichever of these two formats you specify, and can
+hence be used to convert between the two</p>
+</div>
+<div class="section" id="spiersview-finalised-files-spvf">
+<h2>12.2. SPIERSview finalised files (.spvf)<a class="headerlink" href="#spiersview-finalised-files-spvf" title="Permalink to this headline">¶</a></h2>
+<p>The <em>Export Finalised…</em> command on the <em>SPIERSview</em> menu saves a copy
+of the current ‘.spv’ file in Finalised format (see above), for rapid
+view-only loading. As finalised format is internally implemented using
+VAXML, a few restrictions apply and are checked at save-time. The most
+significant of these is that all groups must have unique names; if this
+is not true you will receive a warning, and the file will not be
+written.</p>
+<p>If the <em>Export Hidden Objects</em> item on the <em>SPIERSview</em> menu is ticked,
+all objects are exported. If it is not ticked, the visibility of each
+object is used to determine whether or not it is exported. Note that
+this is simply the presence of absence of the ‘eye’ icon next to the
+object in the Objects panel; an object might be set to visible (and
+hence be exported) but not appear onscreen in SPIERSview because the
+group it belongs to is hidden.</p>
+<p>Groups are always exported, whether hidden or not.</p>
+</div>
+<div class="section" id="vaxml-stl-datasets">
+<h2>12.3. VAXML/STL datasets<a class="headerlink" href="#vaxml-stl-datasets" title="Permalink to this headline">¶</a></h2>
+<p>The <em>Export VAXML/STL…</em> command on the <em>SPIERSview</em> menu exports the
+current ‘.spv’ file as a VAXML file, plus associated STL files
+(SPIERSview cannot export PLY files). One STL file is created per
+object, and these are placed in a subdirectory called &lt;filename&gt;_stl
+where &lt;filename&gt; is the supplied name for the VAXML file. There is no
+option to export STL files without also creating a VAXML file (although
+the latter can of course be manually deleted if it is not required).</p>
+<p>The <em>Export Hidden Objects</em> item on the <em>SPIERSview</em> menu works in the
+same way as for SPIERSview finalised files.</p>
+</div>
+<div class="section" id="dxf-files">
+<h2>12.4. DXF files<a class="headerlink" href="#dxf-files" title="Permalink to this headline">¶</a></h2>
+<p>The <em>Export DXF…</em> command on the <em>SPIERSview</em> menu exports the current
+‘.spv’ file as a DXF triangle mesh. Objects are exported with their
+correct names, but neither groups nor colours are preserved.</p>
+<p>The <em>Export Hidden Objects</em> item on the <em>SPIERSview</em> menu works in the
+same way as for SPIERSview finalised files.</p>
+</div>
+<div class="section" id="screen-capture">
+<h2>12.5. Screen Capture<a class="headerlink" href="#screen-capture" title="Permalink to this headline">¶</a></h2>
+<p>The <em>Screen Capture…</em> command on the <em>SPIERSview</em> menu exports the
+current Main view windows as either a JPEG (.jpg), Windows Bitmap
+(.bmp), Portable Network Graphic (.png) or Tagged Image File Format
+(.tiff) file. The exact image visible (at the resolution visible) is
+used – for best quality remove all panels and maximise the SPIERSview
+window to obtain a large view window, and use Anti-aliasing (see previous section).</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="animationsystem.html" class="btn btn-neutral float-right" title="13. Animation System" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="infopanel.html" class="btn btn-neutral float-left" title="11. Info panel" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2018-2019,  Mark Sutton, Russell J. Garwood, Alan R.T. Spencer
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
