@@ -1,0 +1,292 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>2. Requirements &mdash; SPIERSedit 3.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="3. Basic Concepts" href="basicconcepts.html" />
+    <link rel="prev" title="1. Introduction" href="introduction.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> SPIERSedit
+          
+
+          
+            
+            <img src="_static/SPIERS.jpg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">1. Introduction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">2. Requirements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#system-requirements">2.1. System Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-requirements">2.2. Data requirements</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="basicconcepts.html">3. Basic Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="masks.html">4. Masks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="segments.html">5. Segments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rangegeneration.html">6. Range Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="polynomialgeneration.html">7. Polynomial Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="output.html">8. Output</a></li>
+<li class="toctree-l1"><a class="reference internal" href="volumes.html">9. Measuring volumes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exportingworkingimages.html">10. Exporting Working Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="3dbrush.html">11. 3D Brush</a></li>
+<li class="toctree-l1"><a class="reference internal" href="curves.html">12. Curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lockselectionmode.html">13. Lock/Selection Mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="slicespacing.html">14. Slice Spacing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="histogram.html">15. Histogram</a></li>
+<li class="toctree-l1"><a class="reference internal" href="info.html">16. Info</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datadownsampling.html">17. Dataset Downsampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advancedprefs.html">18. Advanced Prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="updatesystem.html">19. Update System</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SPIERSedit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>2. Requirements</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/requirements.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="requirements">
+<span id="id1"></span><h1>2. Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="system-requirements">
+<h2>2.1. System Requirements<a class="headerlink" href="#system-requirements" title="Permalink to this headline">¶</a></h2>
+<p>SPIERSedit has no minimum requirements as such, and will run on most
+systems; it has, however, not been tested on versions of Windows older
+than Windows XP. Performance will benefit from high processor speed and
+a large amount of system RAM; 2Gb is a recommended minimum. As of v2.20,
+only 64-bit operating systems are supported. Graphics card speed is not
+relevant (although it is to SPIERSview). A fast hard disk is
+recommended; SPIERSedit is I/O intensive, and hard-disk speed will be
+the principle constraint on speed for many bulk-file operations. Large
+datasets can easily exceed 5Gb in size, so hard disk size may also be an
+issue.</p>
+<p><em>Mac</em> <em>OSX:</em> OSX 10.5 or higher is required. SPIERSview makes use of the
+right mouse-button; on single-button Mac OSX systems use the
+control-click combination to simulate right-clicking.</p>
+<p>A high quality optical mouse or digitising tablet is strongly
+recommended for editing work.</p>
+</div>
+<div class="section" id="data-requirements">
+<h2>2.2. Data requirements<a class="headerlink" href="#data-requirements" title="Permalink to this headline">¶</a></h2>
+<p>SPIERSedit can work with any dataset consisting of serial ‘slice’
+images, so long as the resolution and scale of each image is the same,
+and no images are missing from the sequence. Datasets should comprise
+registered (aligned) serial images, ideally in uncompressed Windows
+Bitmap (.bmp) format or Portable Network Graphic (.png). SPIERSedit also supports
+TIIFF (.tif/.tiff) and JPEG (.jpg) format; JPEG datasets are not recommended
+as JPEG compression causes artefacts which can degrade data and hence final models.</p>
+<p><em>Format</em>: Images can be 8-bit grayscale (.png, .bmp, .tiff) or 24-bit colour
+(.bmp, .png, .jpg, .tiff). Images that lack colour information (e.g. CT data)
+should be converted to an 8-bit rather than 24-bit format – you will not
+see a difference visually, but the software will run substantially
+faster.</p>
+<p><em>Names and directory:</em> Although SPIERSedit will load any file sequence
+in alphabetical/numerical order, for clarity it is recommended that
+images should be serially numbered with three or four digits before the
+file extension (e.g. 0001.bmp, 0002.bmp etc). Images must all be in the
+same directory (called the <em>working directory</em> subsequently). If the
+dataset has been prepared using SPIERSalign, this will be the ‘cut’
+directory underlying the SPIERSalign working directory. Note that
+changing filenames once the dataset has been created will effectively
+corrupt SPIERSedit’s data.</p>
+<p><em>Size and cropping:</em> Images can be any size (resolution), but a key
+restriction is that <em>all images</em> in the sequence <em>must be the same
+resolution</em>. The speed of many SPIERSedit operations will be
+proportional to resolution; cropping of the image sequence before
+loading into SPIERSedit is hence strongly recommended. SPIERSalign can
+be used to perform this croppping, and hence it is normal to pass even
+pre-registered data (e.g. from a CT scanner) through SPIERSalign before
+loading into SPIERSedit. Note that once editing work in SPIERSedit has
+begun it is not possible to re-crop images without all work being lost.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="basicconcepts.html" class="btn btn-neutral float-right" title="3. Basic Concepts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="introduction.html" class="btn btn-neutral float-left" title="1. Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2018-2021,  Mark Sutton, Russell J. Garwood, Alan R.T. Spencer
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,406 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>12. Curves &mdash; SPIERSedit 3.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="13. Lock/Selection Mode" href="lockselectionmode.html" />
+    <link rel="prev" title="11. 3D Brush" href="3dbrush.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> SPIERSedit
+          
+
+          
+            
+            <img src="_static/SPIERS.jpg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">2. Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basicconcepts.html">3. Basic Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="masks.html">4. Masks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="segments.html">5. Segments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rangegeneration.html">6. Range Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="polynomialgeneration.html">7. Polynomial Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="output.html">8. Output</a></li>
+<li class="toctree-l1"><a class="reference internal" href="volumes.html">9. Measuring volumes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exportingworkingimages.html">10. Exporting Working Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="3dbrush.html">11. 3D Brush</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">12. Curves</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#concepts">12.1. Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#curves-panel">12.2. Curves Panel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#editing-curves">12.3. Editing Curves</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#copying-curves">12.4. Copying curves</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#interpolating-curves">12.5. Interpolating Curves</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-masks-from-curves">12.6. Creating Masks from Curves</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="lockselectionmode.html">13. Lock/Selection Mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="slicespacing.html">14. Slice Spacing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="histogram.html">15. Histogram</a></li>
+<li class="toctree-l1"><a class="reference internal" href="info.html">16. Info</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datadownsampling.html">17. Dataset Downsampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advancedprefs.html">18. Advanced Prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="updatesystem.html">19. Update System</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SPIERSedit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>12. Curves</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/curves.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="curves">
+<span id="id1"></span><h1>12. Curves<a class="headerlink" href="#curves" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="concepts">
+<h2>12.1. Concepts<a class="headerlink" href="#concepts" title="Permalink to this headline">¶</a></h2>
+<p>SPIERSedit supports a form of ‘spline’ object (technically Catmull-Rom
+splines) which it calls ‘curves’; these are curved lines defined with a
+series of points (‘nodes’) through which they pass. Curves can be closed
+into loops, and these loops can be filled. They can be used to form
+objects in reconstructions by assigning them to a segment, or kept
+invisible in final models and used instead to create masks. Curves can
+be copied between slices in the same way as masks, and an interpolation
+system allows them to gradually change over a series of slices.</p>
+<p>Curves rendered directly as objects (i.e. assigned to a segment) can be
+used to bring out impersistent or thin linear structures, or as closed
+and filled loops to define regions that cannot easily be edited out.</p>
+<p>Curves used as a basis for masks, particularly when used with
+interpolation, provide an invaluable tool for rapidly masking datasets.
+They also greatly aid the consistent definition of arbitrary boundaries,
+as these can be defined as straight lines or gentle curves, making the
+nature obvious, and neater than drawing such edges in by hand.</p>
+<p>Curves are visible in all modes if assigned to a segment, but unless
+SPIERSedit is in <em>Curve</em> mode they will just appear like normal pixels
+of whatever segment they are assigned to. When SPIERSedit is in curve
+mode, all curves present on a slice will be visible (in their specified
+colour) if assigned to a segment; curves not assigned to a segment are
+only visible if selected in the <em>Curves</em> panel. Points controlling a
+curve are only visible if the curve is selected.</p>
+<p>Each curve can only appear once on any one slice. If more than one curve
+is needed on one slice then multiple curves must be created. The same
+curve can be used to model different objects as long as they never don’t
+appear on the same slice, but it is better practice to create a new
+curve for each new object. If a large number of curves are used it can
+become difficult to keep track of them; the <em>Grey-out curves not on
+current slices</em> command on the <em>Curves</em> menu is provided as an aid to
+identifying curves active in the part of the dataset under inspection.</p>
+<p>Unlike all other data editing on a per-slice basis, curves are not
+stored in separate files but within the .spe file. If many curves are
+being used it is hence recommended that the user increases the autosave
+frequency (see Advanced Prefs) or manually saves more regularly.</p>
+<p>There is no maximum number of curves.</p>
+</div>
+<div class="section" id="curves-panel">
+<h2>12.2. Curves Panel<a class="headerlink" href="#curves-panel" title="Permalink to this headline">¶</a></h2>
+<p>Curves are listed in the <em>Curves</em> panel (Fig. 17), which works in a very
+similar way to the <em>Masks</em> panel.</p>
+<div class="figure align-center" id="id2">
+<img alt="_images/figure_17.png" src="_images/figure_17.png" />
+<p class="caption"><span class="caption-text">Figure 17. The Curves Panel</span></p>
+</div>
+<p><em>Creating curves:</em> Curves are created using the <em>New</em> button on
+the <em>Curves</em> panel. New curves are given a unique name and colour; by
+default they are open and not assigned to a segment. A newly created
+curve contains no points; before anything is visible the user needs to
+create nodes on slices for the curve.</p>
+<p><em>Curve Name:</em> This column provides a reference name for the curve. Edit
+by double-clicking.</p>
+<p><em>Col:</em> The curve colour (only displayed in curve mode). Edit by
+double-clicking.</p>
+<p><em>‘Loop’ icon</em>: This specifies the mode of the curve; curves can be open
+(a line), closed (an unfilled loop), or filled (a filled loop) (see Fig
+18). Double-click to cycle between these three modes.</p>
+<p><em>Segment</em>: The segment the curve is assigned to, or [None] if not
+assigned. Double click to edit.</p>
+<p><em>Slices</em>: [Added v2.14, not shown in Fig 17] – gives the flrst and last
+slice on which the curve is used, or ‘Not Used’ if not currently active
+on any slice.</p>
+<p><em>Selecting curves</em>: One or more curves can be selected by left clicking
+on any column of the <em>Curves</em> panel. To select multiple curves use
+Ctrl-click or Shift-click. Selection is indicated by an underlined curve
+name. Selection of curves is used for bulk deleting, copy operations,
+and the mask to curve command. A single selected curve is also a
+requirement for editing of curves within a slice (see below); nodes will
+not be visible unless the curve is selected.</p>
+<p><em>Re-ordering curves list:</em> Curves can be moved up and down the list by
+selecting a curve and using the <em>Up</em> and <em>Down</em> buttons. This reordering
+only affects how the curves appear in this list.</p>
+<p><em>Deleting curves</em>. Select curves in the panel then use the <em>Delete</em>
+button to remove them.</p>
+<div class="figure align-center" id="id3">
+<img alt="_images/figure_18.png" src="_images/figure_18.png" />
+<p class="caption"><span class="caption-text">Figure 18. Curve modes. Note that in Open mode curves have two square end markers, which are specialised nodes through which the curves does not pass, but whose position affects the curvature of the final section. The blue square affects the end with the blue circle, the green square the end with the green circle. When the curve is closed these are treated as normal nodes.</span></p>
+</div>
+</div>
+<div class="section" id="editing-curves">
+<h2>12.3. Editing Curves<a class="headerlink" href="#editing-curves" title="Permalink to this headline">¶</a></h2>
+<p>Curves are edited on a per-slice basis by adding, removing or moving
+nodes. <em>To perform this sort of editing, a single curve must be selected
+in the *Curves</em> panel, and SPIERSedit must be in curve mode*. Curve
+editing uses the brush for position, but brush size is ignored.</p>
+<p><em>Creating nodes:</em> The ‘=’ key adds a node to the curve at the current
+mouse cursor position. If no nodes exist for the curve on the current
+slice, the minimum of 4 are created near the cursor position.</p>
+<p><em>Removing nodes</em>: The ‘-‘ key removes a node from the current mouse
+cursor position. If this would reduce the number of nodes on the slice
+below four, the user is asked if they want to entirely remove the curve
+from the slice or not.</p>
+<p><em>Moving nodes</em>. Nodes can be moved by dragging with the mouse.</p>
+<p><em>Removing curves from slices</em>: curves can be removed from slices by
+individually removing all their nodes. The <em>Remove Curves from Selected
+Slices</em> command on the <em>Curves</em> menu provides a quicker way of doing
+this in bulk, removing all nodes from selected curves for all slices
+selected in the <em>Slice Selector</em> panel.</p>
+<p><em>Curve markers</em>: By default nodes are indicated with small circles, but
+the <em>Curve Markers as Crosses</em> setting on the <em>Curves</em> menu changes
+these to small crosses, which some users may find clearer.</p>
+<p><em>Locked curves</em>: If the <em>Lock curve shape</em> item on the <em>Curves</em> menu is
+ticked, dragging any node will move all nodes of the curve rather than
+an individual node.</p>
+<p><em>Resizing curves</em>: The <em>Resize curves on selected slices</em> command on the
+<em>Curves</em> menu lets the user resize all selected curves on all selected
+slices by a specified percentage.</p>
+</div>
+<div class="section" id="copying-curves">
+<h2>12.4. Copying curves<a class="headerlink" href="#copying-curves" title="Permalink to this headline">¶</a></h2>
+<p>Curves can be copied between slices using the copy commands in the
+<em>Curves</em> menu. This works in a way completely analogous to copying
+masks; the reader is referred to the masks section for more details.</p>
+</div>
+<div class="section" id="interpolating-curves">
+<h2>12.5. Interpolating Curves<a class="headerlink" href="#interpolating-curves" title="Permalink to this headline">¶</a></h2>
+<p>Curves can be interpolated between slices; if, for example, slice 10 and
+slice 20 have nodes defined for a particular curve, interpolating
+between these slices will gradually alter the curve in between the two
+to form a smooth shape change from one to the other. Figure 19
+(overleaf) shows a curve interpolated over seven slices.</p>
+<p>To interpolate a curve between slices, ensure that the curve is selected
+in the <em>Curves</em> panel, that all slices involved are selected, and <em>that
+the curve has the same number of nodes</em> on the first and last slice
+selected. The <em>Interpolate Over Selected Slices</em> command on the <em>Curves</em>
+menu performs the interpolation.</p>
+<p>There is no need for nodes to already exist on the intervening slices,
+but if they do they will be over-written by the interpolation operation.</p>
+<p>Defining filled curves at regular intervals (e.g. every 50 slices) and
+then interpolating them is a fast way to rather precisely specify
+regions to be masked, and is a technique the authors make extensive use
+of.</p>
+</div>
+<div class="section" id="creating-masks-from-curves">
+<h2>12.6. Creating Masks from Curves<a class="headerlink" href="#creating-masks-from-curves" title="Permalink to this headline">¶</a></h2>
+<p>As intimated in previous sections, an important use of curves,
+especially interpolated curves, is to draw masks. To create a mask from
+a curve or curves, select the curve (or curves) in the <em>Curves</em> Panel,
+select the slices involved in the <em>Slice Selector</em> panel (it doesn’t
+matter if slices are selected on which the curve does not exist, so
+often it’s fine to use the <em>Select All</em> button here), and select the
+mask which the curve is draw into in the <em>Masks</em> panel. To trigger the
+operation use the <em>Mask from curve</em> command in the <em>Masks</em> menu. All
+pixels from the curves on all selected slices will then be drawn into
+the selected mask.</p>
+<p>While curves in any mode can be converted into masks, in almost all
+cases the curve should be in filled mode to specify an area rather than
+just an outline. Typically it is easier to set up the mask in unfilled
+mode, and then put it into filled mode before performing the <em>Mask from
+curve</em> operation.</p>
+<p>Creating a mask from a curve is a one-time copy operation, which does
+not create any sort of permanent link. If the curve is later modified,
+the area masked by a <em>Mask from curve</em> operation based on it will not
+update, and the masked area and the curve will no longer be in synch.</p>
+<div class="figure align-center" id="id4">
+<img alt="_images/figure_19.png" src="_images/figure_19.png" />
+<p class="caption"><span class="caption-text">Figure 19. Curve interpolated over seven slices</span></p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="lockselectionmode.html" class="btn btn-neutral float-right" title="13. Lock/Selection Mode" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="3dbrush.html" class="btn btn-neutral float-left" title="11. 3D Brush" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2018-2021,  Mark Sutton, Russell J. Garwood, Alan R.T. Spencer
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

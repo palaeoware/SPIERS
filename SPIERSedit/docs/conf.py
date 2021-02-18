@@ -22,13 +22,13 @@ import sphinx_rtd_theme
 # -- Project information -----------------------------------------------------
 
 project = 'SPIERSedit'
-copyright = '2018-2019,  Mark Sutton, Russell Garwood, Alan R.T. Spencer'
-author = 'Mark Sutton, Russell Garwood, Alan R.T. Spencer'
+copyright = '2018-2021,  Mark Sutton, Russell J. Garwood, Alan R.T. Spencer'
+author = 'Mark Sutton, Russell J. Garwood, Alan R.T. Spencer'
 
 # The short X.Y version
-version = '3.0.0'
+version = '3.1.1'
 # The full version, including alpha/beta/rc tags
-release = '3.0.0'
+release = '3.1.1'
 
 
 # -- General configuration ---------------------------------------------------
@@ -125,7 +125,7 @@ html_static_path = ['_static']
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-#html_logo = None
+html_logo = '_static/SPIERS.jpg'
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32

@@ -1,0 +1,432 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>8. Output &mdash; SPIERSedit 3.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="9. Measuring volumes" href="volumes.html" />
+    <link rel="prev" title="7. Polynomial Generation" href="polynomialgeneration.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> SPIERSedit
+          
+
+          
+            
+            <img src="_static/SPIERS.jpg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">2. Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basicconcepts.html">3. Basic Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="masks.html">4. Masks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="segments.html">5. Segments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rangegeneration.html">6. Range Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="polynomialgeneration.html">7. Polynomial Generation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">8. Output</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#concepts">8.1. Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#settings-tab">8.2. Settings Tab</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#objects-tab">8.3. Objects Tab</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#output-commands">8.4. Output Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#deskewing">8.5. Deskewing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="volumes.html">9. Measuring volumes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exportingworkingimages.html">10. Exporting Working Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="3dbrush.html">11. 3D Brush</a></li>
+<li class="toctree-l1"><a class="reference internal" href="curves.html">12. Curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lockselectionmode.html">13. Lock/Selection Mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="slicespacing.html">14. Slice Spacing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="histogram.html">15. Histogram</a></li>
+<li class="toctree-l1"><a class="reference internal" href="info.html">16. Info</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datadownsampling.html">17. Dataset Downsampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advancedprefs.html">18. Advanced Prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="updatesystem.html">19. Update System</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SPIERSedit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>8. Output</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/output.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="output">
+<span id="id1"></span><h1>8. Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="concepts">
+<h2>8.1. Concepts<a class="headerlink" href="#concepts" title="Permalink to this headline">¶</a></h2>
+<p><em>SPIERSview:</em> SPIERSedit does not directly visualise models in three
+dimensions, but instead exports models in compact ‘.spv’ file format,
+for viewing in SPIERSview (see SPIERSview manual). SPIERSview also
+provides facilities to export models as geometries to other software.</p>
+<p><em>Output Objects</em>: SPIERSedit exports a series of <em>Output Objects</em>, which
+are listed in the <em>Objects</em> tab of the <em>Output</em> panel; these are defined
+by the user as combinations of masks and (for multi-segment datasets)
+segments. The object will consist of all pixels assigned to any of these
+segments that fall into any of these masks. For instance, an object
+might list two masks and a ‘void’ segment; it would then comprise any
+void pixels with either of the two masks. In most cases however output
+objects consist of a single mask and segment, and represent all pixels
+in that segment and that mask. By default a single object is created,
+representing all pixels in the default mask and the default segment.</p>
+<p><em>Output Downsampling</em>: In addition to the dataset downsampling described
+in the Basic Concepts section, SPIERSedit supports a second form of
+downsampling performed at output time. This <em>output downsampling</em>
+applies only to the model exported to SPIERSview, and provides
+performance gains in SPIERSview as it reduced the complexity of the
+model to be displayed. Like dataset downsampling, output downsampling is
+defined as an XY and a Z setting. While XY downsampling works in the
+same way for both dataset and output downsampling, Z downsampling does
+not. A Z-downsampled dataset simply skips files – for example if Z
+downsampling is set to 3, only every third file in the sequence is used.
+Z-downsampling at output instead merges files; if set to 3, each set of
+3 files is merged at output to determine whether any individual pixel is
+‘on’ or ‘off’. Output downsampling is additive to dataset downsampling –
+if the dataset is downsampled by a factor of 2 and the output is also a
+downsampled by a factor of 2, it will in fact be downsampled by a factor
+of four from the source data.</p>
+<p><em>Output Cache</em>: Outputting models can be time consuming, as SPIERSedit
+needs to process data for all slices in the dataset. However once an
+output has been performed, SPIERSedit stores (caches) output information
+for each slice; for subsequent output operations only slices that have
+been altered are processed, and hence output is normally far quicker.
+Certain operations (e.g. creating or deleting a new output object) reset
+this cache.</p>
+</div>
+<div class="section" id="settings-tab">
+<h2>8.2. Settings Tab<a class="headerlink" href="#settings-tab" title="Permalink to this headline">¶</a></h2>
+<p>The <em>Settings</em> Tab of the <em>Output</em> panel (see Fig. 15, left) was
+introduced under Basic Concepts.</p>
+<div class="figure align-center" id="id2">
+<img alt="_images/figure_15.png" src="_images/figure_15.png" />
+<p class="caption"><span class="caption-text">Figure 15. The Output Panel.* Left; Settings Tab. Right; Object Tab.</span></p>
+</div>
+<p><em>Slices/mm, Pixels/mm</em>, <em>Sequence front to back</em>: See Basic Concepts
+(above).</p>
+<p><em>mm/slice Down</em> and <em>mm/slice Left</em>: See Deskewing (below).</p>
+<p><em>Files:</em> <em>First</em> and <em>Last</em>: restricts output to part of the dataset in
+terms of position in the Z direction; by default all files are included,
+but often a restricted portion only need be rendered at any one time,
+and including fewer files will normally speed up the output and
+rendering process.</p>
+<p><em>Bin: XY</em> and <em>Z</em>: These are the settings for output downsampling within
+each image (XY) and between images (Z).</p>
+<p><em>Pixel Sens.</em>: This is pixel sensitivity; it controls how output
+downsampling combines pixels. With output downsampling on (XY or Z
+values &gt; 1), each voxel (3D pixel) output is assembled from Z x XY x XY
+threshold image pixels, each of which may be either ‘on’ or ‘off’. Pixel
+sensitivity is the number of threshold image pixels that need to be on
+before the voxel is turned on. For example if XY and Z are each 3, a
+cube of 3 x 3 x 3 = 27 pixels will be reduced to a single voxel. If
+Pixel Sens. is set to 1, only one of these 27 pixels need be on to turn
+the voxel on. If Pixel Sens. Is set to 14, over half would need to be
+turned on. If in doubt, leave Pixel Sens. at 1; using higher values can
+however help to reduce noise caused by sporadic scattered pixels.</p>
+</div>
+<div class="section" id="objects-tab">
+<h2>8.3. Objects Tab<a class="headerlink" href="#objects-tab" title="Permalink to this headline">¶</a></h2>
+<p>The <em>Objects</em> tab of the <em>Output</em> panel (see Fig. 15, Right) provides a
+list of output objects that that works in a manner similar to the
+<em>Masks</em> panel.</p>
+<p><em>Object Name:</em> This column provides a reference name for the object,
+which will appear in the <em>Objects</em> Panel of SPIERSview. Edit by
+double-clicking. Hovering the mouse over the name of an output object
+gives a list of the Masks and Segments that comprise it.</p>
+<p><em>Col:</em> The item colour in SPIERSview; edit by double-clicking. Note that
+groups can have a colour, though this is only used if they are merged
+(see below).</p>
+<p><em>Key</em>: The keyboard shortcut key that will be used to show/hide the
+object in SPIERSview ([-] means no key assigned). The <em>Next Key</em>
+dropdown below the main list is the key that will be assigned to the
+next object created.</p>
+<p><em>Fidelity</em>: The SPIERSview model fidelity; values of less than 100% will
+trigger a simplification step in SPIERSview to attempt to reduce the
+object’s complexity. Values less than 50% are not advised at export (see
+SPIERSview manual). The <em>Fidelity</em> spinbox below the main list is the
+default for new objects.</p>
+<p><em>Visibility</em>: The ‘eye’ icon column is used to turn items on and off for
+export purposes; invisible items will not be exported.</p>
+<p><em>Merge</em>: Groups (see below) can be merged into single output objects,
+which are treated by SPIERSview as single fused objects, rendered with
+the group colour. This facility allows complex output object to be
+created. To merge or unmerge a group, just double click the merge item
+of the group or of one of its component objects (in the latter case you
+will be asked to confirm that you want the entire group merged).</p>
+<p><em>Creating a new object</em>: To create an object for a single-segment
+datasets, just select the masks that are to comprise it in the <em>Masks</em>
+panel then click <em>New</em> in the <em>Objects</em> tab of the <em>Output</em> panel (or
+use the <em>New Output Object</em> command on the <em>Output</em> menu). For
+multi-segment datasets the segments that are to comprise the object must
+also be selected in the <em>Segment</em> panel before the object is created.
+<em>The masks and segments comprising an object cannot be edited after it
+is created – if need changing the object must be deleted and recreated.</em>
+Objects are created with name based on the masks they use. The keyboard
+shortcut is set from the <em>Next Key</em> drop-down (which is also incremented
+after each object is created), and the fidelity is set from the Fidelity
+spin-box. Colour is based on the component masks.</p>
+<p><em>Deleting objects</em>: Select an object or objects in the Object list, then
+click the <em>Delete</em> button or use the <em>Delete Output Object</em> command on
+the <em>Output</em> menu. These commands are also used to delete empty groups.</p>
+<p><em>Selecting objects</em>: One or more objects can be selected by left
+clicking on any column of the <em>Objects</em> panel. To select multiple
+objects use Ctrl-click or Shift-click. Selection is indicated by an
+underlined object name. Selection of masks is used for bulk deleting and
+for grouping operations.</p>
+<p><em>Re-ordering objects list:</em> Objects can be moved up and down the list by
+selecting an object and using the <em>Up</em> and <em>Down</em> buttons. This
+reordering affects how the masks appear both in this list and in
+SPIERSview. Objects within groups can be moved up or down with a group.</p>
+<p><em>Grouping</em>: SPIERSedit (and SPIERSview) support groups of objects; the
+utility of grouping is discussed in the SPIERSview manual, but
+SPIERSedit also uses groups as a precursor to the creation of merged
+objects (see above). To create a group, select objects then click the
+<em>Group</em> button (or use the <em>Group</em> command in the <em>Output</em> menu). To
+remove objects from a group, select them and use the <em>Remove from Group</em>
+command in the <em>Output</em> menu. Groups can be created within other groups.
+Note that the grouping facilities in SPIERSedit are a little less
+sophisticated than those in SPIERSview; normal practice is to export
+objects ungrouped (merged objects excepted) and perform grouping in
+SPIERSview.</p>
+</div>
+<div class="section" id="output-commands">
+<h2>8.4. Output Commands<a class="headerlink" href="#output-commands" title="Permalink to this headline">¶</a></h2>
+<p>Three variants of the output command exist in the output menu.</p>
+<p><em>Export SPIERSview</em>: Prompts the user for a filename (with an ‘.spv’
+extension), and exports to this file.</p>
+<p><em>Export SPIERSview and Launch</em>: As above, but after Export SPIERSview is
+launched to view the file.</p>
+<p><em>View in SPIERSview</em>: The file is exported to a standard name and
+location (as ‘temp.spv’ in the working images folder); after export
+SPIERSview is launched to view the file. This is the simplest export
+option, and the normal one to use, as once the file has been rendered by
+SPIERSview the latter program can then save a copy elsewhere if this is
+required.</p>
+<p><em>Old export code</em>: An older version of the Export system is available;
+this can be activated (for all three of the above commands) by ticking
+the <em>Use Old Exporting Code</em> option in the <em>Output</em> menu. With this
+enabled output will be substantially slower (and the cache system
+described in Concepts will not be used), but if the user is experiencing
+crashes with output (which typically relate to restricted available
+memory) they may find that the old code succeeds where the newer version
+fails.</p>
+</div>
+<div class="section" id="deskewing">
+<h2>8.5. Deskewing<a class="headerlink" href="#deskewing" title="Permalink to this headline">¶</a></h2>
+<p><em>SPIERSedit</em> incorporates a system to correct for skew in models caused
+by ‘drift’ of fiduciary markings in serial grinding datasets. These
+corrections are best explained by example – see Figure 16 (overleaf).
+Figure 16A shows a block in the image that contains a fossil on its left
+corner; it has edges cut as fiduciary markers, but these are not at
+exactly 90 degrees to the plane in which the specimen will be serially
+ground. This means that the edges will ‘drift’ steadily when the
+specimen is ground and photographed, and if these edges are used for
+alignment, the fossil will consequently be skewed when reconstructed.</p>
+<div class="figure align-center" id="id3">
+<img alt="_images/figure_16.png" src="_images/figure_16.png" />
+<p class="caption"><span class="caption-text">Figure 16. Deskewing example.* A, block prior to grinding with fiduciary edges not at 90 degrees to direction of grinding. B. Serial grinding image #10. C. Serial grinding image #70. D. Movement between B and C.</span></p>
+</div>
+<p>The vertical cylinders represent fixed points of reference. They will
+not appear in normal photographs of the fossil as they are too far away
+(normal images will be zoomed in on this corner for maximum resolution).
+However, suppose that the images B and C were captured at slices 10 and
+70 of the grinding run (at some lower magnification). By overlaying
+these images (and knowing the scale of the image) we can measure how
+much the edges have moved over these 60 slices – in this case 0.8mm to
+the right and 0.6mm downwards. This example is a little artificial, but
+these sorts of errors do occur in serial grinding datasets, and do
+require correction.</p>
+<p>Deskew values are entered into the <em>mm/Slice Down</em> and <em>mm/Slice Left</em>
+boxes on the <em>Settings</em> tab of the <em>Output</em> panel. In this example
+0.01333 (0.8mm / 60 slices) should be entered for mm/Slice down, and
+-0.01 (0.6mm / 60 slice) for mm/Slice left - note the use of a negative
+value for left drift as the edge is actually moving right not left.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="volumes.html" class="btn btn-neutral float-right" title="9. Measuring volumes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="polynomialgeneration.html" class="btn btn-neutral float-left" title="7. Polynomial Generation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2018-2021,  Mark Sutton, Russell J. Garwood, Alan R.T. Spencer
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,373 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>7. Polynomial Generation &mdash; SPIERSedit 3.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="8. Output" href="output.html" />
+    <link rel="prev" title="6. Range Generation" href="rangegeneration.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> SPIERSedit
+          
+
+          
+            
+            <img src="_static/SPIERS.jpg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">2. Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basicconcepts.html">3. Basic Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="masks.html">4. Masks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="segments.html">5. Segments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rangegeneration.html">6. Range Generation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">7. Polynomial Generation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#concepts">7.1. Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-a-sample">7.2. Creating a Sample</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#poly-tab-controls">7.3. Poly Tab Controls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#advice-on-polynomials">7.4. Advice on polynomials</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="output.html">8. Output</a></li>
+<li class="toctree-l1"><a class="reference internal" href="volumes.html">9. Measuring volumes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exportingworkingimages.html">10. Exporting Working Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="3dbrush.html">11. 3D Brush</a></li>
+<li class="toctree-l1"><a class="reference internal" href="curves.html">12. Curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lockselectionmode.html">13. Lock/Selection Mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="slicespacing.html">14. Slice Spacing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="histogram.html">15. Histogram</a></li>
+<li class="toctree-l1"><a class="reference internal" href="info.html">16. Info</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datadownsampling.html">17. Dataset Downsampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advancedprefs.html">18. Advanced Prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="updatesystem.html">19. Update System</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SPIERSedit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>7. Polynomial Generation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/polynomialgeneration.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="polynomial-generation">
+<span id="polynomialgeneration"></span><h1>7. Polynomial Generation<a class="headerlink" href="#polynomial-generation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="concepts">
+<h2>7.1. Concepts<a class="headerlink" href="#concepts" title="Permalink to this headline">¶</a></h2>
+<p><em>Linear</em> generation is a relatively crude way of turning a colour image
+into a monochrome working image, and while <em>Range</em> generation is an
+effective alternative for monochrome datasets (e.g. from CT scanning),
+both approaches potentially misses subtleties of colouration in
+colour-based datasets (e.g. from serial grinding), where different
+materials can be picked out with colour differences rather than simply
+brightness level. <em>Polynomial</em> generation mode is a more sophisticated
+approach to this generation-from-colour problem, which can in some
+circumstances produce ‘better’ thresholds, which will need less manual
+editing afterwards. It is however more complex both in concept and
+practice, and it recommended only for advanced users.</p>
+<p>Polynomial generation uses the concept of <em>training</em>; the user first
+manually edits a region of the dataset to their satisfaction, so that
+all pixels in this region (which can span multiple slices) are assigned
+to their correct segments. SPIERSedit is then asked to create generation
+rules (based on mathematical polynomial equations) which would work
+replicate this manual editing work as effectively as possible (i.e.
+would correctly predict the segment assignment in the sample for as high
+a percentage of pixels as possible). Once created, these rules can be
+applied using the <em>Generate</em> button to all selected slices (or with the
+<em>Recalc</em> brush) in the same way as for <em>Linear</em> generation.</p>
+<p><em>Mathematical note: Polynomial mode generation rules are polynomials of
+the form:</em></p>
+<p>v = k<sub>1</sub> + k<sub>2</sub>r + k<sub>3</sub>g + k<sub>4</sub>b +
+k<sub>5</sub>r<sup>2</sup>+ k<sub>6</sub>g<sup>2</sup> +
+k<sub>7</sub>b<sup>2</sup> + … + k<sub>(3n+1)</sub>r<sup>n</sup> +
+k<sub>(3n+2)</sub>g<sup>n</sup> + k<sub>(3n+3)</sub>b<sup>n</sup></p>
+<p>where v is the greyscale value, r, g, and b are the red, green and blue
+values of the colour image, and n (the order of the polynomial) and
+k<sub>1</sub> to k<sub>(3n+3)</sub> (constants) are the values that comprise
+the rule.</p>
+<p>The <em>Poly</em> tab of the <em>Generation</em> Panel provides controls for the
+creation of polynomial rules; with this tab selected, the <em>Generation</em>
+button (and the <em>Recalc</em> brush) will use polynomial mode generation
+rules.</p>
+<p>Polynomial mode can be used for multi-segment datasets, but both
+Polynomial rule-creation and generation is performed on a per-segment
+basis.</p>
+<p>SPIERSedit uses a genetic algorithm to create polynomial rules; this
+approach simulates Darwinian evolution to ‘breed’ effective rules. It
+starts with a random rule (or the best rule from the last time the
+genetic algorithm was run, if applicable) and determines what percentage
+of the pixels in the supplied sample would have come out correctly had
+that rule been used. It then makes a small random change to the rule,
+and checks again. If the new rule performs better (is ‘fitter’) it is
+retained, otherwise it is discarded. The process is repeated for many
+‘generations’ until the rule reaches an optimal fitness and no further
+improvements appear to be possible.</p>
+</div>
+<div class="section" id="creating-a-sample">
+<h2>7.2. Creating a Sample<a class="headerlink" href="#creating-a-sample" title="Permalink to this headline">¶</a></h2>
+<p><em>Polynomial</em> generation requires a sample of edited ‘correct’ pixels to
+build its rules. The sample used is the pixels turned ‘blue’ in
+Lock/Selection mode (see below) for all slices selected in the <em>Slice
+Selection</em> panel; it can thus consist of as many or as few pixels on as
+many slices as the user desires. SPIERSedit has no facility for storing
+samples; whenever ‘Find Polynomial’ is clicked the current selection is
+used, and any previous sample is discarded.</p>
+</div>
+<div class="section" id="poly-tab-controls">
+<h2>7.3. Poly Tab Controls<a class="headerlink" href="#poly-tab-controls" title="Permalink to this headline">¶</a></h2>
+<p>The <em>Poly</em> tab on the <em>Generation</em> panel (see Fig. 14) provides controls
+for the polynomial rule creation process.</p>
+<div class="figure align-center" id="id1">
+<img alt="_images/figure_14.png" src="_images/figure_14.png" />
+<p class="caption"><span class="caption-text">Figure 14. Poly tab of the Generation Panel.</span></p>
+</div>
+<p><em>Sparsity:</em> Controls how many of the sample pixels are used in the
+breeding process. A sparsity of 1 means every pixel is used, 2 means
+every other pixel, 5 every fifth pixel etc. Use this to speed the
+breeding process, although this might result in slightly less fit rules.</p>
+<p><em>Order</em>: Strictly speaking this is not part of the breeding process, but
+like the other settings it should be set before breeding. It controls
+the ‘order’ of the polynomial (<em>n</em> in the mathematical note above).
+Normally you can leave this at the default value of 4. Increasing it
+increases the time take to breed a solution, but can (in theory at
+least) result in better rules. Changing this and then generating without
+first creating breeding new rules with ‘<em>Find Polynomial</em>’ can
+result in strange behaviour!</p>
+<p><em>Retries</em>: The number of times the breeding process is run. Genetic
+algorithms can become stuck in blind alleys, where the rule has stopped
+improving, but is still far worse than it could be because a wrong
+direction was taken early on. To get around this the breeding process is
+run several times with different starting rules each time; the best
+solution from all runs is then taken. The catch is that the time taken
+for the genetic algorithm to run in proportional to the number of
+retries used. You should normally use at least five retries, unless you
+are refining an existing rule (see below). The default is 10.</p>
+<p><em>Converge</em>: The number of generations without any improvement before the
+algorithm gives up trying to make a rule better. High values make for
+slower breeding but (potentially at least) slightly better rules.</p>
+<p><em>Contrast</em>: This isn’t a setting for breeding but for generation. You
+may find that a rule generates greyscale images with either too little
+contrast (where most pixels are either just brighter or just darker than
+the threshold level), or too much contrast (where most pixels are either
+pure black or pure white). This doesn’t affect the threshold image, but
+does affect the usefulness of the brightness brush – you need a
+reasonable amount of contrast to play with. Changing the contrast
+setting to compensate for this – check how much contrast you have by
+generating and visually inspecting the working image by turning off
+thresholding (untick <em>Threshold</em> on the <em>Mode</em> menu).</p>
+<p><em>Find Polynomial button</em>: Starts breeding with the current settings.
+Progress is reported in a small dialog, which reports the fitness of the
+current (‘Best’) rule as a percentage, representing the proportion of
+pixels in the sample that the current rule predicted correctly (so high
+is good); values of over 95% are normally attainable. The algorithm can
+be left to run to completion, or can be stopped at any time with the
+stop button. Whether the operation is complete or has been manually
+stopped the best rule found will be used. Once completed or stopped, the
+dialog should be closed with it’s ‘Close’ button.</p>
+</div>
+<div class="section" id="advice-on-polynomials">
+<h2>7.4. Advice on polynomials<a class="headerlink" href="#advice-on-polynomials" title="Permalink to this headline">¶</a></h2>
+<p>Breeding can take a long while, particularly for large samples across
+multiple images. The best way to speed it up is to perform a two-stage
+breed. Firstly, set a large number of retries (say 30 or so), but choose
+a low convergence (say 2000) and a high sparsity (how high depends on
+the speed of the computer and the size of the sample – anything that
+makes things go reasonably quickly). Perform a <em>Find Polynomial</em>
+operation with these settings, which will try a lot of different rules
+in a rough-and-ready way. From this you will end up with one good
+candidate. Now set up a careful breed without any retries (set retries
+to 1, sparsity to 1, and converge to 32000 or more) and perform a second
+<em>Find Polynomial</em> operation. This second run of the algorithm will take
+the best rule from the first run and give it as much chance to improve
+as possible. Using this two-stage approach, high quality rules can
+normally be generated in a few minutes at most.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="output.html" class="btn btn-neutral float-right" title="8. Output" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="rangegeneration.html" class="btn btn-neutral float-left" title="6. Range Generation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2018-2021,  Mark Sutton, Russell J. Garwood, Alan R.T. Spencer
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

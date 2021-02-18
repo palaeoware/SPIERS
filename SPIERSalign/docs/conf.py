@@ -22,8 +22,8 @@ import sphinx_rtd_theme
 # -- Project information -----------------------------------------------------
 
 project = 'SPIERSalign'
-copyright = '2018-2021, Russell Garwood, Mark Sutton, Alan R.T. Spencer'
-author = 'Russell Garwood, Mark Sutton, Alan R.T. Spencer'
+copyright = '2018-2021, Russell J. Garwood, Mark Sutton, Alan R.T. Spencer'
+author = 'Russell J. Garwood, Mark Sutton, Alan R.T. Spencer'
 
 # The short X.Y version
 version = '3.1.1'

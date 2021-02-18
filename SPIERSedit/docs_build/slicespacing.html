@@ -1,0 +1,274 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>14. Slice Spacing &mdash; SPIERSedit 3.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="15. Histogram" href="histogram.html" />
+    <link rel="prev" title="13. Lock/Selection Mode" href="lockselectionmode.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> SPIERSedit
+          
+
+          
+            
+            <img src="_static/SPIERS.jpg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">2. Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basicconcepts.html">3. Basic Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="masks.html">4. Masks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="segments.html">5. Segments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rangegeneration.html">6. Range Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="polynomialgeneration.html">7. Polynomial Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="output.html">8. Output</a></li>
+<li class="toctree-l1"><a class="reference internal" href="volumes.html">9. Measuring volumes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exportingworkingimages.html">10. Exporting Working Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="3dbrush.html">11. 3D Brush</a></li>
+<li class="toctree-l1"><a class="reference internal" href="curves.html">12. Curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lockselectionmode.html">13. Lock/Selection Mode</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">14. Slice Spacing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="histogram.html">15. Histogram</a></li>
+<li class="toctree-l1"><a class="reference internal" href="info.html">16. Info</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datadownsampling.html">17. Dataset Downsampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advancedprefs.html">18. Advanced Prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="updatesystem.html">19. Update System</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SPIERSedit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>14. Slice Spacing</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/slicespacing.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="slice-spacing">
+<span id="slicespacing"></span><h1>14. Slice Spacing<a class="headerlink" href="#slice-spacing" title="Permalink to this headline">¶</a></h1>
+<p>For most datasets slice-spacing is be consistent, and setting the
+<em>Slices/mm</em> value in the <em>Settings</em> tab of the <em>Output</em> panel is
+sufficient. In some datasets however slice-spacing is variable, either
+as a result of errors in data collection, or a change in collection
+parameters at some point in the sequence. While correct slice spacings
+are not always known in these circumstances, educated guesses at them
+can usually be made that will improve model results.</p>
+<p>The reconstruction approach used by SPIERS theoretically assumes
+consistent splice spacing, but is flexible enough to be able modify
+models to be tweaked in SPIERSview after construction to allow for some
+inconsistency in slice spacing. To facilitate this SPIERSedit provides a
+mechanism for modifying slice spacing. This should not be used as a
+replacement for a correct <em>Slices/mm</em> setting however; to ensure the
+best reconstruction this value should be set to something close to the
+average spacing for all slices before exact slice positions are
+subsequently tweaked.</p>
+<p>To alter slice spacing, the <em>Show position in slice selector</em> item in
+the <em>Slice Spacing</em> menu should be selected. With this option turned on,
+the filenames in the <em>Slice Selector</em> panel are replaced with positions
+(in mm) of the slice, relative to a 0 position inferred for notional
+slice 0 (so if Slices/mm is set to 10, slice 1 will be at 0.1mm, slice 2
+at 0.2mm etc).</p>
+<p>Individual slice positions can be set by selecting the slice and using
+the <em>Set slice position</em> command on the <em>Slice Spacing</em> menu. SPIERSedit
+will not allow a user to set the position in front of the next slice or
+behind the preceding one; if this is attempted the program will warn the
+user and move the positions of other slices to maintain slice order.</p>
+<p>If several slices share a consistent spacing, this can be set using the
+<em>Change slice spacing</em> command on the <em>Slice Spacing</em> menu. Select
+slices to be affected then use the command – slice spacing can be set as
+an absolute value or a percentage of standard slice spacing (the
+<em>Slices/mm</em> setting).</p>
+<p>We stress again that the mechanism to deal with inconsistent slice
+spacing in SPIERS is something of a bodge, and while it <em>will</em> improve
+the reconstruction of inconsistently spaced data, the process of
+reconstruction (using SPIERS or any other software) is eased by the
+production of consistently spaced data in the first place.</p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="histogram.html" class="btn btn-neutral float-right" title="15. Histogram" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="lockselectionmode.html" class="btn btn-neutral float-left" title="13. Lock/Selection Mode" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2018-2021,  Mark Sutton, Russell J. Garwood, Alan R.T. Spencer
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

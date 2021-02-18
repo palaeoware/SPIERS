@@ -1,0 +1,452 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>4. Masks &mdash; SPIERSedit 3.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="5. Segments" href="segments.html" />
+    <link rel="prev" title="3. Basic Concepts" href="basicconcepts.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> SPIERSedit
+          
+
+          
+            
+            <img src="_static/SPIERS.jpg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">2. Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basicconcepts.html">3. Basic Concepts</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">4. Masks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#concepts">4.1. Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#applying-masks">4.2. Applying masks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#advice-on-use-of-masks">4.3. Advice on use of masks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#masks-manipulation">4.4. Masks manipulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#copying-masks">4.5. Copying Masks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#masks-and-segments">4.6. Masks and Segments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#masks-and-curves">4.7. Masks and Curves</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="segments.html">5. Segments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rangegeneration.html">6. Range Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="polynomialgeneration.html">7. Polynomial Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="output.html">8. Output</a></li>
+<li class="toctree-l1"><a class="reference internal" href="volumes.html">9. Measuring volumes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exportingworkingimages.html">10. Exporting Working Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="3dbrush.html">11. 3D Brush</a></li>
+<li class="toctree-l1"><a class="reference internal" href="curves.html">12. Curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lockselectionmode.html">13. Lock/Selection Mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="slicespacing.html">14. Slice Spacing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="histogram.html">15. Histogram</a></li>
+<li class="toctree-l1"><a class="reference internal" href="info.html">16. Info</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datadownsampling.html">17. Dataset Downsampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advancedprefs.html">18. Advanced Prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="updatesystem.html">19. Update System</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SPIERSedit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>4. Masks</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/masks.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="masks">
+<span id="id1"></span><h1>4. Masks<a class="headerlink" href="#masks" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="concepts">
+<h2>4.1. Concepts<a class="headerlink" href="#concepts" title="Permalink to this headline">¶</a></h2>
+<p>The SPIERSedit mask system allows the user to colour-code
+different parts of the model. The two most common reasons to do this
+are:</p>
+<p><em>Defining a region of interest</em>. While it is possible to manually delete
+all undesired pixels in the background/matrix in each slice, the mask
+system provides a quicker way to separate off the part of the image with
+‘object’ in it from the rest. In Figure 7, a ‘fossil’ mask (light brown)
+has been used to indicate the region of interest prior to any editing
+work. The remaining background (still in the black/white colour of the
+default mask) can then be hidden and excluded from visualisation with a
+few clicks. A similar approach can be used to identify unwanted
+structures such as cracks, and exclude them from visualisation.</p>
+<div class="figure align-center" id="id2">
+<img alt="_images/figure_7.png" src="_images/figure_7.png" />
+<p class="caption"><span class="caption-text">Figure 7. Mask as region of interest.</span></p>
+</div>
+<p><em>Splitting a model into sub-units</em>: The most important
+application for masks is to split the model into several separately
+coloured units (e.g. split an arthropod fossil into carapace, appendages
+and trunk). This enables colour-coding for clarity in the final
+three-dimensional model, and also allows the user to perform ‘virtual
+dissections’ by interactively hiding/unhiding these units in SPIERSview.
+In Figure 8, a ‘body’ mask (light brown) has been applied prior to
+editing (as above), and the background mask hidden from view. After
+editing, further masks were applied to reassign some parts of ‘body’ to
+other structures - a carapace mask (blue), and three different appendage
+masks (purple, red and green) are visible.</p>
+<div class="figure align-center" id="id3">
+<img alt="_images/figure_8.png" src="_images/figure_8.png" />
+<p class="caption"><span class="caption-text">Figure 8. Masks used to identify structures.</span></p>
+</div>
+<p>Masks are only visible in <em>Mask</em> mode; however, if the <em>Always Show
+Masks</em> option in the <em>Mode</em> menu is turned on, you will see masks (in a
+washed-out form) in all other modes (except Lock/selection).</p>
+<p>Note that masking affects both ‘on’ and ‘off’ pixels – a light version
+of the colour is used for ‘on’, and a dark one for ‘off’. Only the ‘on’
+pixels will appear in the final model of course, but the colour-coding
+of ‘off’ regions is there to remind you of the mask that pixels
+subsequently turned on here will be assigned to. Note that the
+mask-boundaries in empty regions of the examples above are rough and
+ready - this doesn’t matter, as there are no ‘on’ pixels here to appear
+in any reconstruction. Those in ‘on’ regions (such as the inside of the
+carapace, above) will be rendered as object boundaries, so more care is
+required.</p>
+<p><em>Colour:</em> Mask colour only affects the colour masks appear in
+SPIERSedit; while this colour is also used to provide a default colour
+for output objects when they are created, these can be set
+independently, and there is no requirement for SPIERSedit mask colours
+to be those used for objects in SPIERSview; mask colours instead should
+be chosen so that the user can easily distinguish masks which abut each
+other when editing. Dark ‘on’ colours should normally be avoided.</p>
+<p><em>Visibility</em>: Masks can be visible or hidden. Hidden masks are still
+visible in the threshold image as their ‘off’ colour, but no ‘on’ pixels
+are shown. This only affects viewing of images in SPIERSedit; hidden
+masks behave just like visible ones for export to SPIERSview. Hiding
+masks only affects program behaviour if the <em>Hidden masks locked for
+generation</em> option in the <em>Masks</em> menu is ticked; as expected this
+option restricts all generation actions performed from the <em>Generate</em>
+panel to visible masks. This allows different generation rules to be
+applied for different regions of interest – often useful if there are
+preservational differences between different structures. Note that the
+recalc mode brush still affects hidden masks even with this option
+ticked.</p>
+<p><em>Locking</em>: Masks can be locked or unlocked. A locked mask cannot be
+overwritten by another mask, either with the mask brush, mask copy
+commands, or through mask from curve operations (see below). There are
+many uses for this facility, the most important being the locking of a
+‘completed’ mask to avoid accidental changes to it.</p>
+</div>
+<div class="section" id="applying-masks">
+<h2>4.2. Applying masks<a class="headerlink" href="#applying-masks" title="Permalink to this headline">¶</a></h2>
+<p>Masks are applied by using the brush in <em>Mask</em> mode. The left and right
+mouse buttons can be set to apply different masks; these are chosen from
+the L and R mask dropdowns in the <em>Main Toolbox</em> panel, or alternatively
+by left or right clicking in the left-hand column of the <em>Masks</em> panel.
+In this column the R indicates the right mouse button mask and the L
+indicates the left mouse button mask; if these coincide a ‘B’ (for both)
+is displayed. Note additionally that selecting a mask in the <em>Masks</em>
+panel automatically chooses it as the left-mouse mask.</p>
+<p>Masks can also be applied using the <em>Masks from Curves</em> and <em>Copy</em>
+commands (see below); these provide mechanisms for rapidly masking large
+numbers of slices.</p>
+</div>
+<div class="section" id="advice-on-use-of-masks">
+<h2>4.3. Advice on use of masks<a class="headerlink" href="#advice-on-use-of-masks" title="Permalink to this headline">¶</a></h2>
+<p><em>Masking procedure:</em> When masking a dataset it is normally best to begin
+masking an isolated part, such as a limb. Find such a structure, and
+adjust the brush size, create and select a mask, and apply it using the
+brush to create a coloured zone around a structure to encompass all its
+boundaries (see Fig. 9). Moving forward or backward through the dataset
+a slice at a time (most conveniently using the shortcut keys for
+movement) allows this process to be repeated and structures followed
+throughout the dataset. It is normally easier to create one mask at a
+time and apply it to all required slices, rather than create all masks
+at once and apply them all, slice by slice.</p>
+<div class="figure align-center" id="id4">
+<img alt="_images/figure_9.png" src="_images/figure_9.png" />
+<p class="caption"><span class="caption-text">Figure 9. Masking example.</span></p>
+</div>
+<p>Here a rough ‘Fossil’ mask has been used to
+pick out a region of interest, facilitating initial inspection of data
+and removing much of the background (hidden). Three subsequent masks
+(two legs and a body) have subsequently been more carefully added; at
+this point only the crack and noise are left in the ‘Fossil’ mask.</p>
+<p><em>Multiple masks</em>: Multiple masks can be easily fused into a single
+object at output, so there is little harm in using multiple masks for a
+single structure. This often provides flexibility – for instance part of
+a structure can be masked separately so that in one version of the
+output it can be hidden to allow users to see inside an object; in
+another version of the output it can be fused seamlessly with the rest
+of the object. As another example ‘left’ and ‘right’ versions of
+arthropod appendages can be separately masked, and then either fused
+together at output or output separately, as desired. In short, it is far
+easier to join objects at output than it is to split up a single mask
+later on, so the use of many masks for all potentially separable
+structures is recommended.</p>
+<p><em>Mask cut-offs</em>: Where structures converge (e.g. a leg meets the body)
+the user must decide at which point to switch masks; this is an
+arbitrary decision, but if not made consistently on subsequent slices
+can result in ragged-looking ‘cuts’. One of the best ways to attain
+consistency is the use of the <em>Masks from Curves</em> command (see below).</p>
+</div>
+<div class="section" id="masks-manipulation">
+<h2>4.4. Masks manipulation<a class="headerlink" href="#masks-manipulation" title="Permalink to this headline">¶</a></h2>
+<p>The <em>Masks</em> panel lists all masks that exist for the currently
+open dataset. When a dataset is created a single mask called
+‘Background’ is created, with all pixels assigned to it. Figure 10 shows
+an undocked <em>Masks</em> panel with many masks visible. Most changes to masks
+are carried out through this panel; a few also use the <em>Masks</em> menu.</p>
+<div class="figure align-center" id="id5">
+<img alt="_images/figure_10.png" src="_images/figure_10.png" />
+<p class="caption"><span class="caption-text">Figure 10. Masks panel.</span></p>
+</div>
+<p><em>Creating masks</em>: The <em>New</em> button in the <em>Masks</em> panel (or the <em>New
+Mask</em> command in the <em>Masks</em> menu) creates a new mask. Up to 255 masks
+in total can be created. New masks are created with an uninformative
+name (e.g. Mask 2), and a random colour; it is good practice to at least
+rename a mask after creation.</p>
+<p><em>Renaming masks</em>: Double click on the Mask Name in the <em>Masks</em> panel to
+edit it.</p>
+<p><em>Changing colours:</em> Double click on the right-hand colour block (the
+Threshold ‘on’ colour) to change it. The left-hand colour block (the
+Threshold ‘off’ colour) is not set independently, but is a darker
+version of the ‘on’ colour. Double-clicking this block will bring up a
+dialog which enables the contrast between the light and dark versions of
+the colour to be set.</p>
+<p><em>Selecting masks</em>: One or more masks can be selected by left clicking on
+any column of the <em>Masks</em> panel. To select multiple masks use Ctrl-click
+or Shift-click. Selection is indicated by an underlined mask name. Note
+that mask selection and choice of left mouse button mask is not quite
+the same thing, though often they will coincide – it is possible for the
+selected mask NOT to be the left mouse button mask for instance, and
+more than one mask can be selected. Selection of masks is used for bulk
+locking or hiding, bulk deleting, mask copying, and the creation of
+output objects.</p>
+<p><em>Mask visibility</em>: Double-clicking a mask’s ‘eye’ icon toggles its
+visibility; this can be done to masks in bulk by selecting them (see
+below) and using the <em>Show Selected Masks</em> or <em>Hide Selected Masks</em>
+commands on the <em>Masks</em> menu.</p>
+<p><em>Mask locking</em>: Double-clicking a mask’s ‘padlock’ icon toggles its lock
+status; this can be done to masks in bulk by selecting them (see below)
+and using the <em>Lock Selected Masks</em> or <em>Unlock Selected Masks</em> commands
+on the <em>Masks</em> menu.</p>
+<p><em>Re-ordering masks list:</em> Masks can be moved up and down the list by
+selecting a single mask and using the <em>Up</em> and <em>Down</em> buttons on the
+<em>Masks</em> panel. This reordering only affects how the masks appear in this
+list; it has no effect on output or images.</p>
+<p><em>Deleting masks:</em> To delete a mask or masks first select them (see
+above), then click delete or use the <em>Delete selected mask(s)</em> command
+on the <em>Masks</em> menu. As all pixels MUST be assigned to a mask,
+SPIERSedit brings up a dialog to determine which mask you want to assign
+pixels in the to-be-deleted mask(s) to. The delete operation may take an
+appreciable amount of time as SPIERSedit goes through all the slices and
+changes all instances of the deleted mask(s) to the target mask.</p>
+</div>
+<div class="section" id="copying-masks">
+<h2>4.5. Copying Masks<a class="headerlink" href="#copying-masks" title="Permalink to this headline">¶</a></h2>
+<p>SPIERSedit provides four different <em>Copy</em> commands in the <em>Masks</em> menu
+to copy masks from or to the previous, next, current or selected
+slice(s); in this context current = viewed slice; next = slice after
+viewed slice; previous = slice before viewed slice; selected = slice(s)
+selected in the <em>Slice Selector</em> panel. These commands copy all masks
+selected in the <em>Masks</em> panel from the source to the target slice(s).
+Ticking the <em>Advance one slice after copy</em> or <em>Go back one</em> <em>slice after
+copy</em> options in the <em>Masks</em> menu combines copy operations with a single
+move operation. Using these options in conjunction it is possible to
+copy masks one slice at a time quickly through the dataset with a single
+command for each step. Alternatively, using the <em>Copy… to selected</em>
+commands it is possible to copy mask data from one slice to many in a
+single command.</p>
+</div>
+<div class="section" id="masks-and-segments">
+<h2>4.6. Masks and Segments<a class="headerlink" href="#masks-and-segments" title="Permalink to this headline">¶</a></h2>
+<p>If the <em>Segment brush applies mask</em> option on the <em>Masks</em> menu is ticked
+then drawing segments on using the brush (with either mouse button) will
+also apply the selected masks to the same pixels.</p>
+</div>
+<div class="section" id="masks-and-curves">
+<h2>4.7. Masks and Curves<a class="headerlink" href="#masks-and-curves" title="Permalink to this headline">¶</a></h2>
+<p>The <em>Mask from curve</em> command on the <em>Masks</em> menu allows the user to
+generate masks quickly for large numbers of slices, and is normally the
+most effective (though not the simplest) way to specify masks over a
+large number of slices. Its use is described in the section on curves.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="segments.html" class="btn btn-neutral float-right" title="5. Segments" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="basicconcepts.html" class="btn btn-neutral float-left" title="3. Basic Concepts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2018-2021,  Mark Sutton, Russell J. Garwood, Alan R.T. Spencer
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
