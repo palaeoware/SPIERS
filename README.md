@@ -67,7 +67,7 @@ We recommend you install and use MSYS2 (64-bit) a Windows package manager, based
 8. You should now be able to find the required libraries under "{install location}/mingw64/bin" and the required header (.h) files for QT v5.x and VTK v8.1 under "{install location}/mingw64/include".
 9. Use the information above to setup a new 64-bit ming64 kit under QT creator and follow standard QT Creator debug/release procedure.
 
-#### Ubuntu 18.04 64-bit - QT Creator + QT v5.x and VTK v7.1 using GCC (64-bit)
+#### Ubuntu 18.04/20.04 64-bit - QT Creator + QT v5.x and VTK v7.1 using GCC (64-bit)
 
 1. Install GCC and QT5.X on your system. You can do this two ways, by using system packages:
 
@@ -87,7 +87,7 @@ Or by downloading and running the installer from Qt: https://www.qt.io/download 
 
 `git clone https://github.com/palaeoware/SPIERS.git`
 
-You can then be able to compile SPIERS by opening the .pro file in QT creator and following standard debug/release procedure. The resulting executables will be placed in their individual bin folders: copy these to a single directory to allow SPIERSedit to launch SPIERSview.
+You can then compile SPIERS by opening the .pro file in QT creator and following standard debug/release procedure (or see alternative below). The resulting executables will be placed in their individual bin folders. SPIERS is set up to work with this directory structure. Copy the build folders to your required location if this differs from the build location.
 
 5. Alternatively you can build using the following commands -  navigate into the SPIERS source folder in a terminal window:
 
@@ -101,17 +101,9 @@ Build by running the make command:
 
 `make`
 
-You can then copy the executable files to your desired location, for example, the below will place the files in the SPIERS root directory:
+You can then copy the build folders to your desired location.
 
-`cp SPIERSalign/bin/SPIERSalign64 ./`
-
-`cp SPIERSedit/bin/SPIERSedit64 ./`
-
-`cp SPIERSview/bin/SPIERSview64 ./`
-
-The executables need to be in the same folder to allow SPIERSedit to launch SPIERSview.
-
-6. Should you wish to create desktop icons or for SPIERS to appear in your launcher, we provide exemplar desktop entries in the SPIERS/examples folder of the repository, coupled with icons for these. Place the icons in the same folder alongside the executable files, and place this folder wherever you would like it to live on your system. The edit the paths to the executables and icons by replacing XXXXX in the example files with your path. Double clicking on the desktop entry will ask you to trust and launch the program. Placing the entry on your desktop will create an icon that launches the software. Additionally, if you open a terminal at the location where the desktop entry is stored, and copy it from there to /usr/share/applications/ using this command
+6. Should you wish to create desktop icons or for SPIERS to appear in your launcher, we provide exemplar desktop entries in the SPIERS/examples folder of the repository, coupled with icons for these. Place the icons in the same folder alongside the executable files, and place this folder wherever you would like it to live on your system. The edit the paths to the executables and icons by replacing XXXXX in the example files with your path. Double clicking on the desktop entry will ask you to trust and launch the program. Placing the entry on your desktop will create an icon that launches the software. Additionally, if you open a terminal at the location where the desktop entry is stored, and copy it from there to /usr/share/applications/ using this command:
 
 `sudo cp SPIERSalign.desktop /usr/share/applications/`
 
@@ -119,7 +111,10 @@ The executables need to be in the same folder to allow SPIERSedit to launch SPIE
 
 `sudo cp SPIERSview.desktop /usr/share/applications/`
 
-This will create entries for each package in the GNOME activities overview / launcher.
+This will create entries for each package in the GNOME activities overview / launcher. Alternatively you can use alacarte to achieve this process using a GUI:
+
+`sudo apt-get update`
+`sudo apt-get install alacarte`
 
 #### macOS Catalina 64-bit - QT Creator + QT v5.x and VTK v8.2 (via Homebrew) using Clang 64-bit/XCode 11 toolchain
 
