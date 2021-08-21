@@ -1,0 +1,41 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the paper below."
+authors:
+- family-names: "Sutton"
+  given-names: "Mark D."
+  orcid: "https://orcid.org/0000-0002-7137-7572"
+- family-names: "Garwood"
+  given-names: "Russell J."
+  orcid: "https://orcid.org/0000-0002-2803-9471"
+- family-names: "Spencer"
+  given-names: "Alan R.T."
+  orcid: "https://orcid.org/0000-0001-6590-405X"
+title: "SPIERS software"
+version: 3.1.1
+doi: 10.5281/zenodo.3899309
+date-released: 2020-06-17
+url: "https://github.com/palaeoware/spiers"
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Sutton"
+    given-names: "Mark D."
+    orcid: "https://orcid.org/0000-0002-7137-7572"
+  - family-names: "Garwood"
+    given-names: "Russell J."
+    orcid: "https://orcid.org/0000-0002-2803-9471"
+  - family-names: "Siveter"
+    given-names: "David J."
+    orcid: "https://orcid.org/0000-0002-1716-5819"
+  - family-names: "Siveter"
+    given-names: "Derek J."
+    orcid: "https://orcid.org/0000-0002-5305-2192"
+  doi: "10.26879/289"
+  journal: "Palaeontologia Electronica"
+  month: 5
+  start: 15.2.5T # First page number
+  #End - not required Last page number
+  title: "SPIERS and VAXML: A software toolkit for tomographic visualisation and a format for virtual specimen interchange"
+  issue: 2
+  volume: 15
+  year: 2012
