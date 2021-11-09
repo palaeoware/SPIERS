@@ -38,6 +38,7 @@ public:
     void Copy(QDir source, QDir dest);
     void MakeNewSegFiles(int snum);
     void DeleteSegments(QList <int> list);
+    void GenerateLCE(QListWidget *SliceSelectorList);
     void GenerateLinear(QListWidget *SliceSelectorList);
     void GeneratePoly(QListWidget *SliceSelectorList);
     void GenerateRange(QListWidget *SliceSelectorList);
@@ -71,6 +72,7 @@ private:
     void WriteSPVData(int, QByteArray, QVector<double> *TrigArray, int TrigCount, QDataStream *out);
     QByteArray ExpandGrid(QByteArray *grid, int awidth, int aheight);
     QString CountMessage;
+    QVector <uchar> LCE_sample;
     int Count;
 
 private slots:

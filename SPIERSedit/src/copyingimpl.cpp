@@ -368,6 +368,32 @@ void CopyingImpl::DeleteSegments(QList <int> list)
  * @brief CopyingImpl::GenerateLinear
  * @param SliceSelectorList
  */
+
+//New generate for local contrast enhancement
+//Base is copy of generateLinear
+void CopyingImpl::GenerateLCE(QListWidget *SliceSelectorList)
+{
+    int c = SliceSelectorList->selectedItems().count();
+    if (c > 1) show(); //show progress dialog if multifile
+    copying = true; //what does this do? Block GUI?
+
+    this->setWindowTitle("Perfoming Local Contrast Enhancement (LCE)...");
+    WriteAllData(CurrentFile);
+    if (c > 1)  progressBar->setMaximum(c);
+    int item_count=0;
+    for (int i = 0; i < Files.count(); i++)
+    {
+        //for each file
+        if ((SliceSelectorList->item(i))->isSelected()) ApplyLCE(CurrentSegment, i, false);
+        if (c > 1) progressBar->setValue(item_count++);
+        if (c > 1) qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
+    }
+    //restore setup
+    LoadAllData(CurrentFile);
+    copying = false;
+    if (c > 1) close(); //close dialog
+}
+
 void CopyingImpl::GenerateLinear(QListWidget *SliceSelectorList)
 {
     int c = SliceSelectorList->selectedItems().count();
@@ -376,11 +402,12 @@ void CopyingImpl::GenerateLinear(QListWidget *SliceSelectorList)
     this->setWindowTitle("Generating linear segment files...");
     WriteAllData(CurrentFile);
     if (c > 1)  progressBar->setMaximum(c);
+    int item_count=0;
     for (int i = 0; i < Files.count(); i++)
     {
 
         if ((SliceSelectorList->item(i))->isSelected()) MakeLinearGreyScale(CurrentSegment, i, false);
-        if (c > 1) progressBar->setValue(i);
+        if (c > 1) progressBar->setValue(item_count++);
         if (c > 1) qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
     }
     LoadAllData(CurrentFile);
@@ -400,10 +427,11 @@ void CopyingImpl::GeneratePoly(QListWidget *SliceSelectorList)
     this->setWindowTitle("Generating polynomial segment files...");
     WriteAllData(CurrentFile);
     if (c > 1)  progressBar->setMaximum(c);
+    int item_count=0;
     for (int i = 0; i < Files.count(); i++)
     {
         if ((SliceSelectorList->item(i))->isSelected()) MakePolyGreyScale(CurrentSegment, i, false);
-        if (c > 1) progressBar->setValue(i);
+        if (c > 1) progressBar->setValue(item_count++);
         if (c > 1) qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
     }
     LoadAllData(CurrentFile);
@@ -423,13 +451,14 @@ void CopyingImpl::GenerateRange(QListWidget *SliceSelectorList)
     this->setWindowTitle("Generating range segment files...");
     WriteAllData(CurrentFile);
     if (c > 1)  progressBar->setMaximum(c);
+    int item_count=0;
     for (int i = 0; i < Files.count(); i++)
     {
         if (RangeSelectedOnly) if ((SliceSelectorList->item(i))->isSelected()) MakeRangeGreyScale(CurrentSegment, i, false);
         if (!RangeSelectedOnly) if ((SliceSelectorList->item(i))->isSelected())
                 for (int j = 0; j < SegmentCount; j++) if (Segments[j]->Activated) MakeRangeGreyScale(j, i, false);
 
-        if (c > 1) progressBar->setValue(i);
+        if (c > 1) progressBar->setValue(item_count++);
         if (c > 1) qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
     }
     LoadAllData(CurrentFile);
@@ -516,7 +545,7 @@ void CopyingImpl::ReverseStretches(QList <double> *stretches, int Sstart, int Ss
  * @return
  */
 bool CopyingImpl::DoIHaveChildren(int parent)
-//Yes, I do!
+//Yes, I do - MDS
 {
     for (int i = 0; i < OutputObjectsCount; i++)
         if (OutputObjects[i]->IsGroup == false && OutputObjects[i]->Parent == parent && OutputObjects[i]->Show) return true;
@@ -880,12 +909,43 @@ void CopyingImpl::Apply3DBrush(int button)
             else Brush.segment(LastMouseX, LastMouseY,  0);
             break;
         case 5:
-            if (tabwidget->currentIndex() < 2 || RangeSelectedOnly)
-                Brush.recalc(LastMouseX, LastMouseY, CurrentSegment);
+            if (tabwidget->currentIndex() < 2 || RangeSelectedOnly || tabwidget->currentIndex()>2)
+            {
+
+                QByteArray NewLocks;
+
+                if (tabwidget->currentIndex()==3) //LCE mode
+                {
+                    if (LCE_sample.size()!=fwidth*fheight) LCE_sample.resize(fwidth4 * fheight);
+                    // get data from GA array
+
+                    memcpy(LCE_sample.data(),GA[CurrentSegment]->bits(),fwidth4*fheight);
+
+                    NewLocks = DoMaskLocking();
+
+                }
+
+                Brush.recalc(LastMouseX, LastMouseY, CurrentSegment, &LCE_sample, &NewLocks);
+            }
             else
                 //all segs
-                for (int i = 0; i < SegmentCount; i++) if (Segments[i]->Activated) Brush.recalc(LastMouseX, LastMouseY, i);
+            {
+                QByteArray NewLocks;
+
+                if (tabwidget->currentIndex()==3) //LCE mode
+                {
+                    if (LCE_sample.size()!=fwidth*fheight) LCE_sample.resize(fwidth4 * fheight);
+                    // get data from GA array
+
+                    memcpy(LCE_sample.data(),GA[CurrentSegment]->bits(),fwidth4*fheight);
+
+                    NewLocks = DoMaskLocking();
+
+                }
+                for (int i = 0; i < SegmentCount; i++) if (Segments[i]->Activated) Brush.recalc(LastMouseX, LastMouseY, i, &LCE_sample, &NewLocks);
+            }
             break;
+
         }
         progressBar->setValue(count++);
         qApp->processEvents(QEventLoop::ExcludeUserInputEvents);

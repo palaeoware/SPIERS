@@ -36,7 +36,7 @@ public:
     void mask(int x, int y, int mask);
     void Brush_Flag_Restart();
     void segment(int x, int y, int effect);
-    void recalc(int x, int y, int segment);
+    void recalc(int x, int y, int segment, QVector<uchar> *sample, QByteArray *locks);
     //more to follow!
     int PixelCount; //applies to all three lists above
 private:

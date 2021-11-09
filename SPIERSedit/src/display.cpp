@@ -570,6 +570,35 @@ QByteArray DoMaskLocking()
     return newlocks;
 }
 
+//Do LCE - based on MakeLinearGreyScale
+void ApplyLCE(int seg, int fnum, bool flag = false)
+{
+    //load data for file - can and should assume existing data is safe
+    if (!flag) LoadAllData(fnum);
+
+    if (Segments[seg]->Locked) return;
+    uchar *data= GA[seg]->bits(); // get data from GA array
+
+    //make a copy of underlying data
+    QVector<uchar> data_original_vector(fwidth4 * fheight);
+    uchar *data_original = data_original_vector.data();
+    memcpy(data_original,data,fwidth4*fheight);
+
+    QByteArray NewLocks = DoMaskLocking();
+
+    //ignore inversion - doesn't make sense for LCE
+    for (int h = 0; h < fheight; h++)
+        for (int w = 0; w < fwidth; w++)
+        {
+            if (!(NewLocks[(fwidth * h + w)]))
+                *(data + (fwidth4 * h + w))
+                    = LCEPixel(w, h, data_original, &NewLocks);
+        }
+    if (!flag) SaveGreyData(fnum, seg);
+
+
+}
+
 void MakeLinearGreyScale(int seg, int fnum, bool flag = false)
 {
     //load data for file - can and should assume existing data is safe
@@ -821,7 +850,7 @@ void MakePolyGreyScale(int seg, int fnum, bool flag = false)
 
 
 
-uchar GenPixel(int x, int y, int s)
+uchar GenPixel(int x, int y, int s, QVector<uchar> *sample, QByteArray *locks)
 {
     CurrentPolyContrast = pow(static_cast<double>(2), Segments[s]->PolyContrast) / Segments[s]->PolyScale;
     //generate a pixel using whatever method
@@ -854,7 +883,57 @@ uchar GenPixel(int x, int y, int s)
         return t2;
     }
 
+    if (tabwidget->currentIndex() == 3)
+    {
+        return LCEPixel(x,y,sample->data(),locks);
+    }
+
     return 0;
+}
+
+uchar LCEPixel(int w, int h, uchar *original_data, QByteArray *new_locks)
+{
+
+    int val = (int)original_data[w + fwidth4*h];
+
+
+    //work out min, max h and w for loop
+    int minw = w-LCE_Radius;
+    if (minw<0) minw=0;
+    int maxw = w+LCE_Radius;
+    if (maxw>=fwidth) maxw = fwidth-1;
+    int minh = h-LCE_Radius;
+    if (minh<0) minh=0;
+    int maxh = h+LCE_Radius;
+    if (maxh>=fheight) maxh = fheight-1;
+
+    int radius_squared = LCE_Radius*LCE_Radius;
+    quint64 count=0;
+    quint64 sum=0;
+    for (int ypos = minh; ypos<=maxh; ypos++)
+    for (int xpos = minw; xpos<=maxw; xpos++)
+    {
+        //Exclude outside radius
+        int d0 = ypos-h;
+        int d1 = xpos-w;
+        if (d0*d0+d1*d1<=radius_squared)
+        {   
+            if (!(new_locks->at(ypos*fwidth+xpos)))  // exclude lock-excluded pixels
+            {
+                sum+=static_cast<quint64>(original_data[ypos*fwidth4+xpos]);
+                count++;
+            }
+        }
+    }
+    if (count==0) return static_cast<uchar>(val); //probably impossible?
+    int mean = static_cast<int>(sum/count);
+
+    int diff = static_cast<int>(val) - mean;
+    int boost = (diff * LCE_Boost) / 5 + LCE_Adjust;
+    val += boost;
+    if (val<0) return 0;
+    if (val>255) return 255;
+    return static_cast<uchar>(val);
 }
 
 uchar GreyScalePixel(int w, int h, int r, int g, int b, int glob)
@@ -886,7 +965,9 @@ uchar GreyScalePixel(int w, int h, int r, int g, int b, int glob)
         rtot *= glob;
         temp = rtot / (ColMonoScale * ColMonoScale * 10000);
     }
-    if (temp < 0) return 0;
-    if (temp > 255) return 255;
+
+
+    if (temp < 0) temp= 0;
+    if (temp > 255) temp= 255;
     return static_cast<uchar>(temp);
 }

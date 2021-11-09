@@ -18,6 +18,7 @@
 #include "brush.h"
 #include "globals.h"
 #include "display.h"
+#include "stdlib.h"
 #include <math.h>
 #include "myscene.h"  //for the scene
 #include <QPen>
@@ -351,7 +352,7 @@ void Brush_class::resize(int size, int shape, double o)
 
             if (TY.count())
             {
-                qSort(TY); //now ordered
+                std::sort(TY.begin(), TY.end()); //replaced qSort
                 bool on = false;
                 int last = TY[0] - 2;
                 foreach (int y, TY)
@@ -388,7 +389,8 @@ void Brush_class::resize(int size, int shape, double o)
 
             if (TX.count())
             {
-                qSort(TX); //now ordered
+                std::sort(TX.begin(), TX.end());
+
                 bool on = false;
                 int last = TX[0] - 2;
                 foreach (int x, TX)
@@ -722,7 +724,7 @@ void Brush_class::brighten(int x, int y, int segment, int effect)
     //FilesDirty[CurrentFile]=true;
 }
 
-void Brush_class::recalc(int x, int y, int segment)
+void Brush_class::recalc(int x, int y, int segment, QVector<uchar> *sample, QByteArray *locks)
 {
     int n;
     uchar *data;
@@ -748,7 +750,8 @@ void Brush_class::recalc(int x, int y, int segment)
                     {
                         pos = ay * fwidth + ax;
                         int pos4 = ay * fwidth4 + ax;
-                        data[pos4] = GenPixel(ax, ay, segment);
+                        if (locks->at(pos)==0)
+                            data[pos4] = GenPixel(ax, ay, segment, sample, locks);
 
                         dirty[pos] = 1;
                     }

@@ -201,6 +201,9 @@ private slots:
     void BrightDownChanged(int);
     void BrightUpChanged(int);
     void SoftChanged(int);
+    void BoostSpinBoxChanged(int);
+    void BoostRadiusSpinBoxChanged(int);
+    void BoostAdjustSpinBoxChanged(int);
     void TransToggled();
     void SquareToggled();
     void ThresholdFlag();

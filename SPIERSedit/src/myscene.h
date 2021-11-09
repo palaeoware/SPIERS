@@ -41,6 +41,10 @@ private:
     void DoMouse(int x, int y, int PressedButton);
     QTime mousetimer;
     int CurrentClosestNode;
+    bool mouse_down;
+    bool got_LCE_sample;
+    QVector<uchar> LCE_sample;
+    QByteArray gen_locks;
 private slots:
     void ScreenUpdate();
 };

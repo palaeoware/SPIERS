@@ -153,6 +153,11 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     QObject::connect(BrushSize, SIGNAL(valueChanged(int)), this, SLOT(BrushChanged(int)));
     QObject::connect(SpinDown, SIGNAL(valueChanged(int)), this, SLOT(BrightDownChanged(int)));
     QObject::connect(SpinUp, SIGNAL(valueChanged(int)), this, SLOT(BrightUpChanged(int)));
+
+    QObject::connect(BoostSpinBox, SIGNAL(valueChanged(int)), this, SLOT(BoostSpinBoxChanged(int)));
+    QObject::connect(BoostRadiusSpinBox, SIGNAL(valueChanged(int)), this, SLOT(BoostRadiusSpinBoxChanged(int)));
+    QObject::connect(BoostAdjustSpinBox, SIGNAL(valueChanged(int)), this, SLOT(BoostAdjustSpinBoxChanged(int)));
+
     QObject::connect(SpinSoft, SIGNAL(valueChanged(int)), this, SLOT(SoftChanged(int)));
     QObject::connect(MaskBoxLeft, SIGNAL(currentIndexChanged(int)), this, SLOT(LeftMaskChanged(int)));
     QObject::connect(MaskBoxRight, SIGNAL(currentIndexChanged(int)), this, SLOT(RightMaskChanged(int)));
@@ -627,6 +632,23 @@ void MainWindowImpl::SoftChanged(int trans)
 {
     BrightSoft = trans;
 }
+
+void MainWindowImpl::BoostSpinBoxChanged(int v)
+{
+    LCE_Boost = v;
+}
+
+void MainWindowImpl::BoostRadiusSpinBoxChanged(int v)
+{
+    LCE_Radius = v;
+}
+
+void MainWindowImpl::BoostAdjustSpinBoxChanged(int v)
+{
+    LCE_Adjust = v;
+}
+
+
 void MainWindowImpl::BrushChanged(int trans)
 //Transparency setting changed - set global, redraw
 {
@@ -2099,8 +2121,10 @@ void MainWindowImpl::on_CheckBoxRangeHardFill_toggled(bool checked)
 
 void MainWindowImpl::on_tabWidget_currentChanged(int index)
 {
-    if (index == 2) GenInvert->setVisible(false);
-    else GenInvert->setVisible(true);
+    GenInvert->setVisible(true);
+    GenerateAuto->setVisible(true);
+    if (index == 2 || index == 3) GenInvert->setVisible(false);
+    if (index == 3 ) GenerateAuto->setVisible(false);
 }
 
 void MainWindowImpl::on_actionChange_downsampling_triggered()

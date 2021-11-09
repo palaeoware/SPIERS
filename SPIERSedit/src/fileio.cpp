@@ -1258,6 +1258,9 @@ void ApplyDefaultSettings()
     BrightUp = 10;
     BrightDown = 10;
     BrightSoft = 0;
+    LCE_Boost = 10;
+    LCE_Adjust = 0;
+    LCE_Radius = 5;
     LastTrans = 0;
     ThreshFlag = true;
     MasksFlag = false;
@@ -2188,6 +2191,11 @@ void WriteSettings()
     out <<  pitch;
     out <<  roll;
     out << Notes;
+
+    out << LCE_Boost;
+    out << LCE_Radius;
+    out << LCE_Adjust;
+
     file.close();
 }
 
@@ -2455,6 +2463,9 @@ void ReadSettings()
 
     if (!in.atEnd()) in >> Notes;
 
+    if (!in.atEnd()) in >> LCE_Boost;
+    if (!in.atEnd()) in >> LCE_Radius;
+    if (!in.atEnd()) in >> LCE_Adjust;
     //now doctor Files array using zsparsity, if necessary
     if (zsparsity > 1)
     {
@@ -2476,5 +2487,6 @@ void ReadSettings()
     }
     else Stretches = FullStretches;
     file.close();
+
 }
 

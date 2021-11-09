@@ -22,6 +22,7 @@
 #include "curves.h"
 #include "copyingimpl.h"
 #include "info.h"
+#include "fileio.h"
 #include <QPointF>
 #include <QGraphicsView>
 
@@ -34,6 +35,8 @@ QPointF mouseDownViewCenter;
 myscene::myscene() : QGraphicsScene()
 {
     button = 0;
+    mouse_down=false;
+    got_LCE_sample = false;
     mousetimer.start();
     setBackgroundBrush(QColor(35, 35, 35));
     CurrentClosestNode = -1;
@@ -41,6 +44,24 @@ myscene::myscene() : QGraphicsScene()
 
 void myscene::DoMouse(int x, int y, int PressedButton)
 {
+
+    if (PressedButton!=0) mouse_down=true;
+
+    //if I'm in LCE mode and don't have a sample - grab one
+    //MIGHT have swapped into this mode mid mouse-action - so not always on mousedown
+    if (!got_LCE_sample && tabwidget->currentIndex()==3 && CurrentMode==5 && mouse_down)
+    {
+        //ensure correct size
+        if (LCE_sample.size()!=fwidth4*fheight) LCE_sample.resize(fwidth4 * fheight);
+
+        // get data from GA array
+        memcpy(LCE_sample.data(),GA[CurrentSegment]->bits(),fwidth4*fheight);
+        //get the per pixel locks - need to load current masks and locks file first
+        LoadMasks(CurrentFile);
+        LoadLocks(CurrentFile);
+        gen_locks = DoMaskLocking();
+        got_LCE_sample=true;
+    }
 
     if (x != LastMouseX || y != LastMouseY) // an actual move
     {
@@ -205,11 +226,11 @@ void myscene::DoAction(int x, int y)
             else Brush.segment(LastMouseX, LastMouseY,  0);
             break;
         case 5:
-            if (tabwidget->currentIndex() < 2 || RangeSelectedOnly)
-                Brush.recalc(LastMouseX, LastMouseY, CurrentSegment);
+            if (tabwidget->currentIndex() !=3 || RangeSelectedOnly)
+                Brush.recalc(LastMouseX, LastMouseY, CurrentSegment, &LCE_sample, &gen_locks);
             else
                 //all segs
-                for (int i = 0; i < SegmentCount; i++) if (Segments[i]->Activated) Brush.recalc(LastMouseX, LastMouseY, i);
+                for (int i = 0; i < SegmentCount; i++) if (Segments[i]->Activated) Brush.recalc(LastMouseX, LastMouseY, i, &LCE_sample, &gen_locks);
             break;
         }
 
@@ -241,6 +262,8 @@ void myscene::MouseUp()
     int n;
     CurrentClosestNode = -1;
     button = 0;
+    mouse_down=false;
+    got_LCE_sample=false;
     for (n = 0; n < fwidth * fheight; n++) dirty[n] = 0;
     return;
 }

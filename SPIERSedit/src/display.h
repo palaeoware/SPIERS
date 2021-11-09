@@ -28,14 +28,17 @@ extern void InitImage(QGraphicsView *gv);
 extern void DeleteDisplayObjects();
 extern void ClearImages();
 extern void MakeLinearGreyScale(int seg, int fnum, bool flag);
+extern void ApplyLCE(int seg, int fnum, bool flag);
 extern void MakeBlankGreyScale(int seg, int fnum, bool flag);
 extern uchar GreyScalePixel(int w, int h, int r, int g, int b, int glob);
+extern uchar LCEPixel(int w, int h, uchar *original_data, QByteArray *new_locks);
 extern void MakePolyGreyScale(int seg, int fnum, bool flag);
 extern void MakeRangeGreyScale(int seg, int fnum, bool flag);
 extern uchar PolyPixel(int w, int h, int seg);
 extern uchar RangePixel(int w, int h, int bot, int top, double cen, double gra, int seg);
-extern uchar GenPixel(int x, int y, int s);
+extern uchar GenPixel(int x, int y, int s, QVector<uchar> *sample, QByteArray *locks);
 extern double CalcPoly(unsigned char r, unsigned char g, unsigned char b, Segment *seg);
 extern void SaveMainImage(QString fname);
+extern QByteArray DoMaskLocking();
 
 #endif // __DISPLAY_H__

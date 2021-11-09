@@ -257,7 +257,7 @@
      <x>0</x>
      <y>0</y>
      <width>962</width>
-     <height>22</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -1603,11 +1603,7 @@
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
-          <layout class="QVBoxLayout" name="verticalLayoutRange">
-           <property name="spacing">
-            <number>0</number>
-           </property>
-          </layout>
+          <layout class="QVBoxLayout" name="verticalLayoutRange"/>
          </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -1656,6 +1652,175 @@
             </widget>
            </item>
           </layout>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tabLCE">
+        <attribute name="title">
+         <string>LCE</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout_2">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_30">
+           <property name="text">
+            <string>Boost:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="KeysafeSpinBox" name="BoostSpinBox">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="keyboardTracking">
+            <bool>false</bool>
+           </property>
+           <property name="minimum">
+            <number>0</number>
+           </property>
+           <property name="maximum">
+            <number>50</number>
+           </property>
+           <property name="value">
+            <number>10</number>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QSlider" name="SliderBoostRadius">
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>100</number>
+           </property>
+           <property name="value">
+            <number>5</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="tickPosition">
+            <enum>QSlider::TicksBothSides</enum>
+           </property>
+           <property name="tickInterval">
+            <number>10</number>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="KeysafeSpinBox" name="BoostRadiusSpinBox">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="keyboardTracking">
+            <bool>false</bool>
+           </property>
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>100</number>
+           </property>
+           <property name="value">
+            <number>5</number>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QSlider" name="SliderBoost">
+           <property name="minimum">
+            <number>0</number>
+           </property>
+           <property name="maximum">
+            <number>50</number>
+           </property>
+           <property name="value">
+            <number>10</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="tickPosition">
+            <enum>QSlider::TicksBothSides</enum>
+           </property>
+           <property name="tickInterval">
+            <number>5</number>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_29">
+           <property name="text">
+            <string>Radius</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QSlider" name="SliderBoostAdjust">
+           <property name="minimum">
+            <number>-100</number>
+           </property>
+           <property name="maximum">
+            <number>100</number>
+           </property>
+           <property name="value">
+            <number>0</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="tickPosition">
+            <enum>QSlider::TicksBothSides</enum>
+           </property>
+           <property name="tickInterval">
+            <number>10</number>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_31">
+           <property name="text">
+            <string>Adjust</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="KeysafeSpinBox" name="BoostAdjustSpinBox">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="keyboardTracking">
+            <bool>false</bool>
+           </property>
+           <property name="minimum">
+            <number>-100</number>
+           </property>
+           <property name="maximum">
+            <number>100</number>
+           </property>
+           <property name="value">
+            <number>0</number>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -4188,8 +4353,8 @@ Interpreted Images:</string>
      <y>230</y>
     </hint>
     <hint type="destinationlabel">
-     <x>56</x>
-     <y>583</y>
+     <x>59</x>
+     <y>579</y>
     </hint>
    </hints>
   </connection>
@@ -4200,8 +4365,8 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>56</x>
-     <y>583</y>
+     <x>59</x>
+     <y>579</y>
     </hint>
     <hint type="destinationlabel">
      <x>32</x>
@@ -4216,8 +4381,8 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>110</x>
-     <y>583</y>
+     <x>117</x>
+     <y>579</y>
     </hint>
     <hint type="destinationlabel">
      <x>110</x>
@@ -4236,8 +4401,8 @@ Interpreted Images:</string>
      <y>357</y>
     </hint>
     <hint type="destinationlabel">
-     <x>110</x>
-     <y>583</y>
+     <x>117</x>
+     <y>579</y>
     </hint>
    </hints>
   </connection>
@@ -4252,8 +4417,8 @@ Interpreted Images:</string>
      <y>357</y>
     </hint>
     <hint type="destinationlabel">
-     <x>164</x>
-     <y>583</y>
+     <x>174</x>
+     <y>579</y>
     </hint>
    </hints>
   </connection>
@@ -4264,8 +4429,8 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>164</x>
-     <y>583</y>
+     <x>174</x>
+     <y>579</y>
     </hint>
     <hint type="destinationlabel">
      <x>164</x>
@@ -4280,8 +4445,8 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>895</x>
-     <y>214</y>
+     <x>889</x>
+     <y>222</y>
     </hint>
     <hint type="destinationlabel">
      <x>944</x>
@@ -4300,8 +4465,8 @@ Interpreted Images:</string>
      <y>209</y>
     </hint>
     <hint type="destinationlabel">
-     <x>895</x>
-     <y>214</y>
+     <x>889</x>
+     <y>222</y>
     </hint>
    </hints>
   </connection>
@@ -4344,12 +4509,12 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>889</x>
-     <y>146</y>
+     <x>883</x>
+     <y>155</y>
     </hint>
     <hint type="destinationlabel">
      <x>938</x>
-     <y>146</y>
+     <y>155</y>
     </hint>
    </hints>
   </connection>
@@ -4361,11 +4526,11 @@ Interpreted Images:</string>
    <hints>
     <hint type="sourcelabel">
      <x>938</x>
-     <y>146</y>
+     <y>155</y>
     </hint>
     <hint type="destinationlabel">
-     <x>889</x>
-     <y>146</y>
+     <x>883</x>
+     <y>155</y>
     </hint>
    </hints>
   </connection>
@@ -4376,8 +4541,8 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>889</x>
-     <y>165</y>
+     <x>883</x>
+     <y>173</y>
     </hint>
     <hint type="destinationlabel">
      <x>938</x>
@@ -4396,8 +4561,8 @@ Interpreted Images:</string>
      <y>165</y>
     </hint>
     <hint type="destinationlabel">
-     <x>889</x>
-     <y>165</y>
+     <x>883</x>
+     <y>173</y>
     </hint>
    </hints>
   </connection>
@@ -4446,6 +4611,102 @@ Interpreted Images:</string>
     <hint type="destinationlabel">
      <x>105</x>
      <y>1230</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SliderBoost</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>BoostSpinBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>780</x>
+     <y>152</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>932</x>
+     <y>152</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SliderBoostRadius</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>BoostRadiusSpinBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>884</x>
+     <y>192</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>939</x>
+     <y>188</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>BoostSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SliderBoost</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>896</x>
+     <y>148</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>827</x>
+     <y>151</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>BoostRadiusSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SliderBoostRadius</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>939</x>
+     <y>188</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>884</x>
+     <y>192</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SliderBoostAdjust</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>BoostAdjustSpinBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>722</x>
+     <y>212</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>905</x>
+     <y>216</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>BoostAdjustSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SliderBoostAdjust</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>920</x>
+     <y>210</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>827</x>
+     <y>215</y>
     </hint>
    </hints>
   </connection>

@@ -891,6 +891,10 @@ void MainWindowImpl::SetUpGUIFromSettings()
     SpinUp->setValue(BrightUp);
     SpinDown->setValue(BrightDown);
     SpinSoft->setValue(BrightSoft);
+
+    BoostRadiusSpinBox->setValue(LCE_Radius);
+    BoostSpinBox->setValue(LCE_Boost);
+    BoostAdjustSpinBox->setValue(LCE_Adjust);
     TransSlider->setValue(Trans);
 
     actionThreshold->setChecked(ThreshFlag);
@@ -1212,6 +1216,7 @@ void MainWindowImpl::on_GenerateButton_clicked()
     if (tabwidget->currentIndex() == 0) dialog.GenerateLinear(SliceSelectorList);
     if (tabwidget->currentIndex() == 1) dialog.GeneratePoly(SliceSelectorList);
     if (tabwidget->currentIndex() == 2) dialog.GenerateRange(SliceSelectorList);
+    if (tabwidget->currentIndex() == 3) dialog.GenerateLCE(SliceSelectorList);
 
     ShowImage(graphicsView);
 }
