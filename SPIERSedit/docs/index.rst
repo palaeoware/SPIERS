@@ -47,6 +47,7 @@ Table of Contents
    segments
    rangegeneration
    polynomialgeneration
+   lce
    output
    volumes
    exportingworkingimages
