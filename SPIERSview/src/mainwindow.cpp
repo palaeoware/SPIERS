@@ -268,7 +268,7 @@ agin:
         fname = QFileDialog::getOpenFileName(
                     this,
                     "Select " + QString(PRODUCTNAME) + " file",
-                    "",
+                    QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),
                     QString(PRODUCTNAME) + " files (*.spv *.sp2 *spvf *.xml *.vaxml)");
         FilterKeys = true;
 
@@ -2825,7 +2825,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
         msgBox.setDefaultButton(QMessageBox::Cancel);
         int ret = msgBox.exec();
 
-        if (ret == QMessageBox::Yes) {
+        if (ret == QMessageBox::Yes)
+        {
             QCoreApplication::quit();
         }
 
@@ -2847,7 +2848,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
             event->accept();
             QCoreApplication::quit();
         }
-        else if (ret == QMessageBox::Cancel) {
+        else if (ret == QMessageBox::Cancel)
+        {
             event->ignore();
             return;
         }
@@ -3999,9 +4001,12 @@ void MainWindow::on_actionFull_Screen_triggered()
         // so need to know if it is already at full screen to return to it previous state on
         // glwidget full screen close.
         wasFullScreen = false;
-        if(isFullScreen()) {
+        if (isFullScreen())
+        {
             wasFullScreen = true;
-        } else {
+        }
+        else
+        {
             lastGeometry = geometry();
             showFullScreen();
         }
@@ -4022,7 +4027,8 @@ void MainWindow::on_actionFull_Screen_triggered()
 
 #ifdef __APPLE__
         // Return the main window back to it previosu state if needed
-        if(wasFullScreen == false) {
+        if (wasFullScreen == false)
+        {
             showNormal();
             setGeometry(lastGeometry);
         }
