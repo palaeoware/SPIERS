@@ -44,9 +44,9 @@ OBJECTS_DIR += build
 
 # Windows common build here
 win32 {
-    INCLUDEPATH += "$$PWD/../../../../../msys64/mingw64/include/vtk-8.1"
+    INCLUDEPATH += "C://msys64/mingw64/include/vtk-8.1"
 
-    LIBS += -L$$PWD/../../../../../msys64/mingw64/lib \
+    LIBS += -L$$C://msys64/mingw64/lib \
     # VTK - Libary
     # libvtk* name to match static lib created
     -llibvtkCommonExecutionModel-8.1 \
@@ -116,7 +116,6 @@ win32 {
     -llibvtkRenderingContextOpenGL2-8.1 \
     -llibvtkRenderingFreeType-8.1 \
     -llibvtkRenderingOpenGL2-8.1 \
-    -llibvtksqlite-8.1 \
     -llibvtkverdict-8.1 \
     -llibvtkCommonCore-8.1 \
     -llibvtkChartsCore-8.1 \
