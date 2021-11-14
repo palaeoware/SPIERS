@@ -970,19 +970,17 @@ QString SVObject::DoMatrixDXFoutput(int v, float x, float y, float z)
             .arg(static_cast<double>(y1))
             .arg(v)
             .arg(static_cast<double>(z1));
-    //string.sprintf("1%d\n%f\n2%d\n%f\n3%d\n%f\n", v, static_cast<double>(x1), v, static_cast<double>(y1), v, static_cast<double>(z1));
 
     if (v < 2)
         return string;
 
-    QString string2 = QString("1%d\n%f\n2%d\n%f\n3%d\n%f\n")
+    QString string2 = QString("1%1\n%2\n2%3\n%4\n3%5\n%6\n")
             .arg(v + 1)
             .arg(static_cast<double>(x1))
             .arg(v + 1)
             .arg(static_cast<double>(y1))
             .arg(v + 1)
             .arg(static_cast<double>(z1));
-    //string2.sprintf("1%d\n%f\n2%d\n%f\n3%d\n%f\n", v + 1, static_cast<double>(x1), v + 1, static_cast<double>(y1), v + 1, static_cast<double>(z1));
 
     string.append(string2);
     return string;
