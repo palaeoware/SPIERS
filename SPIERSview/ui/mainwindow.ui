@@ -608,7 +608,6 @@
       </layout>
      </item>
     </layout>
-    <zorder></zorder>
    </widget>
   </widget>
   <widget class="QDockWidget" name="ClipDock">
