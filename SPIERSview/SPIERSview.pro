@@ -134,180 +134,188 @@ win32 {
 
 # Unix/Linux common build here
 unix:!macx {
-        #Libraries from VTK package (e.g. sudo apt-get install libvtk7-qt-dev).
-	INCLUDEPATH +=/usr/include/vtk-7.1/
-	LIBS += -L/usr/include/vtk-7.1/ \
-	-lvtkCommonExecutionModel-7.1 \
-	-lvtkCommonDataModel-7.1 \
-	-lvtkCommonColor-7.1 \
-	-lvtkCommonComputationalGeometry-7.1 \
-	-lvtkCommonMisc-7.1 \
-	-lvtkCommonSystem-7.1 \
-	-lvtkCommonTransforms-7.1 \
-	-lvtkCommonMath-7.1 \
-	-lvtkalglib-7.1 \
-	-lvtkDICOMParser-7.1 \
-	-lvtkDomainsChemistry-7.1 \
-	-lvtkDomainsChemistryOpenGL2-7.1 \
-	-lvtkexoIIc-7.1 \
-	-lvtkFiltersAMR-7.1 \
-	-lvtkFiltersExtraction-7.1 \
-	-lvtkFiltersFlowPaths-7.1 \
-	-lvtkFiltersGeneral-7.1 \
-	-lvtkFiltersGeneric-7.1 \
-	-lvtkFiltersGeometry-7.1 \
-	-lvtkFiltersHybrid-7.1 \
-	-lvtkFiltersHyperTree-7.1 \
-	-lvtkFiltersImaging-7.1 \
-	-lvtkFiltersModeling-7.1 \
-	-lvtkFiltersParallel-7.1 \
-	-lvtkFiltersParallelImaging-7.1 \
-	-lvtkFiltersProgrammable-7.1 \
-	-lvtkFiltersSelection-7.1 \
-	-lvtkFiltersSMP-7.1 \
-	-lvtkFiltersSources-7.1 \
-	-lvtkFiltersStatistics-7.1 \
-	-lvtkFiltersTexture-7.1 \
-	-lvtkFiltersVerdict-7.1 \
-	-lvtkImagingColor-7.1 \
-	-lvtkImagingFourier-7.1 \
-	-lvtkImagingGeneral-7.1 \
-	-lvtkImagingHybrid-7.1 \
-	-lvtkImagingMath-7.1 \
-	-lvtkImagingMorphological-7.1 \
-	-lvtkImagingSources-7.1 \
-	-lvtkImagingStatistics-7.1 \
-	-lvtkImagingStencil-7.1 \
-	-lvtkInfovisLayout-7.1 \
-	-lvtkIOAMR-7.1 \
-	-lvtkIOEnSight-7.1 \
-	-lvtkIOExodus-7.1 \
-	-lvtkIOGeometry-7.1 \
-	-lvtkIOImage-7.1 \
-	-lvtkIOImport-7.1 \
-	-lvtkIOInfovis-7.1 \
-	-lvtkIOLegacy-7.1 \
-	-lvtkIOLSDyna-7.1 \
-	-lvtkIOMINC-7.1 \
-	-lvtkIOMovie-7.1 \
-	-lvtkIONetCDF-7.1 \
-	-lvtkIOParallel-7.1 \
-	-lvtkIOParallelXML-7.1 \
-	-lvtkIOPLY-7.1 \
-	-lvtkIOSQL-7.1 \
-	-lvtkIOVideo-7.1 \
-	-lvtkIOXML-7.1 \
-	-lvtkIOXMLParser-7.1 \
-	-lvtkmetaio-7.1 \
-	-lvtkRenderingContext2D-7.1 \
-	-lvtkRenderingContextOpenGL2-7.1 \
-	-lvtkRenderingFreeType-7.1 \
-	-lvtkRenderingOpenGL2-7.1 \
-	-lvtkverdict-7.1 \
-	-lvtkCommonCore-7.1 \
-	-lvtkChartsCore-7.1 \
-	-lvtkImagingCore-7.1 \
-	-lvtkIOCore-7.1 \
-	-lvtkParallelCore-7.1 \
-	-lvtkRenderingCore-7.1 \
-	-lvtkFiltersCore-7.1 \
-	-lvtksys-7.1 \
-		-lstdc++ \
-		-lz \
+    #Libraries from VTK package (e.g. sudo apt-get install libvtk7-qt-dev).
+    INCLUDEPATH +=/usr/include/vtk-7.1/
+    LIBS += -L/usr/include/vtk-7.1/ \
+    -lvtkCommonExecutionModel-7.1 \
+    -lvtkCommonDataModel-7.1 \
+    -lvtkCommonColor-7.1 \
+    -lvtkCommonComputationalGeometry-7.1 \
+    -lvtkCommonMisc-7.1 \
+    -lvtkCommonSystem-7.1 \
+    -lvtkCommonTransforms-7.1 \
+    -lvtkCommonMath-7.1 \
+    -lvtkalglib-7.1 \
+    -lvtkDICOMParser-7.1 \
+    -lvtkDomainsChemistry-7.1 \
+    -lvtkDomainsChemistryOpenGL2-7.1 \
+    -lvtkexoIIc-7.1 \
+    -lvtkFiltersAMR-7.1 \
+    -lvtkFiltersExtraction-7.1 \
+    -lvtkFiltersFlowPaths-7.1 \
+    -lvtkFiltersGeneral-7.1 \
+    -lvtkFiltersGeneric-7.1 \
+    -lvtkFiltersGeometry-7.1 \
+    -lvtkFiltersHybrid-7.1 \
+    -lvtkFiltersHyperTree-7.1 \
+    -lvtkFiltersImaging-7.1 \
+    -lvtkFiltersModeling-7.1 \
+    -lvtkFiltersParallel-7.1 \
+    -lvtkFiltersParallelImaging-7.1 \
+    -lvtkFiltersProgrammable-7.1 \
+    -lvtkFiltersSelection-7.1 \
+    -lvtkFiltersSMP-7.1 \
+    -lvtkFiltersSources-7.1 \
+    -lvtkFiltersStatistics-7.1 \
+    -lvtkFiltersTexture-7.1 \
+    -lvtkFiltersVerdict-7.1 \
+    -lvtkImagingColor-7.1 \
+    -lvtkImagingFourier-7.1 \
+    -lvtkImagingGeneral-7.1 \
+    -lvtkImagingHybrid-7.1 \
+    -lvtkImagingMath-7.1 \
+    -lvtkImagingMorphological-7.1 \
+    -lvtkImagingSources-7.1 \
+    -lvtkImagingStatistics-7.1 \
+    -lvtkImagingStencil-7.1 \
+    -lvtkInfovisLayout-7.1 \
+    -lvtkIOAMR-7.1 \
+    -lvtkIOEnSight-7.1 \
+    -lvtkIOExodus-7.1 \
+    -lvtkIOGeometry-7.1 \
+    -lvtkIOImage-7.1 \
+    -lvtkIOImport-7.1 \
+    -lvtkIOInfovis-7.1 \
+    -lvtkIOLegacy-7.1 \
+    -lvtkIOLSDyna-7.1 \
+    -lvtkIOMINC-7.1 \
+    -lvtkIOMovie-7.1 \
+    -lvtkIONetCDF-7.1 \
+    -lvtkIOParallel-7.1 \
+    -lvtkIOParallelXML-7.1 \
+    -lvtkIOPLY-7.1 \
+    -lvtkIOSQL-7.1 \
+    -lvtkIOVideo-7.1 \
+    -lvtkIOXML-7.1 \
+    -lvtkIOXMLParser-7.1 \
+    -lvtkmetaio-7.1 \
+    -lvtkRenderingContext2D-7.1 \
+    -lvtkRenderingContextOpenGL2-7.1 \
+    -lvtkRenderingFreeType-7.1 \
+    -lvtkRenderingOpenGL2-7.1 \
+    -lvtkverdict-7.1 \
+    -lvtkCommonCore-7.1 \
+    -lvtkChartsCore-7.1 \
+    -lvtkImagingCore-7.1 \
+    -lvtkIOCore-7.1 \
+    -lvtkParallelCore-7.1 \
+    -lvtkRenderingCore-7.1 \
+    -lvtkFiltersCore-7.1 \
+    -lvtksys-7.1 \
+    # Other - Libary
+    -lstdc++ \
+    -lz \
 }
 
-# MacOS common build here
+# MacOS x86_64 common build here
 macx {
-
-     #Below vtk installation achieved using installation via homebrew
-     #eg. brew install vtk
-     LIBS += -L$$PWD/../../../../../../usr/local/Cellar/vtk/8.2.0_10/lib/ \
-    -lvtkCommonExecutionModel-8.2.1 \
-    -lvtkCommonDataModel-8.2.1 \
-    -lvtkCommonColor-8.2.1 \
-    -lvtkCommonComputationalGeometry-8.2.1 \
-    -lvtkCommonMisc-8.2.1 \
-    -lvtkCommonSystem-8.2.1 \
-    -lvtkCommonTransforms-8.2.1 \
-    -lvtkCommonMath-8.2.1 \
-    -lvtkDICOMParser-8.2.1 \
-    -lvtkDomainsChemistry-8.2.1 \
-    -lvtkDomainsChemistryOpenGL2-8.2.1 \
-    -lvtkFiltersAMR-8.2.1 \
-    -lvtkFiltersExtraction-8.2.1 \
-    -lvtkFiltersFlowPaths-8.2.1 \
-    -lvtkFiltersGeneral-8.2.1 \
-    -lvtkFiltersGeneric-8.2.1 \
-    -lvtkFiltersGeometry-8.2.1 \
-    -lvtkFiltersHybrid-8.2.1 \
-    -lvtkFiltersHyperTree-8.2.1 \
-    -lvtkFiltersImaging-8.2.1 \
-    -lvtkFiltersModeling-8.2.1 \
-    -lvtkFiltersParallel-8.2.1 \
-    -lvtkFiltersParallelImaging-8.2.1 \
-    -lvtkFiltersProgrammable-8.2.1 \
-    -lvtkFiltersSelection-8.2.1 \
-    -lvtkFiltersSMP-8.2.1 \
-    -lvtkFiltersSources-8.2.1 \
-    -lvtkFiltersStatistics-8.2.1 \
-    -lvtkFiltersTexture-8.2.1 \
-    -lvtkFiltersVerdict-8.2.1 \
-    -lvtkglew-8.2.1 \
-    -lvtkImagingColor-8.2.1 \
-    -lvtkImagingFourier-8.2.1 \
-    -lvtkImagingGeneral-8.2.1 \
-    -lvtkImagingHybrid-8.2.1 \
-    -lvtkImagingMath-8.2.1 \
-    -lvtkImagingMorphological-8.2.1 \
-    -lvtkImagingSources-8.2.1 \
-    -lvtkImagingStatistics-8.2.1 \
-    -lvtkImagingStencil-8.2.1 \
-    -lvtkInfovisLayout-8.2.1 \
-    -lvtkIOAMR-8.2.1 \
-    -lvtkIOEnSight-8.2.1 \
-    -lvtkIOExodus-8.2.1 \
-    -lvtkIOGeometry-8.2.1 \
-    -lvtkIOImage-8.2.1 \
-    -lvtkIOImport-8.2.1 \
-    -lvtkIOInfovis-8.2.1 \
-    -lvtkIOLegacy-8.2.1 \
-    -lvtkIOLSDyna-8.2.1 \
-    -lvtkIOMINC-8.2.1 \
-    -lvtkIOMovie-8.2.1 \
-    -lvtkIONetCDF-8.2.1 \
-    -lvtkIOParallel-8.2.1 \
-    -lvtkIOParallelXML-8.2.1 \
-    -lvtkIOPLY-8.2.1 \
-    -lvtkIOSQL-8.2.1 \
-    -lvtkIOVideo-8.2.1 \
-    -lvtkIOXML-8.2.1 \
-    -lvtkIOXMLParser-8.2.1 \
-    -lvtkmetaio-8.2.1 \
-    -lvtkRenderingContext2D-8.2.1 \
-    -lvtkRenderingContextOpenGL2-8.2.1 \
-    -lvtkRenderingFreeType-8.2.1 \
-    -lvtkRenderingOpenGL2-8.2.1 \
-    -lvtksqlite-8.2.1 \
-    -lvtkverdict-8.2.1 \
-    -lvtkCommonCore-8.2.1 \
-    -lvtkChartsCore-8.2.1 \
-    -lvtkImagingCore-8.2.1 \
-    -lvtkIOCore-8.2.1 \
-    -lvtkParallelCore-8.2.1 \
-    -lvtkRenderingCore-8.2.1 \
-    -lvtkFiltersCore-8.2.1 \
-    -lvtksys-8.2.1 \
+    # Below vtk installation achieved using installation via homebrew:
+    #     brew install vtk
+    # On MacOS running on arm64 (M1 chip) homebrew must be installed under x86_64 to work with QT 5.x
+    # To do this:
+    #     cd ~/Downloads
+    #     mkdir homebrew
+    #     curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
+    #     sudo mv homebrew /usr/local/homebrew
+    #     export PATH=$HOME/bin:/usr/local/bin:$PATH
+    #     alias brew_86='arch -x86_64 /usr/local/homebrew/bin/brew'
+    #     brew_86 insall vtk
+    # If this is not done then homebrew with get installed under arm64 architecture making the VTK
+    # libs incompatible with the x86_64 QT complie that is installed by default from the QT binary.
+    # QT 6.2 claims to be a universal build (i.e. x86_64 + arm64) but VTK cannot currently be build
+    # as a universal library. As such on arm64 MacOS machines we are targeting the Intel x86_64
+    # so that it runs on older Macs and under Rosetta on arm64 (M1 chip) machines. Given more time
+    # both QT and VTK might both catch up with the newer Apple silicon around.
+    LIBS += -L/usr/local/homebrew/Cellar/vtk/9.1.0/lib/ \
+    -lvtkCommonExecutionModel-9.1.1 \
+    -lvtkCommonDataModel-9.1.1 \
+    -lvtkCommonColor-9.1.1 \
+    -lvtkCommonComputationalGeometry-9.1.1 \
+    -lvtkCommonMisc-9.1.1 \
+    -lvtkCommonSystem-9.1.1 \
+    -lvtkCommonTransforms-9.1.1 \
+    -lvtkCommonMath-9.1.1 \
+    -lvtkDICOMParser-9.1.1 \
+    -lvtkDomainsChemistry-9.1.1 \
+    -lvtkDomainsChemistryOpenGL2-9.1.1 \
+    -lvtkFiltersAMR-9.1.1 \
+    -lvtkFiltersExtraction-9.1.1 \
+    -lvtkFiltersFlowPaths-9.1.1 \
+    -lvtkFiltersGeneral-9.1.1 \
+    -lvtkFiltersGeneric-9.1.1 \
+    -lvtkFiltersGeometry-9.1.1 \
+    -lvtkFiltersHybrid-9.1.1 \
+    -lvtkFiltersHyperTree-9.1.1 \
+    -lvtkFiltersImaging-9.1.1 \
+    -lvtkFiltersModeling-9.1.1 \
+    -lvtkFiltersParallel-9.1.1 \
+    -lvtkFiltersParallelImaging-9.1.1 \
+    -lvtkFiltersProgrammable-9.1.1 \
+    -lvtkFiltersSelection-9.1.1 \
+    -lvtkFiltersSMP-9.1.1 \
+    -lvtkFiltersSources-9.1.1 \
+    -lvtkFiltersStatistics-9.1.1 \
+    -lvtkFiltersTexture-9.1.1 \
+    -lvtkFiltersVerdict-9.1.1 \
+    -lvtkImagingColor-9.1.1 \
+    -lvtkImagingFourier-9.1.1 \
+    -lvtkImagingGeneral-9.1.1 \
+    -lvtkImagingHybrid-9.1.1 \
+    -lvtkImagingMath-9.1.1 \
+    -lvtkImagingMorphological-9.1.1 \
+    -lvtkImagingSources-9.1.1 \
+    -lvtkImagingStatistics-9.1.1 \
+    -lvtkImagingStencil-9.1.1 \
+    -lvtkInfovisLayout-9.1.1 \
+    -lvtkIOAMR-9.1.1 \
+    -lvtkIOEnSight-9.1.1 \
+    -lvtkIOExodus-9.1.1 \
+    -lvtkIOGeometry-9.1.1 \
+    -lvtkIOImage-9.1.1 \
+    -lvtkIOImport-9.1.1 \
+    -lvtkIOInfovis-9.1.1 \
+    -lvtkIOLegacy-9.1.1 \
+    -lvtkIOLSDyna-9.1.1 \
+    -lvtkIOMINC-9.1.1 \
+    -lvtkIOMovie-9.1.1 \
+    -lvtkIONetCDF-9.1.1 \
+    -lvtkIOParallel-9.1.1 \
+    -lvtkIOParallelXML-9.1.1 \
+    -lvtkIOPLY-9.1.1 \
+    -lvtkIOSQL-9.1.1 \
+    -lvtkIOVideo-9.1.1 \
+    -lvtkIOXML-9.1.1 \
+    -lvtkIOXMLParser-9.1.1 \
+    -lvtkmetaio-9.1.1 \
+    -lvtkRenderingContext2D-9.1.1 \
+    -lvtkRenderingContextOpenGL2-9.1.1 \
+    -lvtkRenderingFreeType-9.1.1 \
+    -lvtkRenderingOpenGL2-9.1.1 \
+    -lvtkverdict-9.1.1 \
+    -lvtkCommonCore-9.1.1 \
+    -lvtkChartsCore-9.1.1 \
+    -lvtkImagingCore-9.1.1 \
+    -lvtkIOCore-9.1.1 \
+    -lvtkParallelCore-9.1.1 \
+    -lvtkRenderingCore-9.1.1 \
+    -lvtkFiltersCore-9.1.1 \
+    -lvtksys-9.1.1 \
+    # Other - Libary
     -lstdc++ \
     -lz
 
-     INCLUDEPATH += $$PWD/../../../../../../usr/local/Cellar/vtk/8.2.0_10/include/vtk-8.2/
-     DEPENDPATH += $$PWD/../../../../../../usr/local/Cellar/vtk/8.2.0_10/include/vtk-8.2/
-
-    # RJG - Note also the virtual machine has a VTK version built on the box:
-    #LIBS += -L$$PWD/../../../../SPIERS/VTK-8.2.0/build/lib/ \
-    #INCLUDEPATH += $$PWD/../../../../SPIERS/VTK-8.2.0/build
-    #DEPENDPATH += $$PWD/../../../../SPIERS/VTK-8.2.0/build
-    # I have left this in case an alternative is ever required
+    INCLUDEPATH += /usr/local/homebrew/Cellar/vtk/9.1.0/include/vtk-9.1/
+    DEPENDPATH += /usr/local/homebrew/Cellar/vtk/9.1.0/include/vtk-9.1/
 
     # Mac icon
     ICON = resources/SPIERSviewIcon.icns
@@ -318,6 +326,23 @@ macx {
     # as qmake uses sed for string replacements within it.
     QMAKE_INFO_PLIST = Info.plist
 }
+
+# RJG - Note also the virtual machine has a VTK version built on the box:
+#macx {
+    #LIBS += -L$$PWD/../../../../SPIERS/VTK-9.1.0/build/lib/ \
+    #INCLUDEPATH += $$PWD/../../../../SPIERS/VTK-9.1.0/build
+    #DEPENDPATH += $$PWD/../../../../SPIERS/VTK-9.1.0/build
+    # I have left this in case an alternative is ever required
+
+    # Mac icon
+    #ICON = resources/SPIERSviewIcon.icns
+
+    # macOS file associations are done through the Info.plist files under the application pakages
+    # QT/qmake should be able to overwrite the default generated file with this custom file
+    # We need to make sure that the custom Info.plist (below) is in XML format and not binary
+    # as qmake uses sed for string replacements within it.
+    #QMAKE_INFO_PLIST = Info.plist
+#}
 
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \

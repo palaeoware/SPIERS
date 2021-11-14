@@ -71,63 +71,102 @@ We recommend you install and use MSYS2 (64-bit) a Windows package manager, based
 
 1. Install GCC and QT5.X on your system. You can do this two ways, by using system packages:
 
-`sudo apt-get install build-essential libgl1-mesa-dev`
+  `sudo apt-get install build-essential libgl1-mesa-dev`
 
-`sudo apt install qt5-default`
+  `sudo apt install qt5-default`
 
-Or by downloading and running the installer from Qt: https://www.qt.io/download Further instructions are available here: https://wiki.qt.io/Install_Qt_5_on_Ubuntu
+  Or by downloading and running the installer from Qt: https://www.qt.io/download Further instructions are available here: https://wiki.qt.io/Install_Qt_5_on_Ubuntu
 
 2. SPIERSview requires VTK: The Linux version of SPIERSview is currently employs VTK7.1. This can also be installed from the Ubuntu packages:
 
-`sudo apt-get install libvtk7-qt-dev`
+  `sudo apt-get install libvtk7-qt-dev`
 
 3. Using the above package, you should be able to find the required VTK libraries under /usr/include/vtk-7.1/ They can also be included, if needed, in the working directory, and added to the executable at link time using the QMAKE_RPATHDIR variable - e.g. #QMAKE_RPATHDIR += $$PWD/vtk-7.X/
 
 4. Download source code, or clone using Git:
 
-`git clone https://github.com/palaeoware/SPIERS.git`
+  `git clone https://github.com/palaeoware/SPIERS.git`
 
-You can then compile SPIERS by opening the .pro file in QT creator and following standard debug/release procedure (or see alternative below). The resulting executables will be placed in their individual bin folders. SPIERS is set up to work with this directory structure. Copy the build folders to your required location if this differs from the build location.
+  You can then compile SPIERS by opening the .pro file in QT creator and following standard debug/release procedure (or see alternative below). The resulting executables will be placed in their individual bin folders. SPIERS is set up to work with this directory structure. Copy the build folders to your required location if this differs from the build location.
 
 5. Alternatively you can build using the following commands -  navigate into the SPIERS source folder in a terminal window:
 
-`cd SPIERS`
+  `cd SPIERS`
 
-Create a makefile:
+  Create a makefile:
 
-`qmake ./SPIERS.pro`
+  `qmake ./SPIERS.pro`
 
-Build by running the make command:
+  Build by running the make command:
 
-`make`
+  `make`
 
-You can then copy the build folders to your desired location.
+  You can then copy the build folders to your desired location.
 
 6. Should you wish to create desktop icons or for SPIERS to appear in your launcher, we provide exemplar desktop entries in the SPIERS/examples folder of the repository, coupled with icons for these. Place the icons in the same folder alongside the executable files, and place this folder wherever you would like it to live on your system. The edit the paths to the executables and icons by replacing XXXXX in the example files with your path. Double clicking on the desktop entry will ask you to trust and launch the program. Placing the entry on your desktop will create an icon that launches the software. Additionally, if you open a terminal at the location where the desktop entry is stored, and copy it from there to /usr/share/applications/ using this command:
 
-`sudo cp SPIERSalign.desktop /usr/share/applications/`
+  `sudo cp SPIERSalign.desktop /usr/share/applications/`
 
-`sudo cp SPIERSedit.desktop /usr/share/applications/`
+  `sudo cp SPIERSedit.desktop /usr/share/applications/`
 
-`sudo cp SPIERSview.desktop /usr/share/applications/`
+  `sudo cp SPIERSview.desktop /usr/share/applications/`
 
-This will create entries for each package in the GNOME activities overview / launcher. Alternatively you can use alacarte to achieve this process using a GUI:
+  This will create entries for each package in the GNOME activities overview / launcher. Alternatively you can use alacarte to achieve this process using a GUI:
 
-`sudo apt-get update`
-`sudo apt-get install alacarte`
+  `sudo apt-get update`
+  `sudo apt-get install alacarte`
 
-#### macOS Catalina 64-bit - QT Creator + QT v5.x and VTK v8.2 (via Homebrew) using Clang 64-bit/XCode 11 toolchain
+#### macOS Catalina/Big Sur 64-bit - QT Creator + QT v5.x and VTK v9.1.x (via Homebrew) using Clang 64-bit/XCode 11 toolchain
 
-1. Install XCode 11 from Apple App Store.
+1. Install XCode 11 (for Catalina) or XCode 12 (for Big Sur) from Apple App Store.
 2. Install QT5.x/QT Creator from https://www.qt.io/download.
+3. Install Homebrew (https://brew.sh/).
+4. Get VTK 9.1 package via Homebrew - you may need to force Homebrew to install a specific VTK version see Homebrew instruction on how to do so:
+
+  `brew install vtk`
+
+5. Check/Update the path to the VTK package in the ./SPIERSview/SPIERSview.pro file, where "9.1.0" is your installed version number:
+
+'LIBS += -L/usr/local/Cellar/vtk/9.1.0/lib/'
+
+6. You should then be able to compile SPIERS by opening the .pro file in QT creator and following standard debug/release procedure.
+
+Note: it may be possible to install QT5.x/QT Creator via Homebrew rather than via the Apple App Store.
+
+#### macOS Monterey 64-bit - QT Creator + QT v5.x and VTK v9.1.x (via Homebrew) using Clang 64-bit/XCode 13 toolchain
+
+1. Install XCode 12 from Apple App Store.
+2. Install QT5.x/QT Creator from https://www.qt.io/download.
+
+##### [Apple Intel Chip - x86_64]
+
 3. Install Homebrew (https://brew.sh/).
 4. Get VTK 8.2 package via Homebrew - you may need to force Homebrew to install a specific VTK version see Homebrew instruction on how to do so:
 
-`brew install vtk`
+  `brew install vtk`
 
-5. Check/Update the path to the VTK package in the ./SPIERSview/SPIERSview.pro file, where "8.2.0_10" is your installed version number:
+##### [Apple M1 Chip - arm64]
 
-'LIBS += -L$$PWD/../../../../../../usr/local/Cellar/vtk/8.2.0_10/lib/ \'
+On MacOS running on arm64 (M1 chip) homebrew must be installed under x86_64 to work with QT 5.x
+
+3. Install Homebrew (https://brew.sh/). To do this:
+
+  `cd ~/Downloads
+  mkdir homebrew
+  curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
+  sudo mv homebrew /usr/local/homebrew
+  export PATH=$HOME/bin:/usr/local/bin:$PATH
+  alias brew_86='arch -x86_64 /usr/local/homebrew/bin/brew'`
+
+  If this is not done then homebrew with get installed under arm64 architecture making the VTK libs incompatible with the x86_64 QT compile that is installed by default from the QT binary. QT 6.2 claims to be a universal build (i.e. x86_64 + arm64) but VTK cannot currently be build as a universal library. As such on arm64 MacOS machines we are targeting the Intel x86_64 so that it runs on older Macs and under Rosetta on arm64 (M1 chip) machines. Given more time both QT and VTK might both catch up with the newer Apple silicon around.
+
+4. Get VTK 9.1 package via Homebrew - you may need to force Homebrew to install a specific VTK version see Homebrew instruction on how to do so:
+
+  `brew_86 insall vtk`
+
+5. Check/Update the path to the VTK package in the ./SPIERSview/SPIERSview.pro file, where "9.1.0" is your installed version number:
+
+  'LIBS += -L/usr/local/Cellar/vtk/9.1.0/lib/'
 
 6. You should then be able to compile SPIERS by opening the .pro file in QT creator and following standard debug/release procedure.
 
