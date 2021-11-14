@@ -151,12 +151,17 @@ On MacOS running on arm64 (M1 chip) homebrew must be installed under x86_64 to w
 
 3. Install Homebrew (https://brew.sh/). To do this:
 
-  `cd ~/Downloads
-  mkdir homebrew
-  curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
-  sudo mv homebrew /usr/local/homebrew
-  export PATH=$HOME/bin:/usr/local/bin:$PATH
-  alias brew_86='arch -x86_64 /usr/local/homebrew/bin/brew'`
+  `cd ~/Downloads`
+
+  `mkdir homebrew`
+
+  `curl -L https://github.com/Homebrew/brew/tarball/`master | tar xz --strip 1 -C homebrew`
+
+  `sudo mv homebrew /usr/local/homebrew`
+
+  `export PATH=$HOME/bin:/usr/local/bin:$PATH`
+  
+  `alias brew_86='arch -x86_64 /usr/local/homebrew/bin/brew'`
 
   If this is not done then homebrew with get installed under arm64 architecture making the VTK libs incompatible with the x86_64 QT compile that is installed by default from the QT binary. QT 6.2 claims to be a universal build (i.e. x86_64 + arm64) but VTK cannot currently be build as a universal library. As such on arm64 MacOS machines we are targeting the Intel x86_64 so that it runs on older Macs and under Rosetta on arm64 (M1 chip) machines. Given more time both QT and VTK might both catch up with the newer Apple silicon around.
 
