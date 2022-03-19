@@ -77,7 +77,7 @@ We recommend you install and use MSYS2 (64-bit) a Windows package manager, based
 
   Or by downloading and running the installer from Qt: https://www.qt.io/download Further instructions are available here: https://wiki.qt.io/Install_Qt_5_on_Ubuntu
 
-2. SPIERSview requires VTK: The Linux version of SPIERSview is currently employs VTK7.1. This can also be installed from the Ubuntu packages:
+2. SPIERSview requires VTK: The Linux version of SPIERSview currently uses VTK7.1. This can also be installed from the Ubuntu packages:
 
   `sudo apt-get install libvtk7-qt-dev`
 
@@ -160,7 +160,7 @@ On MacOS running on arm64 (M1 chip) homebrew must be installed under x86_64 to w
   `sudo mv homebrew /usr/local/homebrew`
 
   `export PATH=$HOME/bin:/usr/local/bin:$PATH`
-  
+
   `alias brew_86='arch -x86_64 /usr/local/homebrew/bin/brew'`
 
   If this is not done then homebrew with get installed under arm64 architecture making the VTK libs incompatible with the x86_64 QT compile that is installed by default from the QT binary. QT 6.2 claims to be a universal build (i.e. x86_64 + arm64) but VTK cannot currently be build as a universal library. As such on arm64 MacOS machines we are targeting the Intel x86_64 so that it runs on older Macs and under Rosetta on arm64 (M1 chip) machines. Given more time both QT and VTK might both catch up with the newer Apple silicon around.
