@@ -41,7 +41,7 @@ CustomScene::CustomScene() : QGraphicsScene()
  */
 void CustomScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    if (markersUp == 0 || markersLocked == 1 || setupFlag == 1)return;
+    if (markersUp == 0 || markersLocked == 1 || setupFlag == 1) return;
     QPointF position = event->scenePos();
 
     int x, y;

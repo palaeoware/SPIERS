@@ -73,9 +73,6 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
 {
     //Set up initial variables
     setupUi(this);
-
-    qDebug() << QImageWriter::supportedImageFormats();
-
     setWindowTitle(QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION));
 
     showMaximized();
@@ -445,9 +442,9 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     connect(cropWidth, SIGNAL(valueChanged(int)), this, SLOT(resizeCropW(int) ));
     connect(cropHeight, SIGNAL(valueChanged(int)), this, SLOT(resizeCropH(int) ));
     connect(ok, SIGNAL(clicked ()), this, SLOT(okClicked() ));
-    connect(executeAlign, SIGNAL(clicked ()), this, SLOT(executeAlignTriggered() ));
+    connect(executeAlign, SIGNAL(clicked ()), this, SLOT(executeAutoAlignTriggered() ));
     connect(resetImage, SIGNAL(clicked ()), this, SLOT(on_actionReset_Image_triggered() ));
-    connect(setupAlign, SIGNAL(clicked ()), this, SLOT(setupAlignTriggered() ));
+    connect(setupAlign, SIGNAL(clicked ()), this, SLOT(setupAutoAlignTriggered() ));
     connect(aMTopLeftX, SIGNAL(valueChanged(int)), this, SLOT(aMTopLeftXChanged(int) ));
     connect(aMTopLeftY, SIGNAL(valueChanged(int)), this, SLOT(aMTopLeftYChanged(int) ));
     connect(aMWidth, SIGNAL(valueChanged(int)), this, SLOT(aMWidthChanged(int) ));
@@ -797,9 +794,9 @@ void MainWindowImpl::okClicked()
 }
 
 /**
- * @brief MainWindowImpl::setupAlignTriggered
+ * @brief MainWindowImpl::setupAutoAlignTriggered
  */
-void MainWindowImpl::setupAlignTriggered()
+void MainWindowImpl::setupAutoAlignTriggered()
 {
     if (setupAlign->isChecked() == true)
     {
@@ -846,9 +843,9 @@ void MainWindowImpl::setupAlignTriggered()
 }
 
 /**
- * @brief MainWindowImpl::executeAlignTriggered
+ * @brief MainWindowImpl::executeAutoAlignTriggered
  */
-void MainWindowImpl::executeAlignTriggered()
+void MainWindowImpl::executeAutoAlignTriggered()
 {
     if (cropUp == 1)
     {
@@ -902,11 +899,9 @@ void MainWindowImpl::executeAlignTriggered()
     int mappedI, mappedK, mappedJ;
     int warning = 0;
     int n = -1;
-    int points[5000][2];
+    int points[5000][2] = {{0}};
 
     QColor colorRGB;
-
-    QBrush brush(Qt::NoBrush);
     QPen marker;
     marker.setCosmetic(true);
     QColor colour(redValue, greenValue, blueValue);
@@ -956,7 +951,7 @@ void MainWindowImpl::executeAlignTriggered()
                 if (mappedK > alignHeight && warning == 0)
                 {
                     QMessageBox::warning(this, "Error",
-                                         "The horizontal AutoAlign setup box is less than ten pixels from the lower image boundary. we'll deal with this, but if the align doesn't work try moving it further from the edge of the image.",
+                                         "The horizontal AutoAlign setup box is less than ten pixels from the lower image boundary. We'll deal with this, but if the align doesn't work try moving it further from the edge of the image.",
                                          QMessageBox::Ok);
                     warning = 1;
                 }
@@ -991,6 +986,7 @@ void MainWindowImpl::executeAlignTriggered()
     //All points of maximum contrast based on RGB values stored in array --> do shit
     //Sort data (insertion sort)
     int x, y, mark;
+
     for (int l = 1; l < numberPoints; l++)
     {
         y = points[l][1];
@@ -1054,7 +1050,7 @@ void MainWindowImpl::executeAlignTriggered()
     numberPoints = (autoEdgeTwo->height()) / 5;
     warning = 0;
     n = -1;
-    int points2[5000][2];
+    int points2[5000][2] = {{0}};
 
     for (int i = autoEdgeTwo->top(); i < autoEdgeTwo->bottom(); i = i + 5)
     {
@@ -1154,7 +1150,6 @@ void MainWindowImpl::executeAlignTriggered()
     Sy = 0.;
     Sxx = 0.;
     Sxy = 0.;
-    delta = 0.;
 
     for (int l = static_cast<int>(startAt); l < static_cast<int>(endAt); l++)
     {
@@ -1227,7 +1222,6 @@ void MainWindowImpl::executeAlignTriggered()
             statusbar->showMessage(output);
             //pixmap pointer = current scene image
             alignImage = pixMapPointer->pixmap().toImage();
-            warning = 0;
             n = -1;
             //Move along horizontal edge 5 at a time
             for (int i = autoEdgeOne->left(); i < autoEdgeOne->right(); i = i + 5)
@@ -1252,7 +1246,6 @@ void MainWindowImpl::executeAlignTriggered()
                         totalGabove += colorRGB.green();
                         totalBabove += colorRGB.blue();
                     }
-                    warning = 0;
                     for (int k = j; k <= (j + 10); k++)
                     {
                         setupM.map(i, k, &mappedI, &mappedK);
@@ -1347,9 +1340,8 @@ void MainWindowImpl::executeAlignTriggered()
 
             ////////Vertical edge...
             numberPoints = (autoEdgeTwo->height()) / 5;
-            warning = 0;
             n = -1;
-            int points2[5000][2];
+            int points2[5000][2] = {{0}};
 
             for (int i = autoEdgeTwo->top(); i < autoEdgeTwo->bottom(); i = i + 5)
             {
@@ -1427,7 +1419,6 @@ void MainWindowImpl::executeAlignTriggered()
             Sy = 0.;
             Sxx = 0.;
             Sxy = 0.;
-            delta = 0.;
 
             for (int l = static_cast<int>(startAt); l < static_cast<int>(endAt); l++)
             {
@@ -1447,10 +1438,8 @@ void MainWindowImpl::executeAlignTriggered()
             NIa2 = a;
             NIb2 = b;
 
-            if (a != a
-                    || b != b)QMessageBox::warning(this, "NaN",
-                                                       "It would appear that one of the lines here is perfectly vertical - Auto Align will skip the image. Please take a note of its number - a small rotation and repeat Auto Align on this slice should fix the problem. If no line appears vertical, please email.",
-                                                       QMessageBox::Ok);
+            QString message("It would appear that one of the lines here is perfectly vertical - Auto Align will skip the image. Please take a note of its number - a small rotation and repeat Auto Align on this slice should fix the problem. If no line appears vertical, please email.");
+            if (a != a || b != b)QMessageBox::warning(this, "Not a number", message, QMessageBox::Ok);
             else
             {
                 //Now align the image compared to CIa1 etc. - first rotate
@@ -1476,50 +1465,14 @@ void MainWindowImpl::executeAlignTriggered()
                     tempPointer4->setZValue(1);
                 }
 
-
-                ///////////////////////////////////////////////////////
                 //Now shift...
                 verticalShift(CIcornerY - NIcornerY);
                 lateralShift(CIcornerX - NIcornerX);
-                //qDebug()<<CIcornerY-NIcornerY<<CIcornerX-NIcornerX;
                 redrawImage();
 
                 //Now rotate:
-                //Calculate angle...
-                /*Not working - try something else entirely.
-                double angleBetween=(atanf((NIb1-CIb1)/(1.+(CIb1*NIb1))))*(180./PI);
-                double angleBetween2=(atanf((NIb2-CIb2)/(1.+(CIb2*NIb2))))*(180./PI);
-
-                qDebug()<<angleBetween<<angleBetween2;
-                qDebug()<<"CI stats:"<<CIa1<<CIb1<<CIa2<<CIb2;
-                qDebug()<<"NI stats:"<<NIa1<<NIb1<<NIa2<<NIb2;*/
-
-                //Angle for horizontal line from gradient
-                //Use absolue angle to remove quadrant issues - if line near vertical this is a problem.
-                /*float angleNI, angleCI;
-                angleCI=atan(CIb1);
-                angleNI=atan(NIb1);*/
-
-                //Angle for vertical line
-                /*float angleNI2, angleCI2;
-                angleCI2=atan(CIb2);
-                angleNI2=atan(NIb2);*/
-                //Still giving quadrant issues, pain in arse to fix. Trying below/
-
-                //Difference between both...
-                //double angleBetween=(angleCI-angleNI)*(180./PI);
-                //double angleBetween2=(angleCI2-angleNI2)*(180./PI);
-
                 double angleBetween = (atan((NIb1 - CIb1) / (1. + (CIb1 * NIb1)))) * (-180. / PI);
                 double angleBetween2 = (atan((NIb2 - CIb2) / (1. + (CIb2 * NIb2)))) * (-180. / PI);
-
-                //qDebug()<<angleBetween<<angleBetween2<<(atan((NIb1-CIb1)/(1.+(CIb1*NIb1))))*(-180./PI)<<(atan((NIb2-CIb2)/(1.+(CIb2*NIb2))))*(-180./PI);
-
-                //Stop it giving 176 rather than 4, for example.
-                //if(angleBetween>150)angleBetween=180-angleBetween;
-                //if(angleBetween2>150)angleBetween2=180-angleBetween2;
-
-                //Average
                 double avangle = (angleBetween + angleBetween2) / 2;
                 if (avangle > 70.)avangle = 0.;
 
@@ -1557,30 +1510,13 @@ void MainWindowImpl::executeAlignTriggered()
                 if (imageList[currentImage]->format == 1)imageToDraw.save(savename, "JPG", 100);
                 if (imageList[currentImage]->format == 2)imageToDraw.save(savename, "PNG", 50);
 
-                /*rotate(angleBetween);
-
-
-                //The shift
-                double midX=((double)alignWidth/2);
-                double midY=((double)alignHeight/2);
-
-                //Vertical shift
-                double VS=((CIa1+(CIb1*midX))-(NIa1+(NIb1*midX)));
-
-                //Lateral shift
-                //y=a+bx --> (y-a)/b=x
-                double LS=((midY-CIa2)/CIb2)-((midY-NIa2)/NIb2);
-
-                verticalShift(VS);
-                lateralShift(LS);*/
-
                 redrawImage();
-            }//ends the else...
-        }//end the if
-    }//ends the for
+            }
+        }
+    }
     currentImage = CI;
     redrawImage();
-}//ends the function
+}
 
 /**
  * @brief MainWindowImpl::autoMarkersGrid
@@ -1594,7 +1530,6 @@ void MainWindowImpl::autoMarkersGrid ()
     }
     if (grid->isChecked() == true) aMOptions->show();
     if (grid->isChecked() == false) aMOptions->hide();
-
 }
 
 /**
@@ -1787,7 +1722,7 @@ void MainWindowImpl::removeMarkerSlot()
         return;
     }
 
-    delete markers[markers.count()];
+    delete markers[markers.count() - 1];
     markers.removeLast();
     markerList->takeItem((markers.count()));
 
@@ -2605,7 +2540,6 @@ void MainWindowImpl::on_actionAdd_Markers_triggered(bool checked)
             rectPointer = nullptr;
             QApplication::setOverrideCursor(Qt::ArrowCursor);
             redrawImage();
-
         }
 
         selectedMarker = 0;
@@ -2615,16 +2549,13 @@ void MainWindowImpl::on_actionAdd_Markers_triggered(bool checked)
         green->setValue(greenValue);
         blue->setValue(blueValue);
 
-
         markersDialogue->show();
     }
-
-    if (checked == false)
+    else
     {
         markersUp = 0;
         markersDialogue->hide();
     }
-
     redrawImage();
 }
 
@@ -3125,8 +3056,7 @@ void MainWindowImpl::on_actionShift_Down_Less_triggered()
  */
 void MainWindowImpl::verticalShift(qreal shiftSize)
 {
-    if (actionLock_File->isChecked() || currentImage == -1)return;
-    QImage Shift(imageList[currentImage]->fileName);
+    if (actionLock_File->isChecked() || currentImage == -1) return;
 
     //Manually edit matrix to make pure hoizontal movement, not movement in the dX of the matrix
     qreal m11, m12, m21, m22, mdx, mdy;

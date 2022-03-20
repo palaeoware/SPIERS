@@ -26,6 +26,7 @@
 #include <QListWidget>
 #include <QPlainTextEdit>
 #include <QSpinBox>
+#include <QtAlgorithms>
 
 #include "scene.h"
 #include "ui_mainwindow.h"
@@ -127,14 +128,14 @@ private slots:
     void aMThicknessChanged(int value);
     void aMHorizChanged(int value);
     void aMVertChanged(int value);
-    void executeAlignTriggered();
+    void executeAutoAlignTriggered();
     void openRecentFile();
     void changeMarkerSize(int size);
     void markersLockToggled();
     void autoMarkersToggled();
     void autoMarkersAlign();
     void autoMarkersGrid ();
-    void setupAlignTriggered();
+    void setupAutoAlignTriggered();
     void okClicked();
     void resizeCropW(int value);
     void resizeCropH(int value);

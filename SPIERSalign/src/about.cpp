@@ -44,7 +44,7 @@ About::About(QWidget *parent) :
     ui->textLabel_2->setText("This  software is " + QString(PRODUCTNAME) +
                              ". It was coded by"
                              " Russell Garwood (russell.garwood@gmail.com), with advice and assistance from Mark Sutton (m.sutton@imperial.ac.uk) and additional code by Alan R.T. Spencer (alan.spencer@imperial.ac.uk)"
-                             "<br><br>Reports are appreciated, and comments, suggestions, and feature requests are welcome.");
+                             "<br><br>Bug reports are appreciated, and comments, suggestions, and feature requests are welcome.");
     ui->textLabel_2->setAlignment(Qt::AlignCenter);
 
 
