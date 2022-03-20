@@ -687,7 +687,7 @@ void MainWindowImpl::selectMarker()
 void MainWindowImpl::changeMarkerSize(int size)
 {
     if (markersLocked == 1)return;
-    if (selectedMarker < 0)selectedMarker = 0;
+    if (selectedMarker < 0) selectedMarker = 0;
     QSizeF newSize(static_cast<double>(size), static_cast<double>(size));
     for (int i = 0; i < markers.count(); i++)
     {
@@ -1875,7 +1875,6 @@ void MainWindowImpl::on_actionOpen_triggered()
         if (filesDirectoryString == "") return; //dialogue cancelled
         filesDirectory = filesDirectoryString; //construct directory object
     }
-
     else
     {
         filesDirectoryString = fullSettingsFileName;
@@ -1904,19 +1903,17 @@ void MainWindowImpl::on_actionOpen_triggered()
         QFont f;
         f.setBold(true);
         if ((i + 1) % 10 == 0) fileList->item(i)->setFont(f); // font.setBold(true);
-        if ((i + 1) % 50 == 0)
-        {
-            fileList->item(i)->setTextColor(QColor(100, 149, 237));
-        }
-        if ((i + 1) % 100 == 0)
-        {
-            fileList->item(i)->setTextColor(QColor("blue"));
-        }
+        if ((i + 1) % 50 == 0) fileList->item(i)->setTextColor(QColor(100, 149, 237));
+        if ((i + 1) % 100 == 0) fileList->item(i)->setTextColor(QColor("blue"));
     }
 
     //Read from settings and apply matrices
     x = imageList.count();
     QString filename = filesDirectory.absolutePath() + "/settings.txt";
+
+    QImage Dimensions(imageList[currentImage]->fileName);
+    width = Dimensions.width();
+    height = Dimensions.height();
 
     if (QFile::exists(filename) == true)
     {
@@ -2028,11 +2025,35 @@ void MainWindowImpl::on_actionOpen_triggered()
         settings.flush();
         settings.close();
     }
+    //If this is a new file
     else
     {
         for (i = 0; i < imageList.count(); i++)imageList[i]->hidden = false;
         mSize->setValue(10);
         mThickness->setValue(5);
+
+        //Let's start with sensible markers
+        qDeleteAll(markers.begin(), markers.end());
+        markers.clear();
+        markerList->clear();
+
+        int widthOverEight = width / 8;
+        int heightOverEight = height / 8;
+
+        int widthOverSixteen = width / 16;
+
+        for (i = 0; i < 5; i++)
+        {
+            MarkerData *append = new MarkerData(new QRectF(static_cast<double>(i * widthOverEight),
+                                                           static_cast<double>(i * heightOverEight),
+                                                           static_cast<double>(widthOverSixteen),
+                                                           static_cast<double>(widthOverSixteen)), 0);
+            markers.append(append);
+            QString output;
+            output.sprintf("Marker - %d", (i + 1));
+            markerList->addItem(output);
+        }
+
     }
 
     for (i = 0; i < imageList.count(); i++)
@@ -2068,10 +2089,6 @@ void MainWindowImpl::on_actionOpen_triggered()
     actionSave_Backup->setEnabled(true);
     actionLoad_Settings_File->setEnabled(true);
     actionCompress_Dataset->setEnabled(true);
-
-    QImage Dimensions(imageList[currentImage]->fileName);
-    width = Dimensions.width();
-    height = Dimensions.height();
 
     currentScale = 1;
     redrawImage();
@@ -3901,12 +3918,12 @@ void MainWindowImpl::on_horizontalSlider_valueChanged(int value)
  * @brief MainWindowImpl::on_actionSave_triggered
  * Save settings file
  */
-void MainWindowImpl::on_actionSave_triggered()
+void MainWindowImpl::on_actionSave_triggered(QString filename)
 {
     int i;
 
     //Write to settings file
-    QString filename = filesDirectory.absolutePath() + "/settings.txt";
+    if (filename.length() == 0) filename = filesDirectory.absolutePath() + "/settings.txt";
     QFile settings(filename);
     settings.open(QFile::WriteOnly);
     QTextStream write(&settings);
@@ -3926,9 +3943,12 @@ void MainWindowImpl::on_actionSave_triggered()
           lockMarkers->isChecked() << "\t" << actionConstant_autosave->isChecked() << "\n";
 
     for (i = 0; i < markers.count(); i++)
-    {
-        write << markers[i]->markerRect->x() << "\t" << markers[i]->markerRect->y() << "\t" <<  markers[i]->shape << "\t" <<  markers[i]->linePoint.x() << "\t" <<  markers[i]->linePoint.y() << "\n";
-    }
+        write << markers[i]->markerRect->x() << "\t"
+              << markers[i]->markerRect->y() << "\t"
+              << markers[i]->shape << "\t"
+              << markers[i]->linePoint.x() << "\t"
+              << markers[i]->linePoint.y() << "\n";
+
     write << notes->toPlainText();
 
     settings.flush();
@@ -3942,37 +3962,10 @@ void MainWindowImpl::on_actionSave_triggered()
 void MainWindowImpl::on_actionSave_Backup_triggered()
 {
     QDateTime date;
-    date = QDateTime::currentDateTime () ;
-    int i;
-
+    date = QDateTime::currentDateTime ();
     //Write to settings file
     QString filename = filesDirectory.absolutePath() + "/settings backup - " + date.toString("dd MMM yyyy - hh.mm.ss") + ".txt";
-    QFile settings(filename);
-    settings.open(QFile::WriteOnly);
-    QTextStream write(&settings);
-    for (i = 0; i < imageList.count(); i++)
-    {
-        write << imageList[i]->fileName << "\t";
-        write << imageList[i]->m.dx() << "\t";
-        write << imageList[i]->m.dy() << "\t";
-        write << imageList[i]->m.m11() << "\t";
-        write << imageList[i]->m.m22() << "\t";
-        write << imageList[i]->m.m21() << "\t";
-        write << imageList[i]->m.m12() << "\t";
-        write << imageList[i]->hidden << "\n";
-    }
-
-    write << markers.count() << "\t" << mSize->value() << "\t" << mThickness->value() << "\t" << redValue << "\t" << greenValue << "\t" << blueValue << "\t" << currentImage << "\t" <<
-          lockMarkers->isChecked() << "\t" << actionConstant_autosave->isChecked() << "\n";
-
-    for (i = 0; i < markers.count(); i++)
-    {
-        write << markers[i]->markerRect->x() << "\t" << markers[i]->markerRect->y() << "\t" <<  markers[i]->shape << "\t" <<  markers[i]->linePoint.x() << "\t" <<  markers[i]->linePoint.y() << "\n";
-    }
-    write << notes->toPlainText();
-
-    settings.flush();
-    settings.close();
+    on_actionSave_triggered(filename);
 }
 
 /**
