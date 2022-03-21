@@ -55,14 +55,14 @@ void CustomScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
         int shortestMarker = -1;
         for (int i = 0; i < markers.count(); i++)
         {
-            double distance = 100., xT = 0., yT = 0.;
+            double distance = 1000., xT = 0., yT = 0.;
 
             if (markers[i]->shape == 0)
             {
-                xT = (static_cast<double>(x) - markers[i]->markerRect->x());
+                xT = (static_cast<double>(x) - (static_cast<double>(markers[i]->markerRect->x()) + (0.5 * markers[i]->markerRect->width())));
                 xT = xT * xT;
 
-                yT = (static_cast<double>(y) - static_cast<double>(markers[i]->markerRect->y()));
+                yT = (static_cast<double>(y) - (static_cast<double>(markers[i]->markerRect->y()) + (0.5 * markers[i]->markerRect->height())));
                 yT = yT * yT;
 
                 distance = sqrt(xT + yT);
@@ -89,7 +89,7 @@ void CustomScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
                 for (int i = 0; i < 3; i++)if (distance > distances[i])distance = distances[i];
             }
 
-            if (distance < 50.)
+            if (distance < 100.)
             {
                 if (distance < shortestDistance)
                 {

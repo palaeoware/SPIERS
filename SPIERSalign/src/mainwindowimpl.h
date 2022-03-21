@@ -26,7 +26,6 @@
 #include <QListWidget>
 #include <QPlainTextEdit>
 #include <QSpinBox>
-#include <QtAlgorithms>
 
 #include "scene.h"
 #include "ui_mainwindow.h"
@@ -62,7 +61,7 @@ private slots:
     void on_actionAdvance_To_Hidden_triggered();
     void on_actionRetreat_To_Hidden_triggered();
     void on_actionSave_Backup_triggered();
-    void on_actionSave_triggered();
+    void on_actionSave_triggered(QString filename = "");
     void on_actionLock_Forward_triggered(bool checked);
     void on_actionLock_Back_triggered(bool checked);
     void on_actionMove_Forward_Back_triggered();
@@ -140,6 +139,7 @@ private slots:
     void resizeCropW(int value);
     void resizeCropH(int value);
     void clearList();
+    void pickMarkerColourSlot();
 
 private:
     void rotate (qreal rotateAngle);
@@ -167,7 +167,7 @@ private:
     QWidget *layoutWidgetOne, *layoutWidgetTwo, *layoutWidgetThree, *layoutWidgetFour, *layoutWidgetFive;
     QPlainTextEdit *notes;
     QRectF sceneRectangle;
-    QPushButton *lockMarkers, *autoMarkers, *grid, *setupAlign;
+    QPushButton *lockMarkers, *autoMarkers, *grid, *setupAlign, *pickMarkerColourButton;
     QString filesDirectoryString;
     int propogateImage, propogateStep, lockImage;
     int redValue;

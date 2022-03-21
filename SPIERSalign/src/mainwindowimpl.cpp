@@ -44,6 +44,7 @@
 #include <QVBoxLayout>
 #include <QFont>
 #include <QStandardPaths>
+#include <QColorDialog>
 
 #include <math.h>
 #include <qbitmap.h>
@@ -122,6 +123,9 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     blue->setMaximum(255);
     blue->setSingleStep(1);
     QLabel *blueLabel = new QLabel("Blue:");
+
+
+    pickMarkerColourButton = new QPushButton("Pick Colour", markersDialogue);
 
     connect(red, SIGNAL(valueChanged(int)), this, SLOT(changeRed(int) ));
     connect(green, SIGNAL(valueChanged(int)), this, SLOT(changeGreen(int) ));
@@ -206,6 +210,8 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     horizontalLayout11->addWidget(blueLabel);
     horizontalLayout11->addWidget(blue);
     markerLayout->addLayout(horizontalLayout11);
+
+    markerLayout->addWidget(pickMarkerColourButton);
 
     //Dockwidget has inbuilt protected layout, so apply layout to widget and addMarker this docker
     //Can't use set widget for more than one widget
@@ -438,6 +444,7 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     connect(autoMarkers, SIGNAL(clicked()), this, SLOT(autoMarkersToggled() ));
     connect(align, SIGNAL(clicked()), this, SLOT(autoMarkersAlign() ));
     connect(grid, SIGNAL(clicked()), this, SLOT(autoMarkersGrid () ));
+    connect(pickMarkerColourButton, SIGNAL(clicked ()), this, SLOT(pickMarkerColourSlot()));
     connect(executeCrop, SIGNAL(clicked ()), this, SLOT(on_actionCrop_triggered() ));
     connect(cropWidth, SIGNAL(valueChanged(int)), this, SLOT(resizeCropW(int) ));
     connect(cropHeight, SIGNAL(valueChanged(int)), this, SLOT(resizeCropH(int) ));
@@ -452,6 +459,7 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     connect(aMThickness, SIGNAL(valueChanged(int)), this, SLOT(aMThicknessChanged(int) ));
     connect(aMHoriz, SIGNAL(valueChanged(int)), this, SLOT(aMHorizChanged(int) ));
     connect(aMVert, SIGNAL(valueChanged(int)), this, SLOT(aMVertChanged(int) ));
+
 
     //Keyboard shortcuts impossible in designer
     actionShift_Up->setShortcut(Qt::Key_Up);
@@ -694,6 +702,18 @@ void MainWindowImpl::changeMarkerSize(int size)
         markers[i]->markerRect->setSize(newSize);
     }
     redrawJustDecorations();
+}
+
+/**
+ * @brief MainWindowImpl::pickMarkerColour
+ * Change marker colour using a colour picker
+ */
+void MainWindowImpl::pickMarkerColourSlot()
+{
+    QColor colour = QColorDialog::getColor(Qt::white, this);
+    red->setValue(colour.red());
+    green->setValue(colour.green());
+    blue->setValue(colour.blue());
 }
 
 /**
@@ -1866,6 +1886,7 @@ void MainWindowImpl::on_actionOpen_triggered()
 
         this->setWindowTitle(QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION));
     }
+
     currentImage = 0;
 
     if (fullSettingsFileName.isEmpty())
@@ -2029,31 +2050,42 @@ void MainWindowImpl::on_actionOpen_triggered()
     else
     {
         for (i = 0; i < imageList.count(); i++)imageList[i]->hidden = false;
-        mSize->setValue(10);
-        mThickness->setValue(5);
+
+
+        int widthOverEight = width / 8;
+        int heightOverEight = height / 8;
 
         //Let's start with sensible markers
         qDeleteAll(markers.begin(), markers.end());
         markers.clear();
         markerList->clear();
 
-        int widthOverEight = width / 8;
-        int heightOverEight = height / 8;
-
-        int widthOverSixteen = width / 16;
-
         for (i = 0; i < 5; i++)
         {
             MarkerData *append = new MarkerData(new QRectF(static_cast<double>(i * widthOverEight),
                                                            static_cast<double>(i * heightOverEight),
-                                                           static_cast<double>(widthOverSixteen),
-                                                           static_cast<double>(widthOverSixteen)), 0);
+                                                           10.,
+                                                           10.), 0);
             markers.append(append);
             QString output;
             output.sprintf("Marker - %d", (i + 1));
             markerList->addItem(output);
         }
 
+        int widthOverSixteen = width / 16;
+        int newSize = 0;
+        if (widthOverSixteen > 99) newSize = 99;
+        else if (widthOverSixteen < 10) newSize = 10;
+        else newSize = widthOverSixteen;
+
+        mSize->setValue(newSize);
+        mThickness->setValue(5);
+
+        //Make sure markers are visible, at least in top left
+        QColor colour = Dimensions.pixelColor(widthOverEight, heightOverEight);
+        red->setValue(255 - colour.red());
+        blue->setValue(255 - colour.blue());
+        green->setValue(255 - colour.blue());
     }
 
     for (i = 0; i < imageList.count(); i++)
@@ -2092,6 +2124,7 @@ void MainWindowImpl::on_actionOpen_triggered()
 
     currentScale = 1;
     redrawImage();
+
     on_actionFit_Window_triggered();
 
     actionAdd_Markers->trigger();

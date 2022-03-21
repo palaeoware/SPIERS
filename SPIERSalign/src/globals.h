@@ -80,6 +80,7 @@ class MarkerData
 public:
     MarkerData(QRectF *startRectangle, int shp);
     QRectF *markerRect;
+    //Marker shape - 1 is line, 0 is circle
     int shape;
     QGraphicsItem *markerPointer;
     QPointF linePoint;
