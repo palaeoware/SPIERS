@@ -100,6 +100,7 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     markersDialogue->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     markersDialogue->setFeatures(QDockWidget::DockWidgetMovable);
     markersDialogue->setFeatures(QDockWidget::DockWidgetFloatable);
+    markersDialogue->setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum));
 
     //Features to go in docking window
     markerList = new QListWidget(markersDialogue);
@@ -123,7 +124,6 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     blue->setMaximum(255);
     blue->setSingleStep(1);
     QLabel *blueLabel = new QLabel("Blue:");
-
 
     pickMarkerColourButton = new QPushButton("Pick Colour", markersDialogue);
 
@@ -306,6 +306,7 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     info->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     info->setFeatures(QDockWidget::DockWidgetMovable);
     info->setFeatures(QDockWidget::DockWidgetFloatable);
+    info->setMinimumWidth(350);
 
     infoLayout = new QVBoxLayout;
 
@@ -314,8 +315,11 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     infoLabel = new QLabel("TextLabel");
     horizontalLayout3->addWidget(infoCat);
     horizontalLayout3->addWidget(infoLabel);
-
-    infoLayout->addLayout(horizontalLayout3);
+    QScrollArea *infoScrollArea = new QScrollArea;
+    infoScrollArea->setLayout(horizontalLayout3);
+    //infoScrollArea->setMinimumHeight(50);
+    infoScrollArea->setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum));
+    infoLayout->addWidget(infoScrollArea);
 
     //Text box
     notes = new QPlainTextEdit();
@@ -324,8 +328,8 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
 
     layoutWidgetTwo = new QWidget;
     layoutWidgetTwo->setLayout(infoLayout);
-    layoutWidgetTwo->setMaximumWidth(500);
-    layoutWidgetTwo->setMaximumHeight(200);
+    //layoutWidgetTwo->setMaximumWidth(500);
+    //layoutWidgetTwo->setMaximumHeight(500);
     info->setWidget(layoutWidgetTwo);
 
     addDockWidget(Qt::RightDockWidgetArea, info);
@@ -725,7 +729,7 @@ void MainWindowImpl::markersLockToggled()
     {
         markersLocked = 1;
         markerList->clearSelection();
-        markerList->setEnabled(false);
+        setEnabled(false);
         mThickness->setEnabled(false);
         mSize->setEnabled(false);
         addMarker->setEnabled(false);
@@ -737,7 +741,7 @@ void MainWindowImpl::markersLockToggled()
     else
     {
         markersLocked = 0;
-        markerList->setEnabled(true);
+        setEnabled(true);
         mThickness->setEnabled(true);
         mSize->setEnabled(true);
         addMarker->setEnabled(true);
@@ -2214,7 +2218,7 @@ void  MainWindowImpl::redrawImage()
     pixMapPointer->setZValue(0);
     LogText("*11\t");
     showInfo(-1, -1);
-    if (actionConstant_autosave->isChecked())on_actionSave_triggered();
+    if (actionConstant_autosave->isChecked()) on_actionSave_triggered();
     LogText("*12\t");
     redrawDecorations();
     LogText("...Done\n");
@@ -2591,7 +2595,7 @@ void MainWindowImpl::on_actionAdd_Markers_triggered(bool checked)
         }
 
         selectedMarker = 0;
-        layoutWidgetTwo->setMaximumHeight(200);
+        //layoutWidgetTwo->setMaximumHeight(200);
         markersUp = 1;
         red->setValue(redValue);
         green->setValue(greenValue);
@@ -3622,7 +3626,7 @@ void MainWindowImpl::on_actionCreate_Crop_Area_triggered(bool checked)
             actionAdd_Markers->setChecked(false);
         }
 
-        layoutWidgetTwo->setMaximumHeight(300);
+        //layoutWidgetTwo->setMaximumHeight(300);
         cropDock->show();
         actionCrop->setEnabled(true);
         cropUp = 1;
@@ -3646,7 +3650,7 @@ void MainWindowImpl::on_actionCreate_Crop_Area_triggered(bool checked)
         rectPointer = nullptr;
         cropUp = 0;
         cropDock->hide();
-        layoutWidgetTwo->setMaximumHeight(200);
+        // layoutWidgetTwo->setMaximumHeight(200);
         QApplication::setOverrideCursor(Qt::ArrowCursor);
         redrawImage();
     }
