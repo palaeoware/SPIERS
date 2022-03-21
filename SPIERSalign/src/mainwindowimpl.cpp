@@ -723,7 +723,6 @@ void MainWindowImpl::markersLockToggled()
 {
     if (lockMarkers->isChecked() == true)
     {
-
         markersLocked = 1;
         markerList->clearSelection();
         markerList->setEnabled(false);
@@ -737,7 +736,6 @@ void MainWindowImpl::markersLockToggled()
     }
     else
     {
-
         markersLocked = 0;
         markerList->setEnabled(true);
         mThickness->setEnabled(true);
@@ -2771,9 +2769,11 @@ void MainWindowImpl::rotate (qreal rotateAngle)
 
     //Apply by drawing QImage with painter - allows for shifts.
     QImage imageToDraw(width, height, QImage::Format_RGB32);
+    //Set the background to black
+    imageToDraw.fill(Qt::black);
+    //Then use qpainter to paint he transformed image onto this
     QPainter paint;
     paint.begin(&imageToDraw);
-
     //Transform here so rotates around middle - allows translate
     paint.setWorldTransform(imageList[currentImage]->m);
     paint.setRenderHint(QPainter::SmoothPixmapTransform);
@@ -2896,6 +2896,8 @@ void MainWindowImpl::resize(qreal sizeChange)
 
     //Apply transformation here to allow them to occur around centre point
     QImage imageToDraw(width, height, QImage::Format_RGB32);
+    //Set the background to black
+    imageToDraw.fill(Qt::black);
     QPainter paint;
     paint.begin(&imageToDraw);
     paint.setWorldTransform(imageList[currentImage]->m);
@@ -3141,6 +3143,8 @@ void MainWindowImpl::redrawShift()
 {
     QImage Shift(imageList[currentImage]->fileName);
     QImage Shifted(width, height, QImage::Format_RGB32);
+    //Set the background to black
+    Shifted.fill(Qt::black);
     QPainter paint;
     paint.begin(&Shifted);
     paint.setRenderHint(QPainter::SmoothPixmapTransform);
