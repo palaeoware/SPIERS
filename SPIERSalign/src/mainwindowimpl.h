@@ -61,7 +61,7 @@ private slots:
     void on_actionAdvance_To_Hidden_triggered();
     void on_actionRetreat_To_Hidden_triggered();
     void on_actionSave_Backup_triggered();
-    void on_actionSave_triggered(QString filename = "");
+    void savetriggered(QString filename = "");
     void on_actionLock_Forward_triggered(bool checked);
     void on_actionLock_Back_triggered(bool checked);
     void on_actionMove_Forward_Back_triggered();

@@ -317,7 +317,6 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     horizontalLayout3->addWidget(infoLabel);
     QScrollArea *infoScrollArea = new QScrollArea;
     infoScrollArea->setLayout(horizontalLayout3);
-    //infoScrollArea->setMinimumHeight(50);
     infoScrollArea->setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum));
     infoLayout->addWidget(infoScrollArea);
 
@@ -328,8 +327,6 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
 
     layoutWidgetTwo = new QWidget;
     layoutWidgetTwo->setLayout(infoLayout);
-    //layoutWidgetTwo->setMaximumWidth(500);
-    //layoutWidgetTwo->setMaximumHeight(500);
     info->setWidget(layoutWidgetTwo);
 
     addDockWidget(Qt::RightDockWidgetArea, info);
@@ -492,7 +489,7 @@ MainWindowImpl::~MainWindowImpl()
         int i = 0;
 
         //Write to settings file
-        on_actionSave_triggered();
+        savetriggered();
 
         qDeleteAll(imageList.begin(), imageList.end());
         imageList.clear();
@@ -1820,7 +1817,7 @@ void MainWindowImpl::on_actionOpen_triggered()
         amRectPointer = nullptr;
 
         //Write to settings file
-        on_actionSave_triggered();
+        savetriggered();
 
         qDeleteAll(imageList.begin(), imageList.end());
         imageList.clear();
@@ -2074,20 +2071,30 @@ void MainWindowImpl::on_actionOpen_triggered()
             markerList->addItem(output);
         }
 
-        int widthOverSixteen = width / 16;
+        int widthOverFifty = width / 50;
         int newSize = 0;
-        if (widthOverSixteen > 99) newSize = 99;
-        else if (widthOverSixteen < 10) newSize = 10;
-        else newSize = widthOverSixteen;
+        if (widthOverFifty > 99) newSize = 99;
+        else if (widthOverFifty < 10) newSize = 10;
+        else newSize = widthOverFifty;
 
         mSize->setValue(newSize);
         mThickness->setValue(5);
 
         //Make sure markers are visible, at least in top left
-        QColor colour = Dimensions.pixelColor(widthOverEight, heightOverEight);
-        red->setValue(255 - colour.red());
-        blue->setValue(255 - colour.blue());
-        green->setValue(255 - colour.blue());
+        int R = 0, G = 0, B = 0, pixelCount = 0;
+        for (int i = 0; i < widthOverEight; i++)
+            for (int j = 0; j < heightOverEight; j++)
+            {
+                QColor colour = Dimensions.pixelColor(widthOverEight, heightOverEight);
+                R += colour.red();
+                B += colour.blue();
+                G += colour.green();
+                pixelCount++;
+            }
+
+        red->setValue(255 - (R / pixelCount));
+        blue->setValue(255 - (B / pixelCount));
+        green->setValue(255 - (G / pixelCount));
     }
 
     for (i = 0; i < imageList.count(); i++)
@@ -2218,7 +2225,7 @@ void  MainWindowImpl::redrawImage()
     pixMapPointer->setZValue(0);
     LogText("*11\t");
     showInfo(-1, -1);
-    if (actionConstant_autosave->isChecked()) on_actionSave_triggered();
+    if (actionConstant_autosave->isChecked()) savetriggered();
     LogText("*12\t");
     redrawDecorations();
     LogText("...Done\n");
@@ -2329,7 +2336,7 @@ void  MainWindowImpl::redrawDecorations()
 
         QPen marker;
 
-        QColor icolour((255 - redValue), (255 - greenValue), (255 - blueValue));
+        QColor icolour(0, 0, 200);
         marker.setWidth(mThickness->value());
         marker.setStyle(Qt::SolidLine);
         marker.setCosmetic(true);
@@ -2364,7 +2371,7 @@ void  MainWindowImpl::redrawJustDecorations()
     QPen marker;
     marker.setCosmetic(true);
     QColor colour(redValue, greenValue, blueValue);
-    QColor icolour((255 - redValue), (255 - greenValue), (255 - blueValue));
+    QColor icolour(0, 0, 200);
     marker.setWidth(mThickness->value());
     marker.setStyle(Qt::SolidLine);
 
@@ -3956,10 +3963,10 @@ void MainWindowImpl::on_horizontalSlider_valueChanged(int value)
 }
 
 /**
- * @brief MainWindowImpl::on_actionSave_triggered
+ * @brief MainWindowImpl::savetriggered
  * Save settings file
  */
-void MainWindowImpl::on_actionSave_triggered(QString filename)
+void MainWindowImpl::savetriggered(QString filename)
 {
     int i;
 
@@ -4006,7 +4013,7 @@ void MainWindowImpl::on_actionSave_Backup_triggered()
     date = QDateTime::currentDateTime ();
     //Write to settings file
     QString filename = filesDirectory.absolutePath() + "/settings backup - " + date.toString("dd MMM yyyy - hh.mm.ss") + ".txt";
-    on_actionSave_triggered(filename);
+    savetriggered(filename);
 }
 
 /**
