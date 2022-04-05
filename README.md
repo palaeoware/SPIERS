@@ -175,6 +175,14 @@ On MacOS running on arm64 (M1 chip) homebrew must be installed under x86_64 to w
 
 6. You should then be able to compile SPIERS by opening the .pro file in QT creator and following standard debug/release procedure.
 
+7. Packaging of the individual apps is achieved by using the QT macdeployqt program:
+
+  `/{path to QT}/Qt/5.15.2/clang_64/bin/macdeployqt /{path to build}/build-SPIERS-Desktop_Qt_5_15_2_clang_64bit-Release/SPIERSalign/bin/SPIERSalign64.app -always-overwrite -verbose=2`
+
+  `/{path to QT}/Qt/5.15.2/clang_64/bin/macdeployqt /{path to build}/build-SPIERS-Desktop_Qt_5_15_2_clang_64bit-Release/SPIERSedit/bin/SPIERSedit64.app -always-overwrite -verbose=2`
+
+  `/{path to QT}/Qt/5.15.2/clang_64/bin/macdeployqt /{path to build}/build-SPIERS-Desktop_Qt_5_15_2_clang_64bit-Release/SPIERSview/bin/SPIERSview64.app -always-overwrite -verbose=2`
+
 Note: it may be possible to install QT5.x/QT Creator via Homebrew rather than via the Apple App Store.
 _____
 
