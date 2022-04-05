@@ -237,9 +237,9 @@ macx {
     # so that it runs on older Macs and under Rosetta on arm64 (M1 chip) machines. Given more time
     # both QT and VTK might both catch up with the newer Apple silicon around.
     LIBS += -L/usr/local/homebrew/opt/icu4c/lib/ \
-    -licudata.69 \
-    -licuuc.69 \
-    -L/usr/local/homebrew/Cellar/vtk/9.1.0/lib/ \
+    -licudata.70 \
+    -licuuc.70 \
+    -L/usr/local/homebrew/Cellar/vtk/9.1.0_4/lib/ \
     -lvtkCommonExecutionModel-9.1.1 \
     -lvtkCommonDataModel-9.1.1 \
     -lvtkCommonColor-9.1.1 \
@@ -317,8 +317,8 @@ macx {
     -lstdc++ \
     -lz
 
-    INCLUDEPATH += /usr/local/homebrew/Cellar/vtk/9.1.0/include/vtk-9.1/
-    DEPENDPATH += /usr/local/homebrew/Cellar/vtk/9.1.0/include/vtk-9.1/
+    INCLUDEPATH += /usr/local/homebrew/Cellar/vtk/9.1.0_4/include/vtk-9.1/
+    DEPENDPATH += /usr/local/homebrew/Cellar/vtk/9.1.0_4/include/vtk-9.1/
     INCLUDEPATH += /usr/local/homebrew/opt/icu4c/include/
     DEPENDPATH += /usr/local/homebrew/opt/icu4c/include/
 
