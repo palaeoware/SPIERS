@@ -16,6 +16,7 @@
  */
 
 #include "darkstyletheme.h"
+#include <QScreen>
 #include <QRect>
 #include <QDesktopWidget>
 
@@ -93,7 +94,7 @@ void DarkStyleTheme::polish(QApplication *app)
 {
     if (!app) return;
 
-    QRect screenGeometry = QApplication::desktop()->screenGeometry();
+    QRect screenGeometry = QApplication::primaryScreen()->geometry();
     if (screenGeometry.width() > 1920)
     {
         //ARTS - Increase font size for better reading,

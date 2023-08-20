@@ -35,7 +35,7 @@ class MainWindowImpl : public QMainWindow, public Ui::MainWindow
 {
     Q_OBJECT
 public:
-    MainWindowImpl( QWidget *parent = nullptr, Qt::WindowFlags f = nullptr );
+    MainWindowImpl( QWidget *parent = nullptr, Qt::WindowFlags f = {} );
     ~MainWindowImpl();
 
     void LogText(QString text);

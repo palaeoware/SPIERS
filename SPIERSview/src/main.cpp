@@ -60,17 +60,17 @@ void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const Q
         QFile outFile(path);
         outFile.open(QIODevice::WriteOnly | QIODevice::Append);
         QTextStream log(&outFile);
-        log << txt << endl;
+        log << txt << Qt::endl;
 
         // Now print to stout too
         QTextStream console(stdout);
-        console << txt << endl;
+        console << txt << Qt::endl;
     }
     else
     {
         // Print to stout only
         QTextStream console(stdout);
-        console << txt << endl;
+        console << txt << Qt::endl;
     }
 }
 

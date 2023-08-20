@@ -21,6 +21,8 @@
 #include "fileio.h"
 #include <math.h>
 #include <QDebug>
+#include <QElapsedTimer>
+#include <QRandomGenerator>
 
 //these variables can be used for stashing /unstashing
 double k; // the integer part of the thing
@@ -60,7 +62,7 @@ int findpolynomialImpl::MeasurePolyFitness()
 int rand255()
 {
     // gives random number in short range (ignore the 255!)
-    return static_cast<int>(qrand() * 2);
+    return static_cast<int>(QRandomGenerator::global()->generate() * 2);
 }
 
 double findpolynomialImpl::PolyTweak(double val)
@@ -178,8 +180,6 @@ int  findpolynomialImpl::BreedPoly(int gens)
 
 double findpolynomialImpl::CalcScale()
 {
-
-
     //work out scaling factor - find largest and / or smallest values from sample array
     int n;
     double maxval;
@@ -187,18 +187,15 @@ double findpolynomialImpl::CalcScale()
     Segment *seg = Segments[CurrentSegment];
 
     maxval = 0;
-
     for (n = 0; n < Sample.count(); n += seg->PolySparse)
     {
-        r = CalcPoly(Sample[n].r, Sample[n].g, Sample[n].b, seg);
-        if (r < 0) r = 0 - r; //do abs
+        r = abs(CalcPoly(Sample[n].r, Sample[n].g, Sample[n].b, seg));
         if (r > maxval) maxval = r;
     }
     //maxval is now biggest
     maxval /= 128;
 
     return maxval;
-
 }
 
 //New QT stuff
@@ -254,8 +251,6 @@ void findpolynomialImpl::UnStashPoly()
     for (int i = 0; i < 10; i++)
         seg->PolyBlueConsts[i] = BlueConsts[i];
 }
-
-
 
 //And a translated VB function
 void findpolynomialImpl::Breed()
@@ -359,8 +354,8 @@ void findpolynomialImpl::Breed()
 
 double findpolynomialImpl::polyrand()
 {
-    double polyrand = pow(2.0, ((static_cast<double>(qrand()) / static_cast<double>(RAND_MAX) * 16.0) - 8.0));
-    if ((qrand() > (RAND_MAX / 2))) return 0 - polyrand;
+    double polyrand = pow(2.0, ((static_cast<double>(QRandomGenerator::global()->generate()) / QRandomGenerator::global()->generate() * 16.0) - 8.0));
+    if (((new QRandomGenerator)->generateDouble() > (RAND_MAX / 2))) return 0 - polyrand;
     else return polyrand;
 }
 
@@ -376,7 +371,7 @@ void findpolynomialImpl::RandomizePoly(int s, int o)
         Segments[s]->PolyBlueConsts[n] = polyrand();
     }
     Segments[s]->PolyOrder = o;
-    Segments[s]->PolyKall = (qrand() / RAND_MAX) * 200 - 100;
+    Segments[s]->PolyKall = (QRandomGenerator::global()->generate() / RAND_MAX) * 200 - 100;
     Segments[s]->PolyScale = 10000000;
 
     //report
@@ -406,8 +401,8 @@ void findpolynomialImpl::find()
 
     //first step - set up the sample
     WriteAllData(CurrentFile);
-    QTime t;
-    t.start();
+    //QElapsedTimer t;
+    //t.start();
 
     for (int i = 0; i < FileCount; i++)
         if (mainwin->SliceSelectorList->item(i)->isSelected())

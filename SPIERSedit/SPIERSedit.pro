@@ -11,9 +11,11 @@ QT += core \
     network \
     widgets
 
-CONFIG += warn_on \
-    qt \
+CONFIG += qt \
+    release \
+    warn_on \
     thread \
+    sdk_no_version_check
 
 RESOURCES = SPIERSedit.qrc \
     ../SPIERScommon/commonresources.qrc

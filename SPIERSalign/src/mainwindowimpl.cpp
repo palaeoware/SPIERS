@@ -726,7 +726,7 @@ void MainWindowImpl::markersLockToggled()
     {
         markersLocked = 1;
         markerList->clearSelection();
-        setEnabled(false);
+        //setEnabled(false);
         mThickness->setEnabled(false);
         mSize->setEnabled(false);
         addMarker->setEnabled(false);
@@ -738,7 +738,7 @@ void MainWindowImpl::markersLockToggled()
     else
     {
         markersLocked = 0;
-        setEnabled(true);
+        //setEnabled(true);
         mThickness->setEnabled(true);
         mSize->setEnabled(true);
         addMarker->setEnabled(true);

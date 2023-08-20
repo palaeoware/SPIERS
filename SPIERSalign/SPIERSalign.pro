@@ -10,7 +10,8 @@ QT = gui core network widgets
 
 CONFIG += qt \
     release \
-    warn_on
+    warn_on \
+    sdk_no_version_check
 
 RESOURCES += align.qrc \
     ../SPIERScommon/commonresources.qrc
