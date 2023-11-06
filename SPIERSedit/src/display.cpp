@@ -569,6 +569,30 @@ QByteArray DoMaskLocking()
         }
     return newlocks;
 }
+void ApplyRadial(int seg, int fnum, BeamHardening *bh,  bool flag = false)
+{
+    //load data for file - can and should assume existing data is safe
+    if (!flag) LoadAllData(fnum);
+
+    if (Segments[seg]->Locked) return;
+    uchar *data= GA[seg]->bits(); // get data from GA array
+
+    //make a copy of underlying data
+    QVector<uchar> data_original_vector(fwidth4 * fheight);
+    uchar *data_original = data_original_vector.data();
+    memcpy(data_original,data,fwidth4*fheight);
+
+    QByteArray NewLocks = DoMaskLocking();
+
+    for (int h = 0; h < fheight; h++)
+        for (int w = 0; w < fwidth; w++)
+        {
+            if (!(NewLocks[(fwidth * h + w)]))
+                *(data + (fwidth4 * h + w))
+                    = RadialPixel(w, h, data_original, &NewLocks, bh);
+        }
+    if (!flag) SaveGreyData(fnum, seg);
+}
 
 //Do LCE - based on MakeLinearGreyScale
 void ApplyLCE(int seg, int fnum, bool flag = false)
@@ -598,6 +622,7 @@ void ApplyLCE(int seg, int fnum, bool flag = false)
 
 
 }
+
 
 void MakeLinearGreyScale(int seg, int fnum, bool flag = false)
 {
@@ -889,6 +914,19 @@ uchar GenPixel(int x, int y, int s, QVector<uchar> *sample, QByteArray *locks)
     }
 
     return 0;
+}
+
+uchar RadialPixel(int w, int h, uchar *original_data, QByteArray *new_locks, BeamHardening *bh)
+{
+
+    int val = (int)original_data[w + fwidth4*h];
+
+    val += bh->GetCorrectionAtWorkingImageCoordinates(w,h);
+
+    if (val>255) val = 255;
+    if (val<0) val = 0;
+    return (uchar) val;
+
 }
 
 uchar LCEPixel(int w, int h, uchar *original_data, QByteArray *new_locks)

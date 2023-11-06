@@ -59,6 +59,7 @@ MainWindowImpl *AppMainWindow;
 MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     : QMainWindow(parent, f)
 {
+    bh = new BeamHardening();
     DontRedoZoom = false;
     mainwin = this;
     ReadSuperGlobals();
@@ -338,6 +339,8 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
 
     ExportingImages = false;
     DoubleClickTimer.start();
+
+    centerIcon = new BeamHardeningCenterIcon();
 }
 
 
@@ -2123,8 +2126,8 @@ void MainWindowImpl::on_tabWidget_currentChanged(int index)
 {
     GenInvert->setVisible(true);
     GenerateAuto->setVisible(true);
-    if (index == 2 || index == 3) GenInvert->setVisible(false);
-    if (index == 3 ) GenerateAuto->setVisible(false);
+    if (index == 2 || index == 3 || index == 4) GenInvert->setVisible(false);
+    if (index == 3 || index == 4) GenerateAuto->setVisible(false);
 }
 
 void MainWindowImpl::on_actionChange_downsampling_triggered()
@@ -2151,3 +2154,7 @@ void MainWindowImpl::on_actionTEST_triggered()
     }
     RefreshOO();
 }
+
+
+
+

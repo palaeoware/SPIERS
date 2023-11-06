@@ -22,6 +22,7 @@
 #include <QGraphicsScene>
 #include <QString>
 #include "globals.h"
+#include "beamhardening.h"
 
 extern void ShowImage(QGraphicsView *gv);
 extern void InitImage(QGraphicsView *gv);
@@ -29,9 +30,11 @@ extern void DeleteDisplayObjects();
 extern void ClearImages();
 extern void MakeLinearGreyScale(int seg, int fnum, bool flag);
 extern void ApplyLCE(int seg, int fnum, bool flag);
+extern void ApplyRadial(int seg, int fnum, BeamHardening *bh, bool flag);
 extern void MakeBlankGreyScale(int seg, int fnum, bool flag);
 extern uchar GreyScalePixel(int w, int h, int r, int g, int b, int glob);
 extern uchar LCEPixel(int w, int h, uchar *original_data, QByteArray *new_locks);
+extern uchar RadialPixel(int w, int h, uchar *original_data, QByteArray *new_locks, BeamHardening *bh);
 extern void MakePolyGreyScale(int seg, int fnum, bool flag);
 extern void MakeRangeGreyScale(int seg, int fnum, bool flag);
 extern uchar PolyPixel(int w, int h, int seg);

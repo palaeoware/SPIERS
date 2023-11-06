@@ -27,6 +27,8 @@
 #include <QGraphicsView>
 
 #include "../ui/ui_mainwindow.h"
+#include "beamhardeningcentericon.h"
+#include "beamhardening.h"
 
 /**
  * @brief The MainWindowImpl class
@@ -176,6 +178,8 @@ private slots:
     void on_actionOutput_visible_image_set_triggered();
     void on_actionCode_on_GitHub_triggered();
     void on_actionBugIssueFeatureRequest_triggered();
+    void on_FindCentre_clicked();
+
 
     void ScreenUpdate();
     void Menu_Window_MainToolbox();
@@ -238,6 +242,12 @@ private slots:
 
     void autosave();
     void on_actionTEST_triggered();
+    void on_Measure_clicked();
+    void on_ShowCenter_stateChanged(int arg1);
+    void on_CentreX_valueChanged(int arg1);
+    void on_CentreY_valueChanged(int arg1);
+    void on_HardeningRadiusSpinBox_valueChanged(int arg1);
+    void on_AdjustRadialSpinBox_valueChanged(int arg1);
 
 private:
     void MakeUndo(QString type);
@@ -272,6 +282,9 @@ private:
     bool ExportingImages;
 
     QTime DoubleClickTimer;
+
+    BeamHardeningCenterIcon *centerIcon;
+    BeamHardening *bh;
 };
 
 extern MainWindowImpl *AppMainWindow;

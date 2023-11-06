@@ -39,6 +39,7 @@ public:
     void recalc(int x, int y, int segment, QVector<uchar> *sample, QByteArray *locks);
     //more to follow!
     int PixelCount; //applies to all three lists above
+
 private:
     QList <int> Xpos;
     QList <int> Ypos;
@@ -57,6 +58,8 @@ private:
     bool RestartFlag;
     QList <QGraphicsLineItem *> LineList;
     void ThreeDBrushPixels(QList <int> *X, QList <int> *Y, int *PointCount, double offset, int mode);
+
+
 };
 
 extern Brush_class Brush;

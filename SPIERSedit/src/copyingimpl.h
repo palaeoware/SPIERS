@@ -24,6 +24,7 @@
 
 #include "ui_Copying.h"
 #include "mainwindowimpl.h"
+#include "beamhardening.h"
 
 class OutputObject;
 
@@ -59,6 +60,7 @@ public:
     void Apply3DBrush(int button);
     bool copying;
 
+    void GenerateRadial(QListWidget *SliceSelectorList, BeamHardening *bh);
 protected:
     void closeEvent(QCloseEvent *event);
 
@@ -74,7 +76,6 @@ private:
     QString CountMessage;
     QVector <uchar> LCE_sample;
     int Count;
-
 private slots:
     void escape();
 
