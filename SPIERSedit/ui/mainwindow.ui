@@ -1844,7 +1844,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="FindCentre">
+              <widget class="QPushButton" name="SetCentre">
                <property name="text">
                 <string>Set to Image Centre</string>
                </property>

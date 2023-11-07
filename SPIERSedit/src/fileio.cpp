@@ -2196,6 +2196,10 @@ void WriteSettings()
     out << LCE_Radius;
     out << LCE_Adjust;
 
+    out << mainwin->GetRadialCentreX();
+    out << mainwin->GetRadialCentreY();
+    out << mainwin->GetRadialRadius();
+    out << mainwin->GetRadialAdjust();
     file.close();
 }
 
@@ -2466,6 +2470,21 @@ void ReadSettings()
     if (!in.atEnd()) in >> LCE_Boost;
     if (!in.atEnd()) in >> LCE_Radius;
     if (!in.atEnd()) in >> LCE_Adjust;
+
+    int tempX=-1, tempY, tempRad, tempAdjust;
+    if (!in.atEnd()) in >> tempX;
+    if (!in.atEnd()) in >> tempY;
+    if (!in.atEnd()) in >> tempRad;
+    if (!in.atEnd()) in >> tempAdjust;
+
+    if (tempX!=-1)
+    {
+        mainwin->SetRadialCentreX(tempX);
+        mainwin->SetRadialCentreY(tempY);
+        mainwin->SetRadialRadius(tempRad);
+        mainwin->SetRadialAdjust(tempAdjust);
+    }
+
     //now doctor Files array using zsparsity, if necessary
     if (zsparsity > 1)
     {

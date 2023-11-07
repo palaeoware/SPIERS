@@ -20,10 +20,12 @@ void BeamHardening::SetParams(int x, int y, int radius, int adjust)
 //Get the sample, and compute the correction buffer
 void BeamHardening::Measure(QListWidget *SliceSelectorList, int cX, int cY, QLabel *label, int radius)
 {
+
     WriteAllData(CurrentFile);
 
     long pixelCount = 0;
     int fileCount = 0;
+
 
     for (int i = 0; i < Files.count(); i++)
     {
@@ -91,6 +93,14 @@ void BeamHardening::Measure(QListWidget *SliceSelectorList, int cX, int cY, QLab
         total += sampleBuffer[i] * sampleCountBuffer[i]; //for better mean
         totalDivisor += sampleCountBuffer[i];
     }
+    if (totalDivisor == 0)
+    {
+        label->setText("No data selected. No measurements made.");
+        free(sampleBuffer); //free the memory
+        free(sampleCountBuffer);
+        sampleBufferSize=-1; //and reset to 'no data'
+        return;
+    }
 
     int targetLevel = (int)(total/totalDivisor);    //no, this can't be a divide by zero
 
@@ -107,6 +117,7 @@ void BeamHardening::Measure(QListWidget *SliceSelectorList, int cX, int cY, QLab
 
     //restore setup
     LoadAllData(CurrentFile);
+
 }
 
 bool BeamHardening::HasSample()

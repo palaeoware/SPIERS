@@ -47,6 +47,14 @@ public:
     void SetUpGUIFromSettings();
     void Start();
     void MouseZoom(int delta);
+    void SetRadialCentreX(int v);
+    void SetRadialCentreY(int v);
+    void SetRadialRadius(int v);
+    void SetRadialAdjust(int v);
+    int GetRadialCentreX();
+    int GetRadialCentreY();
+    int GetRadialRadius();
+    int GetRadialAdjust();
 private slots:
     void Moveimage(int);
     void on_action3D_Brush_toggled(bool );
@@ -178,7 +186,6 @@ private slots:
     void on_actionOutput_visible_image_set_triggered();
     void on_actionCode_on_GitHub_triggered();
     void on_actionBugIssueFeatureRequest_triggered();
-    void on_FindCentre_clicked();
 
 
     void ScreenUpdate();
@@ -248,6 +255,8 @@ private slots:
     void on_CentreY_valueChanged(int arg1);
     void on_HardeningRadiusSpinBox_valueChanged(int arg1);
     void on_AdjustRadialSpinBox_valueChanged(int arg1);
+
+    void on_SetCentre_clicked();
 
 private:
     void MakeUndo(QString type);

@@ -605,6 +605,8 @@ void MainWindowImpl:: MouseZoom(int delta)
     else ZoomSlider->setValue(ZoomSlider->value() + delta / 5);
 }
 
+
+
 void MainWindowImpl::SetMasksFlag()
 {
     if (actionShowMasks->isChecked()) MasksFlag = true;
@@ -2154,6 +2156,7 @@ void MainWindowImpl::on_actionTEST_triggered()
     }
     RefreshOO();
 }
+
 
 
 
