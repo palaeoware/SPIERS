@@ -2,6 +2,8 @@
 #include "myscene.h"
 #include "globals.h"
 
+//Handles the cross and circle icons for radial corrections system
+
 BeamHardeningCenterIcon::BeamHardeningCenterIcon()
 {
     centerVisible = false;
@@ -24,12 +26,10 @@ void BeamHardeningCenterIcon::PlaceCenter(int x, int y, int radius)
     lastX = x;
     lastY = y;
     lastRadius = radius;
-    int n;
     QPen MyPen;
-    qreal rcms = static_cast<qreal>(ColMonoScale);
     qreal rx1, rx2, ry1, ry2;
-    int lx, ly;
 
+    //delete any old ones
     if (center1!=nullptr)
     {
         scene->removeItem(center1);
@@ -53,9 +53,10 @@ void BeamHardeningCenterIcon::PlaceCenter(int x, int y, int radius)
     if (Active == false || centerVisible==false) return;
 
     MyPen.setCosmetic(true);
-    MyPen.setColor(QColor(255, 255, 255));
+    MyPen.setColor(QColor(255, 255, 255));  //white pen
     MyPen.setWidth(3);
 
+    //make cross - offset by .5 to be in centre of pixels
     rx1 = static_cast<qreal>(x-3);
     rx2 = static_cast<qreal>(x+3);
     ry1 = static_cast<qreal>(y-3);
@@ -68,6 +69,7 @@ void BeamHardeningCenterIcon::PlaceCenter(int x, int y, int radius)
     center2 = scene->addLine( rx1+.5, ry1+.5, rx2+.5, ry2+.5, MyPen);
     center2->setZValue(1);
 
+    //and make circle
     rx1 = static_cast<qreal>(x+.5);
     ry1 = static_cast<qreal>(y+.5);
     radiusItem = scene->addEllipse(rx1 - (qreal)radius/2.0, ry1- (qreal)radius/2.0, radius, radius, MyPen);

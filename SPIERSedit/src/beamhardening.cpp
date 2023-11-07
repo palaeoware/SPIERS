@@ -6,7 +6,7 @@
 
 BeamHardening::BeamHardening()
 {
-    sampleBufferSize = -1;
+    sampleBufferSize = -1;  //this is an internal code for 'no data'
 }
 
 void BeamHardening::SetParams(int x, int y, int radius, int adjust)
@@ -17,6 +17,7 @@ void BeamHardening::SetParams(int x, int y, int radius, int adjust)
     adj = adjust;
 }
 
+//Get the sample, and compute the correction buffer
 void BeamHardening::Measure(QListWidget *SliceSelectorList, int cX, int cY, QLabel *label, int radius)
 {
     WriteAllData(CurrentFile);
@@ -65,12 +66,13 @@ void BeamHardening::Measure(QListWidget *SliceSelectorList, int cX, int cY, QLab
     if (pixelCount == 0)
     {
         label->setText("No files with locked (selected) pixels are selected. No measurements made.");
-        free(sampleBuffer); //kill old ones - unless first time
+        free(sampleBuffer); //free the memory
         free(sampleCountBuffer);
-        sampleBufferSize=-1;
+        sampleBufferSize=-1; //and reset to 'no data'
         return;
     }
 
+    //divide totals by counts
     for (int i=0; i<sampleBufferSize; i++)
     {
         if (sampleCountBuffer[i]!=0)
@@ -81,7 +83,7 @@ void BeamHardening::Measure(QListWidget *SliceSelectorList, int cX, int cY, QLab
 
     label->setText(QString("Measurement completed. %1 pixels sampled over %2 slices").arg(pixelCount).arg(fileCount));
 
-    //work out mean value in middle
+    //work out mean value in middle region
     long total = 0;
     long totalDivisor = 0;
     for (int i=1; i<=radius; i++) //ignore 1
@@ -90,16 +92,15 @@ void BeamHardening::Measure(QListWidget *SliceSelectorList, int cX, int cY, QLab
         totalDivisor += sampleCountBuffer[i];
     }
 
-    int targetLevel = (int)(total/totalDivisor);
+    int targetLevel = (int)(total/totalDivisor);    //no, this can't be a divide by zero
 
-    //and adjust the values throughout - yes, even inside in case radius is changed after sampling
+    //and adjust the values throughout - yes, even inside radius in case radius is changed after sampling
     for (int i=0; i<sampleBufferSize; i++)
     {
         if (sampleCountBuffer[i]>0)
-            sampleBuffer[i] = targetLevel - sampleBuffer[i];
+            sampleBuffer[i] = targetLevel - sampleBuffer[i];  //compute correction
         else
             sampleBuffer[i] = 0;
-        //qDebug()<<sampleBuffer[i] << sampleCountBuffer[i];
     }
 
     //Done - sample buffer is now how much we should increase by at that distance
@@ -110,7 +111,10 @@ void BeamHardening::Measure(QListWidget *SliceSelectorList, int cX, int cY, QLab
 
 bool BeamHardening::HasSample()
 {
-    if (sampleBufferSize==-1) return false; else return true;
+    if (sampleBufferSize==-1)
+        return false;
+    else
+        return true;
 }
 
 int BeamHardening::GetCorrectionAtWorkingImageCoordinates(int x, int y)
@@ -122,10 +126,10 @@ int BeamHardening::GetCorrectionAtWorkingImageCoordinates(int x, int y)
     int dy = cy - y;
     int dist = (int)qSqrt(dx*dx + dy*dy);
 
-    if (dist<rad)
+    if (dist<rad)   //inside
         return adj;
 
-    if (sampleCountBuffer[dist]==0)
+    if (sampleCountBuffer[dist]==0) //no data
         return adj;
 
     return sampleBuffer[dist] + adj;
@@ -151,7 +155,7 @@ long BeamHardening::Sample(int slice, int centerX, int centerY)
                 qreal dist = qSqrt(dx2 + dy2);
                 int iDist = (int)dist;
 
-                sampleBuffer[iDist] += ColArray.pixelColor(x,y).red();
+                sampleBuffer[iDist] += ColArray.pixelColor(x,y).red(); //use red value as proxy for greyscale value
                 sampleCountBuffer[iDist]++;
 
                 count++;
@@ -160,13 +164,14 @@ long BeamHardening::Sample(int slice, int centerX, int centerY)
     return count;
 }
 
+//check for pixel lock
 bool BeamHardening::IsLocked(int x, int y)
 {
     int xWk = x / ColMonoScale;
     int yWk = y / ColMonoScale;
     uchar *data = (uchar *) Locks.data();
 
-    int pos = ((fheight - yWk - 1) * fwidth + xWk) * 2;
+    int pos = ((fheight - yWk - 1) * fwidth + xWk) * 2; //magic formula copied from elsewhere. Why *2? Who knows!
     return (data[pos] == 255);
 }
 
