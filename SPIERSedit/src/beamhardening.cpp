@@ -37,7 +37,9 @@ void BeamHardening::Measure(QListWidget *SliceSelectorList, int cX, int cY, QLab
     if (fileCount == 0)
     {
         label->setText("No files with locked (selected) pixels are selected. No measurements made.");
+        return;
     }
+
     sampleBufferSize = qMax(cwidth, cheight); //really only needs root2 x max, but this will be safer
     sampleBuffer = (int *)malloc(sampleBufferSize*sizeof(int));
     sampleCountBuffer = (int *)malloc(sampleBufferSize*sizeof(int));
@@ -48,12 +50,13 @@ void BeamHardening::Measure(QListWidget *SliceSelectorList, int cX, int cY, QLab
         sampleCountBuffer[i]=0;
     }
 
+    int thisFcount=0;
     for (int i = 0; i < Files.count(); i++)
     {
         //for each file
         if ((SliceSelectorList->item(i))->isSelected())
         {
-            label->setText(QString("Measuring file %1 of %2").arg(i+1).arg(fileCount));
+            label->setText(QString("Measuring file %1 of %2").arg(++thisFcount).arg(fileCount));
             qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
             pixelCount += Sample(i, cX, cY);
         }
@@ -65,6 +68,7 @@ void BeamHardening::Measure(QListWidget *SliceSelectorList, int cX, int cY, QLab
         free(sampleBuffer); //kill old ones - unless first time
         free(sampleCountBuffer);
         sampleBufferSize=-1;
+        return;
     }
 
     for (int i=0; i<sampleBufferSize; i++)
@@ -85,6 +89,7 @@ void BeamHardening::Measure(QListWidget *SliceSelectorList, int cX, int cY, QLab
         total += sampleBuffer[i] * sampleCountBuffer[i]; //for better mean
         totalDivisor += sampleCountBuffer[i];
     }
+
     int targetLevel = (int)(total/totalDivisor);
 
     //and adjust the values throughout - yes, even inside in case radius is changed after sampling
