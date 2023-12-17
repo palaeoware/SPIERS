@@ -394,6 +394,34 @@ void CopyingImpl::GenerateLCE(QListWidget *SliceSelectorList)
     if (c > 1) close(); //close dialog
 }
 
+void CopyingImpl::GenerateRadial(QListWidget *SliceSelectorList, BeamHardening *bh)
+{
+    qDebug()<<"Here";
+    if (!bh->HasSample())
+        return;
+
+    qDebug()<<"... and Here";
+    int c = SliceSelectorList->selectedItems().count();
+    if (c > 1) show(); //show progress dialog if multifile
+    copying = true; //what does this do? Block GUI?
+
+    this->setWindowTitle("Perfoming radial corrections ...");
+    WriteAllData(CurrentFile);
+    if (c > 1)  progressBar->setMaximum(c);
+    int item_count=0;
+    for (int i = 0; i < Files.count(); i++)
+    {
+        //for each file
+        if ((SliceSelectorList->item(i))->isSelected()) ApplyRadial(CurrentSegment, i, bh, false);
+        if (c > 1) progressBar->setValue(item_count++);
+        if (c > 1) qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
+    }
+    //restore setup
+    LoadAllData(CurrentFile);
+    copying = false;
+    if (c > 1) close(); //close dialog
+}
+
 void CopyingImpl::GenerateLinear(QListWidget *SliceSelectorList)
 {
     int c = SliceSelectorList->selectedItems().count();

@@ -475,6 +475,7 @@ void Brush_class::Brush_Flag_Restart()
     RestartFlag = true;
 }
 
+
 bool Brush_class::draw(int x, int y)
 //Draw the lines onto the graphicsscene
 //returns true if anything drawn, otherwise false (allows cursor to change)

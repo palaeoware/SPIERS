@@ -257,7 +257,7 @@
      <x>0</x>
      <y>0</y>
      <width>962</width>
-     <height>26</height>
+     <height>17</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -1153,13 +1153,16 @@
      <item>
       <widget class="QTabWidget" name="tabWidget">
        <property name="currentIndex">
-        <number>0</number>
+        <number>4</number>
        </property>
        <widget class="QWidget" name="tabLinear">
         <attribute name="title">
          <string>Linear</string>
         </attribute>
         <layout class="QHBoxLayout">
+         <property name="sizeConstraint">
+          <enum>QLayout::SetDefaultConstraint</enum>
+         </property>
          <property name="leftMargin">
           <number>2</number>
          </property>
@@ -1821,6 +1824,208 @@
             <number>0</number>
            </property>
           </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tabBeamHardening">
+        <attribute name="title">
+         <string>Radial</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_8">
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_7">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_6">
+             <item>
+              <widget class="QCheckBox" name="ShowCenter">
+               <property name="text">
+                <string>Show Details</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="SetCentre">
+               <property name="text">
+                <string>Set to Image Centre</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="Measure">
+               <property name="text">
+                <string>Measure Sample</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_5">
+             <item>
+              <widget class="KeysafeSpinBox" name="CentreX">
+               <property name="keyboardTracking">
+                <bool>false</bool>
+               </property>
+               <property name="prefix">
+                <string>Centre X: </string>
+               </property>
+               <property name="maximum">
+                <number>9999</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="KeysafeSpinBox" name="CentreY">
+               <property name="keyboardTracking">
+                <bool>false</bool>
+               </property>
+               <property name="prefix">
+                <string>Centre Y: </string>
+               </property>
+               <property name="maximum">
+                <number>9999</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QLabel" name="labelHardeningData">
+             <property name="text">
+              <string>No measurements made</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>11</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_8">
+           <item>
+            <widget class="QLabel" name="label_32">
+             <property name="text">
+              <string>Min Radius</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSlider" name="SliderHardeningRadius">
+             <property name="minimum">
+              <number>0</number>
+             </property>
+             <property name="maximum">
+              <number>2000</number>
+             </property>
+             <property name="value">
+              <number>5</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="tickPosition">
+              <enum>QSlider::TicksBothSides</enum>
+             </property>
+             <property name="tickInterval">
+              <number>10</number>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="KeysafeSpinBox" name="HardeningRadiusSpinBox">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="keyboardTracking">
+              <bool>false</bool>
+             </property>
+             <property name="minimum">
+              <number>0</number>
+             </property>
+             <property name="maximum">
+              <number>2000</number>
+             </property>
+             <property name="value">
+              <number>5</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_9">
+           <item>
+            <widget class="QLabel" name="label_33">
+             <property name="text">
+              <string>Adjust</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSlider" name="SliderBoostAdjust_2">
+             <property name="minimum">
+              <number>-100</number>
+             </property>
+             <property name="maximum">
+              <number>100</number>
+             </property>
+             <property name="value">
+              <number>0</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="tickPosition">
+              <enum>QSlider::TicksBothSides</enum>
+             </property>
+             <property name="tickInterval">
+              <number>10</number>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="KeysafeSpinBox" name="AdjustRadialSpinBox">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="keyboardTracking">
+              <bool>false</bool>
+             </property>
+             <property name="minimum">
+              <number>-100</number>
+             </property>
+             <property name="maximum">
+              <number>100</number>
+             </property>
+             <property name="value">
+              <number>0</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
         </layout>
        </widget>
@@ -4353,8 +4558,8 @@ Interpreted Images:</string>
      <y>230</y>
     </hint>
     <hint type="destinationlabel">
-     <x>59</x>
-     <y>579</y>
+     <x>60</x>
+     <y>604</y>
     </hint>
    </hints>
   </connection>
@@ -4365,8 +4570,8 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>59</x>
-     <y>579</y>
+     <x>60</x>
+     <y>604</y>
     </hint>
     <hint type="destinationlabel">
      <x>32</x>
@@ -4381,8 +4586,8 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>117</x>
-     <y>579</y>
+     <x>116</x>
+     <y>604</y>
     </hint>
     <hint type="destinationlabel">
      <x>110</x>
@@ -4401,8 +4606,8 @@ Interpreted Images:</string>
      <y>357</y>
     </hint>
     <hint type="destinationlabel">
-     <x>117</x>
-     <y>579</y>
+     <x>116</x>
+     <y>604</y>
     </hint>
    </hints>
   </connection>
@@ -4417,8 +4622,8 @@ Interpreted Images:</string>
      <y>357</y>
     </hint>
     <hint type="destinationlabel">
-     <x>174</x>
-     <y>579</y>
+     <x>172</x>
+     <y>604</y>
     </hint>
    </hints>
   </connection>
@@ -4429,8 +4634,8 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>174</x>
-     <y>579</y>
+     <x>172</x>
+     <y>604</y>
     </hint>
     <hint type="destinationlabel">
      <x>164</x>
@@ -4445,8 +4650,8 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>889</x>
-     <y>222</y>
+     <x>910</x>
+     <y>212</y>
     </hint>
     <hint type="destinationlabel">
      <x>944</x>
@@ -4465,8 +4670,8 @@ Interpreted Images:</string>
      <y>209</y>
     </hint>
     <hint type="destinationlabel">
-     <x>889</x>
-     <y>222</y>
+     <x>910</x>
+     <y>212</y>
     </hint>
    </hints>
   </connection>
@@ -4477,12 +4682,12 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>890</x>
-     <y>128</y>
+     <x>912</x>
+     <y>115</y>
     </hint>
     <hint type="destinationlabel">
-     <x>938</x>
-     <y>128</y>
+     <x>946</x>
+     <y>115</y>
     </hint>
    </hints>
   </connection>
@@ -4493,12 +4698,12 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>938</x>
-     <y>128</y>
+     <x>946</x>
+     <y>115</y>
     </hint>
     <hint type="destinationlabel">
-     <x>890</x>
-     <y>128</y>
+     <x>912</x>
+     <y>115</y>
     </hint>
    </hints>
   </connection>
@@ -4509,12 +4714,12 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>883</x>
-     <y>155</y>
+     <x>907</x>
+     <y>139</y>
     </hint>
     <hint type="destinationlabel">
-     <x>938</x>
-     <y>155</y>
+     <x>946</x>
+     <y>139</y>
     </hint>
    </hints>
   </connection>
@@ -4525,12 +4730,12 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>938</x>
-     <y>155</y>
+     <x>946</x>
+     <y>139</y>
     </hint>
     <hint type="destinationlabel">
-     <x>883</x>
-     <y>155</y>
+     <x>907</x>
+     <y>139</y>
     </hint>
    </hints>
   </connection>
@@ -4541,12 +4746,12 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>883</x>
-     <y>173</y>
+     <x>907</x>
+     <y>163</y>
     </hint>
     <hint type="destinationlabel">
-     <x>938</x>
-     <y>165</y>
+     <x>946</x>
+     <y>163</y>
     </hint>
    </hints>
   </connection>
@@ -4557,12 +4762,12 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>938</x>
-     <y>165</y>
+     <x>946</x>
+     <y>163</y>
     </hint>
     <hint type="destinationlabel">
-     <x>883</x>
-     <y>173</y>
+     <x>907</x>
+     <y>163</y>
     </hint>
    </hints>
   </connection>
@@ -4606,7 +4811,7 @@ Interpreted Images:</string>
    <hints>
     <hint type="sourcelabel">
      <x>117</x>
-     <y>1331</y>
+     <y>1354</y>
     </hint>
     <hint type="destinationlabel">
      <x>105</x>
@@ -4621,12 +4826,12 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>780</x>
-     <y>152</y>
+     <x>904</x>
+     <y>133</y>
     </hint>
     <hint type="destinationlabel">
-     <x>932</x>
-     <y>152</y>
+     <x>938</x>
+     <y>133</y>
     </hint>
    </hints>
   </connection>
@@ -4637,12 +4842,12 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>884</x>
-     <y>192</y>
+     <x>904</x>
+     <y>174</y>
     </hint>
     <hint type="destinationlabel">
-     <x>939</x>
-     <y>188</y>
+     <x>943</x>
+     <y>174</y>
     </hint>
    </hints>
   </connection>
@@ -4653,12 +4858,12 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>896</x>
-     <y>148</y>
+     <x>938</x>
+     <y>133</y>
     </hint>
     <hint type="destinationlabel">
-     <x>827</x>
-     <y>151</y>
+     <x>904</x>
+     <y>133</y>
     </hint>
    </hints>
   </connection>
@@ -4669,12 +4874,12 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>939</x>
-     <y>188</y>
+     <x>943</x>
+     <y>174</y>
     </hint>
     <hint type="destinationlabel">
-     <x>884</x>
-     <y>192</y>
+     <x>904</x>
+     <y>174</y>
     </hint>
    </hints>
   </connection>
@@ -4689,8 +4894,8 @@ Interpreted Images:</string>
      <y>212</y>
     </hint>
     <hint type="destinationlabel">
-     <x>905</x>
-     <y>216</y>
+     <x>947</x>
+     <y>215</y>
     </hint>
    </hints>
   </connection>
@@ -4707,6 +4912,70 @@ Interpreted Images:</string>
     <hint type="destinationlabel">
      <x>827</x>
      <y>215</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SliderHardeningRadius</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>HardeningRadiusSpinBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>774</x>
+     <y>192</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>916</x>
+     <y>199</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>HardeningRadiusSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SliderHardeningRadius</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>919</x>
+     <y>188</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>882</x>
+     <y>186</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SliderBoostAdjust_2</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>AdjustRadialSpinBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>828</x>
+     <y>218</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>917</x>
+     <y>225</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>AdjustRadialSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SliderBoostAdjust_2</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>932</x>
+     <y>214</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>883</x>
+     <y>219</y>
     </hint>
    </hints>
   </connection>

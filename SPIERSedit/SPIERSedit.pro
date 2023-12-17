@@ -59,6 +59,8 @@ FORMS += ui/import.ui \
     ui/about.ui
 
 HEADERS += src/display.h \
+    src/beamhardening.h \
+    src/beamhardeningcentericon.h \
     src/brush.h \
     src/curves.h \
     src/fileio.h \
@@ -95,6 +97,8 @@ HEADERS += src/display.h \
     ../SPIERScommon/src/prereleasecomponent.h
 
 SOURCES += src/display.cpp \
+    src/beamhardening.cpp \
+    src/beamhardeningcentericon.cpp \
     src/brush.cpp \
     src/curves.cpp \
     src/fileio.cpp \

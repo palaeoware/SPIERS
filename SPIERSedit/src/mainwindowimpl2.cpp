@@ -31,6 +31,8 @@
 #include "findpolynomialimpl.h"
 #include "undo.h"
 #include "myrangescene.h"
+#include "brush.h"
+#include "beamhardening.h"
 
 #include <QTimer>
 #include <QTime>
@@ -1211,13 +1213,16 @@ void MainWindowImpl::on_GenerateAuto_toggled(bool checked)
 
 void MainWindowImpl::on_GenerateButton_clicked()
 {
+    if (FileCount==0) return;
+
+    qDebug()<<"No data"<<FileCount;
     //save all my data
     CopyingImpl dialog;
     if (tabwidget->currentIndex() == 0) dialog.GenerateLinear(SliceSelectorList);
     if (tabwidget->currentIndex() == 1) dialog.GeneratePoly(SliceSelectorList);
     if (tabwidget->currentIndex() == 2) dialog.GenerateRange(SliceSelectorList);
     if (tabwidget->currentIndex() == 3) dialog.GenerateLCE(SliceSelectorList);
-
+    if (tabwidget->currentIndex() == 4) dialog.GenerateRadial(SliceSelectorList, bh);
     ShowImage(graphicsView);
 }
 
@@ -3203,7 +3208,97 @@ void MainWindowImpl::on_actionInterpolate_over_selected_slices_triggered()
         }
     }
 
-    //ResetUndo();
     ShowImage(graphicsView);
     RefreshCurves();
+}
+
+
+void MainWindowImpl::on_SetCentre_clicked()
+{
+    if (FileCount==0) return;
+    CentreX->setValue(ColArray.width()/2);
+    CentreY->setValue(ColArray.height()/2);
+}
+
+void MainWindowImpl::on_Measure_clicked()
+{
+    if (FileCount==0) return;
+    bh->SetParams(CentreX->value(), CentreY->value(), HardeningRadiusSpinBox->value(), AdjustRadialSpinBox->value()); //just in case
+    bh->Measure(SliceSelectorList, CentreX->value(), CentreY->value(), labelHardeningData, HardeningRadiusSpinBox->value());
+}
+
+
+void MainWindowImpl::on_ShowCenter_stateChanged(int arg1)
+{
+    if (arg1==0)
+        centerIcon->ShowCenter(false);
+    else
+        centerIcon->ShowCenter(true);
+
+}
+
+
+void MainWindowImpl::on_CentreX_valueChanged(int arg1)
+{
+    centerIcon->PlaceCenter(CentreX->value(), CentreY->value(), HardeningRadiusSpinBox->value());
+    bh->SetParams(CentreX->value(), CentreY->value(), HardeningRadiusSpinBox->value(), AdjustRadialSpinBox->value());
+}
+
+
+void MainWindowImpl::on_CentreY_valueChanged(int arg1)
+{
+    centerIcon->PlaceCenter(CentreX->value(), CentreY->value(), HardeningRadiusSpinBox->value());
+    bh->SetParams(CentreX->value(), CentreY->value(), HardeningRadiusSpinBox->value(), AdjustRadialSpinBox->value());
+}
+
+void MainWindowImpl::on_HardeningRadiusSpinBox_valueChanged(int arg1)
+{
+    centerIcon->PlaceCenter(CentreX->value(), CentreY->value(), HardeningRadiusSpinBox->value());
+    bh->SetParams(CentreX->value(), CentreY->value(), HardeningRadiusSpinBox->value(), AdjustRadialSpinBox->value());
+}
+
+void MainWindowImpl::on_AdjustRadialSpinBox_valueChanged(int arg1)
+{
+    centerIcon->PlaceCenter(CentreX->value(), CentreY->value(), HardeningRadiusSpinBox->value());
+    bh->SetParams(CentreX->value(), CentreY->value(), HardeningRadiusSpinBox->value(), AdjustRadialSpinBox->value());
+}
+
+void MainWindowImpl::SetRadialCentreX(int v)
+{
+    CentreX->setValue(v);
+}
+
+void MainWindowImpl::SetRadialCentreY(int v)
+{
+    CentreY->setValue(v);
+}
+
+void MainWindowImpl::SetRadialRadius(int v)
+{
+    HardeningRadiusSpinBox->setValue(v);
+}
+
+void MainWindowImpl::SetRadialAdjust(int v)
+{
+    AdjustRadialSpinBox->setValue(v);
+}
+
+int MainWindowImpl::GetRadialCentreX()
+{
+    return CentreX->value();
+}
+
+int MainWindowImpl::GetRadialCentreY()
+{
+    return CentreY->value();
+}
+
+int MainWindowImpl::GetRadialRadius()
+{
+    return HardeningRadiusSpinBox->value();
+}
+
+int MainWindowImpl::GetRadialAdjust()
+{
+    return AdjustRadialSpinBox->value();
 }

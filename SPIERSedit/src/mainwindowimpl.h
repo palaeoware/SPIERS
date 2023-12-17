@@ -27,6 +27,8 @@
 #include <QGraphicsView>
 
 #include "../ui/ui_mainwindow.h"
+#include "beamhardeningcentericon.h"
+#include "beamhardening.h"
 
 /**
  * @brief The MainWindowImpl class
@@ -45,6 +47,14 @@ public:
     void SetUpGUIFromSettings();
     void Start();
     void MouseZoom(int delta);
+    void SetRadialCentreX(int v);
+    void SetRadialCentreY(int v);
+    void SetRadialRadius(int v);
+    void SetRadialAdjust(int v);
+    int GetRadialCentreX();
+    int GetRadialCentreY();
+    int GetRadialRadius();
+    int GetRadialAdjust();
 private slots:
     void Moveimage(int);
     void on_action3D_Brush_toggled(bool );
@@ -177,6 +187,7 @@ private slots:
     void on_actionCode_on_GitHub_triggered();
     void on_actionBugIssueFeatureRequest_triggered();
 
+
     void ScreenUpdate();
     void Menu_Window_MainToolbox();
     void Menu_Window_Generate();
@@ -238,6 +249,14 @@ private slots:
 
     void autosave();
     void on_actionTEST_triggered();
+    void on_Measure_clicked();
+    void on_ShowCenter_stateChanged(int arg1);
+    void on_CentreX_valueChanged(int arg1);
+    void on_CentreY_valueChanged(int arg1);
+    void on_HardeningRadiusSpinBox_valueChanged(int arg1);
+    void on_AdjustRadialSpinBox_valueChanged(int arg1);
+
+    void on_SetCentre_clicked();
 
 private:
     void MakeUndo(QString type);
@@ -272,6 +291,9 @@ private:
     bool ExportingImages;
 
     QTime DoubleClickTimer;
+
+    BeamHardeningCenterIcon *centerIcon;
+    BeamHardening *bh;
 };
 
 extern MainWindowImpl *AppMainWindow;
