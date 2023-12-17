@@ -9,7 +9,7 @@ extensions = [
 ]
 
 # Define the projects that will share this configuration file.
-# These have to match the project environmental variable defined in the readthedocs admin menu (readthedocs project --> admin --> environmental variables)
+# These have to match the project environmental variable defined in the readthedocs admin menu (readthedocs project --> admin --> environmental variables; i.e.SPIERSalign/docs,SPIERSedit/docs or SPIERSview/docs)
 multiproject_projects = {
     "SPIERSalign/docs": {
          "config": {
