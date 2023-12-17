@@ -22,8 +22,8 @@ import sphinx_rtd_theme
 # -- Project information -----------------------------------------------------
 
 project = 'SPIERSview'
-copyright = '2018-2019,  Mark Sutton, Russell J. Garwood, Alan R.T. Spencer'
-author = 'Mark Sutton, Russell J. Garwood, Alan R.T. Spencer'
+copyright = '2018-2023,  Mark Sutton, Russell J. Garwood, Alan R.T. Spencer'
+author = 'Mark D. Sutton, Russell J. Garwood, Alan R.T. Spencer'
 
 # The short X.Y version
 version = '3.1.1'
@@ -59,7 +59,7 @@ master_doc = 'index'
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'en'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -199,7 +199,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'SPIERSview.tex', 'SPIERSview Documentation',
-     'Russell Garwood, Mark Sutton, Alan R.T. Spencer', 'manual'),
+     'Russell J. Garwood, Mark D. Sutton, Alan R.T. Spencer', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
