@@ -41,7 +41,7 @@ Figure RAC2 shows an example of good sample selection for a single slice.
 	
     Figure RAC2. A slice from a CT dataset with a sample defined using the lock brush (blue). Note that the
     sample includes the centre, extends to near the edge (as the specimen is also near the edge), and avoids both the crack on
-    the right hand side, and the missing portion towards the bottom. The white circle near the centre shows the specified radius.
+    the right hand side, and the missing portion towards the bottom. The white circle near the centre shows the specified minimum radius.
     
 Once the sample has been defined, select all slices from which lock data is to be used, and click the 'Measure Sample' button. SPIERS
 collates the specified sample data and determines a mean brightness level for the correction based on distance to the specific
