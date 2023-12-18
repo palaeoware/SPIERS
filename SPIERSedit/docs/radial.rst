@@ -7,7 +7,7 @@ Concept
 -------
 
 Radial generation is a generation mode that applies a correction filter
-to data. Unlike linear, range and   - unlike liner, range and polynomial modes (but like LCE mode), 
+to data. Unlike linear, range and polynomial modes (but like LCE mode)
 it does not replace existing working data, but applies a correction to it. Radial artefact correction 
 is designed to correct certain computed tomography artefacts (beam hardening, ring artefacts) that result in
 brightness variations relative to the centre of rotation. It is designed for use on greyscale rather than colour raw images. 
@@ -32,7 +32,7 @@ recommended to extend the sample over multiple slices. The SPIERS radial correct
 available data, so the correction will only be applied as far away from the center as the sample reaches - it is thus important that it
 should reach as close to the edge as specimen positioning demands. Samples should not however extend into completely black regions
 lacking data. A 'Min radius' should also be set. Pixels inside the minimum radius from the centre will not be corrected. This inner region is 
-also used to guage the correct 'target' greyscale level for the correction.
+also used to gauge the correct 'target' greyscale level for the correction.
 
 Figure RAC2 shows an example of good sample selection for a single slice.
 
@@ -44,7 +44,7 @@ Figure RAC2 shows an example of good sample selection for a single slice.
     the right hand side, and the missing portion towards the bottom. The white circle near the centre shows the specified radius.
     
 Once the sample has been defined, select all slices from which lock data is to be used, and click the 'Measure Sample' button. SPIERS
-collates the specified sample data and determines a mean brightness level for the correction based on distance to the specifie
+collates the specified sample data and determines a mean brightness level for the correction based on distance to the specific
 centre point, and relative to the mean brightness of the pixels within the specified minimum radius circle. Note that sampling is
 performed from raw data not working data.
 
@@ -54,7 +54,7 @@ desired threshold level. A typical workflow would be to generate a linear workin
 to that single slice, with the optimum adjustment level determined by trial and error. Note that to re-generate in this workflow, both 
 the linear and radial generation steps must be repeated, as performing a second radial correction without an intervening linear generation will simply 
 double the effect of the radial correction, rather than repeating it. After the correct settings are determined, the linear generation and
-correction can be applied to all required sices by selecting them in the slice selection prior to generation and correction.
+correction can be applied to all required slices by selecting them in the slice selection prior to generation and correction.
 
 Note that sample pixels will not be affected by generation and correction as they are locked (the lock brush doubles up as both a
 a selection and locking facility). This is unlikely to be a problem as, by definition, these pixels are 
