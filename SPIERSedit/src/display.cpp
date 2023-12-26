@@ -29,6 +29,7 @@
 #include "curves.h"
 #include "myscene.h"
 #include "brush.h"
+#include "mainwindowimpl.h"
 
 QGraphicsPixmapItem *MainImage;
 double LastZoom;
@@ -39,6 +40,61 @@ double CurrentPolyContrast;
 void SaveMainImage(QString fname)
 {
     MainImage->pixmap().save(fname);
+}
+
+
+//This gets (as char array -128 to +127) the additions for each pixel to the gradient
+QByteArray* GetGradientArray()
+{
+    QByteArray* gradientData = new QByteArray(fheight * fwidth, 0);
+
+    int curveIndex = SelectedCurve;
+
+    if (curveIndex==-1) return gradientData;
+
+    QList<int> xPoints;
+    QList<int> yPoints;
+
+    GetPointsOnSpline(curveIndex, &xPoints, &yPoints);
+
+    qDebug()<<GradientDensity<<GradientMinDist<<GradientMaxDist<<GradientMinDistValue<<GradientMaxDistValue;
+
+    for (int x=0; x<fwidth; x++)
+    for (int y=0; y<fheight; y++)
+    {
+        int closestDist=99999;
+        for (int i=0; i<xPoints.count(); i++)
+        {
+            int xDist = xPoints[i] - x;
+            int yDist = yPoints[i] - y;
+            int dist = (int)(sqrt(xDist * xDist + yDist * yDist)+.5);
+            //if (x==0 && y==0) qDebug()<<dist<<xDist<<yDist;
+            if (dist<closestDist) closestDist = dist;
+
+            /*if (xPoints[i]==x && yPoints[i]==y)
+            {
+                qDebug()<<"HIT POINT: "<<x<<y;
+                (*gradientData)[y*fwidth + x] = 127;
+            }
+            */
+        }
+        char v;
+        //if (x==0) qDebug()<<closestDist<<GradientMaxDist<<GradientMinDist;
+        if(closestDist >= GradientMaxDist)
+            v = (char)GradientMaxDistValue;
+        else if (closestDist <= GradientMinDist)
+            v = (char)GradientMinDistValue;
+        else
+        {
+            // between two values
+            double pos = (double)(closestDist - GradientMinDist) / (double) (GradientMaxDist - GradientMinDist);
+            v = (char)((double)GradientMaxDistValue * pos + (double)GradientMinDistValue * (1-pos) + .5);
+            //qDebug()<<x<<y<<closestDist<<pos<<v;
+        }
+         (*gradientData)[y*fwidth + x] = v;
+    }
+
+    return gradientData;
 }
 
 QImage GenerateThresh()
@@ -56,6 +112,11 @@ QImage GenerateThresh()
     int high, seg, i;
     bool lockmode, maskmode, greymode, MergeMasks, MergeMasks2;
 
+
+    QByteArray *gradientArray;
+    if (previewGradient) gradientArray = GetGradientArray();
+
+
     //First - work out segments at each point
     SegmentMap.resize(fwidth * fheight);
 
@@ -63,6 +124,11 @@ QImage GenerateThresh()
     //set up my pointers - an optimisation to point straight to data
     for (n = 0; n < SegmentCount; n++)
         GApointers.append(GA[n]->bits());
+
+
+    //additions for preview of radial
+
+    int gradientAddition = 0;
 
     for (int jx = 0; jx < fwidth; jx++)
         for (int jy = 0; jy < fheight; jy++)
@@ -74,7 +140,16 @@ QImage GenerateThresh()
             {
                 if (Segments[i]->Activated)
                 {
+                if (previewGradient)
+                        gradientAddition = ((int)(gradientArray->at(jy * fwidth + jx)));
+                    else
+                        gradientAddition = 0;
+
                     temp = (int)  * ((GA[i]->bits()) + jy * fwidth4 + jx);
+                    temp += gradientAddition;
+                    if (temp>255) temp=255;
+                    if (temp<0) temp=0;
+
                     if (temp >= high)
                     {
                         high = temp;
@@ -84,6 +159,7 @@ QImage GenerateThresh()
             }
             SegmentMap[jy * fwidth + jx] = seg;
         }
+
 
 
     //Code here is direct VB translation - hence superflous copying of bools!
@@ -101,12 +177,34 @@ QImage GenerateThresh()
 
     if (greymode)   // just copy the image
     {
-//      qDebug()<<"Format of GA"<<GA[CurrentSegment]->format();
-        //RetThresh = GA[CurrentSegment]->scaled(QSize(fwidth*ColMonoScale, fheight*ColMonoScale), Qt::IgnoreAspectRatio,Qt::FastTransformation);
-//      qDebug()<<"Format of GA rescales"<<RetThresh.format();
-        RetThresh = GA[CurrentSegment]->convertToFormat(QImage::Format_RGB32); //make sure it's in 32 bit ARGB
-//      qDebug()<<"Format of rescaled and converted"<<RetThresh.format();
-        //RetThresh = RetThresh.convertToFormat(QImage::Format_RGB888); //make sure it's in 32 bit ARGB
+
+
+        //but modify for gradient preview
+        if (previewGradient)
+        {
+            uchar * oldData = GA[CurrentSegment]->bits();
+            QImage tempImage(fwidth, fheight, QImage::Format_Grayscale8);
+
+            uchar * newData = tempImage.bits();
+
+            for (int jx = 0; jx < fwidth; jx++)
+            for (int jy = 0; jy < fheight; jy++)
+            {
+                invertedpos = (fheight - 1 - jy) * fwidth + jx;
+                gradientAddition = ((int)(gradientArray->at(jy * fwidth + jx)));
+
+                int v = oldData[jy *fwidth4 + jx];
+                v+=gradientAddition;
+                if (v>255) v=255;
+                if (v<0) v=0;
+                newData[jy * fwidth4 + jx] = (uchar)v;
+            }
+            RetThresh = tempImage.convertToFormat(QImage::Format_RGB32);
+        }
+        else
+        {
+            RetThresh = GA[CurrentSegment]->convertToFormat(QImage::Format_RGB32); //make sure it's in 32 bit ARGB
+        }
     }
     else
     {
@@ -255,14 +353,16 @@ QImage GenerateThresh()
         else if (CurrentMode == 1 || MergeMasks2)  for (sn = 0; sn < CurveCount; sn++) DrawCurve(sn, 2, CurrentFile, &Thresh);
         else for (sn = 0; sn < CurveCount; sn++) DrawCurve(sn, 0, CurrentFile, &Thresh);
 
-
+        if (previewGradient) delete gradientArray;
         return Thresh;
         //RetThresh = Thresh.scaled(fwidth*ColMonoScale, fheight*ColMonoScale, Qt::IgnoreAspectRatio, Qt::FastTransformation);
 
     }
+    if (previewGradient) delete gradientArray;
     return RetThresh;
 
 }
+
 
 
 void ClearImages()

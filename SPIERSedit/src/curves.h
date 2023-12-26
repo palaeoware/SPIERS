@@ -34,5 +34,5 @@ extern void DrawCurve(int c, int mycol, int file, QImage *Thresh);
 extern void DrawCurveOutput(int c, int file, uchar *fullarray, QList <bool> *UseMasks, bool remove);
 extern void DrawCurveMarkers(QGraphicsScene *scene);
 extern void PopulateTriangleList(int OutObject, int firstfile, int lastfile, QList<double> *stretches, int resamps, QVector<double> *TrigArray, int *TrigCount);
-
+extern void GetPointsOnSpline(int curveIndex, QList<int> *xPos, QList<int> *yPos);
 #endif // __CURVES_H__

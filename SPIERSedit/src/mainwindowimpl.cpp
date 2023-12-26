@@ -2161,3 +2161,21 @@ void MainWindowImpl::on_actionTEST_triggered()
 
 
 
+
+
+
+
+void MainWindowImpl::on_actionThreshold_triggered()
+{
+
+}
+
+
+
+
+
+void MainWindowImpl::on_actionOpen_toggled(bool arg1)
+{
+
+}
+

@@ -220,6 +220,12 @@ extern int cwidth4;
 extern int AutoSaveFrequency;
 extern bool NoUpdateSelectionFlag;
 extern bool escapeFlag;
+extern bool previewGradient;
+extern int GradientDensity;
+extern int GradientMinDist;
+extern int GradientMinDistValue;
+extern int GradientMaxDist;
+extern int GradientMaxDistValue;
 extern bool OutputRegroupMode;
 extern QList <class Segment *> Segments;
 extern QList <class Mask *> MasksSettings;
@@ -235,6 +241,7 @@ extern bool clearing;
 extern int Trans, CMin, CMax;
 extern int SegmentCount;
 extern QList <QImage *> GA; //this is the grey arrays
+extern QByteArray GradientArray;
 extern QImage ColArray; //other data
 extern QByteArray Masks, Locks;
 extern QByteArray dirty;

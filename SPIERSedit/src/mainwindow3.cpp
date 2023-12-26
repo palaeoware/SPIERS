@@ -247,6 +247,8 @@ void MainWindowImpl::wheelEvent(QWheelEvent *event)
 }
 
 
+
+
 void MainWindowImpl::on_actionExport_Curves_as_CSV_triggered()
 {
     QString filen = QFileDialog::getSaveFileName(
@@ -378,3 +380,24 @@ void MainWindowImpl::on_actionCode_on_GitHub_triggered()
 {
     QDesktopServices::openUrl(QUrl(QString(GITURL) + QString(GITREPOSITORY)));
 }
+
+
+
+void MainWindowImpl::DoGradientsUpdate()
+{
+    //Values changed in UI for Gradients - redo preview if preview is on
+
+    if (chkGradientsPreview->isChecked())
+    {
+        qDebug()<<"TODO - Refresh (preview on)";
+        ShowImage(graphicsView);
+    }
+    else
+    {
+        qDebug()<<"TODO - Refresh (preview off)";
+        ShowImage(graphicsView);
+    }
+
+}
+
+

@@ -1234,6 +1234,13 @@ void ApplyDefaultSettings()
     OutputObjectsCount = 0;
     LastMouseX = -1; //no cursor yet
     SquareBrush = true;
+    GradientDensity = 3;
+    GradientMinDist=0;
+    GradientMinDistValue=0;
+    GradientMaxDist=100;
+    GradientMaxDistValue=10;
+    qDebug()<<"Done defaults";
+    previewGradient = false;
     CurrentFile = 0;
     CurrentZoom = 1;
     //ColMonoScale=2;
@@ -2200,6 +2207,14 @@ void WriteSettings()
     out << mainwin->GetRadialCentreY();
     out << mainwin->GetRadialRadius();
     out << mainwin->GetRadialAdjust();
+
+    out << GradientDensity;
+    out << GradientMaxDist;
+    out << GradientMaxDistValue;
+    out << GradientMinDist;
+    out << GradientMinDistValue;
+
+
     file.close();
 }
 
@@ -2484,6 +2499,18 @@ void ReadSettings()
         mainwin->SetRadialRadius(tempRad);
         mainwin->SetRadialAdjust(tempAdjust);
     }
+
+    if (!in.atEnd()) in >> GradientDensity;
+    if (!in.atEnd()) in >> GradientMaxDist;
+    if (!in.atEnd()) in >> GradientMaxDistValue;
+    if (!in.atEnd()) in >> GradientMinDist;
+    if (!in.atEnd()) in >> GradientMinDistValue;
+
+    mainwin->SetGradientDensity(GradientDensity);
+    mainwin->SetGradientMaxDist(GradientMaxDist);
+    mainwin->SetGradientMaxDistValue(GradientMaxDistValue);
+    mainwin->SetGradientMinDist(GradientMinDist);
+    mainwin->SetGradientMinDistValue(GradientMinDistValue);
 
     //now doctor Files array using zsparsity, if necessary
     if (zsparsity > 1)

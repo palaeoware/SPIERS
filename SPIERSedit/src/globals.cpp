@@ -62,6 +62,9 @@ QString FullSettingsFileName;
 
 int SegmentCount;
 QList <QImage *> GA; //this is the grey arrays
+
+QByteArray GradientArray; //pointer to radial array of ints - this is modifier from gradient
+
 QImage ColArray; //other data
 QByteArray Masks, Locks;
 QByteArray dirty;  //will hold flags for brighten mode - avoid doing same pixel twice in one stroke.
@@ -101,6 +104,13 @@ bool HorribleBodgeFlagDontStoreUndo;
 bool MenuHistSelectedOnly;
 bool SquareBrush;
 bool escapeFlag;
+bool previewGradient;
+int GradientDensity;
+int GradientMinDist;
+int GradientMinDistValue;
+int GradientMaxDist;
+int GradientMaxDistValue;
+
 
 QString SettingsFileName;
 QString FileNotes;

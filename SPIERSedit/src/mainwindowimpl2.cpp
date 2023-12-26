@@ -3263,6 +3263,48 @@ void MainWindowImpl::on_AdjustRadialSpinBox_valueChanged(int arg1)
     bh->SetParams(CentreX->value(), CentreY->value(), HardeningRadiusSpinBox->value(), AdjustRadialSpinBox->value());
 }
 
+void MainWindowImpl::on_spinGradientsDistMinEffect_valueChanged(int arg1)
+{
+    GradientMinDistValue=arg1;
+    DoGradientsUpdate();
+}
+
+
+void MainWindowImpl::on_spinGradientsDistMaxEffect_valueChanged(int arg1)
+{
+    GradientMaxDistValue=arg1;
+    DoGradientsUpdate();
+}
+
+
+void MainWindowImpl::on_spinGradientsDistMin_valueChanged(int arg1)
+{
+    GradientMinDist=arg1;
+    DoGradientsUpdate();
+}
+
+
+void MainWindowImpl::on_spinGradientsDistMax_valueChanged(int arg1)
+{
+    GradientMaxDist=arg1;
+    DoGradientsUpdate();
+}
+
+void MainWindowImpl::on_spinGradientsPointDensity_valueChanged(int arg1)
+{
+    GradientDensity =arg1;
+    DoGradientsUpdate();
+}
+
+void MainWindowImpl::on_chkGradientsPreview_toggled(bool checked)
+{
+    previewGradient=checked;
+    DoGradientsUpdate();
+}
+
+
+
+
 void MainWindowImpl::SetRadialCentreX(int v)
 {
     CentreX->setValue(v);
@@ -3301,4 +3343,29 @@ int MainWindowImpl::GetRadialRadius()
 int MainWindowImpl::GetRadialAdjust()
 {
     return AdjustRadialSpinBox->value();
+}
+
+void MainWindowImpl::SetGradientDensity(int v)
+{
+    spinGradientsPointDensity->setValue(v);
+}
+
+void MainWindowImpl::SetGradientMinDist(int v)
+{
+    spinGradientsDistMin->setValue(v);
+}
+
+void MainWindowImpl::SetGradientMaxDist(int v)
+{
+    spinGradientsDistMax->setValue(v);
+}
+
+void MainWindowImpl::SetGradientMinDistValue(int v)
+{
+    spinGradientsDistMinEffect->setValue(v);
+}
+
+void MainWindowImpl::SetGradientMaxDistValue(int v)
+{
+    spinGradientsDistMaxEffect->setValue(v);
 }

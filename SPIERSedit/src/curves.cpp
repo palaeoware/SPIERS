@@ -1304,3 +1304,75 @@ void PopulateTriangleList(int OutObject, int firstfile, int lastfile, QList<doub
     for (n = 0; n < OutputObjects[OutObject]->CurveComponents.count(); n++)
         SurfaceCurve (n, firstfile, lastfile, stretches, resamps, TrigArray, TrigCount);
 }
+
+
+int GetGradientXPos(double pos, PointList *p)
+{
+    //get int and double parts of pos
+    int intPart = (int)pos;
+    double doublePart = pos - (double)intPart;
+    if (doublePart<0) doublePart = 0;
+    if (doublePart>1) doublePart = 1;
+
+    int i0 = intPart-1; if (i0<0) i0 += p->Count; if (i0>=p->Count) i0-=p->Count;
+    int i1 = intPart; if (i1<0) i1 += p->Count; if (i1>=p->Count) i1-=p->Count;
+    int i2 = intPart+1; if (i2<0) i2 += p->Count; if (i2>=p->Count) i2-=p->Count;
+    int i3 = intPart+2; if (i3<0) i3 += p->Count; if (i3>=p->Count) i3-=p->Count;
+
+    //points are, apparently, already in threshold space.
+    return CatmullRomSpline(doublePart, (*p).X[i0], (*p).X[i1],(*p).X[i2],(*p).X[i3]);
+
+}
+
+
+int GetGradientYPos(double pos, PointList *p)
+{
+    //get int and double parts of pos
+    int intPart = (int)pos;
+    double doublePart = pos - (double)intPart;
+    if (doublePart<0) doublePart = 0;
+    if (doublePart>1) doublePart = 1;
+
+    int i0 = intPart-1; if (i0<0) i0 += p->Count; if (i0>=p->Count) i0-=p->Count;
+    int i1 = intPart; if (i1<0) i1 += p->Count; if (i1>=p->Count) i1-=p->Count;
+    int i2 = intPart+1; if (i2<0) i2 += p->Count; if (i2>=p->Count) i2-=p->Count;
+    int i3 = intPart+2; if (i3<0) i3 += p->Count; if (i3>=p->Count) i3-=p->Count;
+
+    return CatmullRomSpline(doublePart, (*p).Y[i0], (*p).Y[i1],(*p).Y[i2],(*p).Y[i3]);
+
+}
+
+
+// for gradients system. Sample - in threshold image space - a series of positions
+// Assumed lists are empty
+void GetPointsOnSpline(int curveIndex, QList<int> *xPos, QList<int> *yPos)
+{
+    xPos->clear();
+    yPos->clear();
+
+    Curve *cv = Curves[curveIndex];
+    PointList *p = cv->SplinePoints[CurrentFile];
+
+    int pointCount = p->Count;
+    double posBase = 0;
+    if (!cv->Closed)
+    {
+        pointCount-=2;
+        posBase = 1;
+    }
+    double posAdd;
+
+    int numberOfPoints = GradientDensity * pointCount;
+    if (numberOfPoints<2)
+        posAdd = 0;
+    else
+        posAdd = (double) pointCount / (double)(numberOfPoints-1);
+
+    for (int i=0; i<numberOfPoints; i++)
+    {
+        //qDebug()<<posBase + i * posAdd;
+        xPos->append(GetGradientXPos(posBase + i * posAdd,p));
+        yPos->append(GetGradientYPos(posBase + i * posAdd,p));
+    }
+
+}

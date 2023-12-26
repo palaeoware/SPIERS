@@ -104,6 +104,7 @@ private slots:
     void on_actionFit_Window_triggered();
     void on_actionNext_Image_triggered();
     void on_actionPrevious_Image_triggered();
+    void on_actionOpen_triggered2();
     void on_actionOpen_triggered();
     void on_actionInfo_triggered(bool checked);
     void on_actionManual_triggered();

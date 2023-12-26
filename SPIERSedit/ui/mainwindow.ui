@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>962</width>
-    <height>1378</height>
+    <height>1862</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,8 +18,8 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>200</width>
-    <height>200</height>
+    <width>0</width>
+    <height>0</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -1150,10 +1150,10 @@
      </size>
     </property>
     <layout class="QVBoxLayout">
-     <item>
+     <item alignment="Qt::AlignVCenter">
       <widget class="QTabWidget" name="tabWidget">
        <property name="currentIndex">
-        <number>4</number>
+        <number>5</number>
        </property>
        <widget class="QWidget" name="tabLinear">
         <attribute name="title">
@@ -2024,6 +2024,382 @@
               <number>0</number>
              </property>
             </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tabGradients">
+        <attribute name="title">
+         <string>Gradients</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_10">
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_9">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_7">
+             <item>
+              <widget class="QLabel" name="label_36">
+               <property name="text">
+                <string>Effect (dist min)</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="SliderBoost_4">
+               <property name="minimum">
+                <number>-100</number>
+               </property>
+               <property name="maximum">
+                <number>100</number>
+               </property>
+               <property name="value">
+                <number>10</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="tickPosition">
+                <enum>QSlider::TicksBothSides</enum>
+               </property>
+               <property name="tickInterval">
+                <number>5</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="KeysafeSpinBox" name="spinGradientsDistMinEffect">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="keyboardTracking">
+                <bool>false</bool>
+               </property>
+               <property name="minimum">
+                <number>-100</number>
+               </property>
+               <property name="maximum">
+                <number>100</number>
+               </property>
+               <property name="value">
+                <number>0</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_10">
+             <item>
+              <widget class="QLabel" name="label_37">
+               <property name="text">
+                <string>Effect (dist max)</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="SliderBoost_5">
+               <property name="minimum">
+                <number>-100</number>
+               </property>
+               <property name="maximum">
+                <number>100</number>
+               </property>
+               <property name="value">
+                <number>10</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="tickPosition">
+                <enum>QSlider::TicksBothSides</enum>
+               </property>
+               <property name="tickInterval">
+                <number>5</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="KeysafeSpinBox" name="spinGradientsDistMaxEffect">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="keyboardTracking">
+                <bool>false</bool>
+               </property>
+               <property name="minimum">
+                <number>-100</number>
+               </property>
+               <property name="maximum">
+                <number>100</number>
+               </property>
+               <property name="value">
+                <number>10</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_11">
+             <item>
+              <widget class="QLabel" name="label_38">
+               <property name="text">
+                <string>Dist min</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="SliderBoost_6">
+               <property name="minimum">
+                <number>0</number>
+               </property>
+               <property name="maximum">
+                <number>5000</number>
+               </property>
+               <property name="value">
+                <number>0</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="tickPosition">
+                <enum>QSlider::NoTicks</enum>
+               </property>
+               <property name="tickInterval">
+                <number>5</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="KeysafeSpinBox" name="spinGradientsDistMin">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="keyboardTracking">
+                <bool>false</bool>
+               </property>
+               <property name="minimum">
+                <number>0</number>
+               </property>
+               <property name="maximum">
+                <number>5000</number>
+               </property>
+               <property name="value">
+                <number>0</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_12">
+             <item>
+              <widget class="QLabel" name="label_39">
+               <property name="text">
+                <string>Dist max</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="SliderBoost_7">
+               <property name="minimum">
+                <number>0</number>
+               </property>
+               <property name="maximum">
+                <number>5000</number>
+               </property>
+               <property name="value">
+                <number>100</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="tickPosition">
+                <enum>QSlider::NoTicks</enum>
+               </property>
+               <property name="tickInterval">
+                <number>5</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="KeysafeSpinBox" name="spinGradientsDistMax">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="keyboardTracking">
+                <bool>false</bool>
+               </property>
+               <property name="minimum">
+                <number>0</number>
+               </property>
+               <property name="maximum">
+                <number>5000</number>
+               </property>
+               <property name="value">
+                <number>100</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_14">
+             <item>
+              <widget class="QLabel" name="label_40">
+               <property name="text">
+                <string>Point Density</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="SliderBoost_8">
+               <property name="minimum">
+                <number>0</number>
+               </property>
+               <property name="maximum">
+                <number>20</number>
+               </property>
+               <property name="value">
+                <number>0</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="tickPosition">
+                <enum>QSlider::NoTicks</enum>
+               </property>
+               <property name="tickInterval">
+                <number>5</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="KeysafeSpinBox" name="spinGradientsPointDensity">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="keyboardTracking">
+                <bool>false</bool>
+               </property>
+               <property name="minimum">
+                <number>0</number>
+               </property>
+               <property name="maximum">
+                <number>20</number>
+               </property>
+               <property name="value">
+                <number>3</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_5">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_13">
+             <item>
+              <widget class="QLabel" name="lblGradientsWarning">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>[Warnings]</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="chkGradientsPreview">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Preview</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </item>
@@ -4559,7 +4935,7 @@ Interpreted Images:</string>
     </hint>
     <hint type="destinationlabel">
      <x>60</x>
-     <y>604</y>
+     <y>922</y>
     </hint>
    </hints>
   </connection>
@@ -4571,7 +4947,7 @@ Interpreted Images:</string>
    <hints>
     <hint type="sourcelabel">
      <x>60</x>
-     <y>604</y>
+     <y>922</y>
     </hint>
     <hint type="destinationlabel">
      <x>32</x>
@@ -4587,7 +4963,7 @@ Interpreted Images:</string>
    <hints>
     <hint type="sourcelabel">
      <x>116</x>
-     <y>604</y>
+     <y>922</y>
     </hint>
     <hint type="destinationlabel">
      <x>110</x>
@@ -4607,7 +4983,7 @@ Interpreted Images:</string>
     </hint>
     <hint type="destinationlabel">
      <x>116</x>
-     <y>604</y>
+     <y>922</y>
     </hint>
    </hints>
   </connection>
@@ -4623,7 +4999,7 @@ Interpreted Images:</string>
     </hint>
     <hint type="destinationlabel">
      <x>172</x>
-     <y>604</y>
+     <y>922</y>
     </hint>
    </hints>
   </connection>
@@ -4635,7 +5011,7 @@ Interpreted Images:</string>
    <hints>
     <hint type="sourcelabel">
      <x>172</x>
-     <y>604</y>
+     <y>922</y>
     </hint>
     <hint type="destinationlabel">
      <x>164</x>
@@ -4651,11 +5027,11 @@ Interpreted Images:</string>
    <hints>
     <hint type="sourcelabel">
      <x>910</x>
-     <y>212</y>
+     <y>273</y>
     </hint>
     <hint type="destinationlabel">
-     <x>944</x>
-     <y>209</y>
+     <x>949</x>
+     <y>273</y>
     </hint>
    </hints>
   </connection>
@@ -4666,12 +5042,12 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>944</x>
-     <y>209</y>
+     <x>949</x>
+     <y>273</y>
     </hint>
     <hint type="destinationlabel">
      <x>910</x>
-     <y>212</y>
+     <y>273</y>
     </hint>
    </hints>
   </connection>
@@ -4715,11 +5091,11 @@ Interpreted Images:</string>
    <hints>
     <hint type="sourcelabel">
      <x>907</x>
-     <y>139</y>
+     <y>164</y>
     </hint>
     <hint type="destinationlabel">
      <x>946</x>
-     <y>139</y>
+     <y>164</y>
     </hint>
    </hints>
   </connection>
@@ -4731,11 +5107,11 @@ Interpreted Images:</string>
    <hints>
     <hint type="sourcelabel">
      <x>946</x>
-     <y>139</y>
+     <y>164</y>
     </hint>
     <hint type="destinationlabel">
      <x>907</x>
-     <y>139</y>
+     <y>164</y>
     </hint>
    </hints>
   </connection>
@@ -4747,11 +5123,11 @@ Interpreted Images:</string>
    <hints>
     <hint type="sourcelabel">
      <x>907</x>
-     <y>163</y>
+     <y>205</y>
     </hint>
     <hint type="destinationlabel">
      <x>946</x>
-     <y>163</y>
+     <y>205</y>
     </hint>
    </hints>
   </connection>
@@ -4763,11 +5139,11 @@ Interpreted Images:</string>
    <hints>
     <hint type="sourcelabel">
      <x>946</x>
-     <y>163</y>
+     <y>205</y>
     </hint>
     <hint type="destinationlabel">
      <x>907</x>
-     <y>163</y>
+     <y>205</y>
     </hint>
    </hints>
   </connection>
@@ -4778,12 +5154,12 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>890</x>
-     <y>202</y>
+     <x>912</x>
+     <y>285</y>
     </hint>
     <hint type="destinationlabel">
-     <x>938</x>
-     <y>202</y>
+     <x>946</x>
+     <y>285</y>
     </hint>
    </hints>
   </connection>
@@ -4794,12 +5170,12 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>938</x>
-     <y>202</y>
+     <x>946</x>
+     <y>285</y>
     </hint>
     <hint type="destinationlabel">
-     <x>890</x>
-     <y>202</y>
+     <x>912</x>
+     <y>285</y>
     </hint>
    </hints>
   </connection>
@@ -4811,11 +5187,11 @@ Interpreted Images:</string>
    <hints>
     <hint type="sourcelabel">
      <x>117</x>
-     <y>1354</y>
+     <y>1838</y>
     </hint>
     <hint type="destinationlabel">
      <x>105</x>
-     <y>1230</y>
+     <y>1816</y>
     </hint>
    </hints>
   </connection>
@@ -4827,11 +5203,11 @@ Interpreted Images:</string>
    <hints>
     <hint type="sourcelabel">
      <x>904</x>
-     <y>133</y>
+     <y>154</y>
     </hint>
     <hint type="destinationlabel">
      <x>938</x>
-     <y>133</y>
+     <y>154</y>
     </hint>
    </hints>
   </connection>
@@ -4843,11 +5219,11 @@ Interpreted Images:</string>
    <hints>
     <hint type="sourcelabel">
      <x>904</x>
-     <y>174</y>
+     <y>216</y>
     </hint>
     <hint type="destinationlabel">
      <x>943</x>
-     <y>174</y>
+     <y>216</y>
     </hint>
    </hints>
   </connection>
@@ -4859,11 +5235,11 @@ Interpreted Images:</string>
    <hints>
     <hint type="sourcelabel">
      <x>938</x>
-     <y>133</y>
+     <y>154</y>
     </hint>
     <hint type="destinationlabel">
      <x>904</x>
-     <y>133</y>
+     <y>154</y>
     </hint>
    </hints>
   </connection>
@@ -4875,11 +5251,11 @@ Interpreted Images:</string>
    <hints>
     <hint type="sourcelabel">
      <x>943</x>
-     <y>174</y>
+     <y>216</y>
     </hint>
     <hint type="destinationlabel">
      <x>904</x>
-     <y>174</y>
+     <y>216</y>
     </hint>
    </hints>
   </connection>
@@ -4890,12 +5266,12 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>722</x>
-     <y>212</y>
+     <x>904</x>
+     <y>278</y>
     </hint>
     <hint type="destinationlabel">
      <x>947</x>
-     <y>215</y>
+     <y>278</y>
     </hint>
    </hints>
   </connection>
@@ -4906,12 +5282,12 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>920</x>
-     <y>210</y>
+     <x>947</x>
+     <y>278</y>
     </hint>
     <hint type="destinationlabel">
-     <x>827</x>
-     <y>215</y>
+     <x>904</x>
+     <y>278</y>
     </hint>
    </hints>
   </connection>
@@ -4922,12 +5298,12 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>774</x>
-     <y>192</y>
+     <x>902</x>
+     <y>287</y>
     </hint>
     <hint type="destinationlabel">
-     <x>916</x>
-     <y>199</y>
+     <x>946</x>
+     <y>287</y>
     </hint>
    </hints>
   </connection>
@@ -4938,12 +5314,12 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>919</x>
-     <y>188</y>
+     <x>946</x>
+     <y>287</y>
     </hint>
     <hint type="destinationlabel">
-     <x>882</x>
-     <y>186</y>
+     <x>902</x>
+     <y>287</y>
     </hint>
    </hints>
   </connection>
@@ -4954,12 +5330,12 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>828</x>
-     <y>218</y>
+     <x>903</x>
+     <y>314</y>
     </hint>
     <hint type="destinationlabel">
-     <x>917</x>
-     <y>225</y>
+     <x>946</x>
+     <y>314</y>
     </hint>
    </hints>
   </connection>
@@ -4970,12 +5346,172 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>932</x>
-     <y>214</y>
+     <x>946</x>
+     <y>314</y>
     </hint>
     <hint type="destinationlabel">
-     <x>883</x>
-     <y>219</y>
+     <x>903</x>
+     <y>314</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SliderBoost_4</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinGradientsDistMinEffect</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>902</x>
+     <y>119</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>945</x>
+     <y>119</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinGradientsDistMinEffect</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SliderBoost_4</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>945</x>
+     <y>119</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>902</x>
+     <y>119</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SliderBoost_8</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>spinGradientsPointDensity</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>784</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>925</x>
+     <y>263</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinGradientsPointDensity</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SliderBoost_8</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>930</x>
+     <y>248</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>822</x>
+     <y>253</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SliderBoost_7</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>spinGradientsDistMax</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>758</x>
+     <y>209</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>911</x>
+     <y>220</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinGradientsDistMax</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SliderBoost_7</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>921</x>
+     <y>204</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>832</x>
+     <y>211</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SliderBoost_6</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>spinGradientsDistMin</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>783</x>
+     <y>180</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>925</x>
+     <y>185</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinGradientsDistMin</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SliderBoost_6</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>937</x>
+     <y>175</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>791</x>
+     <y>188</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SliderBoost_5</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>spinGradientsDistMaxEffect</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>808</x>
+     <y>138</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>921</x>
+     <y>140</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinGradientsDistMaxEffect</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SliderBoost_5</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>923</x>
+     <y>129</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>796</x>
+     <y>143</y>
     </hint>
    </hints>
   </connection>

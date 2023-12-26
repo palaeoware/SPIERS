@@ -53,6 +53,7 @@
 #include "globals.h"
 #include "mainwindowimpl.h"
 #include "globals.h"
+
 #include "../SPIERScommon/src/netmodule.h"
 
 #define PI 3.14159265
@@ -2139,6 +2140,11 @@ void MainWindowImpl::on_actionOpen_triggered()
     actionAdd_Markers->trigger();
     actionInfo->trigger();
     actionAuto_Align->trigger();
+}
+
+void MainWindowImpl::on_actionOpen_triggered2()
+{
+    qDebug()<<"Debug 2 triggered";
 }
 
 /**

@@ -55,6 +55,12 @@ public:
     int GetRadialCentreY();
     int GetRadialRadius();
     int GetRadialAdjust();
+    void SetGradientDensity(int);
+    void SetGradientMinDist(int v);
+    void SetGradientMaxDist(int v);
+    void SetGradientMinDistValue(int v);
+    void SetGradientMaxDistValue(int v);
+
 private slots:
     void Moveimage(int);
     void on_action3D_Brush_toggled(bool );
@@ -258,6 +264,24 @@ private slots:
 
     void on_SetCentre_clicked();
 
+    void on_spinGradientsDistMinEffect_valueChanged(int arg1);
+
+    void on_spinGradientsDistMaxEffect_valueChanged(int arg1);
+
+    void on_spinGradientsDistMin_valueChanged(int arg1);
+
+    void on_spinGradientsDistMax_valueChanged(int arg1);
+
+    void on_chkGradientsPreview_toggled(bool checked);
+
+    void on_actionThreshold_triggered();
+
+    void on_spinGradientsPointDensity_valueChanged(int arg1);
+
+    void on_actionOpen_triggered();
+
+    void on_actionOpen_toggled(bool arg1);
+
 private:
     void MakeUndo(QString type);
     void RefreshMasks();
@@ -294,6 +318,7 @@ private:
 
     BeamHardeningCenterIcon *centerIcon;
     BeamHardening *bh;
+    void DoGradientsUpdate();
 };
 
 extern MainWindowImpl *AppMainWindow;
