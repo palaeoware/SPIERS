@@ -1223,6 +1223,11 @@ void MainWindowImpl::on_GenerateButton_clicked()
     if (tabwidget->currentIndex() == 2) dialog.GenerateRange(SliceSelectorList);
     if (tabwidget->currentIndex() == 3) dialog.GenerateLCE(SliceSelectorList);
     if (tabwidget->currentIndex() == 4) dialog.GenerateRadial(SliceSelectorList, bh);
+    if (tabwidget->currentIndex() == 5)
+    {
+        dialog.GenerateGradient(SliceSelectorList);
+        chkGradientsPreview->setChecked(false); //always turn off preview after a generate
+    }
     ShowImage(graphicsView);
 }
 

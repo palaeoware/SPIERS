@@ -278,10 +278,6 @@ private slots:
 
     void on_spinGradientsPointDensity_valueChanged(int arg1);
 
-    void on_actionOpen_triggered();
-
-    void on_actionOpen_toggled(bool arg1);
-
 private:
     void MakeUndo(QString type);
     void RefreshMasks();

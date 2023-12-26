@@ -564,7 +564,6 @@ void DrawCurveOutput(int c, int file, uchar *data, QList <bool> *UseMasks, bool 
 }
 
 
-
 void DrawCurve(int c, int mycol, int file, QImage *Thresh)
 {
 
@@ -1357,22 +1356,25 @@ void GetPointsOnSpline(int curveIndex, QList<int> *xPos, QList<int> *yPos)
     double posBase = 0;
     if (!cv->Closed)
     {
-        pointCount-=2;
+        pointCount-=3;
         posBase = 1;
     }
     double posAdd;
 
-    int numberOfPoints = GradientDensity * pointCount;
-    if (numberOfPoints<2)
+    int numberOfPoints = GradientDensity * pointCount + 1;
+    //qDebug()<<numberOfPoints;
+    if (GradientDensity==0)
+    {
         posAdd = 0;
+        numberOfPoints=1;
+    }
     else
-        posAdd = (double) pointCount / (double)(numberOfPoints-1);
+        posAdd = 1.0 / (double)GradientDensity;
 
     for (int i=0; i<numberOfPoints; i++)
     {
-        //qDebug()<<posBase + i * posAdd;
+
         xPos->append(GetGradientXPos(posBase + i * posAdd,p));
         yPos->append(GetGradientYPos(posBase + i * posAdd,p));
     }
-
 }

@@ -2128,8 +2128,8 @@ void MainWindowImpl::on_tabWidget_currentChanged(int index)
 {
     GenInvert->setVisible(true);
     GenerateAuto->setVisible(true);
-    if (index == 2 || index == 3 || index == 4) GenInvert->setVisible(false);
-    if (index == 3 || index == 4) GenerateAuto->setVisible(false);
+    if (index == 2 || index == 3 || index == 4 || index == 5) GenInvert->setVisible(false);
+    if (index == 3 || index == 4 || index == 5) GenerateAuto->setVisible(false);
 }
 
 void MainWindowImpl::on_actionChange_downsampling_triggered()
@@ -2174,8 +2174,5 @@ void MainWindowImpl::on_actionThreshold_triggered()
 
 
 
-void MainWindowImpl::on_actionOpen_toggled(bool arg1)
-{
 
-}
 

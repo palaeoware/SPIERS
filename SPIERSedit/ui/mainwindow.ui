@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>962</width>
-    <height>1862</height>
+    <height>1933</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -1153,7 +1153,7 @@
      <item alignment="Qt::AlignVCenter">
       <widget class="QTabWidget" name="tabWidget">
        <property name="currentIndex">
-        <number>5</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="tabLinear">
         <attribute name="title">
@@ -2382,7 +2382,7 @@
                 </size>
                </property>
                <property name="text">
-                <string>[Warnings]</string>
+                <string>Select ONE curve to apply gradient.</string>
                </property>
               </widget>
              </item>

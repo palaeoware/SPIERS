@@ -40,6 +40,7 @@ public:
     void MakeNewSegFiles(int snum);
     void DeleteSegments(QList <int> list);
     void GenerateLCE(QListWidget *SliceSelectorList);
+    void GenerateGradient(QListWidget *SliceSelectorList);
     void GenerateLinear(QListWidget *SliceSelectorList);
     void GeneratePoly(QListWidget *SliceSelectorList);
     void GenerateRange(QListWidget *SliceSelectorList);

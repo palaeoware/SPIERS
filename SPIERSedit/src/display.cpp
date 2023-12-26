@@ -43,6 +43,53 @@ void SaveMainImage(QString fname)
 }
 
 
+// Calculate the distance between
+// point pt and the segment p1 --> p2.
+
+//From http://www.csharphelper.com/howtos/howto_point_segment_distance.html
+double FindDistanceToSegment(
+    double ptx, double pty, double p1x, double p1y, double p2x, double p2y)
+{
+    float dx = p2x - p1x;
+    float dy = p2y - p1y;
+    if ((dx == 0) && (dy == 0))
+    {
+        // It's a point not a line segment.
+        dx = ptx - p1x;
+        dy = pty - p1y;
+        return sqrt(dx * dx + dy * dy);
+    }
+
+    // Calculate the t that minimizes the distance.
+    double t = ((ptx - p1x) * dx + (pty - p1y) * dy) /
+              (dx * dx + dy * dy);
+
+    // See if this represents one of the segment's
+    // end points or a point in the middle.
+    if (t < 0)
+    {
+//        closest = new PointF(p1.X, p1.Y);
+        dx = ptx - p1x;
+        dy = pty - p1y;
+    }
+    else if (t > 1)
+    {
+//        closest = new PointF(p2.X, p2.Y);
+        dx = ptx - p2x;
+        dy = pty - p2y;
+    }
+    else
+    {
+        double closestx = p1x + t*dx;
+        double closesty = p1y+t*dy;
+
+        dx = ptx - closestx;
+        dy = pty - closesty;
+    }
+
+    return sqrt(dx * dx + dy * dy);
+}
+
 //This gets (as char array -128 to +127) the additions for each pixel to the gradient
 QByteArray* GetGradientArray()
 {
@@ -57,39 +104,53 @@ QByteArray* GetGradientArray()
 
     GetPointsOnSpline(curveIndex, &xPoints, &yPoints);
 
-    qDebug()<<GradientDensity<<GradientMinDist<<GradientMaxDist<<GradientMinDistValue<<GradientMaxDistValue;
+    //qDebug()<<GradientDensity<<GradientMinDist<<GradientMaxDist<<GradientMinDistValue<<GradientMaxDistValue;
+
+    bool insideNeeded = Curves[curveIndex]->Filled;
+
+    QByteArray curveInsides(fwidth * fheight, 0);
+    if (insideNeeded)
+    {
+        QList<bool> useMasks;
+        for (int i=0; i<=MaxUsedMask; i++) useMasks.append(true);  //use all - get excluded later
+        DrawCurveOutput(curveIndex, CurrentFile, (uchar *)curveInsides.data(), &useMasks, false);
+    }
 
     for (int x=0; x<fwidth; x++)
     for (int y=0; y<fheight; y++)
     {
         int closestDist=99999;
-        for (int i=0; i<xPoints.count(); i++)
+        for (int i=0; i<xPoints.count()-1; i++)
         {
-            int xDist = xPoints[i] - x;
-            int yDist = yPoints[i] - y;
-            int dist = (int)(sqrt(xDist * xDist + yDist * yDist)+.5);
-            //if (x==0 && y==0) qDebug()<<dist<<xDist<<yDist;
+
+
+            int dist = (int)(FindDistanceToSegment(x,y,xPoints[i], yPoints[i], xPoints[i+1],yPoints[i+1]) +.5);
             if (dist<closestDist) closestDist = dist;
 
-            /*if (xPoints[i]==x && yPoints[i]==y)
-            {
-                qDebug()<<"HIT POINT: "<<x<<y;
-                (*gradientData)[y*fwidth + x] = 127;
-            }
-            */
         }
+
         char v;
-        //if (x==0) qDebug()<<closestDist<<GradientMaxDist<<GradientMinDist;
-        if(closestDist >= GradientMaxDist)
-            v = (char)GradientMaxDistValue;
-        else if (closestDist <= GradientMinDist)
-            v = (char)GradientMinDistValue;
+
+        bool amInside=((uchar)curveInsides.at(y * fwidth + x) ==255 && insideNeeded);
+
+        if (amInside)
+        {
+            v = GradientMinDistValue;
+        }
         else
         {
-            // between two values
-            double pos = (double)(closestDist - GradientMinDist) / (double) (GradientMaxDist - GradientMinDist);
-            v = (char)((double)GradientMaxDistValue * pos + (double)GradientMinDistValue * (1-pos) + .5);
-            //qDebug()<<x<<y<<closestDist<<pos<<v;
+            //if (x==0) qDebug()<<closestDist<<GradientMaxDist<<GradientMinDist;
+            if(closestDist >= GradientMaxDist)
+                v = (char)GradientMaxDistValue;
+            else if (closestDist <= GradientMinDist)
+                v = (char)GradientMinDistValue;
+            else
+            {
+                // between two values
+                double pos = (double)(closestDist - GradientMinDist) / (double) (GradientMaxDist - GradientMinDist);
+                v = (char)((double)GradientMaxDistValue * pos + (double)GradientMinDistValue * (1-pos) + .5);
+                //qDebug()<<x<<y<<closestDist<<pos<<v;
+            }
         }
          (*gradientData)[y*fwidth + x] = v;
     }
@@ -723,6 +784,48 @@ void ApplyLCE(int seg, int fnum, bool flag = false)
 
 }
 
+
+//Do LCE - based on MakeLinearGreyScale
+void ApplyGradient(int seg, int fnum)
+{
+    //load data for file - can and should assume existing data is safe
+    LoadAllData(fnum);
+
+    if (Segments[seg]->Locked) return;
+    uchar *data= GA[seg]->bits(); // get data from GA array
+
+    //make a copy of underlying data
+    QVector<uchar> data_original_vector(fwidth4 * fheight);
+    uchar *data_original = data_original_vector.data();
+    memcpy(data_original,data,fwidth4*fheight);
+
+    QByteArray NewLocks = DoMaskLocking();
+
+    //GetGradientArray uses currentfile - so bodge this
+    int oldCurrentFile = CurrentFile;
+    CurrentFile = fnum;
+    QByteArray *gradientData = GetGradientArray();
+    CurrentFile = oldCurrentFile;
+
+    for (int h = 0; h < fheight; h++)
+        for (int w = 0; w < fwidth; w++)
+        {
+            if (!(NewLocks[(fwidth * h + w)]))
+            {
+                int gradientAddition = ((int)(gradientData->at(h * fwidth + w)));
+
+                int temp = (int) *(data + (fwidth4 * h + w));
+                temp += gradientAddition;
+                if (temp>255) temp=255;
+                if (temp<0) temp=0;
+
+                *(data + (fwidth4 * h + w)) = (uchar)temp;
+            }
+        }
+
+    delete gradientData;
+    SaveGreyData(fnum, seg);
+}
 
 void MakeLinearGreyScale(int seg, int fnum, bool flag = false)
 {

@@ -394,13 +394,53 @@ void CopyingImpl::GenerateLCE(QListWidget *SliceSelectorList)
     if (c > 1) close(); //close dialog
 }
 
+void CopyingImpl::GenerateGradient(QListWidget *SliceSelectorList)
+{
+    int curveCount = 0;
+    for (int i=0; i<Curves.count(); i++)
+        if (Curves[i]->widgetitem->isSelected())
+            curveCount++;
+    if (SelectedCurve==-1 || curveCount!=1)
+    {
+        QMessageBox::warning(nullptr, "Cannot proceed", "You must have one and only one curve selected to use gradient generation", QMessageBox::Ok);
+        return;
+    }
+
+    int c = SliceSelectorList->selectedItems().count();
+    if (c > 1) show(); //show progress dialog if multifile
+    copying = true; //what does this do? Block GUI?
+
+    this->setWindowTitle("Applying gradient corrections ...");
+    WriteAllData(CurrentFile);
+    if (c > 1)  progressBar->setMaximum(c);
+    int item_count=0;
+    for (int i = 0; i < Files.count(); i++)
+    {
+        //for each file
+        if ((SliceSelectorList->item(i))->isSelected())
+        {
+            for (int j = 0; j < SegmentCount; j++) if (Segments[j]->Activated) ApplyGradient(CurrentSegment, i);
+            item_count++;
+            if (c > 1)
+            {
+                progressBar->setValue(item_count);
+                qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
+            }
+        }
+    }
+    //restore setup
+    LoadAllData(CurrentFile);
+    copying = false;
+    if (c > 1) close(); //close dialog
+}
+
 void CopyingImpl::GenerateRadial(QListWidget *SliceSelectorList, BeamHardening *bh)
 {
-    qDebug()<<"Here";
+    //qDebug()<<"Here";
     if (!bh->HasSample())
         return;
 
-    qDebug()<<"... and Here";
+    //qDebug()<<"... and Here";
     int c = SliceSelectorList->selectedItems().count();
     if (c > 1) show(); //show progress dialog if multifile
     copying = true; //what does this do? Block GUI?

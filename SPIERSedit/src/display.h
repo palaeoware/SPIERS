@@ -30,6 +30,7 @@ extern void DeleteDisplayObjects();
 extern void ClearImages();
 extern void MakeLinearGreyScale(int seg, int fnum, bool flag);
 extern void ApplyLCE(int seg, int fnum, bool flag);
+extern void ApplyGradient(int seg, int fnum);
 extern void ApplyRadial(int seg, int fnum, BeamHardening *bh, bool flag);
 extern void MakeBlankGreyScale(int seg, int fnum, bool flag);
 extern uchar GreyScalePixel(int w, int h, int r, int g, int b, int glob);

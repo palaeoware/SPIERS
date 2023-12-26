@@ -382,22 +382,10 @@ void MainWindowImpl::on_actionCode_on_GitHub_triggered()
 }
 
 
-
 void MainWindowImpl::DoGradientsUpdate()
 {
     //Values changed in UI for Gradients - redo preview if preview is on
-
-    if (chkGradientsPreview->isChecked())
-    {
-        qDebug()<<"TODO - Refresh (preview on)";
-        ShowImage(graphicsView);
-    }
-    else
-    {
-        qDebug()<<"TODO - Refresh (preview off)";
-        ShowImage(graphicsView);
-    }
-
+    ShowImage(graphicsView);
 }
 
 
