@@ -2130,6 +2130,14 @@ void MainWindowImpl::on_tabWidget_currentChanged(int index)
     GenerateAuto->setVisible(true);
     if (index == 2 || index == 3 || index == 4 || index == 5) GenInvert->setVisible(false);
     if (index == 3 || index == 4 || index == 5) GenerateAuto->setVisible(false);
+    if (index!=5)
+    {
+        if (chkGradientsPreview->isChecked())
+        {
+            chkGradientsPreview->setChecked(false);
+            DoGradientsUpdate();
+        }
+    }
 }
 
 void MainWindowImpl::on_actionChange_downsampling_triggered()
