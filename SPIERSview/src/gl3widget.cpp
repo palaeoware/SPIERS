@@ -351,8 +351,6 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
     // Update the stored FOV
     updateFOV();
 
-    //glDebug("Line 358");
-
     // Show/Hide GL Scale Ball
     scaleBall->draw(vMatrix, vMatrix * camera);
 
@@ -360,7 +358,6 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
     if (mainWindow->ui->actionShow_Scale_Grid->isChecked())
         scaleGrid->draw(vMatrix, vMatrix * camera);
 
-    //glDebug("Line 367");
 }
 
 /**

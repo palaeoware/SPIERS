@@ -14,7 +14,7 @@ QT += network xml gui core widgets opengl
 #QMAKE_LFLAGS_RELEASE =
 
 CONFIG += qt \
-    release \
+    #release \
     warn_on \
     sdk_no_version_check
 
@@ -30,8 +30,10 @@ UI_DIR += ui
 # Load the SPIERS version number
 include(../version.pri)
 
-#Needed to make binaries launchable from file in Ubuntu - GCC default link flag -pie on newer Ubuntu versions this so otherwise recognised as shared library
-QMAKE_LFLAGS += -no-pie
+unix:!macx {
+    #Needed to make binaries launchable from file in Ubuntu - GCC default link flag -pie on newer Ubuntu versions this so otherwise recognised as shared library
+    QMAKE_LFLAGS += -no-pie
+}
 
 RC_FILE = resources/icon.rc
 
@@ -43,93 +45,76 @@ MOC_DIR += build
 
 OBJECTS_DIR += build
 
-# Windows common build here
+# Windows VS2019 build here
 win32 {
-    INCLUDEPATH += "C://msys64/mingw64/include/vtk-8.1"
+    INCLUDEPATH += "C://Users/as13709/Documents/Programming/VTK/9.3.0/Install/include/vtk-9.3" \
+    "C://Users/as13709/Documents/Programming/ZLIB/1.3/Install/include"
 
-    LIBS += -L$$C://msys64/mingw64/lib \
-    # VTK - Libary
-    # libvtk* name to match static lib created
-    -llibvtkCommonExecutionModel-8.1 \
-    -llibvtkCommonDataModel-8.1 \
-    -llibvtkCommonColor-8.1 \
-    -llibvtkCommonComputationalGeometry-8.1 \
-    -llibvtkCommonMisc-8.1 \
-    -llibvtkCommonSystem-8.1 \
-    -llibvtkCommonTransforms-8.1 \
-    -llibvtkCommonMath-8.1 \
-    -llibvtkDICOMParser-8.1 \
-    -llibvtkDomainsChemistry-8.1 \
-    -llibvtkDomainsChemistryOpenGL2-8.1 \
-    -llibvtkexoIIc-8.1 \
-    -llibvtkFiltersAMR-8.1 \
-    -llibvtkFiltersExtraction-8.1 \
-    -llibvtkFiltersFlowPaths-8.1 \
-    -llibvtkFiltersGeneral-8.1 \
-    -llibvtkFiltersGeneric-8.1 \
-    -llibvtkFiltersGeometry-8.1 \
-    -llibvtkFiltersHybrid-8.1 \
-    -llibvtkFiltersHyperTree-8.1 \
-    -llibvtkFiltersImaging-8.1 \
-    -llibvtkFiltersModeling-8.1 \
-    -llibvtkFiltersParallel-8.1 \
-    -llibvtkFiltersParallelImaging-8.1 \
-    -llibvtkFiltersProgrammable-8.1 \
-    -llibvtkFiltersSelection-8.1 \
-    -llibvtkFiltersSMP-8.1 \
-    -llibvtkFiltersSources-8.1 \
-    -llibvtkFiltersStatistics-8.1 \
-    -llibvtkFiltersTexture-8.1 \
-    -llibvtkFiltersVerdict-8.1 \
-    -llibvtkglew-8.1 \
-    -llibvtkImagingColor-8.1 \
-    -llibvtkImagingFourier-8.1 \
-    -llibvtkImagingGeneral-8.1 \
-    -llibvtkImagingHybrid-8.1 \
-    -llibvtkImagingMath-8.1 \
-    -llibvtkImagingMorphological-8.1 \
-    -llibvtkImagingSources-8.1 \
-    -llibvtkImagingStatistics-8.1 \
-    -llibvtkImagingStencil-8.1 \
-    -llibvtkInfovisLayout-8.1 \
-    -llibvtkIOAMR-8.1 \
-    -llibvtkIOEnSight-8.1 \
-    -llibvtkIOExodus-8.1 \
-    -llibvtkIOGeometry-8.1 \
-    -llibvtkIOImage-8.1 \
-    -llibvtkIOImport-8.1 \
-    -llibvtkIOInfovis-8.1 \
-    -llibvtkIOLegacy-8.1 \
-    -llibvtkIOLSDyna-8.1 \
-    -llibvtkIOMINC-8.1 \
-    -llibvtkIOMovie-8.1 \
-    -llibvtkIONetCDF-8.1 \
-    -llibvtkIOParallel-8.1 \
-    -llibvtkIOParallelXML-8.1 \
-    -llibvtkIOPLY-8.1 \
-    -llibvtkIOSQL-8.1 \
-    -llibvtkIOVideo-8.1 \
-    -llibvtkIOXML-8.1 \
-    -llibvtkIOXMLParser-8.1 \
-    -llibvtkmetaio-8.1 \
-    -llibvtkNetCDF-8.1 \
-    -llibvtkRenderingContext2D-8.1 \
-    -llibvtkRenderingContextOpenGL2-8.1 \
-    -llibvtkRenderingFreeType-8.1 \
-    -llibvtkRenderingOpenGL2-8.1 \
-    -llibvtkverdict-8.1 \
-    -llibvtkCommonCore-8.1 \
-    -llibvtkChartsCore-8.1 \
-    -llibvtkImagingCore-8.1 \
-    -llibvtkIOCore-8.1 \
-    -llibvtkParallelCore-8.1 \
-    -llibvtkRenderingCore-8.1 \
-    -llibvtkFiltersCore-8.1 \
-    -llibvtksys-8.1 \
-    # Other - Libary
-    -lstdc++ \
-    -lz \
-    -lgdi32
+    release {
+        LIBS += -LC://Users/as13709/Documents/Programming/VTK/9.3.0/Install/lib \
+        # VTK - Libary
+        # vtk* name to match lib created
+        -lvtkCommonCore-9.3 \
+        -lvtkCommonDataModel-9.3 \
+        -lvtkCommonExecutionModel-9.3 \
+        -lvtkCommonMath-9.3 \
+        -lvtkCommonMisc-9.3 \
+        -lvtkCommonSystem-9.3 \
+        -lvtkCommonTransforms-9.3 \
+        -lvtkdoubleconversion-9.3 \
+        -lvtkFiltersCore-9.3 \
+        -lvtkFiltersGeneral-9.3 \
+        -lvtkFiltersHybrid-9.3 \
+        -lvtkFiltersVerdict-9.3 \
+        -lvtkIOCore-9.3 \
+        -lvtkIOGeometry-9.3 \
+        -lvtkIOImage-9.3 \
+        -lvtkIOPLY-9.3 \
+        -lvtkkissfft-9.3 \
+        -lvtkloguru-9.3 \
+        -lvtklz4-9.3 \
+        -lvtklzma-9.3 \
+        -lvtkpugixml-9.3 \
+        -lvtkRenderingCore-9.3 \
+        -lvtksys-9.3 \
+        -lvtkzlib-9.3 \
+        # Zlib
+        -LC://Users/as13709/Documents/Programming/ZLIB/1.3/Install/lib \
+        -lzlib
+    }
+
+    debug {
+        LIBS += -LC://Users/as13709/Documents/Programming/VTK/9.3.0/Install/lib \
+        # VTK - Libary
+        # vtk* name to match lib created
+        -lvtkCommonCore-9.3d \
+        -lvtkCommonDataModel-9.3d \
+        -lvtkCommonExecutionModel-9.3d \
+        -lvtkCommonMath-9.3d \
+        -lvtkCommonMisc-9.3d \
+        -lvtkCommonSystem-9.3d \
+        -lvtkCommonTransforms-9.3d \
+        -lvtkdoubleconversion-9.3d \
+        -lvtkFiltersCore-9.3d \
+        -lvtkFiltersGeneral-9.3d \
+        -lvtkFiltersHybrid-9.3d \
+        -lvtkFiltersVerdict-9.3d \
+        -lvtkIOCore-9.3d \
+        -lvtkIOGeometry-9.3d \
+        -lvtkIOImage-9.3d \
+        -lvtkIOPLY-9.3d \
+        -lvtkkissfft-9.3d \
+        -lvtkloguru-9.3d \
+        -lvtklz4-9.3d \
+        -lvtklzma-9.3d \
+        -lvtkpugixml-9.3d \
+        -lvtkRenderingCore-9.3d \
+        -lvtksys-9.3d \
+        -lvtkzlib-9.3d \
+        # Zlib
+        -LC://Users/as13709/Documents/Programming/ZLIB/1.3/Install/lib \
+        -lzlibd
+    }
 }
 
 # Unix/Linux common build here
