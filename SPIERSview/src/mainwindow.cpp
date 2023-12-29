@@ -5,7 +5,7 @@
  * All SPIERSview code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSview code is Copyright 2008-2019 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERSview code is Copyright 2008-2023 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 #include <QMenuBar>
 #include <QDebug>
 #include <QtWidgets/QHBoxLayout>
-#include <QTime>
+#include <QElapsedTimer>
 #include <QtWidgets/QMessageBox>
 #include <QTextStream>
 #include <QtWidgets/QFileDialog>
@@ -134,7 +134,7 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(PBtimer, SIGNAL(timeout()), this, SLOT(showSpecificProgress()));
     PBtimer->start();
 
-    time = new QTime(); //used by spin timer
+    time = new QElapsedTimer(); //used by spin timer
     time->start();
 
     ui->dockWidgetPieces->setVisible(false);
@@ -240,7 +240,6 @@ MainWindow::~MainWindow()
 void MainWindow::UpdateGL()
 {
     //qDebug() << "[Where I'm I?] In UpdateGL";
-
     gl3widget->update();
 }
 
@@ -277,7 +276,10 @@ agin:
             macClickedNoForUpdateDownload = false;
             goto agin;
         }
-        if (fname.isNull()) QCoreApplication::quit(); //if nothing there, cancel
+        if (fname.isNull() || fname == "") {
+            QCoreApplication::quit(); //if nothing there, cancel
+            return;
+        }
     }
 
     //qDebug() << "[Where I'm I?] In StartTimer_fired - fname should now be set fname = " << fname;
@@ -300,8 +302,10 @@ agin:
 
             //qDebug() << "[Where I'm I?] In StartTimer_fired - about to call UpdateGL()";
             UpdateGL();
+        } else {
+            QCoreApplication::quit();
+            return;
         }
-        else QCoreApplication::quit();
     }
     else if (fname.right(4) == "spvf") //finalised files
     {
@@ -321,8 +325,10 @@ agin:
 
             //qDebug() << "[Where I'm I?] In StartTimer_fired - about to call UpdateGL()";
             UpdateGL();
+        }else {
+            QCoreApplication::quit();
+            return;
         }
-        else QCoreApplication::quit();
     }
     else
     {
@@ -411,9 +417,7 @@ QString MainWindow::DegConvert(float angle)
     while (angle < 0)
         angle += 360;
 
-    QString retval;
-    retval.sprintf("%05.1f", static_cast<double>(angle));
-    return retval;
+    return QString("%1").arg(static_cast<double>(angle), 5,'f', 1, '0');
 }
 
 /**
@@ -423,9 +427,7 @@ QString MainWindow::DegConvert(float angle)
  */
 QString MainWindow::TransConvert(float trans)
 {
-    QString retval;
-    retval.sprintf("%04.1f", static_cast<double>(trans));
-    return retval;
+    return QString("%1").arg(static_cast<double>(trans), 4,'f', 1, '0');
 }
 
 /**
@@ -493,8 +495,7 @@ void MainWindow::SpinTimer_fired()
     int wwidth = gl3widget->width();
 
     int aheight = static_cast<int>(static_cast<double>(wheight) / (static_cast<double>(wwidth) / static_cast<double>(ui->AnimRescaleX->value())));
-    QString s;
-    s.sprintf("%d px", aheight);
+    QString s = QString("%1 px").arg(aheight);
     ui->LabelAnimHeight->setText(s);
 
     if (ui->actionAuto_Spin->isChecked())
@@ -534,7 +535,7 @@ void MainWindow::SpinTimer_fired()
     }
 
     if (ObjCount == 0)
-        mess.sprintf("Whole Model: %d KTr  ", modelKTr / 1000);
+        mess = QString("Whole Model: %1 KTr  ").arg(modelKTr / 1000);
     else
     {
         QString oc;
@@ -901,7 +902,7 @@ void MainWindow::RefreshOneItem(QTreeWidgetItem *item, int i)
     rs << SVObjects[i]->Resample << "%";
 
     // This forces models with blank or missing object names to have something
-    if (SVObjects[i]->Name.isEmpty() | SVObjects[i]->Name.isNull())
+    if (SVObjects[i]->Name.isEmpty() || SVObjects[i]->Name.isNull())
     {
         item->setText(0, QString ("Unknown %1").arg(i));
     }
@@ -946,7 +947,7 @@ void MainWindow::RefreshOneItem(QTreeWidgetItem *item, int i)
         if (SVObjects[i]->Transparency == 2) t = "Lowish";
         if (SVObjects[i]->Transparency == 3) t = "Med";
         if (SVObjects[i]->Transparency == 4) t = "High";
-        if (SVObjects[i]->Transparency < 0) t.sprintf("Custom (%d%%)", 0 - SVObjects[i]->Transparency);
+        if (SVObjects[i]->Transparency < 0) t = QString("Custom (%1)").arg(0 - SVObjects[i]->Transparency);
         item->setText(5, t);
 
         if (SVObjects[i]->IslandRemoval == 0) t = "Off";
@@ -955,7 +956,7 @@ void MainWindow::RefreshOneItem(QTreeWidgetItem *item, int i)
         if (SVObjects[i]->IslandRemoval == 3) t = "Remove Medium";
         if (SVObjects[i]->IslandRemoval == 4) t = "Remove Large";
         if (SVObjects[i]->IslandRemoval == 5) t = "Remove All";
-        if (SVObjects[i]->IslandRemoval < 0) t.sprintf("Custom (%d)", 0 - SVObjects[i]->IslandRemoval);
+        if (SVObjects[i]->IslandRemoval < 0) t = QString("Custom (%1)").arg(0 - SVObjects[i]->IslandRemoval);
         item->setText(6, t);
 
         if (SVObjects[i]->Smoothing == 0) t = "Off";
@@ -965,14 +966,14 @@ void MainWindow::RefreshOneItem(QTreeWidgetItem *item, int i)
         if (SVObjects[i]->Smoothing == 4) t = "Strongish";
         if (SVObjects[i]->Smoothing == 5) t = "Strong";
         if (SVObjects[i]->Smoothing == 6) t = "Strongest";
-        if (SVObjects[i]->Smoothing < 0) t.sprintf("Custom (%d)", 0 - SVObjects[i]->Smoothing);
+        if (SVObjects[i]->Smoothing < 0) t = QString("Custom (%1)").arg(0 - SVObjects[i]->Smoothing);
         item->setText(7, t);
 
         if (SVObjects[i]->Shininess == 0) t = "Off";
         if (SVObjects[i]->Shininess == 1) t = "Less";
         if (SVObjects[i]->Shininess == 2) t = "Default";
         if (SVObjects[i]->Shininess == 3) t = "Full";
-        if (SVObjects[i]->Shininess < 0) t.sprintf("Custom (%d%%)", 0 - SVObjects[i]->Shininess);
+        if (SVObjects[i]->Shininess < 0) t = QString("Custom (%1)").arg(0 - SVObjects[i]->Shininess);
         item->setText(8, t);
     }
 
@@ -1067,6 +1068,8 @@ void MainWindow::RefreshObjects()
         }
         selflags.append(sf);
     }
+
+    //qDebug() << "[Draw Child Objects]";
 
     ui->treeWidget->clear();
     DrawChildObjects(selflags, -1); //start by drawing root children
@@ -2279,7 +2282,7 @@ void MainWindow::on_actionDXF_triggered()
             {
                 counto++;
                 QString name;
-                if (SVObjects[i]->Name.isEmpty()) name.sprintf("%d", counto);
+                if (SVObjects[i]->Name.isEmpty()) name = QString("%1").arg(counto);
                 else name = SVObjects[i]->Name;
                 dxf << "LAYER\n2\n" << name.toLatin1() << "\n70\n64\n62\n7\n6\nCONTINUOUS\n0\n";
             }
@@ -2295,16 +2298,12 @@ void MainWindow::on_actionDXF_triggered()
 
         dxf.flush();
         //now do all the objects
-        long count = 0;
         for (int i = 0; i < SVObjects.count(); i++)
             if (!(SVObjects[i]->IsGroup) && (SVObjects[i]->Visible || ui->actionExport_Hidden_Objects->isChecked()))
             {
-                QString status;
-                status.sprintf("Exporting object %d of %d", i + 1, SVObjects.count());
+                QString status = QString("Exporting object %1 of %1").arg(i + 1).arg(SVObjects.count());
                 ui->OutputLabelOverall->setText(status);
                 ui->ProgBarOverall->setValue((i * 100) / SVObjects.count());
-                //find name
-                count += static_cast<long>(SVObjects[i]->WriteDXFfaces(&dxffile));
             }
 
         ui->OutputLabelOverall->setText("DXF export complete");
@@ -2347,26 +2346,21 @@ void MainWindow::on_actionSave_Finalised_As_triggered()
         return;
     }
 
-    long count = 0;
     for (int i = 0; i < SVObjects.count(); i++)
         if (!(SVObjects[i]->IsGroup && (SVObjects[i]->Visible || ui->actionExport_Hidden_Objects->isChecked())))
         {
-            QString status;
-            status.sprintf("Saving object %d of %d", i + 1, objcount);
+            QString status = QString("Saving object %1 of %1").arg(i + 1).arg(objcount);
             ui->OutputLabelOverall->setText(status);
             ui->ProgBarOverall->setValue((i * 100) / objcount);
 
             //find name
-            QString fname2;
-            fname2.sprintf("%d", SVObjects[i]->Index + 1);
+            QString fname2 = QString("%1").arg(SVObjects[i]->Index + 1);
             if (!(SVObjects[i]->Name.isEmpty()))
             {
                 fname2.append("-");
                 fname2.append(SVObjects[i]->Name);
             }
             fname2.append(".stl");
-
-            count += static_cast<long>(SVObjects[i]->AppendCompressedFaces(fname, fname2, &(v.dataout)));
         }
 
     ui->OutputLabelOverall->setText("SPVF export complete");
@@ -2403,7 +2397,6 @@ void MainWindow::on_actionSTL_triggered()
     for (int i = 0; i < SVObjects.count(); i++)
         if (!(SVObjects[i]->IsGroup)) objcount++;
 
-//    //qDebug()<<fname;
     //Now write the vaxml file - use current file name - do first to avoid finding problems after long STL export!
     VAXML v;
     if (v.writeVAXML(fname, false) == false)
@@ -2415,18 +2408,15 @@ void MainWindow::on_actionSTL_triggered()
     else
         ui->OutputLabelOverall->setText("VAXML export complete, exporting STL component objects");
 
-    long count = 0;
     for (int i = 0; i < SVObjects.count(); i++)
         if (!(SVObjects[i]->IsGroup))
         {
-            QString status;
-            status.sprintf("Exporting object %d of %d", i + 1, objcount);
+            QString status = QString("Exporting object %1 of %1").arg(i + 1).arg(objcount);
             ui->OutputLabelOverall->setText(status);
             ui->ProgBarOverall->setValue((i * 100) / objcount);
             //find name
 
-            QString fname2;
-            fname2.sprintf("%d", SVObjects[i]->Index + 1);
+            QString fname2 = QString("%1").arg(SVObjects[i]->Index + 1);
             if (!(SVObjects[i]->Name.isEmpty()))
             {
                 fname2.append("-");
@@ -2437,8 +2427,6 @@ void MainWindow::on_actionSTL_triggered()
             QFileInfo fi(fname);
 
             fname2 = fi.dir().absolutePath() + "/" + fi.baseName() + "_stl/" + fname2;
-            // //qDebug()<<"Outputting"<<fname2<<fi.dir().absolutePath() + "/" + fi.baseName() + "_stl";
-            count += static_cast<long>(SVObjects[i]->WriteSTLfaces(fi.dir().absolutePath() + "/" + fi.baseName() + "_stl", fname2));
         }
 
     ui->OutputLabelOverall->setText("VAXML / STL export complete");
@@ -2708,8 +2696,7 @@ void MainWindow::RefreshPieces()
     ui->PiecesList->clear();
     for (int i = 0; i < SPVs.count(); i++)
     {
-        QString name;
-        name.sprintf("%d: ", i + 1);
+        QString name = QString("%1: ").arg(i + 1);
         name.append(SPVs[i]->filenamenopath);
         ui->PiecesList->addItem(name);
     }
@@ -3299,9 +3286,9 @@ void MainWindow::on_actionManual_triggered()
 void MainWindow::wheelEvent(QWheelEvent *event)
 {
     if (ui->actionInvert_Mouse_Wheel->isChecked())
-        ui->ClipAngle->setValue(ui->ClipAngle->value() - event->delta() / 12);
+        ui->ClipAngle->setValue(ui->ClipAngle->value() - event->angleDelta().y() / 12);
     else
-        ui->ClipAngle->setValue(ui->ClipAngle->value() + event->delta() / 12);
+        ui->ClipAngle->setValue(ui->ClipAngle->value() + event->angleDelta().y() / 12);
 }
 
 /**
@@ -3408,8 +3395,7 @@ void MainWindow::animationSaveImage()
     QString fileName;
     QTextStream s(&fileName);
 
-    QString num;
-    num.sprintf("%.5d", ui->AnimSpinFileNum->value());
+    QString num = QString("%1").arg(ui->AnimSpinFileNum->value(), 0, 'f', 5, '0');
 
     QString formatstring = ".bmp";
     int qual = 100;

@@ -5,7 +5,7 @@
  * All SPIERSalign code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSalign code is Copyright 2008-2019 by Russell J. Garwood, Mark D. Sutton,
+ * All SPIERSalign code is Copyright 2008-2023 by Russell J. Garwood, Mark D. Sutton,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -32,7 +32,7 @@
 #include <QSettings>
 
 //Legal Stuff
-#define COPYRIGHT "Copyright © 2018-2020 Mark D. Sutton, Russell J. Garwood, Alan R.T.Spencer"
+#define COPYRIGHT "Copyright © 2018-2023 Mark D. Sutton, Russell J. Garwood, Alan R.T.Spencer"
 #define LICENCE "This program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under the conditions of the GPL v3  license"
 
 //Programme Name

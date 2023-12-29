@@ -5,7 +5,7 @@
  * All SPIERSview code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSview code is Copyright 2008-2019 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERSview code is Copyright 2008-2023 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -92,7 +92,7 @@ private:
     QTimer *SpinTimer;
     QTimer *PBtimer;
 
-    QTime *time;
+    QElapsedTimer *time;
     void UnsetAllStereo();
     void DrawChildObjects(QList <bool> selflags, int parent);
     void RefreshOneItem(QTreeWidgetItem *item, int i);
