@@ -1006,10 +1006,8 @@ void CopyingImpl::Apply3DBrush(int button)
                     // get data from GA array
 
                     memcpy(LCE_sample.data(),GA[CurrentSegment]->bits(),fwidth4*fheight);
-
-                    NewLocks = DoMaskLocking();
-
                 }
+                NewLocks = DoMaskLocking();
                 for (int i = 0; i < SegmentCount; i++) if (Segments[i]->Activated) Brush.recalc(LastMouseX, LastMouseY, i, &LCE_sample, &NewLocks);
             }
             break;

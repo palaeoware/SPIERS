@@ -753,7 +753,8 @@ void Brush_class::recalc(int x, int y, int segment, QVector<uchar> *sample, QByt
                         int pos4 = ay * fwidth4 + ax;
                         if (locks->at(pos)==0)
                             data[pos4] = GenPixel(ax, ay, segment, sample, locks);
-
+                        else
+                            qDebug()<<"Locked";
                         dirty[pos] = 1;
                     }
             }

@@ -59,9 +59,12 @@ void myscene::DoMouse(int x, int y, int PressedButton)
         //get the per pixel locks - need to load current masks and locks file first
         LoadMasks(CurrentFile);
         LoadLocks(CurrentFile);
-        gen_locks = DoMaskLocking();
+
         got_LCE_sample=true;
     }
+
+    if (CurrentMode==5) //recalc
+        gen_locks = DoMaskLocking();
 
     if (x != LastMouseX || y != LastMouseY) // an actual move
     {
