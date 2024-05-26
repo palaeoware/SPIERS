@@ -151,7 +151,8 @@ void SPVReader::internalProcessFile(QString filename)
                 buffer[strlen(buffer) - 1] = 0; //lose the newline character
 
             char namebuff[200];
-            strcpy_s(namebuff, buffer);
+            strcpy(namebuff, buffer);
+            //strcpy_s(namebuff, buffer);
 
             if (strcmp("END", buffer) == 0 && filecount == 0) return; //Error - sp2 file does not refer to any spv files
             if (strcmp("END", buffer) != 0)
