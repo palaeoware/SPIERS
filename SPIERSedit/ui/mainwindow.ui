@@ -300,6 +300,7 @@
     <addaction name="actionCurve"/>
     <addaction name="actionLock"/>
     <addaction name="actionMask"/>
+    <addaction name="actionCycle_Bright_Segment_Mask"/>
     <addaction name="separator"/>
     <addaction name="actionToggle_Source"/>
     <addaction name="actionThreshold"/>
@@ -330,7 +331,7 @@
    </widget>
    <widget class="QMenu" name="menuBrush">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="title">
      <string>Brush</string>
@@ -345,6 +346,9 @@
     <addaction name="action30_x_30"/>
     <addaction name="action50_x_50"/>
     <addaction name="action200_x_200"/>
+    <addaction name="separator"/>
+    <addaction name="actionIncrease_Size"/>
+    <addaction name="actionDecrease_Size"/>
     <addaction name="separator"/>
     <addaction name="actionSquare"/>
     <addaction name="action3D_Brush"/>
@@ -4904,6 +4908,30 @@ Interpreted Images:</string>
   <action name="actionCode_on_GitHub">
    <property name="text">
     <string>Code on GitHub</string>
+   </property>
+  </action>
+  <action name="actionCycle_Bright_Segment_Mask">
+   <property name="text">
+    <string>Cycle Bright/Segment/Mask</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+C</string>
+   </property>
+  </action>
+  <action name="actionIncrease_Size">
+   <property name="text">
+    <string>Increase Size</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+=</string>
+   </property>
+  </action>
+  <action name="actionDecrease_Size">
+   <property name="text">
+    <string>Decrease Size</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+-</string>
    </property>
   </action>
  </widget>

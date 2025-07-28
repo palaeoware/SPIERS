@@ -2184,3 +2184,49 @@ void MainWindowImpl::on_actionThreshold_triggered()
 
 
 
+
+void MainWindowImpl::on_actionCycle_Bright_Segment_Mask_triggered()
+{
+    if (actionBright->isChecked())
+    {
+        actionSegment->setChecked(true);
+        CurrentMode = 4;
+        ShowImage(graphicsView);
+        return;
+    }
+    if (actionSegment->isChecked())
+    {
+        actionMask->setChecked(true);
+        CurrentMode = 1;
+        ShowImage(graphicsView);
+        return;
+    }
+
+    if (actionMask->isChecked())
+    {
+        actionBright->setChecked(true);
+        CurrentMode = 0;
+        ShowImage(graphicsView);
+        return;
+    }
+
+}
+
+
+void MainWindowImpl::on_action1_x_1_triggered()
+{
+
+}
+
+
+void MainWindowImpl::on_actionIncrease_Size_triggered()
+{
+    BrushSize->setValue(BrushSize->value()+1);
+}
+
+
+void MainWindowImpl::on_actionDecrease_Size_triggered()
+{
+    BrushSize->setValue(BrushSize->value()-1);
+}
+
