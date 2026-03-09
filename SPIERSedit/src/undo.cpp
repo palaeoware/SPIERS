@@ -53,7 +53,7 @@ UndoDataObject::UndoDataObject(int type, int curve_index = -1)
     if (type >= 0)
     {
         StoredImage = *GA[type];
-        undosize = GA[type]->byteCount();
+        undosize = (int) (GA[type]->sizeInBytes());
         TotalUndoSize += undosize;
     }
 }

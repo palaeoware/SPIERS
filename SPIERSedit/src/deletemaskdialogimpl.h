@@ -30,7 +30,7 @@ class DeleteMaskDialogImpl : public QDialog, public Ui::DeleteMaskDialog
 {
     Q_OBJECT
 public:
-    DeleteMaskDialogImpl(QList <int> MasksToDelete, QWidget *parent = nullptr, Qt::WindowFlags f = nullptr );
+    DeleteMaskDialogImpl(QList <int> MasksToDelete, QWidget *parent = nullptr, Qt::WindowFlags f = {} );
     bool Cancelled;
     int MaskToDeleteIndex;
     QList <int> MasksToDeleteList;

@@ -29,7 +29,7 @@ class resampleImpl : public QDialog, public Ui::resample
 {
     Q_OBJECT
 public:
-    resampleImpl( QWidget *parent = nullptr, Qt::WindowFlags f = nullptr );
+    resampleImpl( QWidget *parent = nullptr, Qt::WindowFlags f = {} );
 private:
     int ClosestTo(QString NewFileString);
 private slots:

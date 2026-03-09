@@ -41,7 +41,7 @@ class findpolynomialImpl : public QDialog, public Ui::findpolynomial
 {
     Q_OBJECT
 public:
-    findpolynomialImpl( QWidget *parent = nullptr, Qt::WindowFlags f = nullptr );
+    findpolynomialImpl( QWidget *parent = nullptr, Qt::WindowFlags f = {} );
     void find();
 protected:
     void closeEvent(QCloseEvent *event);

@@ -38,7 +38,7 @@ mainview::mainview(QObject *parent) : QGraphicsView()
 void mainview::wheelEvent(QWheelEvent *event)
 {
     //event->ignore();
-    AppMainWindow->MouseZoom(event->delta());
+    AppMainWindow->MouseZoom(event->angleDelta().y());
 
 }
 
@@ -52,7 +52,7 @@ bool mainview::eventFilter(QObject *obj, QEvent *event)
 {
     if (event->type() == QEvent::Wheel)
     {
-        AppMainWindow->MouseZoom((static_cast<QWheelEvent *>(event))->delta());
+        AppMainWindow->MouseZoom((static_cast<QWheelEvent *>(event))->angleDelta().y());
         return true; //stop further wheel processing
     }
     else

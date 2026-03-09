@@ -35,7 +35,7 @@ class CopyingImpl : public QDialog, public Ui::Copying
 {
     Q_OBJECT
 public:
-    CopyingImpl( QWidget *parent = nullptr, Qt::WindowFlags f = nullptr );
+    CopyingImpl( QWidget *parent = nullptr, Qt::WindowFlags f = {} );
     void Copy(QDir source, QDir dest);
     void MakeNewSegFiles(int snum);
     void DeleteSegments(QList <int> list);

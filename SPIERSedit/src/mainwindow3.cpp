@@ -242,7 +242,7 @@ void MainWindowImpl::on_actionManual_triggered()
 
 void MainWindowImpl::wheelEvent(QWheelEvent *event)
 {
-    ZoomSlider->setValue(ZoomSlider->value() + event->delta() / 12);
+    ZoomSlider->setValue(ZoomSlider->value() + event->angleDelta().y() / 12);
     event->ignore();
 }
 
@@ -280,7 +280,7 @@ void MainWindowImpl::on_actionExport_Curves_as_CSV_triggered()
                 out << "," << Curves[i]->SplinePoints[j]->X[k];
                 out << "," << Curves[i]->SplinePoints[j]->Y[k];
             }
-            out << endl;
+            out << Qt::endl;
         }
     }
     file.close();
@@ -360,7 +360,7 @@ void MainWindowImpl::on_actionOutput_visible_image_set_triggered()
         QTextStream out(&outstring);
 
         QString formattedi;
-        formattedi.sprintf("%05i", i);
+        formattedi.asprintf("%05i", i);
         out << targetdir << "/" << formattedi << ".png";
         SaveMainImage(outstring);
 

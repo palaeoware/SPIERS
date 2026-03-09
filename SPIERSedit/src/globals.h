@@ -71,7 +71,7 @@ extern int FileCompressionLevel;
 extern QVector<int> SegmentMap;
 extern MainWindowImpl *mainwin;
 extern bool MasksMoveBack, MasksMoveForward;
-extern QMutex mutex;
+extern QRecursiveMutex mutex;
 extern QList<double> Stretches;
 extern QList<double> FullStretches;
 extern bool ShowSlicePosition;

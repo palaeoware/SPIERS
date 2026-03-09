@@ -27,7 +27,7 @@ class ImportDialogImpl : public QDialog, public Ui::ImportDialog
 {
     Q_OBJECT
 public:
-    ImportDialogImpl(QWidget *parent = nullptr, Qt::WindowFlags f = nullptr );
+    ImportDialogImpl(QWidget *parent = nullptr, Qt::WindowFlags f = {} );
     QString fname;
     QString notes;
     bool Cancelled;

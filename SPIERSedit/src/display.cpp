@@ -25,6 +25,7 @@
 #include <QImage>
 #include <QColor>
 #include <QTime>
+#include <QTransform>
 #include <math.h>
 #include "curves.h"
 #include "myscene.h"
@@ -666,7 +667,7 @@ void ShowImage(QGraphicsView *gv)
 //        qDebug()<<"Here in Graphics View";
 //        qDebug()<<GA.count();
 //        for (int i=0; i<GA.count(); i++) qDebug()<<GA[i];
-    QMatrix identity; //will default to this
+    QTransform identity; //will default to this
     if (Active == false) return;
     QImage myimage(cwidth, cheight, QImage::Format_RGB32);
 
@@ -677,7 +678,7 @@ void ShowImage(QGraphicsView *gv)
     gv->setSceneRect(myimage.rect()); //keep scene size to this image - in case of curve markers for instance dragging it out
     if (LastZoom != CurrentZoom)
     {
-        gv->setMatrix(identity);
+        gv->setTransform(identity);
         gv->scale(CurrentZoom, CurrentZoom);
         LastZoom = CurrentZoom;
     }

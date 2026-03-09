@@ -19,6 +19,7 @@
 #include "dialogaboutimpl.h"
 #include "importdialogimpl.h"
 #include "curves.h"
+#include "qactiongroup.h"
 #include "resampleimpl.h"
 #include "mainwindowimpl.h"
 #include "copyingimpl.h"
@@ -76,59 +77,59 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     //For commands which rely on F keys that are non functional on macOS define backup shortcuts
     QList<QKeySequence> shortcuts;
     shortcuts.append(QKeySequence(Qt::Key_F1));
-    shortcuts.append(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_1));
+    shortcuts.append(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_1));
     actionMain_Toolbox->setShortcuts(shortcuts);
     QObject::connect(actionMain_Toolbox, SIGNAL(triggered()), this, SLOT(Menu_Window_MainToolbox()));
 
     shortcuts.clear();
     shortcuts.append(QKeySequence(Qt::Key_F2));
-    shortcuts.append(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_2));
+    shortcuts.append(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_2));
     actionSlice_Selector->setShortcuts(shortcuts);
     QObject::connect(actionSlice_Selector, SIGNAL(triggered()), this, SLOT(Menu_Window_SliceSelector()));
 
     shortcuts.clear();
     shortcuts.append(QKeySequence(Qt::Key_F3));
-    shortcuts.append(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_3));
+    shortcuts.append(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_3));
     actionGeneration->setShortcuts(shortcuts);
     QObject::connect(actionGeneration, SIGNAL(triggered()), this, SLOT(Menu_Window_Generate()));
 
     shortcuts.clear();
     shortcuts.append(QKeySequence(Qt::Key_F4));
-    shortcuts.append(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_4));
+    shortcuts.append(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_4));
     actionMasks->setShortcuts(shortcuts);
     QObject::connect(actionMasks, SIGNAL(triggered()), this, SLOT(Menu_Window_Masks()));
 
     shortcuts.clear();
     shortcuts.append(QKeySequence(Qt::Key_F5));
-    shortcuts.append(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_5));
+    shortcuts.append(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_5));
     actionSegments->setShortcuts(shortcuts);
     QObject::connect(actionSegments, SIGNAL(triggered()), this, SLOT(Menu_Window_Segments()));
 
     shortcuts.clear();
     shortcuts.append(QKeySequence(Qt::Key_F6));
-    shortcuts.append(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_6));
+    shortcuts.append(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_6));
     actionCurves->setShortcuts(shortcuts);
     QObject::connect(actionCurves, SIGNAL(triggered()), this, SLOT(Menu_Window_Curves()));
 
     shortcuts.clear();
     shortcuts.append(QKeySequence(Qt::Key_F7));
-    shortcuts.append(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_7));
+    shortcuts.append(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_7));
     actionOutput->setShortcuts(shortcuts);
     QObject::connect(actionOutput, SIGNAL(triggered()), this, SLOT(Menu_Window_Output()));
 
     shortcuts.clear();
     shortcuts.append(QKeySequence(Qt::Key_F8));
-    shortcuts.append(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_8));
+    shortcuts.append(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_8));
     actionHistorgram->setShortcuts(shortcuts);
 
     shortcuts.clear();
     shortcuts.append(QKeySequence(Qt::Key_F9));
-    shortcuts.append(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_9));
+    shortcuts.append(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_9));
     actionInfo->setShortcuts(shortcuts);
 
     shortcuts.clear();
     shortcuts.append(QKeySequence(Qt::Key_F12));
-    shortcuts.append(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_R));
+    shortcuts.append(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_R));
     actionView_in_SPIERSview->setShortcuts(shortcuts);
 
     QObject::connect(actionImport, SIGNAL(triggered()), this, SLOT(Menu_File_Import())); //file/open
@@ -951,22 +952,23 @@ void MainWindowImpl::Menu_Window_Generate()
 
 void MainWindowImpl::FileOpen()
 {
+    qDebug()<<"Try mutex";
     QMutexLocker locker(&mutex);
-
+    qDebug()<<"Done mutex";
     QString file = QFileDialog::getOpenFileName(
                        this,
                        "Select SPIERSedit settings file",
                        QDir::homePath(),
                        "SPIERSedit files (*.spe)");
 
-
+    qDebug()<<"H1";
     //Now we do a whole load of initialisation!
     if (file.isNull()) return; //if nothing there, cancel
     if (Active) WriteSettings();
     FullSettingsFileName = file;
-
+    qDebug()<<"H2";
     ReadSettings();
-
+    qDebug()<<"H3";
     //Now do set up - same as for
     if (Active)
     {
@@ -974,11 +976,12 @@ void MainWindowImpl::FileOpen()
         Brush.Brush_Flag_Restart();
         ClearImages();
     }
-
+    qDebug()<<"H4";
     SetUpGUIFromSettings();
     RecentFile(file);
-
+    qDebug()<<"H5";
     Start();
+    qDebug()<<"H6";
 }
 
 void MainWindowImpl::openRecentFile()
@@ -1359,7 +1362,7 @@ void MainWindowImpl::Menu_File_New()  //create from scratch
     QStringList files = QFileDialog::getOpenFileNames(
                             nullptr,
                             "Select source images for dataset",
-                            QString(QStandardPaths::DesktopLocation),
+                            QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),
                             "Images (*.png *.jpg *.jpeg *.bmp *.tif *.tiff)");
 
     // If nothing there, cancel

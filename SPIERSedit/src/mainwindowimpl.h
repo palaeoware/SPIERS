@@ -29,6 +29,7 @@
 #include "../ui/ui_mainwindow.h"
 #include "beamhardeningcentericon.h"
 #include "beamhardening.h"
+#include "qelapsedtimer.h"
 
 /**
  * @brief The MainWindowImpl class
@@ -37,7 +38,7 @@ class MainWindowImpl : public QMainWindow, public Ui::MainWindow
 {
     Q_OBJECT
 public:
-    MainWindowImpl( QWidget *parent = nullptr, Qt::WindowFlags f = nullptr );
+    MainWindowImpl( QWidget *parent = nullptr, Qt::WindowFlags f = {} );
     ~MainWindowImpl();
     QTimer *timer2;
     void RefreshOneSegmentItem(QTreeWidgetItem *item, int i);
@@ -318,7 +319,7 @@ private:
 
     bool ExportingImages;
 
-    QTime DoubleClickTimer;
+    QElapsedTimer DoubleClickTimer;
 
     BeamHardeningCenterIcon *centerIcon;
     BeamHardening *bh;

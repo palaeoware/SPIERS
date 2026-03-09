@@ -27,7 +27,7 @@ class moreimpl : public QDialog, public Ui::Dialog
 {
     Q_OBJECT
 public:
-    moreimpl( QWidget *parent = nullptr, Qt::WindowFlags f = nullptr );
+    moreimpl( QWidget *parent = nullptr, Qt::WindowFlags f = {} );
     QString fname;
     bool Cancelled;
 private slots:

@@ -28,7 +28,7 @@ class ContrastImpl : public QDialog, public Ui::ContrastDialog
 {
     Q_OBJECT
 public:
-    ContrastImpl( int MaskNo, QWidget *parent = nullptr, Qt::WindowFlags f = nullptr );
+    ContrastImpl( int MaskNo, QWidget *parent = nullptr, Qt::WindowFlags f = {} );
     bool Cancelled;
     int MaskNumber;
 private slots:

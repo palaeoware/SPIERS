@@ -675,7 +675,7 @@ void CopyingImpl::ExportSPV(int flag)  //0 for export, 1 for export and launch, 
         QString s;
         if (OutputObjects[translationtable[i]]->Key != 0)
         {
-            s.append(static_cast<uchar>(OutputObjects[translationtable[i]]->Key));
+            s.append(QChar(static_cast<uchar>(OutputObjects[translationtable[i]]->Key)));
             s += " - ";
         }
         s += OutputObjects[translationtable[i]]->Name;
@@ -1344,7 +1344,8 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
         QString s;
         if (OutputObjects[translationtable[i]]->Key != 0)
         {
-            s.append(static_cast<uchar>(OutputObjects[translationtable[i]]->Key));
+            s.append(QChar(static_cast<uchar>(OutputObjects[translationtable[i]]->Key)));
+
             s += " - ";
         }
         s += OutputObjects[translationtable[i]]->Name;

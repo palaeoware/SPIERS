@@ -29,7 +29,7 @@ class slicespacingdialogImpl : public QDialog, public Ui::slicespacingdialog
 {
     Q_OBJECT
 public:
-    slicespacingdialogImpl( QWidget *parent = nullptr, Qt::WindowFlags f = nullptr );
+    slicespacingdialogImpl( QWidget *parent = nullptr, Qt::WindowFlags f = {} );
     double relative;
 private slots:
     void on_Relative_valueChanged(double );

@@ -121,7 +121,7 @@ void MainWindowImpl::RefreshOneMaskItem(QTreeWidgetItem *item, int i) //i is ind
 void MainWindowImpl::RefreshMasks()
 {
     bodgeflag = true;
-    QTime t;
+    QElapsedTimer t;
     t.start();
 
     QList <bool> selflags;
@@ -355,7 +355,7 @@ void MainWindowImpl::RefreshOneOOItem(QTreeWidgetItem *item, int i) //i is index
 
     OOTreeWidget->setItemWidget (item, 1, test);
 
-    QString KeySt(OutputObjects[i]->Key);
+    QString KeySt(QChar(OutputObjects[i]->Key));
     if (OutputObjects[i]->Key == 0) KeySt = "[-]";
 
     QString ResampleSt;
@@ -1034,11 +1034,11 @@ void MainWindowImpl::SetUpGUIFromSettings()
         if ((i + 1) % 10 == 0) item->setFont(f); // font.setBold(true);
         if ((i + 1) % 50 == 0)
         {
-            item->setTextColor(QColor(100, 149, 237));
+            item->setForeground(QColor(100, 149, 237));
         }
         if ((i + 1) % 100 == 0)
         {
-            item->setTextColor(QColor("blue"));
+            item->setForeground(QColor("blue"));
         }
 
         SliceSelectorList->addItem(item);

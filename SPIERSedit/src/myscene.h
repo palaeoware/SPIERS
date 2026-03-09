@@ -18,6 +18,7 @@
 #ifndef __MYSCENE_H__
 #define __MYSCENE_H__
 
+#include "qelapsedtimer.h"
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
 #include <QString>
@@ -39,7 +40,7 @@ private:
     void DoAction(int x, int y);
     void MouseUp();
     void DoMouse(int x, int y, int PressedButton);
-    QTime mousetimer;
+    QElapsedTimer mousetimer;
     int CurrentClosestNode;
     bool mouse_down;
     bool got_LCE_sample;

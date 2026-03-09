@@ -29,7 +29,7 @@ class SettingsImpl : public QDialog, public Ui::Settings
 {
     Q_OBJECT
 public:
-    SettingsImpl( QWidget *parent = nullptr, Qt::WindowFlags f = nullptr );
+    SettingsImpl( QWidget *parent = nullptr, Qt::WindowFlags f = {} );
 private slots:
     void on_RecompressSourceFiles_pressed();
     void on_RecompressFiles_pressed();

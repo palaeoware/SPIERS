@@ -30,7 +30,7 @@ class ResizeDialogImpl : public QDialog, public Ui::ResizeDialog
 {
     Q_OBJECT
 public:
-    ResizeDialogImpl( QWidget *parent = nullptr, Qt::WindowFlags f = nullptr );
+    ResizeDialogImpl( QWidget *parent = nullptr, Qt::WindowFlags f = {} );
     bool Cancelled;
 private slots:
     void on_buttonBox_accepted();

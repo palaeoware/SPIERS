@@ -30,7 +30,7 @@ class ExportDXF : public QDialog, public Ui::Copying
 {
     Q_OBJECT
 public:
-    ExportDXF( MainWindowImpl *mwp, QWidget *parent = nullptr, Qt::WindowFlags f = nullptr );
+    ExportDXF( MainWindowImpl *mwp, QWidget *parent = nullptr, Qt::WindowFlags f = {} );
     MainWindowImpl *mw;
 };
 

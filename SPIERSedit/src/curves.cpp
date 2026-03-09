@@ -330,7 +330,7 @@ void ScanlineFill(int c, int mycol, QImage *Thresh, class PointList *LPointList)
             //there are intersections!
             //sort them into order - this is insertion sort algorithm
 
-            qSort(intersections.begin(), intersections.end());
+            std::sort(intersections.begin(), intersections.end());
 
             //and make sure they can't go off the left!
             //for (int i=0; i<intersections.count(); i++) if (intersections[i]<0) intersections[i]=0;
@@ -436,7 +436,7 @@ void ScanlineFillOutput(int c, uchar *data, class PointList *LPointList, QList <
             //there are intersections!
             //sort them into order - this is insertion sort algorithm
 
-            qSort(intersections.begin(), intersections.end());
+            std::sort(intersections.begin(), intersections.end());
 
             //and make sure they can't go off the left!
             //for (int i=0; i<intersections.count(); i++) if (intersections[i]<0) intersections[i]=0;

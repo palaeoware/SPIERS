@@ -72,7 +72,7 @@ void Cache::CalcMySize()
     int csize, cmsize;
     Q_UNUSED(csize);
     Q_UNUSED(cmsize);
-    if (ColData) Size += ColData->byteCount();
+    if (ColData) Size += (int)ColData->sizeInBytes();
     if (ColDataCompressed) Size += ColDataCompressed->size();
     csize = Size;
     if (Locks) Size += Locks->size();
@@ -81,7 +81,7 @@ void Cache::CalcMySize()
     for (int i = 0; i < GreyData.count(); i++)
     {
         if (GreyData[i]->CompressedData) Size += (GreyData[i]->CompressedData->size());
-        if (GreyData[i]->Data) Size += (GreyData[i]->Data->byteCount());
+        if (GreyData[i]->Data) Size += (int)(GreyData[i]->Data->sizeInBytes());
     }
 
 
@@ -362,7 +362,7 @@ bool SimpleLoadGreyData(int fnum, int seg, QImage *greydata)
     QString actfn = Fname.mid(lastsep + 1, lastdot - lastsep - 1);
     QString temp = "/" + SettingsFileName + "/" + "s";
     QString t2;
-    t2.sprintf("%d_", seg + 1);
+    t2.asprintf("%d_", seg + 1);
     temp.append(t2);
     temp.append(actfn);
     sfname.append(temp);
@@ -436,7 +436,7 @@ void LoadGreyData(int fnum, int seg)
     QString actfn = Fname.mid(lastsep + 1, lastdot - lastsep - 1);
     QString temp = "/" + SettingsFileName + "/" + "s";
     QString t2;
-    t2.sprintf("%d_", seg + 1);
+    t2.asprintf("%d_", seg + 1);
     temp.append(t2);
     temp.append(actfn);
     sfname.append(temp);
@@ -670,7 +670,7 @@ void SimpleSaveGreyData(int fnum, int seg, QImage greydata)
     QString actfn = Fname.mid(lastsep + 1, lastdot - lastsep - 1);
     QString temp = "/" + SettingsFileName + "/" + "s";
     QString t2;
-    t2.sprintf("%d_", seg + 1);
+    t2.asprintf("%d_", seg + 1);
     temp.append(t2);
     temp.append(actfn);
     sfname.append(temp);
@@ -705,7 +705,7 @@ void SaveGreyData(int fnum, int seg)
     QString actfn = Fname.mid(lastsep + 1, lastdot - lastsep - 1);
     QString temp = "/" + SettingsFileName + "/" + "s";
     QString t2;
-    t2.sprintf("%d_", seg + 1);
+    t2.asprintf("%d_", seg + 1);
     temp.append(t2);
     temp.append(actfn);
     sfname.append(temp);
@@ -1425,7 +1425,7 @@ QString GetString(QDataStream *in)
     {
         *in >> a;
         Counter++;
-        text.append(a);
+        text.append(QChar(a));
     }
     while (a != 0);
     *in >> a;
@@ -1503,7 +1503,7 @@ void GetSettingsMinus6(QDataStream *in)
     Segments.clear();
     for (n = 0; n < SegmentCount; n++)
     {
-        sstring.sprintf("Segment %d", n + 1);
+        sstring.asprintf("Segment %d", n + 1);
         Segments.append(new Segment(sstring));
     }
 
@@ -1632,7 +1632,7 @@ void GetSettingsMinus6(QDataStream *in)
     MasksSettings.clear();
     for (n = 0; n <= MaxUsedMask; n++)
     {
-        sstring.sprintf("Mask %d", n + 1);
+        sstring.asprintf("Mask %d", n + 1);
         MasksSettings.append(new Mask(sstring));
         MasksSettings[n]->Name = MaskNames[n];
         for (m = 0; m < 3; m++) MasksSettings[n]->ForeColour[m] = MaskForeColours[n][m]; //r,g,b
@@ -1706,7 +1706,7 @@ void GetSettingsMinus6(QDataStream *in)
     FullFiles = Files; //need this for appending a curve.... might do some harm later, so will clear it
     for (n = 0; n < CurveCount; n++)
     {
-        sstring.sprintf("Curve %d", n + 1);
+        sstring.asprintf("Curve %d", n + 1);
         Curves.append(new Curve(sstring));
     }
 
@@ -1896,7 +1896,7 @@ void GetSettingsMinus6(QDataStream *in)
     if (Errors > 0)
     {
         QString Mess;
-        Mess.sprintf("Warning - %d read errors encountered in settings file", Errors);
+        Mess.asprintf("Warning - %d read errors encountered in settings file", Errors);
         Message(Mess);
         DumpSettings();
     }
@@ -1960,7 +1960,7 @@ bool GetSettings(QDir srcdir)
         break;
     default:
         QString temp;
-        temp.sprintf("Settings file is version %d - too recent for this version of SPIERSedit, sorry!", tempint);
+        temp.asprintf("Settings file is version %d - too recent for this version of SPIERSedit, sorry!", tempint);
         Error(temp);
     }
     file.close();

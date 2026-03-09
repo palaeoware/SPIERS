@@ -29,7 +29,7 @@ class DistributeDialogImpl : public QDialog, public Ui::DistributeDialog
 {
     Q_OBJECT
 public:
-    DistributeDialogImpl( QWidget *parent = nullptr, Qt::WindowFlags f = nullptr );
+    DistributeDialogImpl( QWidget *parent = nullptr, Qt::WindowFlags f = {} );
 private slots:
     void on_SpinBoxFrom_valueChanged(int );
     void on_SpinBoxTo_valueChanged(int );

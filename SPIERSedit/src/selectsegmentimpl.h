@@ -26,7 +26,7 @@ class SelectSegmentImpl : public QDialog, public Ui::SelectSegment
 {
     Q_OBJECT
 public:
-    SelectSegmentImpl(int seg,  QWidget *parent = nullptr, Qt::WindowFlags f = nullptr );
+    SelectSegmentImpl(int seg,  QWidget *parent = nullptr, Qt::WindowFlags f = {} );
     bool Cancelled;
     int RetValue;
 

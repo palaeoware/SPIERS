@@ -20,7 +20,7 @@
 #include <math.h>
 #include <QSettings>
 #include "myrangescene.h"
-
+#include <QRandomGenerator>
 bool ThreeDmode;
 int BrushY, BrushZ;
 double yaw, pitch, roll;
@@ -43,7 +43,7 @@ bool RenderCache;
 bool NoUpdateSelectionFlag;
 bool CurveShapeLocked;
 bool GreyImage;
-QMutex mutex(QMutex::Recursive);
+QRecursiveMutex mutex;
 QStringList Files;
 QStringList FullFiles;
 int FileCount, CurrentFile;
@@ -124,11 +124,11 @@ Mask::Mask(QString name)
     quint64 n, m;
     Name = name;
 
-    n = static_cast<quint64>(50. * static_cast<double>(qrand()));
+    n = static_cast<quint64>(50. * static_cast<double>(QRandomGenerator::global()->generate()));
 
     ForeColour[0] = 128 + static_cast<int>( static_cast<double>(126) * sin(static_cast<double>(n)));
     ForeColour[1] = 128 + static_cast<int>( static_cast<double>(126) * cos(static_cast<double>(n)));
-    ForeColour[2] = 128 + static_cast<int>( static_cast<double>(127) * (qrand() / RAND_MAX));
+    ForeColour[2] = 128 + static_cast<int>( static_cast<double>(127) * (QRandomGenerator::global()->generate() / RAND_MAX));
 
     Contrast = 2;
 
@@ -145,10 +145,10 @@ Segment::Segment(QString name)
 //Constructor for a segment - set defaults
 {
     Name = name;
-    quint64 n = static_cast<quint64>(50. * static_cast<double>(qrand()));
+    quint64 n = static_cast<quint64>(50. * static_cast<double>(QRandomGenerator::global()->generate()));
     Colour[0] = 128 + int( static_cast<double>(126) * sin(static_cast<double>(n)));
     Colour[1] = 128 + int( static_cast<double>(126) * cos(static_cast<double>(n)));
-    Colour[2] = 128 + int( static_cast<double>(127) * (qrand() / RAND_MAX));
+    Colour[2] = 128 + int( static_cast<double>(127) * (QRandomGenerator::global()->generate() / RAND_MAX));
     LinPercent[0] = 100;
     LinPercent[1] = 100;
     LinPercent[2] = 100;
@@ -209,10 +209,10 @@ Segment::~Segment()
 Curve::Curve(QString name)
 {
     Name = name;
-    quint64 n = static_cast<quint64>(50. * static_cast<double>(qrand()));
+    quint64 n = static_cast<quint64>(50. * static_cast<double>(QRandomGenerator::global()->generate()));
     Colour[0] = 128 + int( static_cast<double>(126) * sin(static_cast<double>(n)));
     Colour[1] = 128 + int( static_cast<double>(126) * cos(static_cast<double>(n)));
-    Colour[2] = 128 + int( static_cast<double>(127) * (qrand() / RAND_MAX));
+    Colour[2] = 128 + int( static_cast<double>(127) * (QRandomGenerator::global()->generate() / RAND_MAX));
     Closed = false;
     Filled = false;
     Segment = 0;
@@ -302,7 +302,7 @@ void Message(QString message)
 void Message1(char *message, int x)
 {
     QString temp;
-    temp.sprintf(message, x);
+    temp.asprintf(message, x);
     QMessageBox::information(nullptr, "Message", message, QMessageBox::Ok);
 }
 

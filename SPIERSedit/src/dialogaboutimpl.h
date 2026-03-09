@@ -29,7 +29,7 @@ class DialogAboutImpl : public QDialog, public Ui::About
     Q_OBJECT
 
 public:
-    DialogAboutImpl( QWidget *parent = nullptr, Qt::WindowFlags f = nullptr );
+    DialogAboutImpl( QWidget *parent = nullptr, Qt::WindowFlags f = {} );
 
 private:
     QString returnLicense();
