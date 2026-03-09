@@ -26,10 +26,12 @@
 #include <QStyle>
 #include <QScreen>
 #include <QGuiApplication>
+#include <QDebug>
 
 #include "mainwindowimpl.h"
 #include "display.h"
 #include "globals.h"
+#include "opencvinterface.h"
 #include "../../SPIERScommon/src/darkstyletheme.h"
 #include "../../SPIERScommon/src/netmodule.h"
 
@@ -87,6 +89,15 @@ void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const Q
 #ifndef __APPLE__
 int main(int argc, char **argv)
 {
+
+    OpenCVInterface::TestOpenCV();
+
+    qDebug()<<"OpenCV enabled? "<<OpenCVInterface::enabled;
+    if (OpenCVInterface::enabled)
+    {
+        openCV = new OpenCVInterface();
+    }
+
     //This has the app draw at HiDPI scaling on HiDPI displays, usually two pixels for every one logical pixel
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 

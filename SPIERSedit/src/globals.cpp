@@ -111,6 +111,7 @@ int GradientMinDistValue;
 int GradientMaxDist;
 int GradientMaxDistValue;
 
+OpenCVInterface *openCV;
 
 QString SettingsFileName;
 QString FileNotes;
@@ -301,8 +302,7 @@ void Message(QString message)
 
 void Message1(char *message, int x)
 {
-    QString temp;
-    temp.asprintf(message, x);
+    QString temp = QString::asprintf(message, x);
     QMessageBox::information(nullptr, "Message", message, QMessageBox::Ok);
 }
 

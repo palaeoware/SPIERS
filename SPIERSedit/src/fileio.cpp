@@ -137,6 +137,7 @@ int CacheIndex(int fnum)
     {
         if (Caches[i]->Filenum == fnum)
         {
+            //qDebug()<<"Found entry "<<fnum<<" i is "<<i<< " lastused "<<Caches[i]->LastUsed;
             Caches[i]->LastUsed = QDateTime::currentDateTime();
             return i;
         }
@@ -318,6 +319,7 @@ past:  //so can get here with a valid cache entry but no colour file
         if (!RenderCache)
         {
             //Store a copy in cache
+
             int newcache = GetCacheIndex(fnum); //gets index (may be new) for this to be cached in
             //store data
             if (CacheCompressionLevel == 0) //no compression -stash data
@@ -361,8 +363,7 @@ bool SimpleLoadGreyData(int fnum, int seg, QImage *greydata)
     QString sfname = Fname.left(lastsep);
     QString actfn = Fname.mid(lastsep + 1, lastdot - lastsep - 1);
     QString temp = "/" + SettingsFileName + "/" + "s";
-    QString t2;
-    t2.asprintf("%d_", seg + 1);
+    QString t2= QString::asprintf("%d_", seg + 1);
     temp.append(t2);
     temp.append(actfn);
     sfname.append(temp);
@@ -384,8 +385,6 @@ bool SimpleLoadGreyData(int fnum, int seg, QImage *greydata)
 void LoadGreyData(int fnum, int seg)
 //Get info from segment file
 {
-    //qDebug()<<"In LGD, file"<<fnum<<"seg"<<seg<<"GA count"<<GA.count();
-
     while (GA.count() <= seg) GA.append(static_cast<QImage *>(nullptr)); //put in a blank if we don't have enough!
     //qDebug()<<"In LGD, file"<<fnum<<"seg"<<seg<<"GA count"<<GA.count();
     //check cache
@@ -394,7 +393,7 @@ void LoadGreyData(int fnum, int seg)
 
     if (i >= 0)
     {
-        //qDebug()<<"Using cache copy";
+        //qDebug()<<"Trying cache copy";
         //Use cache copy
         if (CacheCompressionLevel > 0)
         {
@@ -423,8 +422,10 @@ void LoadGreyData(int fnum, int seg)
 
                 return;
             }
+
         }
-        //qDebug()<<"Shouldn't see this"; Error("Cache error");
+        //qDebug()<<"Not cached";
+        //Error("Cache error");
     }
 
     //qDebug()<<"Past cache";
@@ -435,8 +436,8 @@ void LoadGreyData(int fnum, int seg)
     QString sfname = Fname.left(lastsep);
     QString actfn = Fname.mid(lastsep + 1, lastdot - lastsep - 1);
     QString temp = "/" + SettingsFileName + "/" + "s";
-    QString t2;
-    t2.asprintf("%d_", seg + 1);
+    QString t2 = QString::asprintf("%d_", seg + 1);
+
     temp.append(t2);
     temp.append(actfn);
     sfname.append(temp);
@@ -470,7 +471,7 @@ void LoadGreyData(int fnum, int seg)
 
         bool r = GA[seg]->load(sfname);
 
-//                qDebug()<<"Loaded "<<sfname<<"- success is "<<r;
+        //qDebug()<<"Loaded "<<sfname<<"- success is "<<r;
         //if it fails - just try again!
         while (r == false || GA[seg]->isNull())
         {
@@ -492,7 +493,7 @@ void LoadGreyData(int fnum, int seg)
         GA[seg]->setColorTable(clut);
     }
 
-
+    //qDebug()<<"GCI2";
     int newcache = GetCacheIndex(fnum); //gets index (may be new) for this to be cached in
     //add new entries for segments
 
@@ -669,8 +670,7 @@ void SimpleSaveGreyData(int fnum, int seg, QImage greydata)
     QString sfname = Fname.left(lastsep);
     QString actfn = Fname.mid(lastsep + 1, lastdot - lastsep - 1);
     QString temp = "/" + SettingsFileName + "/" + "s";
-    QString t2;
-    t2.asprintf("%d_", seg + 1);
+    QString t2= QString::asprintf("%d_", seg + 1);
     temp.append(t2);
     temp.append(actfn);
     sfname.append(temp);
@@ -704,8 +704,7 @@ void SaveGreyData(int fnum, int seg)
     QString sfname = Fname.left(lastsep);
     QString actfn = Fname.mid(lastsep + 1, lastdot - lastsep - 1);
     QString temp = "/" + SettingsFileName + "/" + "s";
-    QString t2;
-    t2.asprintf("%d_", seg + 1);
+    QString t2= QString::asprintf("%d_", seg + 1);
     temp.append(t2);
     temp.append(actfn);
     sfname.append(temp);
@@ -726,6 +725,7 @@ void SaveGreyData(int fnum, int seg)
     }
 
     //and insert into cache
+                //qDebug()<<"GCI3";
     int newcache = GetCacheIndex(fnum); //gets index (may be new) for this to be cached in
 
     //Caching
@@ -819,6 +819,7 @@ past:  //so can get here with a valid cache entry but no grey file
         }
 
         //Store a copy in cache
+                    //qDebug()<<"GCI4";
         int newcache = GetCacheIndex(fnum); //gets index (may be new) for this to be cached in
         if (newcache != -1) if (Caches[newcache]->Masks != nullptr) delete  Caches[newcache]->Masks; //delete any old one
 
@@ -880,6 +881,7 @@ void SaveMasks(int fnum)
     else file.write(Masks.data(), static_cast<qint64>(Masks.size()));
 
     //and insert into cache
+    //qDebug()<<"GCI5";
     int newcache = GetCacheIndex(fnum); //gets index (may be new) for this to be cached in
     if (newcache != -1) if (Caches[newcache]->Masks != nullptr) delete  Caches[newcache]->Masks; //delete any old one
 
@@ -1101,6 +1103,7 @@ past:  //so can get here with a valid cache entry but no grey file
         {
             //qDebug()<<"H3-storing";
             //Store a copy in cache
+            //qDebug()<<"GCI6";
             int newcache = GetCacheIndex(fnum); //gets index (may be new) for this to be cached in
             if (newcache != -1) if (Caches[newcache]->Locks != nullptr) delete  Caches[newcache]->Locks; //delete any old one
 
@@ -1176,6 +1179,7 @@ void SaveLocks(int fnum)
     if (!RenderCache)
     {
         //Store a copy in cache
+        //qDebug()<<"GCI7";
         int newcache = GetCacheIndex(fnum); //gets index (may be new) for this to be cached in
         if (newcache != -1) if (Caches[newcache]->Locks != nullptr) delete  Caches[newcache]->Locks; //delete any old one
         //OK, work out what to do with compression
@@ -1239,7 +1243,7 @@ void ApplyDefaultSettings()
     GradientMinDistValue=0;
     GradientMaxDist=100;
     GradientMaxDistValue=10;
-    qDebug()<<"Done defaults";
+    //qDebug()<<"Done defaults";
     previewGradient = false;
     CurrentFile = 0;
     CurrentZoom = 1;
@@ -1335,7 +1339,7 @@ int GetShort(QDataStream *in)
     Counter += 2;
     if (in->status())
     {
-        qDebug() << "getshort" << in->status();
+        //qDebug() << "getshort" << in->status();
         Errors++;
     }
     return static_cast<int>(val);
@@ -1348,7 +1352,7 @@ int GetInt(QDataStream *in)
     Counter += 4;
     if (in->status())
     {
-        qDebug() << "getint" << in->status();
+        //qDebug() << "getint" << in->status();
         Errors++;
     }
     return val;
@@ -1361,7 +1365,7 @@ int GetBool(QDataStream *in)
     Counter += 2;
     if (in->status())
     {
-        qDebug() << "getbool" << in->status();
+        //qDebug() << "getbool" << in->status();
         Errors++;
     }
     if (val < 0) return true;
@@ -1382,7 +1386,7 @@ int GetVariantInt(QDataStream *in)
         test = GetShort(in);
         if (in->status())
         {
-            qDebug() << "getvariantint" << in->status();
+            //qDebug() << "getvariantint" << in->status();
             Errors++;
         };
         return test;
@@ -1396,7 +1400,7 @@ double GetDouble(QDataStream *in)
     Counter += 8;
     if (in->status())
     {
-        qDebug() << "getdouble" << in->status();
+        //qDebug() << "getdouble" << in->status();
         Errors++;
     };
     return test;
@@ -1408,7 +1412,7 @@ void GetBytes(QDataStream *in, char *ptr, int bytes)
     Counter += bytes;
     if (in->status())
     {
-        qDebug() << "getbytes" << in->status();
+        //qDebug() << "getbytes" << in->status();
         Errors++;
     };
     return;
@@ -1444,7 +1448,7 @@ QString GetString(QDataStream *in)
 
     if (in->status())
     {
-        qDebug() << "getstring" << in->status();
+        //qDebug() << "getstring" << in->status();
         Errors++;
     };
     return text;
@@ -1492,7 +1496,7 @@ void GetSettingsMinus6(QDataStream *in)
     QString stemp;
     int itemp;
     double dtemp;
-    QString sstring;
+
     Errors = 0;
     BrightUp = GetShort(in);
     BrightDown = GetShort(in);
@@ -1503,8 +1507,7 @@ void GetSettingsMinus6(QDataStream *in)
     Segments.clear();
     for (n = 0; n < SegmentCount; n++)
     {
-        sstring.asprintf("Segment %d", n + 1);
-        Segments.append(new Segment(sstring));
+        Segments.append(new Segment(QString::asprintf("Segment %d", n + 1)));
     }
 
 
@@ -1632,8 +1635,7 @@ void GetSettingsMinus6(QDataStream *in)
     MasksSettings.clear();
     for (n = 0; n <= MaxUsedMask; n++)
     {
-        sstring.asprintf("Mask %d", n + 1);
-        MasksSettings.append(new Mask(sstring));
+        MasksSettings.append(new Mask(QString::asprintf("Mask %d", n + 1)));
         MasksSettings[n]->Name = MaskNames[n];
         for (m = 0; m < 3; m++) MasksSettings[n]->ForeColour[m] = MaskForeColours[n][m]; //r,g,b
         for (m = 0; m < 3; m++) MasksSettings[n]->BackColour[m] = MaskBackColours[n][m]; //r,g,b
@@ -1706,8 +1708,7 @@ void GetSettingsMinus6(QDataStream *in)
     FullFiles = Files; //need this for appending a curve.... might do some harm later, so will clear it
     for (n = 0; n < CurveCount; n++)
     {
-        sstring.asprintf("Curve %d", n + 1);
-        Curves.append(new Curve(sstring));
+        Curves.append(new Curve(QString::asprintf("Curve %d", n + 1)));
     }
 
     //a dummy - don't ask why
@@ -1895,8 +1896,7 @@ void GetSettingsMinus6(QDataStream *in)
 
     if (Errors > 0)
     {
-        QString Mess;
-        Mess.asprintf("Warning - %d read errors encountered in settings file", Errors);
+        QString Mess = QString::asprintf("Warning - %d read errors encountered in settings file", Errors);
         Message(Mess);
         DumpSettings();
     }
@@ -1959,8 +1959,7 @@ bool GetSettings(QDir srcdir)
         GetSettingsMinus6(&in);
         break;
     default:
-        QString temp;
-        temp.asprintf("Settings file is version %d - too recent for this version of SPIERSedit, sorry!", tempint);
+        QString temp = QString::asprintf("Settings file is version %d - too recent for this version of SPIERSedit, sorry!", tempint);
         Error(temp);
     }
     file.close();
@@ -2079,7 +2078,7 @@ void WriteSettings()
     //Do all the simple stuff first
     out << FileNotes;
 
-    out << FullFiles.count();
+    out << (int)FullFiles.count();
 
     out << CurrentFile << cwidth << cheight;
     out << fwidth << fheight;
@@ -2137,7 +2136,7 @@ void WriteSettings()
         out << c->Closed << c->Filled << c->Segment;
         out << c->ListOrder;
         //now the hard stuff
-        for (int i = 0; i < FullFiles.count(); i++)
+        for (int i = 0; i < (int)FullFiles.count(); i++)
         {
             out << c->SplinePoints[i]->Count;
             for (int k = 0; k < (c->SplinePoints[i]->Count); k++)
@@ -2153,12 +2152,12 @@ void WriteSettings()
         out << o->Name;
         out << o->Resample;
         out << o->Colour[0] << o->Colour[1] << o->Colour[2]; //r,g,b
-        out << o->ComponentMasks.count();
-        out << o->ComponentSegments.count();
-        out << o->CurveComponents.count();
-        for (n = 0; n < o->ComponentMasks.count(); n++) out << o->ComponentMasks[n];
-        for (n = 0; n < o->ComponentSegments.count(); n++) out << o->ComponentSegments[n];
-        for (n = 0; n < o->CurveComponents.count(); n++) out << o->CurveComponents[n];
+        out << (int)o->ComponentMasks.count();
+        out <<(int) o->ComponentSegments.count();
+        out << (int)o->CurveComponents.count();
+        for (n = 0; n < (int)o->ComponentMasks.count(); n++) out << o->ComponentMasks[n];
+        for (n = 0; n < (int)o->ComponentSegments.count(); n++) out << o->ComponentSegments[n];
+        for (n = 0; n < (int)o->CurveComponents.count(); n++) out << o->CurveComponents[n];
         out << o->ListOrder;
         out << o->IsGroup;
         out << o->Parent;
@@ -2188,7 +2187,7 @@ void WriteSettings()
     out << CurrentZoom;
 
     out << ShowSlicePosition;
-    for (int i = 0; i < FullStretches.count(); i++)
+    for (int i = 0; i < (int)FullStretches.count(); i++)
         out << FullStretches[i];
     out << zsparsity;
     out << ThreeDmode;
@@ -2273,31 +2272,39 @@ void ReadSettings()
     //Do all the simple stuff first
     in >> FileNotes;
     in >> FileCount >> CurrentFile >> cwidth >> cheight;
-
     in >> fwidth >> fheight;
     in >> dummy_int >> ColMonoScale >> Trans;
     in >> CMin >> CMax;
+
     in >> HiddenMasksLockedForGeneration;
     in >> SegmentBrushAppliesMasks;
     in >> SegmentsLocked; //this no longer used
     in >> CurveMarkersAsCrosses >> CurveShapeLocked;
     in >> CurrentMode >> CurrentSegment >> CurrentRSegment;
+
     in >> Brush_Size >> BrightUp >> BrightDown;
+
     in >> BrightSoft >> LastTrans >> ThreshFlag >> MasksFlag;
     in >> SegsFlag >> SampleArraySize >> MaxUsedMask >> SelectedMask;
     in >> SelectedRMask >> SelectedCurve >> CurveCount >> OutputObjectsCount;
+
     in >> PixPerMM >> SlicePerMM >> SkewDown >> SkewLeft;
     in >> FirstOutputFile >> LastOutputFile >> MaxTriangles;
+
     in >> RangeHardFill >> RangeSelectedOnly >> OutputMirroring;
     in >> PixSens >> XYDownsample >> ZDownsample >> SquareBrush;
+
     in >> SegmentCount;
 
+    //return;
     //Read sample array
     SampleArray.resize(SampleArraySize * 4);
+
     in.readRawData(SampleArray.data(), SampleArraySize * 4);
 
     //Read Filenames
     Files.clear();
+
     for (n = 0; n < FileCount; n++)
     {
         in >> dummy;
@@ -2315,6 +2322,7 @@ void ReadSettings()
     //Segments
     qDeleteAll(Segments.begin(), Segments.end());
     Segments.clear();
+
     Segment *seg;
     for (i = 0; i < SegmentCount; i++)
     {
@@ -2440,7 +2448,6 @@ void ReadSettings()
     in >> MenuToolboxChecked;
     in >> MenuSliceSelectorChecked;
 
-    //qDebug("RS7");
     //new - check available on reload
     if (!in.atEnd()) in >> MenuHistChecked;
     if (!in.atEnd()) in >> MenuHistSelectedOnly;
@@ -2463,7 +2470,6 @@ void ReadSettings()
     {
         CurrentZoom = 1.0;
     }
-
     //Filenames are stored as absolute files - means can't relocate SPEs
     //To fix and retain back-compatibility, code belows fixes path of files
     //to path of SPE
@@ -2532,6 +2538,7 @@ void ReadSettings()
         }
     }
     else Stretches = FullStretches;
+
     file.close();
 
 }

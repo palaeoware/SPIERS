@@ -37,6 +37,7 @@
 #include "backthread.h"
 #include "histogram.h"
 #include "../../SPIERScommon/src/netmodule.h"
+#include "opencvinterface.h"
 
 #include <QColorDialog>
 #include <QFileDialog>
@@ -2231,5 +2232,11 @@ void MainWindowImpl::on_actionIncrease_Size_triggered()
 void MainWindowImpl::on_actionDecrease_Size_triggered()
 {
     BrushSize->setValue(BrushSize->value()-1);
+}
+
+
+void MainWindowImpl::on_trainML_clicked()
+{
+    openCV->TrainOnOneSlice(CurrentFile);
 }
 

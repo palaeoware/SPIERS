@@ -287,6 +287,8 @@ private slots:
 
     void on_actionDecrease_Size_triggered();
 
+    void on_trainML_clicked();
+
 private:
     void MakeUndo(QString type);
     void RefreshMasks();

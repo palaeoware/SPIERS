@@ -1192,11 +1192,11 @@ void MainWindowImpl::SetUpGenerationToolbox(int s)
     LinearGlobalSpinBox->setValue(Segments[s]->LinGlobal);
     GenInvert->setChecked(Segments[s]->LinInvert);
 
-    SpinBoxSparsity->setValue(Segments[s]->PolySparse);
-    SpinBoxOrder->setValue(static_cast<int>(Segments[s]->PolyOrder));
-    SpinBoxRetries->setValue(Segments[s]->PolyRetries);
-    SpinBoxConverge->setValue(Segments[s]->PolyConverge);
-    SpinBoxContrast->setValue(Segments[s]->PolyContrast);
+    //SpinBoxSparsity->setValue(Segments[s]->PolySparse);
+    //SpinBoxOrder->setValue(static_cast<int>(Segments[s]->PolyOrder));
+    //SpinBoxRetries->setValue(Segments[s]->PolyRetries);
+    //SpinBoxConverge->setValue(Segments[s]->PolyConverge);
+    //SpinBoxContrast->setValue(Segments[s]->PolyContrast);
 }
 
 void MainWindowImpl::on_GenInvert_toggled(bool checked)
@@ -1215,7 +1215,6 @@ void MainWindowImpl::on_GenerateButton_clicked()
 {
     if (FileCount==0) return;
 
-    qDebug()<<"No data"<<FileCount;
     //save all my data
     CopyingImpl dialog;
     if (tabwidget->currentIndex() == 0) dialog.GenerateLinear(SliceSelectorList);
@@ -1294,7 +1293,7 @@ void MainWindowImpl::on_SpinBoxConverge_valueChanged(int value)
     for (int i = 0; i < value; i++) v *= 2;
 
     QTextStream(&s) << " (" << 125 * v << ")";
-    SpinBoxConverge->setSuffix(s);
+    //SpinBoxConverge->setSuffix(s);
     Segments[CurrentSegment]->PolyConverge = value;
 }
 

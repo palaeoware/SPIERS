@@ -483,6 +483,31 @@ void CopyingImpl::GenerateLinear(QListWidget *SliceSelectorList)
     if (c > 1) close();
 }
 
+
+/**
+ * @brief CopyingImpl::GeneratePoly
+ * @param SliceSelectorList
+ */
+void CopyingImpl::GenerateML(QListWidget *SliceSelectorList)
+{
+    int c = SliceSelectorList->selectedItems().count();
+    if (c > 1) show();
+    copying = true;
+    this->setWindowTitle("Generating machine learning predictions...");
+    WriteAllData(CurrentFile);
+    if (c > 1)  progressBar->setMaximum(c);
+    int item_count=0;
+    for (int i = 0; i < Files.count(); i++)
+    {
+        if ((SliceSelectorList->item(i))->isSelected()) MakePolyGreyScale(CurrentSegment, i, false);
+        if (c > 1) progressBar->setValue(item_count++);
+        if (c > 1) qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
+    }
+    LoadAllData(CurrentFile);
+    copying = false;
+    if (c > 1) close();
+}
+
 /**
  * @brief CopyingImpl::GeneratePoly
  * @param SliceSelectorList
@@ -498,7 +523,7 @@ void CopyingImpl::GeneratePoly(QListWidget *SliceSelectorList)
     int item_count=0;
     for (int i = 0; i < Files.count(); i++)
     {
-        if ((SliceSelectorList->item(i))->isSelected()) MakePolyGreyScale(CurrentSegment, i, false);
+        if ((SliceSelectorList->item(i))->isSelected()) MakeML(CurrentSegment, i, false);
         if (c > 1) progressBar->setValue(item_count++);
         if (c > 1) qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
     }

@@ -62,19 +62,21 @@ HEADERS += src/display.h \
     src/beamhardening.h \
     src/beamhardeningcentericon.h \
     src/brush.h \
+    src/bytearray2d.h \
     src/curves.h \
     src/fileio.h \
     src/globals.h \
     src/importdialogimpl.h \
+    src/labelledpoint.h \
     src/mainwindowimpl.h \
     src/myscene.h \
     src/copyingimpl.h \
     src/moreimpl.h \
+    src/opencvinterface.h \
     src/undo.h \
     src/contrastimpl.h \
     src/deletemaskdialogimpl.h \
     src/settingsimpl.h \
-    src/backthread.h \
     src/histogram.h \
     src/selectsegmentimpl.h \
     src/resizedialogimpl.h \
@@ -100,21 +102,23 @@ SOURCES += src/display.cpp \
     src/beamhardening.cpp \
     src/beamhardeningcentericon.cpp \
     src/brush.cpp \
+    src/bytearray2d.cpp \
     src/curves.cpp \
     src/fileio.cpp \
     src/globals.cpp \
     src/importdialogimpl.cpp \
+    src/labelledpoint.cpp \
     src/main.cpp \
     src/mainwindowimpl.cpp \
     src/myscene.cpp \
     src/copyingimpl.cpp \
     src/moreimpl.cpp \
+    src/opencvinterface.cpp \
     src/undo.cpp \
     src/contrastimpl.cpp \
     src/mainwindowimpl2.cpp \
     src/deletemaskdialogimpl.cpp \
     src/settingsimpl.cpp \
-    src/backthread.cpp \
     src/histogram.cpp \
     src/selectsegmentimpl.cpp \
     src/resizedialogimpl.cpp \
@@ -137,6 +141,14 @@ SOURCES += src/display.cpp \
     ../SPIERScommon/src/semanticversion.cpp \
     ../SPIERScommon/src//prereleasecomponent.cpp
 
+OPENCV_DIR = C:/opencv/opencv
+INCLUDEPATH += $$OPENCV_DIR/build/include
+LIBS += -L$$OPENCV_DIR/build/x64/vc16/lib
+CONFIG(debug, debug|release) {
+        LIBS += -lopencv_world4130d
+    } else {
+        LIBS += -lopencv_world4130
+    }
 # MacOS common build here
 macx {
     #Mac icon

@@ -157,8 +157,7 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     {
         MarkerData *append = new MarkerData(new QRectF(static_cast<double>(i) * 20., static_cast<double>(i) * 20., 10., 10.), 0);
         markers.append(append);
-        QString output;
-        output.asprintf("Marker - %d", (i + 1));
+        QString output = QString::asprintf("Marker - %d", (i + 1));
         markerList->addItem(output);
     }
 
@@ -1776,8 +1775,7 @@ void MainWindowImpl::addMarkerSlot()
     if (markersLocked == 1)return;
     MarkerData *append = new MarkerData(new QRectF(10., 10., static_cast<double>(mSize->value()), static_cast<double>(mSize->value())), 0);
     markers.append(append);
-    QString output;
-    output.asprintf("Marker - %d", markers.count());
+    QString output = QString::asprintf("Marker - %d", markers.count());
     markerList->addItem(output);
     markerList->setCurrentRow(markers.count() - 1);
     selectedMarker = (markers.count() - 1);
@@ -1893,8 +1891,7 @@ void MainWindowImpl::on_actionOpen_triggered()
         {
             MarkerData *append = new MarkerData(new QRectF(static_cast<double>(i) * 20., static_cast<double>(i) * 20., 10., 10.), 0);
             markers.append(append);
-            QString output;
-            output.asprintf("Marker - %d", (i + 1));
+            QString output= QString::asprintf("Marker - %d", (i + 1));
             markerList->addItem(output);
         }
 
@@ -2089,8 +2086,7 @@ void MainWindowImpl::on_actionOpen_triggered()
             {
                 MarkerData *append = new MarkerData(new QRectF(list[0].toDouble(), list[1].toDouble(), static_cast<double>(mSize->value()), static_cast<double>(mSize->value())), list[2].toInt());
                 markers.append(append);
-                QString output;
-                output.asprintf("Marker - %d", (j + 1));
+                QString output= QString::asprintf("Marker - %d", (j + 1));
                 markerList->addItem(output);
                 markers[j]->linePoint.setX(list[3].toDouble());
                 markers[j]->linePoint.setY(list[4].toDouble());
@@ -2122,8 +2118,7 @@ void MainWindowImpl::on_actionOpen_triggered()
                                                            10.,
                                                            10.), 0);
             markers.append(append);
-            QString output;
-            output.asprintf("Marker - %d", (i + 1));
+            QString output= QString::asprintf("Marker - %d", (i + 1));
             markerList->addItem(output);
         }
 
@@ -2203,7 +2198,7 @@ void MainWindowImpl::on_actionOpen_triggered()
 
 void MainWindowImpl::on_actionOpen_triggered2()
 {
-    qDebug()<<"Debug 2 triggered";
+    //qDebug()<<"Debug 2 triggered";
 }
 
 /**
@@ -2270,8 +2265,7 @@ void  MainWindowImpl::redrawImage()
 
     //Title bar
     QString output = " - " + imageList[currentImage]->fileName;
-    QString output2;
-    output2.asprintf(" - (%d/%d)", currentImage + 1, imageList.count());
+    QString output2= QString::asprintf(" - (%d/%d)", currentImage + 1, (int)imageList.count());
     this->setWindowTitle(QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION) + output + output2);
 
     LogText("*7\t");
@@ -2390,8 +2384,7 @@ void  MainWindowImpl::redrawDecorations()
         if (cropping != 1)
         {
             QString output = "Crop mode enabled - crop area";
-            QString output2;
-            output2.asprintf(" - %d pixels wide, %d pixels high)", cropArea->width(), cropArea->height());
+            QString output2= QString::asprintf(" - %d pixels wide, %d pixels high)", cropArea->width(), cropArea->height());
             statusbar->showMessage(output + output2);
         }
     }
@@ -2603,8 +2596,7 @@ void  MainWindowImpl::redrawJustCropBox()
     rectPointer = scene->addRect(*cropArea, pen, brush);
     rectPointer->setZValue(1);
     QString output = "Crop mode enabled - crop area";
-    QString output2;
-    output2.asprintf(" - %d pixels wide, %d pixels high)", cropArea->width(), cropArea->height());
+    QString output2= QString::asprintf(" - %d pixels wide, %d pixels high)", cropArea->width(), cropArea->height());
     cropWidth->setValue(cropArea->width());
     cropHeight->setValue(cropArea->height());
     statusbar->showMessage(output + output2);
@@ -3413,8 +3405,7 @@ void MainWindowImpl::on_actionApply_Propogation_triggered()
             qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
 
             QString output = "propogation - ";// + imageList[i]->fileName;
-            QString output2;
-            output2.asprintf("Processing (%d/%d)", i + 1, imageList.count());
+            QString output2= QString::asprintf("Processing (%d/%d)", i + 1, imageList.count());
             statusbar->showMessage(output + output2);
 
             //Start painter
@@ -3523,8 +3514,7 @@ void MainWindowImpl::on_actionApply_Propogation_triggered()
             qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
 
             QString output = "propogation - ";
-            QString output2;
-            output2.asprintf("Processing (%d/%d)", l, imageList.count());
+            QString output2= QString::asprintf("Processing (%d/%d)", l, imageList.count());
             statusbar->showMessage(output + output2);
 
             //Start painter
@@ -3814,8 +3804,7 @@ void MainWindowImpl::on_actionCrop_triggered()
             qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
 
             QString output = "Cropping - ";
-            QString output2;
-            output2.asprintf("Processing (%d/%d)", count, (max - min));
+            QString output2= QString::asprintf("Processing (%d/%d)", count, (max - min));
             statusbar->showMessage(output + output2);
 
             QImage cropimage;
@@ -4399,8 +4388,7 @@ void MainWindowImpl::on_actionLoad_Settings_File_triggered()
         {
             MarkerData *append = new MarkerData(new QRectF(list[0].toDouble(), list[1].toDouble(), 5., 5.), list[2].toInt());
             markers.append(append);
-            QString output;
-            output.asprintf("Marker - %d", (j + 1));
+            QString output= QString::asprintf("Marker - %d", (j + 1));
             markerList->addItem(output);
             markers[j]->linePoint.setX(list[3].toDouble());
             markers[j]->linePoint.setY(list[4].toDouble());
@@ -4439,8 +4427,7 @@ void MainWindowImpl::on_actionLoad_Settings_File_triggered()
         qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
 
         QString output = "Applying settings - ";
-        QString output2;
-        output2.asprintf("Processing (%d/%d)", i + 1, listLength);
+        QString output2= QString::asprintf("Processing (%d/%d)", i + 1, listLength);
         statusbar->showMessage(output + output2);
         if (!imageList[i]->m.isIdentity())
         {
@@ -4533,8 +4520,7 @@ void MainWindowImpl::on_actionCompress_Dataset_triggered()
         qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
 
         QString output = "Compressing - ";
-        QString output2;
-        output2.asprintf("Processing (%d/%d)", i + 1, x);
+        QString output2= QString::asprintf("Processing (%d/%d)", i + 1, x);
         statusbar->showMessage(output + output2);
 
         flag = 0;

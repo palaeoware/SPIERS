@@ -22,13 +22,18 @@
 #include <QGraphicsScene>
 #include <QString>
 #include "globals.h"
+#include "bytearray2d.h"
 #include "beamhardening.h"
+#include <QList>
+#include "labelledpoint.h"
 
 extern void ShowImage(QGraphicsView *gv);
 extern void InitImage(QGraphicsView *gv);
 extern void DeleteDisplayObjects();
+extern QList<LabelledPoint> GenerateLabels();
 extern void ClearImages();
 extern void MakeLinearGreyScale(int seg, int fnum, bool flag);
+extern void MakeML(int seg, int fnum, bool flag);
 extern void ApplyLCE(int seg, int fnum, bool flag);
 extern void ApplyGradient(int seg, int fnum);
 extern void ApplyRadial(int seg, int fnum, BeamHardening *bh, bool flag);

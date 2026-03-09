@@ -29,6 +29,7 @@ MyThread *BackThread;
 
 void MyThread::run()
 {
+    qDebug()<<"IN OLD THREADING CODE1";
     QTimer *t = new QTimer();
     connect(t, SIGNAL(timeout()), this, SLOT(TimerFired()));
     t->start(2000);

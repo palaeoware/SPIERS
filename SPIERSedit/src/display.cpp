@@ -32,6 +32,7 @@
 #include "brush.h"
 #include "mainwindowimpl.h"
 
+
 QGraphicsPixmapItem *MainImage;
 double LastZoom;
 double CurrentPolyContrast;
@@ -173,7 +174,6 @@ QImage GenerateThresh()
     int x, y;
     int high, seg, i;
     bool lockmode, maskmode, greymode, MergeMasks, MergeMasks2;
-
 
     QByteArray *gradientArray;
     if (previewGradient) gradientArray = GetGradientArray();
@@ -426,6 +426,44 @@ QImage GenerateThresh()
 }
 
 
+//Modified GenerateThresh to generate a byte array of segment numbers (=labels for ML)
+//A few other simplfications too
+QList<LabelledPoint> GenerateLabels()
+{
+    //First - work out segments at each point
+    QList<LabelledPoint> labels;
+
+    QList <uchar *> GApointers;
+    //set up my pointers - an optimisation to point straight to data
+    for (int n = 0; n < SegmentCount; n++)
+        GApointers.append(GA[n]->bits());
+
+
+    for (int jx = 0; jx < fwidth; jx++)
+    for (int jy = 0; jy < fheight; jy++)
+    {
+        int high = 128;
+        int seg = -1;
+        //n=j*4;
+        for (int i = 0; i < SegmentCount; i++)
+        {
+            int temp = (int)  * ((GA[i]->bits()) + jy * fwidth4 + jx);
+            if (temp>255) temp=255;
+            if (temp<0) temp=0;
+
+            if (temp >= high)
+            {
+                high = temp;
+                seg = i;
+            }
+        }
+        if (seg!=-1)
+            labels.append(LabelledPoint(jx, jy, seg));
+    }
+
+    return labels;
+}
+
 
 void ClearImages()
 {
@@ -664,13 +702,15 @@ void AlterImage(QImage *myimage)
 
 void ShowImage(QGraphicsView *gv)
 {
-//        qDebug()<<"Here in Graphics View";
-//        qDebug()<<GA.count();
+        //qDebug()<<"Here in Graphics View2";
+        //qDebug()<<GA.count();
 //        for (int i=0; i<GA.count(); i++) qDebug()<<GA[i];
     QTransform identity; //will default to this
     if (Active == false) return;
     QImage myimage(cwidth, cheight, QImage::Format_RGB32);
 
+    //qDebug()<<cwidth;
+    //qDebug()<<cheight;
 
     AlterImage(&myimage); //Preprocess original image (contrast, transparency), add new one
     MainImage->setPixmap(QPixmap::fromImage(myimage));
@@ -826,6 +866,27 @@ void ApplyGradient(int seg, int fnum)
 
     delete gradientData;
     SaveGreyData(fnum, seg);
+}
+
+void MakeML(int seg, int fnum, bool flag = false)
+{
+    //load data for file - can and should assume existing data is safe
+    if (!flag) LoadAllData(fnum);
+
+    uchar *data;
+    data = GA[seg]->bits();
+
+    QByteArray NewLocks = DoMaskLocking();
+    qDebug()<<"Here in MakeML";
+    for (int h = 0; h < fheight; h++)
+        for (int w = 0; w < fwidth; w++)
+        {
+            if (!(NewLocks[(fwidth * h + w)])) *(data + (fwidth4 * h + w)) = openCV->GetProbability(w, h, seg);
+        }
+
+
+    if (!flag) SaveGreyData(fnum, seg);
+
 }
 
 void MakeLinearGreyScale(int seg, int fnum, bool flag = false)
@@ -989,6 +1050,14 @@ uchar PolyPixel(int w, int h, int s)
     return static_cast<uchar>(temp);
 }
 
+uchar MLPixel(int w, int h, int s)
+{
+    w *= ColMonoScale;
+    h *= ColMonoScale;
+
+    return openCV->GetProbability(w, h, s);
+ }
+
 uchar RangePixel(int w, int h, int bot, int top, double cen, double gra, int seg)
 {
     Q_UNUSED(bot);
@@ -1081,6 +1150,7 @@ void MakePolyGreyScale(int seg, int fnum, bool flag = false)
 
 uchar GenPixel(int x, int y, int s, QVector<uchar> *sample, QByteArray *locks)
 {
+    qDebug()<<"Tab index "<<tabwidget->currentIndex();
     CurrentPolyContrast = pow(static_cast<double>(2), Segments[s]->PolyContrast) / Segments[s]->PolyScale;
     //generate a pixel using whatever method
     if (tabwidget->currentIndex() == 0)
@@ -1094,9 +1164,7 @@ uchar GenPixel(int x, int y, int s, QVector<uchar> *sample, QByteArray *locks)
 
     if (tabwidget->currentIndex() == 1)
     {
-        uchar t = PolyPixel(x, y, s);
-        if (Segments[s]->LinInvert) return 255 - t;
-        else return t;
+        return MLPixel(x, y, s);
     }
 
     if (tabwidget->currentIndex() == 2)

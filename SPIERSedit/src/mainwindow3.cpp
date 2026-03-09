@@ -359,8 +359,7 @@ void MainWindowImpl::on_actionOutput_visible_image_set_triggered()
         QString outstring;
         QTextStream out(&outstring);
 
-        QString formattedi;
-        formattedi.asprintf("%05i", i);
+        QString formattedi = QString::asprintf("%05i", i);
         out << targetdir << "/" << formattedi << ".png";
         SaveMainImage(outstring);
 
