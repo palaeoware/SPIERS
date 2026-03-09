@@ -18,7 +18,7 @@
 #include "darkstyletheme.h"
 #include <QScreen>
 #include <QRect>
-#include <QDesktopWidget>
+#include <QGuiApplication>
 
 /**
  * @brief DarkStyleTheme::DarkStyleTheme

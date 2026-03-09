@@ -26,7 +26,7 @@
 #include <QListWidget>
 #include <QPlainTextEdit>
 #include <QSpinBox>
-
+#include <QCheckBox>
 #include "scene.h"
 #include "ui_mainwindow.h"
 #include "about.h"
@@ -141,7 +141,8 @@ private slots:
     void resizeCropH(int value);
     void clearList();
     void pickMarkerColourSlot();
-
+    void getMinClicked();
+    void getMaxClicked();
 private:
     void rotate (qreal rotateAngle);
     void resize(qreal sizeChange);
@@ -158,7 +159,8 @@ private:
     QDockWidget *info, *cropDock, *aMOptions, *autoAlign;
     QSpinBox *red, *red2;
     QSpinBox *green, *green2;
-    QSpinBox *blue, *blue2;
+    QSpinBox *blue, *blue2, *startCropFile, *endCropFile;
+    QLineEdit *folderName;
     QGridLayout *aMGridLayout;
     QVBoxLayout *markerLayout, *infoLayout, *cropLayout, *aMVertLayout, *autoLayout;
     QHBoxLayout *horizontalLayout1, *horizontalLayout2, *horizontalLayout3, *horizontalLayout4, *horizontalLayout5, *horizontalLayout6, *horizontalLayout7, *horizontalLayout8, *horizontalLayout9,

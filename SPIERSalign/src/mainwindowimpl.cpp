@@ -158,7 +158,7 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
         MarkerData *append = new MarkerData(new QRectF(static_cast<double>(i) * 20., static_cast<double>(i) * 20., 10., 10.), 0);
         markers.append(append);
         QString output;
-        output.sprintf("Marker - %d", (i + 1));
+        output.asprintf("Marker - %d", (i + 1));
         markerList->addItem(output);
     }
 
@@ -261,6 +261,7 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     QLabel *cropLabel2 = new QLabel("Crop Box Colour:");
     cropLayout->addWidget(cropLabel2);
 
+    QHBoxLayout *horizontalLayout5 = new QHBoxLayout;
     //Can't use same spins as for markers so new below - change to value of RGB constants when switch to crop mode
     red2 = new QSpinBox(markersDialogue);
     red2->setMaximum(255);
@@ -281,18 +282,58 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     connect(green2, SIGNAL(valueChanged(int)), this, SLOT(changeGreen(int) ));
     connect(blue2, SIGNAL(valueChanged(int)), this, SLOT(changeBlue(int) ));
 
-    cropLayout->addWidget(redLabel2);
-    cropLayout->addWidget(red2);
+    horizontalLayout5->addWidget(redLabel2);
+    horizontalLayout5->addWidget(red2);
 
-    cropLayout->addWidget(greenLabel2);
-    cropLayout->addWidget(green2);
+    horizontalLayout5->addWidget(greenLabel2);
+    horizontalLayout5->addWidget(green2);
 
-    cropLayout->addWidget(blueLabel2);
-    cropLayout->addWidget(blue2);
+    horizontalLayout5->addWidget(blueLabel2);
+    horizontalLayout5->addWidget(blue2);
+    cropLayout->addLayout(horizontalLayout5);
+
+    QHBoxLayout *horizontalLayout6 = new QHBoxLayout;
+    startCropFile = new QSpinBox();
+    startCropFile->setMinimum(1);
+    startCropFile->setMaximum(1);
+    QLabel *l1 = new QLabel("Min");
+    QPushButton *getMin = new QPushButton("Set", cropDock);
+
+    horizontalLayout6->addWidget(l1);
+    horizontalLayout6->addWidget(startCropFile);
+    horizontalLayout6->addWidget(getMin);
+
+            endCropFile = new QSpinBox();
+    endCropFile->setMinimum(1);
+    endCropFile->setMaximum(1);
+    QLabel *l2 = new QLabel("Max");
+    QPushButton *getMax = new QPushButton("Set", cropDock);
+
+
+    connect(getMin, &QPushButton::clicked, this, &MainWindowImpl::getMinClicked);
+    connect(getMax, &QPushButton::clicked, this, &MainWindowImpl::getMaxClicked);
+
+    horizontalLayout6->addWidget(l2);
+    horizontalLayout6->addWidget(endCropFile);
+    horizontalLayout6->addWidget(getMax);
+
+    QLabel *l4 = new QLabel("File number range");
+    cropLayout->addWidget(l4);
+    cropLayout->addLayout(horizontalLayout6);
+
 
     QPushButton *executeCrop = new QPushButton("Crop", cropDock);
 
     cropLayout->addWidget(executeCrop);
+
+    QHBoxLayout *horizontalLayout7 = new QHBoxLayout;
+    folderName = new QLineEdit("Cut");
+    QLabel *l3 = new QLabel("Output folder name");
+
+    horizontalLayout7->addWidget(l3);
+    horizontalLayout7->addWidget(folderName);
+    cropLayout->addLayout(horizontalLayout7);
+
 
     layoutWidgetThree = new QWidget;
     layoutWidgetThree->setLayout(cropLayout);
@@ -466,14 +507,14 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     //Keyboard shortcuts impossible in designer
     actionShift_Up->setShortcut(Qt::Key_Up);
     actionShift_Down->setShortcut(Qt::Key_Down);
-    actionShift_Up_Less->setShortcut(Qt::SHIFT + Qt::Key_Up);
-    actionShift_Down_Less->setShortcut(Qt::SHIFT + Qt::Key_Down);
-    actionMove_Up->setShortcut(Qt::ALT + Qt::Key_Up);
-    actionMove_Down->setShortcut(Qt::ALT + Qt::Key_Down);
-    actionRotate_Anticlockwise_Less->setShortcut(Qt::SHIFT + Qt::Key_1);
-    actionRotate_Clockwise_Less_2->setShortcut(Qt::SHIFT + Qt::Key_0);
-    actionShrink_Less->setShortcut(Qt::SHIFT + Qt::Key_BracketLeft);
-    actionEnlarge_Less->setShortcut(Qt::SHIFT + Qt::Key_BracketRight);
+    actionShift_Up_Less->setShortcut(Qt::SHIFT | Qt::Key_Up);
+    actionShift_Down_Less->setShortcut(Qt::SHIFT | Qt::Key_Down);
+    actionMove_Up->setShortcut(Qt::ALT | Qt::Key_Up);
+    actionMove_Down->setShortcut(Qt::ALT | Qt::Key_Down);
+    actionRotate_Anticlockwise_Less->setShortcut(Qt::SHIFT | Qt::Key_1);
+    actionRotate_Clockwise_Less_2->setShortcut(Qt::SHIFT | Qt::Key_0);
+    actionShrink_Less->setShortcut(Qt::SHIFT | Qt::Key_BracketLeft);
+    actionEnlarge_Less->setShortcut(Qt::SHIFT | Qt::Key_BracketRight);
     QKeySequence sc("CTRL+SHIFT+0");
     actionRotate_Clockwise_More->setShortcut(sc);
 }
@@ -505,6 +546,7 @@ MainWindowImpl::~MainWindowImpl()
         delete info;
     }
 }
+
 
 /**
 
@@ -608,6 +650,19 @@ void showInfo(int x, int y)
 
     label->setText(out);
 }
+
+
+void MainWindowImpl::getMinClicked()
+{
+    startCropFile->setValue(spinBox->value());
+}
+
+
+void MainWindowImpl::getMaxClicked()
+{
+    endCropFile->setValue(spinBox->value());
+}
+
 
 /**
  * @brief MainWindowImpl::buildRecentFiles
@@ -1722,7 +1777,7 @@ void MainWindowImpl::addMarkerSlot()
     MarkerData *append = new MarkerData(new QRectF(10., 10., static_cast<double>(mSize->value()), static_cast<double>(mSize->value())), 0);
     markers.append(append);
     QString output;
-    output.sprintf("Marker - %d", markers.count());
+    output.asprintf("Marker - %d", markers.count());
     markerList->addItem(output);
     markerList->setCurrentRow(markers.count() - 1);
     selectedMarker = (markers.count() - 1);
@@ -1839,7 +1894,7 @@ void MainWindowImpl::on_actionOpen_triggered()
             MarkerData *append = new MarkerData(new QRectF(static_cast<double>(i) * 20., static_cast<double>(i) * 20., 10., 10.), 0);
             markers.append(append);
             QString output;
-            output.sprintf("Marker - %d", (i + 1));
+            output.asprintf("Marker - %d", (i + 1));
             markerList->addItem(output);
         }
 
@@ -1892,7 +1947,7 @@ void MainWindowImpl::on_actionOpen_triggered()
     if (fullSettingsFileName.isEmpty())
     {
         filesDirectoryString = QFileDialog::getExistingDirectory(this, tr("Select folder containing image files; note the files within a folder will not be listed if you are using Windows."),
-                                                                 QString(QStandardPaths::DesktopLocation), QFileDialog::ShowDirsOnly);
+                                                                 QStandardPaths::writableLocation(QStandardPaths::DesktopLocation), QFileDialog::ShowDirsOnly);
         if (filesDirectoryString == "") return; //dialogue cancelled
         filesDirectory = filesDirectoryString; //construct directory object
     }
@@ -1924,8 +1979,8 @@ void MainWindowImpl::on_actionOpen_triggered()
         QFont f;
         f.setBold(true);
         if ((i + 1) % 10 == 0) fileList->item(i)->setFont(f); // font.setBold(true);
-        if ((i + 1) % 50 == 0) fileList->item(i)->setTextColor(QColor(100, 149, 237));
-        if ((i + 1) % 100 == 0) fileList->item(i)->setTextColor(QColor("blue"));
+        if ((i + 1) % 50 == 0) fileList->item(i)->setForeground(QBrush(QColor(100, 149, 237)));
+        if ((i + 1) % 100 == 0) fileList->item(i)->setForeground(QBrush(QColor("blue")));
     }
 
     //Read from settings and apply matrices
@@ -2035,7 +2090,7 @@ void MainWindowImpl::on_actionOpen_triggered()
                 MarkerData *append = new MarkerData(new QRectF(list[0].toDouble(), list[1].toDouble(), static_cast<double>(mSize->value()), static_cast<double>(mSize->value())), list[2].toInt());
                 markers.append(append);
                 QString output;
-                output.sprintf("Marker - %d", (j + 1));
+                output.asprintf("Marker - %d", (j + 1));
                 markerList->addItem(output);
                 markers[j]->linePoint.setX(list[3].toDouble());
                 markers[j]->linePoint.setY(list[4].toDouble());
@@ -2068,7 +2123,7 @@ void MainWindowImpl::on_actionOpen_triggered()
                                                            10.), 0);
             markers.append(append);
             QString output;
-            output.sprintf("Marker - %d", (i + 1));
+            output.asprintf("Marker - %d", (i + 1));
             markerList->addItem(output);
         }
 
@@ -2140,6 +2195,10 @@ void MainWindowImpl::on_actionOpen_triggered()
     actionAdd_Markers->trigger();
     actionInfo->trigger();
     actionAuto_Align->trigger();
+
+    endCropFile->setMaximum(imageList.count());
+    startCropFile->setMaximum(imageList.count());
+
 }
 
 void MainWindowImpl::on_actionOpen_triggered2()
@@ -2212,12 +2271,12 @@ void  MainWindowImpl::redrawImage()
     //Title bar
     QString output = " - " + imageList[currentImage]->fileName;
     QString output2;
-    output2.sprintf(" - (%d/%d)", currentImage + 1, imageList.count());
+    output2.asprintf(" - (%d/%d)", currentImage + 1, imageList.count());
     this->setWindowTitle(QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION) + output + output2);
 
     LogText("*7\t");
     //Rescale view
-    graphicsView->resetMatrix ();
+    graphicsView->resetTransform();
     LogText("*8\t");
     graphicsView->scale(currentScale, currentScale);
     LogText("*9\t");
@@ -2332,7 +2391,7 @@ void  MainWindowImpl::redrawDecorations()
         {
             QString output = "Crop mode enabled - crop area";
             QString output2;
-            output2.sprintf(" - %d pixels wide, %d pixels high)", cropArea->width(), cropArea->height());
+            output2.asprintf(" - %d pixels wide, %d pixels high)", cropArea->width(), cropArea->height());
             statusbar->showMessage(output + output2);
         }
     }
@@ -2545,7 +2604,7 @@ void  MainWindowImpl::redrawJustCropBox()
     rectPointer->setZValue(1);
     QString output = "Crop mode enabled - crop area";
     QString output2;
-    output2.sprintf(" - %d pixels wide, %d pixels high)", cropArea->width(), cropArea->height());
+    output2.asprintf(" - %d pixels wide, %d pixels high)", cropArea->width(), cropArea->height());
     cropWidth->setValue(cropArea->width());
     cropHeight->setValue(cropArea->height());
     statusbar->showMessage(output + output2);
@@ -3355,7 +3414,7 @@ void MainWindowImpl::on_actionApply_Propogation_triggered()
 
             QString output = "propogation - ";// + imageList[i]->fileName;
             QString output2;
-            output2.sprintf("Processing (%d/%d)", i + 1, imageList.count());
+            output2.asprintf("Processing (%d/%d)", i + 1, imageList.count());
             statusbar->showMessage(output + output2);
 
             //Start painter
@@ -3465,7 +3524,7 @@ void MainWindowImpl::on_actionApply_Propogation_triggered()
 
             QString output = "propogation - ";
             QString output2;
-            output2.sprintf("Processing (%d/%d)", l, imageList.count());
+            output2.asprintf("Processing (%d/%d)", l, imageList.count());
             statusbar->showMessage(output + output2);
 
             //Start painter
@@ -3686,16 +3745,32 @@ void MainWindowImpl::on_actionCrop_triggered()
         QStringList items;
         for (int i = 0; i < count; i++) items <<  imageList[i]->fileName;
         bool ok;
-        QString minfile = QInputDialog::getItem(this, "Start file", "Please choose the file from which you want to crop", items, 0, false, &ok);
-        if (!ok) return;
-        for (int i = 0; i < count; i++)if (imageList[i]->fileName == minfile)min = i;
 
-        QStringList items2;
-        for (int i = (min + 1); i < count; i++) items2 <<  imageList[i]->fileName;
-        QString maxfile = QInputDialog::getItem (this, "End file", "Please choose the file at which you want the crop to end", items2, items2.count() - 1, false, &ok);
-        if (!ok) return;
-        for (int i = 0; i < count; i++)if (imageList[i]->fileName == maxfile) max = i;
+        min = startCropFile->value();
+        max = endCropFile->value();
 
+        if (max<=min)
+        {
+            QMessageBox::critical(
+                this,                      // parent widget (nullptr if none)
+                "Error",                   // dialog title
+                "Minimum file must be lower than maximum file!"    // message text
+                );
+            return;
+        }
+        /*else
+        {
+            QString minfile = QInputDialog::getItem(this, "Start file", "Please choose the file from which you want to crop", items, 0, false, &ok);
+            if (!ok) return;
+            for (int i = 0; i < count; i++)if (imageList[i]->fileName == minfile)min = i;
+
+            QStringList items2;
+            for (int i = (min + 1); i < count; i++) items2 <<  imageList[i]->fileName;
+            QString maxfile = QInputDialog::getItem (this, "End file", "Please choose the file at which you want the crop to end", items2, items2.count() - 1, false, &ok);
+            if (!ok) return;
+            for (int i = 0; i < count; i++)if (imageList[i]->fileName == maxfile) max = i;
+        }
+        */
         QStringList formats;
         formats << "bmp" << "jpg" << "png" << "tiff";
         QString chosenFormat =  QInputDialog::getItem(this, "Choose file format", "Enter the file format you wish the cropped images to be saved as", formats, 0, false, &ok);
@@ -3711,11 +3786,11 @@ void MainWindowImpl::on_actionCrop_triggered()
                                                                             QMessageBox::Cancel)) == 4194304)return;
 
         //Create directory
-        QString dirname = filesDirectory.absolutePath() + "/cut/";
+        QString dirname = filesDirectory.absolutePath() + "/" +folderName->text()+ "/";
         QDir cut;
         if (cut.mkpath(dirname) == false)
         {
-            QMessageBox::warning(this, "Error", "Can't create cut folder for images", QMessageBox::Ok);
+            QMessageBox::warning(this, "Error", "Can't create folder for images", QMessageBox::Ok);
             actionLock_Forward->setChecked(false);
             return;
         }
@@ -3740,7 +3815,7 @@ void MainWindowImpl::on_actionCrop_triggered()
 
             QString output = "Cropping - ";
             QString output2;
-            output2.sprintf("Processing (%d/%d)", count, (max - min));
+            output2.asprintf("Processing (%d/%d)", count, (max - min));
             statusbar->showMessage(output + output2);
 
             QImage cropimage;
@@ -3772,7 +3847,7 @@ void MainWindowImpl::on_actionCrop_triggered()
         statusbar->clearMessage();
         statusbar->removeWidget(&progress);
 
-        QMessageBox::warning(this, "Crop completed", "Cropped images placed in cut folder of current directory.", QMessageBox::Ok);
+        QMessageBox::warning(this, "Crop completed", "Cropped images placed in folder '" + folderName->text() +"' under current directory.", QMessageBox::Ok);
     }
 }
 
@@ -4251,7 +4326,7 @@ void MainWindowImpl::on_actionLoad_Settings_File_triggered()
     int i, j = 0;
     if ((QMessageBox::question(nullptr, "Confirm", "Are you sure you want to load a settings file? This will overwrite the current settings and apply the new ones to the currently open dataset.",
                                QMessageBox::Ok, QMessageBox::Cancel)) == QMessageBox::Cancel) return;
-    QString settingsFile = QFileDialog::getOpenFileName(this, tr("Select settings file"), QString(QStandardPaths::DesktopLocation));
+    QString settingsFile = QFileDialog::getOpenFileName(this, tr("Select settings file"), QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
     if (settingsFile == "") return;
 
     QFile settings(settingsFile);
@@ -4325,7 +4400,7 @@ void MainWindowImpl::on_actionLoad_Settings_File_triggered()
             MarkerData *append = new MarkerData(new QRectF(list[0].toDouble(), list[1].toDouble(), 5., 5.), list[2].toInt());
             markers.append(append);
             QString output;
-            output.sprintf("Marker - %d", (j + 1));
+            output.asprintf("Marker - %d", (j + 1));
             markerList->addItem(output);
             markers[j]->linePoint.setX(list[3].toDouble());
             markers[j]->linePoint.setY(list[4].toDouble());
@@ -4365,7 +4440,7 @@ void MainWindowImpl::on_actionLoad_Settings_File_triggered()
 
         QString output = "Applying settings - ";
         QString output2;
-        output2.sprintf("Processing (%d/%d)", i + 1, listLength);
+        output2.asprintf("Processing (%d/%d)", i + 1, listLength);
         statusbar->showMessage(output + output2);
         if (!imageList[i]->m.isIdentity())
         {
@@ -4459,7 +4534,7 @@ void MainWindowImpl::on_actionCompress_Dataset_triggered()
 
         QString output = "Compressing - ";
         QString output2;
-        output2.sprintf("Processing (%d/%d)", i + 1, x);
+        output2.asprintf("Processing (%d/%d)", i + 1, x);
         statusbar->showMessage(output + output2);
 
         flag = 0;

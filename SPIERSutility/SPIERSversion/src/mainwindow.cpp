@@ -112,7 +112,7 @@ void MainWindow::getFileVersions()
             QString xmlstring;
             in >> xmlstring;
             QByteArray xmlbytearray;
-            xmlbytearray.append(xmlstring);
+            xmlbytearray.append(xmlstring.toUtf8());
             QBuffer buffer(&xmlbytearray);
 
             //setup XML reader
@@ -124,15 +124,15 @@ void MainWindow::getFileVersions()
 
             if (xml.readNextStartElement())
             {
-                if (xml.name() == "vaxml")
+                if (xml.name() == u"vaxml")
                 {
                     while (xml.readNextStartElement())
                     {
-                        if (xml.name() == "header")
+                        if (xml.name() == u"header")
                         {
                             while (xml.readNextStartElement())
                             {
-                                if (xml.name() == "version")
+                                if (xml.name() == u"version")
                                 {
                                     QString text = xml.readElementText();
                                     int i = text.toInt(&flag);

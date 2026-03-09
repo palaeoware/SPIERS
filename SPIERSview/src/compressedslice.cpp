@@ -1,5 +1,5 @@
 #include "compressedslice.h"
-#include <zlib.h>
+#include "zlib.h"
 #include <stdlib.h>
 #include <QFile>
 #include <QTextStream>
