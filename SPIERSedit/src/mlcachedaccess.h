@@ -28,9 +28,11 @@ public:
     QColor GetColor(int x, int y);
     void FetchSourceDataIfNeeded();
     void FetchFeatureIfNeeded(int featureIndex);
+
 private:
     void FetchSourceData();
     void FetchFeatureData(int feature);
+
 
 };
 
@@ -54,6 +56,8 @@ public:
     void CalculateFeature(cv::Mat &mat, int sliceIndex, int featureID);
     cv::Mat GetWholeSliceIntensity(int sliceIndex);
     cv::Mat GetWholeSliceFeature(int z, int featureIndex);
+    void SetFeatureInUse(int featureID, bool inUse);
+    QList<int> GetFeaturesInUse();
 private:
     ulong GetMemorySizeOfSlice();
     void ResizeCache();
@@ -66,9 +70,13 @@ private:
     QList<int> slicesByCacheIndex;
     QList<int> cacheIndicesBySlice;
     QList<QString> featureNameByIndex;
+    QList<bool> featureInUse;
+    void RebuildFeatureIDsInUse();
+    QList<int> featureIDsInUse;
 
     int xyBin, zBin, xSize, ySize, zSize;
     int featureSize, sourceImageSize;
+
 
     int FindReusableCacheSlot();
 };

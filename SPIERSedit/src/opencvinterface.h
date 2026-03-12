@@ -15,8 +15,9 @@ public:
     cv::Mat QImageToCvMatGrayFloat(QImage &img);
     void Train(int slice, MainWindowImpl *mw);
     uchar GetProbability(int x, int y, int z, int segment);
-
     void CalculateFeatureData(MainWindowImpl *mw);
+    void GetProbabilitiesAllSegments(int x, int y, int z, int *segBuffer);
+    void Generate(QListWidget *SliceSelectorList);
 private:
     bool dataComputed;
     int currentSlice;
@@ -24,6 +25,8 @@ private:
     MLCachedAccess *data;
     void CreateCacheHandlerIfNeeded();
     void SetUpFeatures();
+    void MakeML(int fnum);
+    void ComputeSliceProbabilitiesFromVotes(int sliceID);
 };
 
 #endif // OPENCVINTERFACE_H

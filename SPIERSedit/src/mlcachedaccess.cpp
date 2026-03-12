@@ -21,6 +21,8 @@ MLCachedSlice::MLCachedSlice(int featureCount, int zIndex, MLCachedAccess *paren
 
 }
 
+
+
 void MLCachedSlice::AddFeature()
 {
     featuresValid.append(false);
@@ -202,6 +204,16 @@ MLCachedAccess::MLCachedAccess(int sliceCount, bool colourImages, int fwidth, in
     SetMaxMemoryUsage(1024ul *1024ul *1024ul * 2ul); //2Gb default
 }
 
+void MLCachedAccess::SetFeatureInUse(int featureID, bool inUse)
+{
+    featureInUse[featureID]= inUse;
+    RebuildFeatureIDsInUse();
+}
+
+QList<int> MLCachedAccess::GetFeaturesInUse()
+{
+    return featureIDsInUse;
+}
 QString MLCachedAccess::GetSourceImageFeatureName()
 {
     return "src";
@@ -283,6 +295,7 @@ int MLCachedAccess::AddFeature(QString feature)
     }
 
     featureNameByIndex.append(feature);
+    featureInUse.append(false);
     //No, I have to add it
     int nextFeatureIndex = featureIndexByName.count();
     featureIndexByName.insert(feature, nextFeatureIndex);
@@ -294,6 +307,8 @@ int MLCachedAccess::AddFeature(QString feature)
             cachedSlices[i]->AddFeature();
         }
     }
+
+    RebuildFeatureIDsInUse();
 
     return nextFeatureIndex;
 }
@@ -307,6 +322,7 @@ bool MLCachedAccess::RemoveFeature(QString feature)
         return false;
 
     featureNameByIndex.removeAt(featureIndex);
+    featureInUse.removeAt(featureIndex);
     featureIndexByName.remove(feature);
     for (int i=0; i<cachedSlices.count(); i++)
     {
@@ -315,6 +331,9 @@ bool MLCachedAccess::RemoveFeature(QString feature)
             cachedSlices[i]->RemoveFeature(featureIndex);
         }
     }
+
+    RebuildFeatureIDsInUse();
+
     return true;
 }
 
@@ -330,6 +349,13 @@ MLCachedSlice * MLCachedAccess::GetSlice(int sliceIndex)
         //Assign one
         return cachedSlices[AssignCacheSlot(sliceIndex)];
     }
+}
+
+void MLCachedAccess::RebuildFeatureIDsInUse()
+{
+    featureIDsInUse.clear();
+    for(int i=0; i<featureInUse.count(); i++)
+        if (featureInUse[i]) featureIDsInUse.append(i);
 }
 
 float MLCachedAccess::GetFeatureValueAt(int x, int y, int z, int featureID)

@@ -58,8 +58,9 @@ private:
     bool RestartFlag;
     QList <QGraphicsLineItem *> LineList;
     void ThreeDBrushPixels(QList <int> *X, QList <int> *Y, int *PointCount, double offset, int mode);
+    int segBuffer[256];
 
-
+    void recalcForML(int x, int y, QByteArray *locks);
 };
 
 extern Brush_class Brush;

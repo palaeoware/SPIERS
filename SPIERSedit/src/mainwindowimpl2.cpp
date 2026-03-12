@@ -1218,7 +1218,7 @@ void MainWindowImpl::on_GenerateButton_clicked()
     //save all my data
     CopyingImpl dialog;
     if (tabwidget->currentIndex() == 0) dialog.GenerateLinear(SliceSelectorList);
-    if (tabwidget->currentIndex() == 1) dialog.GeneratePoly(SliceSelectorList);
+    if (tabwidget->currentIndex() == 1) openCV->Generate(SliceSelectorList);
     if (tabwidget->currentIndex() == 2) dialog.GenerateRange(SliceSelectorList);
     if (tabwidget->currentIndex() == 3) dialog.GenerateLCE(SliceSelectorList);
     if (tabwidget->currentIndex() == 4) dialog.GenerateRadial(SliceSelectorList, bh);

@@ -42,7 +42,6 @@ public:
     void GenerateLCE(QListWidget *SliceSelectorList);
     void GenerateGradient(QListWidget *SliceSelectorList);
     void GenerateLinear(QListWidget *SliceSelectorList);
-    void GeneratePoly(QListWidget *SliceSelectorList);
     void GenerateML(QListWidget *SliceSelectorList);
     void GenerateRange(QListWidget *SliceSelectorList);
     void GenerateAllLinear();

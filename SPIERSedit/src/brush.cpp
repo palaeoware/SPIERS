@@ -725,6 +725,49 @@ void Brush_class::brighten(int x, int y, int segment, int effect)
     //FilesDirty[CurrentFile]=true;
 }
 
+void Brush_class::recalcForML(int x, int y, QByteArray *locks)
+{
+    int n;
+    int pos;
+    int xoff, yoff;
+    int ax, ay;
+
+    xoff = x / ColMonoScale;
+    yoff = y / ColMonoScale;
+
+    for (n = 0; n < PixelCount; n++)
+    {
+        ay = Ypos[n] + yoff;
+        if (ay >= 0)
+            if (ay < fheight)
+            {
+                ax = Xpos[n] + xoff;
+                if (ax >= 0)
+                    if (ax < fwidth)
+                    {
+                        pos = ay * fwidth + ax;
+                        int pos4 = ay * fwidth4 + ax;
+                        if (locks->at(pos)==0)
+                        {
+                            openCV->GetProbabilitiesAllSegments(ax,ay,CurrentFile,segBuffer);
+                            for (int i=0; i<SegmentCount; i++)
+                            {
+                                if (!Segments[i]->Locked)
+                                {
+                                    GA[i]->bits()[pos4] = (uchar) segBuffer[i];
+                                    Segments[i]->Dirty = true;
+                                    Segments[i]->UndoDirty = true;
+                                }
+                            }
+                            dirty[pos] = 1;
+                        }
+                    }
+            }
+    }
+    ;
+
+}
+
 void Brush_class::recalc(int x, int y, int segment, QVector<uchar> *sample, QByteArray *locks)
 {
     int n;
@@ -732,6 +775,12 @@ void Brush_class::recalc(int x, int y, int segment, QVector<uchar> *sample, QByt
     int pos;
     int xoff, yoff;
     int ax, ay;
+
+    if (tabwidget->currentIndex() == 1) //Special case - recalc for ML - affects all segments
+    {
+        recalcForML(x,y,locks);
+        return;
+    }
 
     if (Segments[segment]->Locked) return;
     xoff = x / ColMonoScale;
@@ -752,10 +801,10 @@ void Brush_class::recalc(int x, int y, int segment, QVector<uchar> *sample, QByt
                         pos = ay * fwidth + ax;
                         int pos4 = ay * fwidth4 + ax;
                         if (locks->at(pos)==0)
+                        {
                             data[pos4] = GenPixel(ax, ay, segment, sample, locks);
-                        else
-                            //qDebug()<<"Locked";
-                        dirty[pos] = 1;
+                            dirty[pos] = 1;
+                        }
                     }
             }
     }

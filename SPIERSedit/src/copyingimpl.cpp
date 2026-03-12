@@ -508,29 +508,6 @@ void CopyingImpl::GenerateML(QListWidget *SliceSelectorList)
     if (c > 1) close();
 }
 
-/**
- * @brief CopyingImpl::GeneratePoly
- * @param SliceSelectorList
- */
-void CopyingImpl::GeneratePoly(QListWidget *SliceSelectorList)
-{
-    int c = SliceSelectorList->selectedItems().count();
-    if (c > 1) show();
-    copying = true;
-    this->setWindowTitle("Generating polynomial segment files...");
-    WriteAllData(CurrentFile);
-    if (c > 1)  progressBar->setMaximum(c);
-    int item_count=0;
-    for (int i = 0; i < Files.count(); i++)
-    {
-        if ((SliceSelectorList->item(i))->isSelected()) MakeML(CurrentSegment, i, false);
-        if (c > 1) progressBar->setValue(item_count++);
-        if (c > 1) qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
-    }
-    LoadAllData(CurrentFile);
-    copying = false;
-    if (c > 1) close();
-}
 
 /**
  * @brief CopyingImpl::GenerateRange

@@ -730,22 +730,22 @@ QByteArray CopyingImpl::ExpandGrid(QByteArray *grid, int awidth, int aheight)
         {
             if (grid->at(Gpos))
             {
-                NewGrid[Gpos] = 255;
+                NewGrid[Gpos] = 255u;
                 //set all 8 surroundings in NewGrid
                 if (i > 0)
                 {
-                    NewGrid[Gpos - 1] = 255;
-                    if (j > 0) NewGrid[Gpos - 1 - gxsize] = 255;
-                    if (j < (gysize - 1)) NewGrid[Gpos - 1 + gxsize] = 255;
+                    NewGrid[Gpos - 1] = 255u;
+                    if (j > 0) NewGrid[Gpos - 1 - gxsize] = 255u;
+                    if (j < (gysize - 1)) NewGrid[Gpos - 1 + gxsize] = 255u;
                 }
                 if (i < (gxsize - 1))
                 {
-                    NewGrid[Gpos + 1] = 255;
-                    if (j > 0) NewGrid[Gpos + 1 - gxsize] = 255;
-                    if (j < (gysize - 1)) NewGrid[Gpos + 1 + gxsize] = 255;
+                    NewGrid[Gpos + 1] = 255u;
+                    if (j > 0) NewGrid[Gpos + 1 - gxsize] = 255u;
+                    if (j < (gysize - 1)) NewGrid[Gpos + 1 + gxsize] = 255u;
                 }
-                if (j > 0) NewGrid[Gpos - gxsize] = 255;
-                if (j < (gysize - 1)) NewGrid[Gpos + gxsize] = 255;
+                if (j > 0) NewGrid[Gpos - gxsize] = 255u;
+                if (j < (gysize - 1)) NewGrid[Gpos + gxsize] = 255u;
 
             }
             Gpos++;
@@ -1198,7 +1198,7 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
                 if (XYDownsample * ZDownsample > 1)
                 {
                     for (n = 0; n < awidth; n++) for (m = 0; m < aheight; m++)
-                            if (ResampleForLoRes(n * XYDownsample, m * XYDownsample, temparray)) (*OutputArray)[m * awidth + n] = 255;
+                            if (ResampleForLoRes(n * XYDownsample, m * XYDownsample, temparray)) (*OutputArray)[m * awidth + n] = 255u;
                 }
 
                 //PADDING
@@ -1244,7 +1244,7 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
                         {
                             bigpos = mm * awidth + n * GRID_SCALE; //work out index into big array
                             for (int nn = n * GRID_SCALE; nn < xmax; nn++) //row each column
-                                if ((*OutputArray)[bigpos++]) (*GridArray)[Gpos] = 255;
+                                if ((*OutputArray)[bigpos++]) (*GridArray)[Gpos] = 255u;
                         }
                         //break2:
                         Gpos++;

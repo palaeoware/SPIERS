@@ -478,7 +478,6 @@ QList<LabelledPoint> GenerateLabels(MainWindowImpl *mw)
                         if (seg!=-1)
                         {
                             labels.append(LabelledPoint(jx, jy, k, seg));
-                            qDebug()<<"Added "<<jx<<jy<<seg;
                         }
                     }
                 }
@@ -898,26 +897,6 @@ void ApplyGradient(int seg, int fnum)
     SaveGreyData(fnum, seg);
 }
 
-void MakeML(int seg, int fnum, bool flag = false)
-{
-    //load data for file - can and should assume existing data is safe
-    if (!flag) LoadAllData(fnum);
-
-    uchar *data;
-    data = GA[seg]->bits();
-
-    QByteArray NewLocks = DoMaskLocking();
-
-    for (int h = 0; h < fheight; h++)
-        for (int w = 0; w < fwidth; w++)
-        {
-            if (!(NewLocks[(fwidth * h + w)])) *(data + (fwidth4 * h + w)) = openCV->GetProbability(w, h, fnum, seg);
-        }
-
-
-    if (!flag) SaveGreyData(fnum, seg);
-
-}
 
 void MakeLinearGreyScale(int seg, int fnum, bool flag = false)
 {
@@ -1192,7 +1171,7 @@ uchar GenPixel(int x, int y, int s, QVector<uchar> *sample, QByteArray *locks)
 
     if (tabwidget->currentIndex() == 1)
     {
-        return MLPixel(x, y, s);
+        qDebug()<<"ERROR!!!";
     }
 
     if (tabwidget->currentIndex() == 2)
