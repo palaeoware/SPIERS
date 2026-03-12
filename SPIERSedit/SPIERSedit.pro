@@ -12,7 +12,7 @@ QT += core \
     widgets
 
 CONFIG += qt \
-    release \
+    debug_and_release \
     warn_on \
     thread \
     sdk_no_version_check
@@ -69,9 +69,13 @@ HEADERS += src/display.h \
     src/importdialogimpl.h \
     src/labelledpoint.h \
     src/mainwindowimpl.h \
+    src/mlcachedaccess.h \
+    src/mlfeaturecalculator.h \
+    src/mlupdateblockingdialog.h \
     src/myscene.h \
     src/copyingimpl.h \
     src/moreimpl.h \
+    src/opencvfileio.h \
     src/opencvinterface.h \
     src/undo.h \
     src/contrastimpl.h \
@@ -110,9 +114,13 @@ SOURCES += src/display.cpp \
     src/labelledpoint.cpp \
     src/main.cpp \
     src/mainwindowimpl.cpp \
+    src/mlcachedaccess.cpp \
+    src/mlfeaturecalculator.cpp \
+    src/mlupdateblockingdialog.cpp \
     src/myscene.cpp \
     src/copyingimpl.cpp \
     src/moreimpl.cpp \
+    src/opencvfileio.cpp \
     src/opencvinterface.cpp \
     src/undo.cpp \
     src/contrastimpl.cpp \

@@ -270,7 +270,7 @@ extern int  FirstOutputFile, LastOutputFile;
 extern int MaxTriangles;
 extern bool RangeHardFill, RangeSelectedOnly, OutputMirroring;
 extern int  PixSens, XYDownsample, ZDownsample;
-extern bool HiddenMasksLockedForGeneration, SegmentBrushAppliesMasks;
+extern bool HiddenMasksLockedForGeneration, SegmentBrushAppliesMasks, SegmentBrushAppliesLocks;
 extern bool SegmentsLocked, CurveMarkersAsCrosses, CurveShapeLocked;
 extern int LastMouseX, LastMouseY;
 extern bool SquareBrush;

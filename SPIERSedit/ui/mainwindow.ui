@@ -352,6 +352,9 @@
     <addaction name="separator"/>
     <addaction name="actionSquare"/>
     <addaction name="action3D_Brush"/>
+    <addaction name="separator"/>
+    <addaction name="actionSegment_brush_applies_masks"/>
+    <addaction name="actionSegment_brush_applies_locks"/>
    </widget>
    <widget class="QMenu" name="menuSegments">
     <property name="enabled">
@@ -392,7 +395,6 @@
     <addaction name="actionMaskGo_back_one_slice_after_copy"/>
     <addaction name="separator"/>
     <addaction name="actionHidden_masks_locked_for_generation"/>
-    <addaction name="actionSegment_brush_applies_masks"/>
     <addaction name="separator"/>
     <addaction name="actionLock_Selected_Masks"/>
     <addaction name="actionUnlock_Selected_Masks"/>
@@ -1311,6 +1313,13 @@
         <layout class="QVBoxLayout" name="verticalLayout_11">
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_15">
+           <item>
+            <widget class="QPushButton" name="testML">
+             <property name="text">
+              <string>TestML</string>
+             </property>
+            </widget>
+           </item>
            <item>
             <widget class="QPushButton" name="trainML">
              <property name="text">
@@ -4650,6 +4659,14 @@ Interpreted Images:</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+-</string>
+   </property>
+  </action>
+  <action name="actionSegment_brush_applies_locks">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Segment brush applies locks</string>
    </property>
   </action>
  </widget>

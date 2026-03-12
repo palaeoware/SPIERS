@@ -842,6 +842,7 @@ void Brush_class::segment(int x, int y, int effect)
     int ax, ay;
     uchar tmp;
     uchar *mdata = (uchar *) Masks.data(); //for seg applies mask case
+    uchar *ldata = (uchar *) Locks.data(); //ditto locks
     int m, s; //will be mask to apply
     QList <uchar *> data;
 
@@ -865,11 +866,15 @@ void Brush_class::segment(int x, int y, int effect)
                 if (ax >= 0)
                     if (ax < fwidth)
                     {
+
+
                         if (SegmentBrushAppliesMasks)
                         {
                             pos = ((fheight - ay - 1) * fwidth + ax);
                             tmp = mdata[pos];
-                            if (tmp <= MaxUsedMask) if ((MasksSettings[static_cast<int>(tmp)]->Lock) == false) mdata[pos] = static_cast<uchar>(m);
+                            if (tmp <= MaxUsedMask)
+                                if ((MasksSettings[static_cast<int>(tmp)]->Lock) == false)
+                                    mdata[pos] = static_cast<uchar>(m);
                         }
                         //now do actual segmentation effect
 
@@ -902,11 +907,25 @@ void Brush_class::segment(int x, int y, int effect)
                                     if (smax == 0)
                                     {
                                         (data[s])[pos] = static_cast<uchar>(255);
+
                                     }
                                     else
                                     {
-                                        for (n = 0; n < SegmentCount; n++) if ((data[n])[pos] == 255) if (!(Segments[n]->Locked)) (data[n])[pos] = static_cast<uchar>(254); // all segments capped at 254
+                                        for (n = 0; n < SegmentCount; n++)
+                                            if ((data[n])[pos] == 255)
+                                                if (!(Segments[n]->Locked))
+                                                    (data[n])[pos] = static_cast<uchar>(254); // all segments capped at 254
                                         (data[s])[pos] = static_cast<uchar>(255);
+                                    }
+
+                                    if (SegmentBrushAppliesLocks)
+                                    {
+
+                                        pos = ((fheight - ay - 1) * fwidth + ax) * 2;
+                                        if (s==-2)
+                                            ldata[pos] = 0;
+                                        else
+                                            ldata[pos] = 255;
                                     }
                                 }
                             }
@@ -919,7 +938,8 @@ void Brush_class::segment(int x, int y, int effect)
         s->Dirty = true;
         s->UndoDirty = true;
     }
-    if (SegmentBrushAppliesMasks)   MasksDirty = true;
+    if (SegmentBrushAppliesMasks) MasksDirty = true;
+    if (SegmentBrushAppliesLocks) LocksDirty = true;
     //FilesDirty[CurrentFile]=true;
 }
 

@@ -289,6 +289,11 @@ private slots:
 
     void on_trainML_clicked();
 
+    void on_testML_clicked();
+
+
+    void on_actionSegment_brush_applies_locks_triggered();
+
 private:
     void MakeUndo(QString type);
     void RefreshMasks();

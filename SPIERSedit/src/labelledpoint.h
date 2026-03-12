@@ -6,9 +6,10 @@
 class LabelledPoint
 {
 public:
-    LabelledPoint(int xpos, int ypos, int seg);
+    LabelledPoint(int xpos, int ypos, int slice, int seg);
     int x;
     int y;
+    int z;
     int segment;
 };
 

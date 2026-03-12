@@ -56,7 +56,7 @@ int fwidth4;
 double CurrentZoom;
 int ColMonoScale; //This is the resample factor - i.e. the binning - name is historical!
 int Trans, CMin, CMax; //settings for colour (source) files
-bool HiddenMasksLockedForGeneration, SegmentBrushAppliesMasks;
+bool HiddenMasksLockedForGeneration, SegmentBrushAppliesMasks, SegmentBrushAppliesLocks;
 bool SegmentsLocked, CurveMarkersAsCrosses;
 QString FullSettingsFileName;
 

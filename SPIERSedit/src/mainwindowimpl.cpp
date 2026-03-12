@@ -2237,6 +2237,21 @@ void MainWindowImpl::on_actionDecrease_Size_triggered()
 
 void MainWindowImpl::on_trainML_clicked()
 {
-    openCV->TrainOnOneSlice(CurrentFile);
+    openCV->Train(CurrentFile, this);
+}
+
+
+void MainWindowImpl::on_testML_clicked()
+{
+    openCV->CalculateFeatureData(this);
+}
+
+
+
+
+void MainWindowImpl::on_actionSegment_brush_applies_locks_triggered()
+{
+    if (actionSegment_brush_applies_locks->isChecked()) SegmentBrushAppliesLocks = true;
+    else SegmentBrushAppliesLocks = false;
 }
 

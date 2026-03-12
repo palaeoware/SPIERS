@@ -89,7 +89,7 @@ void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const Q
 #ifndef __APPLE__
 int main(int argc, char **argv)
 {
-
+    
     OpenCVInterface::TestOpenCV();
 
     qDebug()<<"OpenCV enabled? "<<OpenCVInterface::enabled;

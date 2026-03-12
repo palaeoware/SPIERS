@@ -1304,6 +1304,8 @@ void ApplyDefaultSettings()
     OutputMirroring = false;
     HiddenMasksLockedForGeneration = false;
     SegmentBrushAppliesMasks = false;
+    SegmentBrushAppliesLocks = false;
+
     CurveShapeLocked = false;
     SegmentsLocked = false;
     CurveMarkersAsCrosses = false;

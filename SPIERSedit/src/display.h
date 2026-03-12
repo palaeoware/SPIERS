@@ -30,7 +30,7 @@
 extern void ShowImage(QGraphicsView *gv);
 extern void InitImage(QGraphicsView *gv);
 extern void DeleteDisplayObjects();
-extern QList<LabelledPoint> GenerateLabels();
+extern QList<LabelledPoint> GenerateLabels(MainWindowImpl *mw);
 extern void ClearImages();
 extern void MakeLinearGreyScale(int seg, int fnum, bool flag);
 extern void MakeML(int seg, int fnum, bool flag);

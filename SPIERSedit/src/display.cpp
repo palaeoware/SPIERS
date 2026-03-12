@@ -31,7 +31,7 @@
 #include "myscene.h"
 #include "brush.h"
 #include "mainwindowimpl.h"
-
+#include "mlupdateblockingdialog.h"
 
 QGraphicsPixmapItem *MainImage;
 double LastZoom;
@@ -428,39 +428,69 @@ QImage GenerateThresh()
 
 //Modified GenerateThresh to generate a byte array of segment numbers (=labels for ML)
 //A few other simplfications too
-QList<LabelledPoint> GenerateLabels()
+QList<LabelledPoint> GenerateLabels(MainWindowImpl *mw)
 {
+    SaveLocks(CurrentFile);
+
     //First - work out segments at each point
     QList<LabelledPoint> labels;
 
-    QList <uchar *> GApointers;
-    //set up my pointers - an optimisation to point straight to data
-    for (int n = 0; n < SegmentCount; n++)
-        GApointers.append(GA[n]->bits());
-
-
-    for (int jx = 0; jx < fwidth; jx++)
-    for (int jy = 0; jy < fheight; jy++)
+    for (int k = 0; k < Files.count(); k++)
     {
-        int high = 128;
-        int seg = -1;
-        //n=j*4;
-        for (int i = 0; i < SegmentCount; i++)
+        if (mw->SliceSelectorList->item(k)->isSelected())
         {
-            int temp = (int)  * ((GA[i]->bits()) + jy * fwidth4 + jx);
-            if (temp>255) temp=255;
-            if (temp<0) temp=0;
-
-            if (temp >= high)
+            MLUpdateBlockingDialog::updateDetailText(QString("Slice %1").arg(k));
+            for (int n = 0; n < SegmentCount; n++)
             {
-                high = temp;
-                seg = i;
+                LoadGreyData(k, n);
             }
+            LoadLocks(k);
+
+
+            QList <uchar *> GApointers;
+            //set up my pointers - an optimisation to point straight to data
+            for (int n = 0; n < SegmentCount; n++)
+                GApointers.append(GA[n]->bits());
+
+            uchar *ldata = (uchar *) Locks.data(); //ditto locks
+
+            for (int jx = 0; jx < fwidth; jx++)
+                for (int jy = 0; jy < fheight; jy++)
+                {
+                    if (ldata[((fheight - jy - 1) * fwidth + jx) * 2] > 0) //if locked
+                    {
+                        //qDebug()<<"Pixel locked "<<k<<jx<<jy;
+                        int high = 128;
+                        int seg = -1;
+                        //n=j*4;
+                        for (int i = 0; i < SegmentCount; i++)
+                        {
+                            int temp = (int)  * ((GA[i]->bits()) + jy * fwidth4 + jx);
+                            if (temp>255) temp=255;
+                            if (temp<0) temp=0;
+
+                            if (temp >= high)
+                            {
+                                high = temp;
+                                seg = i;
+                            }
+                        }
+                        if (seg!=-1)
+                        {
+                            labels.append(LabelledPoint(jx, jy, k, seg));
+                            qDebug()<<"Added "<<jx<<jy<<seg;
+                        }
+                    }
+                }
         }
-        if (seg!=-1)
-            labels.append(LabelledPoint(jx, jy, seg));
     }
 
+    //Restore data for normal operation
+    for (int n = 0; n < SegmentCount; n++)
+    {
+        LoadGreyData(CurrentFile, n);
+    }
+    LoadLocks(CurrentFile);
     return labels;
 }
 
@@ -877,11 +907,11 @@ void MakeML(int seg, int fnum, bool flag = false)
     data = GA[seg]->bits();
 
     QByteArray NewLocks = DoMaskLocking();
-    qDebug()<<"Here in MakeML";
+
     for (int h = 0; h < fheight; h++)
         for (int w = 0; w < fwidth; w++)
         {
-            if (!(NewLocks[(fwidth * h + w)])) *(data + (fwidth4 * h + w)) = openCV->GetProbability(w, h, seg);
+            if (!(NewLocks[(fwidth * h + w)])) *(data + (fwidth4 * h + w)) = openCV->GetProbability(w, h, fnum, seg);
         }
 
 
@@ -1055,7 +1085,7 @@ uchar MLPixel(int w, int h, int s)
     w *= ColMonoScale;
     h *= ColMonoScale;
 
-    return openCV->GetProbability(w, h, s);
+    return openCV->GetProbability(w, h, CurrentFile, s);
  }
 
 uchar RangePixel(int w, int h, int bot, int top, double cen, double gra, int seg)
@@ -1150,9 +1180,7 @@ void MakePolyGreyScale(int seg, int fnum, bool flag = false)
 
 uchar GenPixel(int x, int y, int s, QVector<uchar> *sample, QByteArray *locks)
 {
-    qDebug()<<"Tab index "<<tabwidget->currentIndex();
-    CurrentPolyContrast = pow(static_cast<double>(2), Segments[s]->PolyContrast) / Segments[s]->PolyScale;
-    //generate a pixel using whatever method
+     //generate a pixel using whatever method
     if (tabwidget->currentIndex() == 0)
     {
         uchar t = GreyScalePixel( x,  y,  Segments[s]->LinPercent[0],
