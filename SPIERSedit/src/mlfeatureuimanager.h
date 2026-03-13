@@ -12,6 +12,7 @@ public:
     MLFeatureUIManager(MLCachedAccess *data, QTableWidget *tableWidget);
     void Rebuild();
     void ActivateSelectedFeatures(bool activate);
+    void DeleteSelectedFeatures();
 private slots:
     void OnTableItemChanged(QTableWidgetItem *item);
 private:

@@ -157,3 +157,25 @@ void MLFeatureMean::CalcFeatureMean2D(cv::Mat &mat, int sliceID, MLCachedAccess 
     }
 }
 
+
+
+int MLFeatureMean::GetDependencyDepth()
+{
+    if (_is3D)
+        return 2;
+    else
+        return 1;
+
+}
+
+
+QString MLFeatureMean::GetArg1SetupString(int v)
+{
+    return QString("window=%1")
+        .arg(v);
+}
+
+QString MLFeatureMean::GetArg2SetupString(int v)
+{
+    return "";
+}

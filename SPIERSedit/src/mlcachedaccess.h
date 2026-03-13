@@ -60,6 +60,7 @@ public:
     void SetFeatureInUse(int featureID, bool inUse);
     QList<int> GetFeaturesInUse();
     void DumpFeatures();
+    int GetIndexForFeature(MLFeature *feature);
 private:
     ulong GetMemorySizeOfSlice();
     void ResizeCache();
@@ -80,5 +81,6 @@ private:
 
 
     int FindReusableCacheSlot();
+    bool IsFeatureADependency(MLFeature *feature);
 };
 

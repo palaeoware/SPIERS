@@ -21,6 +21,15 @@ protected:
     QString GetTypeCodeForFile() override;
     QString GetArgsForFile() override;
     QString Get3DForFile() override;
+
+    // MLFeature interface
+public:
+    int GetDependencyDepth() override;
+
+    // MLFeature interface
+public:
+    QString GetArg1SetupString(int v) override;
+    QString GetArg2SetupString(int v) override;
 };
 
 #endif // MLFEATUREDIFFERENCEOFGAUSSIANS_H

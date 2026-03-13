@@ -8,6 +8,7 @@
 #include "mainwindowimpl.h"
 
 class MLFeatureUIManager;
+class MLAddFeature;
 
 class OpenCVInterface
 {
@@ -30,10 +31,11 @@ private:
     cv::Ptr<cv::ml::RTrees> rf;
     MLCachedAccess *data;
     void CreateSingletonsIfNeeded();
-    void SetUpFeatures();
+    void TestSetUpFeatures();
     void MakeML(int fnum);
     void ComputeSliceProbabilitiesFromVotes(int sliceID);
     MLFeatureUIManager *uiManager;
+    MLAddFeature *addFeatureDialog;
 };
 
 #endif // OPENCVINTERFACE_H

@@ -23,6 +23,15 @@ protected:
 private:
     void CalcFeatureMean3D(cv::Mat &, int, MLCachedAccess *);
     void CalcFeatureMean2D(cv::Mat &, int, MLCachedAccess *);
+
+    // MLFeature interface
+public:
+    int GetDependencyDepth() override;
+
+    // MLFeature interface
+public:
+    QString GetArg1SetupString(int v) override;
+    QString GetArg2SetupString(int v) override;
 };
 
 #endif // MLFEATUREMEAN_H

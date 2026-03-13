@@ -45,6 +45,7 @@ OBJECTS_DIR += build
 FORMS += ui/import.ui \
     ui/mainwindow.ui \
     ui/Copying.ui \
+    ui/mladdfeature.ui \
     ui/more.ui \
     ui/outputsettings.ui \
     ui/contrast.ui \
@@ -106,7 +107,8 @@ HEADERS += src/display.h \
     ../SPIERScommon/src/darkstyletheme.h \
     ../SPIERScommon/src/netmodule.h \
     ../SPIERScommon/src/semanticversion.h \
-    ../SPIERScommon/src/prereleasecomponent.h
+    ../SPIERScommon/src/prereleasecomponent.h \
+    ui/mladdfeature.h
 
 SOURCES += src/display.cpp \
     src/beamhardening.cpp \
@@ -159,7 +161,8 @@ SOURCES += src/display.cpp \
     ../SPIERScommon/src/darkstyletheme.cpp \
     ../SPIERScommon/src/netmodule.cpp \
     ../SPIERScommon/src/semanticversion.cpp \
-    ../SPIERScommon/src//prereleasecomponent.cpp
+    ../SPIERScommon/src//prereleasecomponent.cpp \
+    ui/mladdfeature.cpp
 
 OPENCV_DIR = C:/opencv/opencv
 INCLUDEPATH += $$OPENCV_DIR/build/include

@@ -220,6 +220,11 @@ int MLCachedAccess::GetIndexForFeature(MLFeature::FeatureType type, MLFeature::C
     return feature;
 }
 
+int MLCachedAccess::GetIndexForFeature(MLFeature *feature)
+{
+    return GetIndexForFeature(feature->GetType(), feature->GetChannel(), feature->is3D(), feature->GetArg1(),feature->GetArg2());
+}
+
 void MLCachedAccess::SetFeatureInUse(int featureID, bool inUse)
 {
     features[featureID]->SetSelected(inUse);
@@ -333,10 +338,35 @@ int MLCachedAccess::AddFeature(MLFeature *feature)
     return nextFeatureIndex;
 }
 
+bool MLCachedAccess::IsFeatureADependency(MLFeature *feature)
+{
+    for (int i=0; i<features.count(); i++)
+    {
+        if (features[i]==feature)
+            continue;
+
+        auto depList = features[i]->GetDependencies();
+        for (int j=0; j<depList.count(); j++)
+        {
+            if (feature->Compare(depList[j]))
+            {
+                qDeleteAll(depList);
+                return true;
+            }
+        }
+        qDeleteAll(depList);
+    }
+    return false;
+}
+
+
 bool MLCachedAccess::RemoveFeature(int featureIndex)
 {
     if (featureIndex == -1)
         //it doesn't exist - return false (error)
+        return false;
+
+    if (IsFeatureADependency(features[featureIndex]))
         return false;
 
     features.removeAt(featureIndex);

@@ -68,6 +68,7 @@ QString MLFeature::GetPrettyFullName()
         .arg(GetPrettyArgs());
 }
 
+//returns true if they are the same
 bool MLFeature::Compare(FeatureType type, Channel channel, bool is3D, int arg1, int arg2)
 {
     if (type!=_type) return false;
@@ -116,7 +117,12 @@ QString MLFeature::GetChannelCodeForFile()
 
 QString MLFeature::GetPrettyChannel()
 {
-    switch (_channel)
+    return GetPrettyChannel(_channel);
+}
+
+QString MLFeature::GetPrettyChannel(Channel ch)
+{
+    switch (ch)
     {
     case Channel::Intensity:
         return "grey";
@@ -127,9 +133,9 @@ QString MLFeature::GetPrettyChannel()
     case Channel::Blue:
         return "blue";
     case Channel::G_B:
-        return "green-blue";
+        return "g-b";
     case Channel::R_G:
-        return "red-green";
+        return "r-g";
     default:
         qDebug()<<"Missing case in GetPrettyChannel";
         return "";

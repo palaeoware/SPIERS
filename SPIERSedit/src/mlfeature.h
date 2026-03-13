@@ -40,8 +40,11 @@ public:
     virtual QString GetPrettyName()=0;
     virtual QString GetPrettyArgs()=0;
     QString GetPrettyChannel();
+    static QString GetPrettyChannel(Channel i);
     virtual QString GetPretty3D()=0;
-
+    virtual int GetDependencyDepth()=0;
+    virtual QString GetArg1SetupString(int v)=0;
+    virtual QString GetArg2SetupString(int v)=0;
     bool IsSelected();
     void SetSelected(bool selected);
     FeatureType GetType();

@@ -3,6 +3,7 @@
 
 #include <QHeaderView>
 #include <QObject>
+#include "globals.h"
 
 MLFeatureUIManager::MLFeatureUIManager(MLCachedAccess *data, QTableWidget *tableWidget)
 {
@@ -34,9 +35,11 @@ void MLFeatureUIManager::OnTableItemChanged(QTableWidgetItem *item)
 
 void MLFeatureUIManager::Rebuild()
 {
-    _tableWidget->setRowCount(_data->GetFeatureCount());
 
     _tableWidget->setUpdatesEnabled(false);
+    _tableWidget->setSortingEnabled(false);
+    _tableWidget->setRowCount(_data->GetFeatureCount());
+
     for (int i=0; i<_data->GetFeatureCount(); i++)
     {
         MLFeature *feature = _data->GetFeature(i);
@@ -60,13 +63,66 @@ void MLFeatureUIManager::Rebuild()
     }
 
     auto *header = _tableWidget->horizontalHeader();
-
+    header->setMinimumSectionSize(1);
     header->setSectionResizeMode(0, QHeaderView::ResizeToContents);
-    header->setSectionResizeMode(1, QHeaderView::Stretch);          // this column expands
+    header->setSectionResizeMode(1, QHeaderView::ResizeToContents);          // this column expands
     header->setSectionResizeMode(2, QHeaderView::ResizeToContents);
     header->setSectionResizeMode(3, QHeaderView::ResizeToContents);
     header->setSectionResizeMode(4, QHeaderView::ResizeToContents);
     _tableWidget->setUpdatesEnabled(true);
+    _tableWidget->setSortingEnabled(true);
+    _tableWidget->clearSelection();
+    _tableWidget->setCurrentItem(nullptr);
+}
+
+void MLFeatureUIManager::DeleteSelectedFeatures()
+{
+    int maxDependencyDepth = -1;
+    QList<MLFeature *> toDelete;
+    for (int i=0; i<_tableWidget->rowCount(); i++)
+    {
+        if (_tableWidget->selectionModel()->isRowSelected(i, QModelIndex()))
+        {
+            MLFeature *feature = _data->GetFeature(_tableWidget->item(i,0)->data(Qt::UserRole).toInt());
+
+            toDelete.append(feature);
+            int depDepth = feature->GetDependencyDepth();
+            if (depDepth>maxDependencyDepth)
+                maxDependencyDepth = depDepth;
+        }
+    }
+
+    //now make lists in dependency depth order. We have to delete highs first
+    QList<QList<MLFeature *>> deleteByDepth;
+    for (int i=0; i<=maxDependencyDepth; i++)
+        deleteByDepth.append(QList<MLFeature*>());
+
+    for (int i=0; i<toDelete.count(); i++)
+    {
+        MLFeature *feature = toDelete[i];
+        deleteByDepth[feature->GetDependencyDepth()].append(feature);
+    }
+
+    QList<MLFeature *> failedList;
+    for (int j=maxDependencyDepth; j>=0; j--)
+    {
+        for (int i=0; i<deleteByDepth[j].count(); i++)
+        {
+            MLFeature *feature = deleteByDepth[j][i];
+            if (!_data->RemoveFeature(_data->GetIndexForFeature(feature)))
+                failedList.append(feature);
+        }
+    }
+
+    Rebuild();
+    if (failedList.count()==1)
+    {
+        Message(QString("Could not remove feature %1 as another feature depends on it").arg(failedList[0]->GetPrettyFullName()));
+    }
+    if (failedList.count()>1)
+    {
+        Message(QString("Could not remove %1 features as other features depend on them").arg(failedList.count()));
+    }
 }
 
 void MLFeatureUIManager::ActivateSelectedFeatures(bool activate)
@@ -94,6 +150,7 @@ void MLFeatureUIManager::SetUpTableWidget()
     _tableWidget->setRowCount(0);
     _tableWidget->setColumnCount(0);
 
+    _tableWidget->horizontalHeader()->setStyleSheet("QHeaderView::section { padding-left: 2px; padding-right: 2px; }");
     _tableWidget->setColumnCount(5);
     _tableWidget->setHorizontalHeaderLabels({
         " ",

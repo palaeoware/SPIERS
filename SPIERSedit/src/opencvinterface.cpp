@@ -15,7 +15,8 @@
 #include "mlfeaturedifferenceofgaussians.h"
 #include "mlfeaturemean.h"
 #include "mlfeatureuimanager.h"
-
+#include "ui/mlAddFeature.h"
+#
 bool OpenCVInterface::enabled;
 
 
@@ -24,6 +25,8 @@ OpenCVInterface::OpenCVInterface()
 {
     data = nullptr;
     uiManager = nullptr;
+    addFeatureDialog = nullptr;
+
 
 }
 
@@ -90,6 +93,7 @@ void OpenCVInterface::GetProbabilitiesAllSegments(int x, int y, int z, int *segB
 
 void OpenCVInterface::Generate(QListWidget *SliceSelectorList)
 {
+    CreateSingletonsIfNeeded();
     WriteAllData(CurrentFile);
 
     MLUpdateBlockingDialog::showDialog(mainwin, "", "","Creating segments using ML data");
@@ -121,17 +125,30 @@ void OpenCVInterface::Generate(QListWidget *SliceSelectorList)
 
 void OpenCVInterface::UIActivateSelectedFeatures(bool activate)
 {
+    CreateSingletonsIfNeeded();
     uiManager->ActivateSelectedFeatures(activate);
 }
 
 void OpenCVInterface::UIDeleteSelectedFeatures()
 {
-
+    CreateSingletonsIfNeeded();
+    uiManager->DeleteSelectedFeatures();
 }
 
 void OpenCVInterface::UIAddFeature()
 {
+    CreateSingletonsIfNeeded();
+    if (addFeatureDialog==nullptr)
+        addFeatureDialog = new MLAddFeature(mainwin);
 
+    addFeatureDialog->Show();
+    MLFeature *feature = addFeatureDialog->GetResult();
+
+    if (feature!=nullptr)
+    {
+        data->SetFeatureInUse(data->AddFeature(feature),true);
+        uiManager->Rebuild();
+    }
 }
 
 void OpenCVInterface::ComputeSliceProbabilitiesFromVotes(int sliceID)
@@ -268,7 +285,7 @@ void OpenCVInterface::CreateSingletonsIfNeeded()
     }
 }
 
-void OpenCVInterface::SetUpFeatures()
+void OpenCVInterface::TestSetUpFeatures()
 {
     data->SetFeatureInUse(data->AddFeature(new MLFeatureIntensity(MLFeature::Channel::Intensity)),true);
 
@@ -297,14 +314,12 @@ void OpenCVInterface::SetUpFeatures()
     data->SetFeatureInUse(data->AddFeature(new MLFeatureIntensity(MLFeature::Channel::G_B)),true);
     data->SetFeatureInUse(data->AddFeature(new MLFeatureGaussian(MLFeature::Channel::G_B,true, 2)), true);
 
-    data->DumpFeatures();
     uiManager->Rebuild();
 }
 
 void OpenCVInterface::CalculateFeatureData(MainWindowImpl *mw)
 {
     CreateSingletonsIfNeeded();
-    SetUpFeatures();
 
     MLUpdateBlockingDialog::showDialog(mw, "Initialising", "", "Calculating Feature Data");
     int featureCount = data->GetFeatureCount();
@@ -327,7 +342,6 @@ void OpenCVInterface::CalculateFeatureData(MainWindowImpl *mw)
 void OpenCVInterface::Train(int slice, MainWindowImpl *mw)
 {
     CreateSingletonsIfNeeded();
-    SetUpFeatures();
 
     if (SegmentCount<2)
     {

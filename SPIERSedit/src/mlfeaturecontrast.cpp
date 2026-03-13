@@ -27,7 +27,7 @@ QList<MLFeature *> MLFeatureContrast::GetDependencies()
 
 QString MLFeatureContrast::GetPrettyName()
 {
-    return "Contrast";
+    return "contrast";
 }
 
 QString MLFeatureContrast::GetPrettyArgs()
@@ -59,4 +59,25 @@ QString MLFeatureContrast::Get3DForFile()
         return "3";
     else
         return "2";
+}
+
+
+int MLFeatureContrast::GetDependencyDepth()
+{
+    if (_is3D)
+        return 3;  //=>gau3=>gau2>=int
+    else
+        return 2;
+}
+
+
+QString MLFeatureContrast::GetArg1SetupString(int v)
+{
+    return QString("Gaussian sigma=%1")
+        .arg(pow(2,v));
+}
+
+QString MLFeatureContrast::GetArg2SetupString(int v)
+{
+    return "";
 }

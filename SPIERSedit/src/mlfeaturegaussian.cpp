@@ -28,7 +28,7 @@ QList<MLFeature *> MLFeatureGaussian::GetDependencies()
 
 QString MLFeatureGaussian::GetPrettyName()
 {
-    return "Gaussian";
+    return "gaussian";
 }
 
 QString MLFeatureGaussian::GetPrettyArgs()
@@ -223,4 +223,24 @@ void MLFeatureGaussian::CalcFeatureGaussian3D(cv::Mat &mat, int sliceID, MLCache
             outRow[x] = (wsum > 0.0) ? static_cast<float>(acc / wsum) : 0.0f;
         }
     }
+}
+
+int MLFeatureGaussian::GetDependencyDepth()
+{
+    if (_is3D)
+        return 2;
+    else
+        return 1;
+}
+
+
+QString MLFeatureGaussian::GetArg1SetupString(int v)
+{
+    return QString("sigma=%1")
+        .arg(pow(2,v));
+}
+
+QString MLFeatureGaussian::GetArg2SetupString(int v)
+{
+    return "";
 }

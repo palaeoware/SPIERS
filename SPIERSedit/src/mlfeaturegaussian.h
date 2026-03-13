@@ -18,6 +18,7 @@ public:
     QString GetPretty3D() override;
 
 
+    int GetDependencyDepth() override;
 protected:
     QString GetTypeCodeForFile() override;
     QString GetArgsForFile() override;
@@ -25,6 +26,11 @@ protected:
 private:
     void CalcFeatureGaussian2D(cv::Mat &mat, int sliceID, MLCachedAccess *data);
     void CalcFeatureGaussian3D(cv::Mat &mat, int sliceID, MLCachedAccess *data);
+
+    // MLFeature interface
+public:
+    QString GetArg1SetupString(int v) override;
+    QString GetArg2SetupString(int v) override;
 };
 
 #endif // MLFEATUREGAUSSIAN_H

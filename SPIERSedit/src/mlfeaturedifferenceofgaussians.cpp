@@ -28,7 +28,7 @@ QList<MLFeature *> MLFeatureDifferenceOfGaussians::GetDependencies()
 
 QString MLFeatureDifferenceOfGaussians::GetPrettyName()
 {
-    return "Difference of gaussians";
+    return "diff gaussian";
 }
 
 QString MLFeatureDifferenceOfGaussians::GetPrettyArgs()
@@ -62,4 +62,26 @@ QString MLFeatureDifferenceOfGaussians::Get3DForFile()
         return "3";
     else
         return "2";
+}
+
+
+int MLFeatureDifferenceOfGaussians::GetDependencyDepth()
+{
+    if (_is3D)
+        return 3;  //=>gau3=>gau2>=int
+    else
+        return 2;
+}
+
+
+QString MLFeatureDifferenceOfGaussians::GetArg1SetupString(int v)
+{
+    return QString("sigma=%1")
+        .arg(pow(2,v));
+}
+
+QString MLFeatureDifferenceOfGaussians::GetArg2SetupString(int v)
+{
+    return QString("sigma=%1")
+        .arg(pow(2,v));
 }

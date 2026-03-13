@@ -131,7 +131,7 @@ void MLFeatureIntensity::CalcFeatureColor(cv::Mat &mat, int sliceID, MLCachedAcc
 
 QString MLFeatureIntensity::GetPrettyName()
 {
-    return "Voxel value";
+    return "voxel value";
 }
 
 QString MLFeatureIntensity::GetPrettyArgs()
@@ -163,4 +163,21 @@ QString MLFeatureIntensity::GetArgsForFile()
 QList<MLFeature *> MLFeatureIntensity::GetDependencies()
 {
     return QList<MLFeature *>();  //no dependecies
+}
+
+
+int MLFeatureIntensity::GetDependencyDepth()
+{
+    return 0; //intensity never has dependencies
+}
+
+
+QString MLFeatureIntensity::GetArg1SetupString(int v)
+{
+    return "";
+}
+
+QString MLFeatureIntensity::GetArg2SetupString(int v)
+{
+    return "";
 }
