@@ -10,8 +10,8 @@ class MLFeatureCalculator
 {
 public:
     MLFeatureCalculator();
-    static void CalculateFeature(cv::Mat &mat, int sliceID, QString featureName, MLCachedAccess *data);
-    static QList<QString> GetDependencies(QString featureName);
+    static void CalculateFeature(cv::Mat &mat, int sliceID, MLFeature feature, MLCachedAccess *data);
+    static QList<MLFeature> GetDependencies(MLFeature feature);
 private:
     static void CalcFeatureIntensity(cv::Mat &mat, int sliceID, MLCachedAccess *data);
     static void CalcFeatureColor(cv::Mat &mat, int sliceID, MLCachedAccess *data, QString col);

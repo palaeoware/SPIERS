@@ -69,10 +69,12 @@ void MLCachedSlice::FetchFeatureIfNeeded(int featureIndex)
         FetchFeatureData(featureIndex);
 }
 
+
+
 void MLCachedSlice::FetchFeatureData(int feature)
 {
     bool ok;
-    cv::Mat loadedMat = openCVFileIO::LoadMatBinary(cache->GetFeatureName(feature),
+    cv::Mat loadedMat = openCVFileIO::LoadMatBinary(cache->GetFeature(feature)->GetEncodedNameForFile(),
                                                     cache->GetXSize(), cache->GetYSize(),
                                                     sliceIndex, ok);
 
@@ -81,7 +83,8 @@ void MLCachedSlice::FetchFeatureData(int feature)
         //file loading worked OK
         featureData[feature] = loadedMat;
         MLUpdateBlockingDialog::updateDetailText(
-            QString("Loaded feature %1 for slice %2 from file cache").arg(cache->GetFeatureName(feature))
+            QString("Loaded feature %1 for slice %2 from file cache")
+                .arg(cache->GetFeature(feature)->GetPrettyFullName())
                 .arg(sliceIndex));
     }
     else
@@ -89,11 +92,12 @@ void MLCachedSlice::FetchFeatureData(int feature)
         cv::Mat mat;
         mat.create(cache->GetYSize(), cache->GetXSize(), CV_32F);
         MLUpdateBlockingDialog::updateDetailText(
-            QString("Calculating feature %1 for slice %2").arg(cache->GetFeatureName(feature))
+            QString("Calculating feature %1 for slice %2")
+                .arg(cache->GetFeature(feature)->GetPrettyFullName())
                 .arg(sliceIndex));
         cache->CalculateFeature(mat, sliceIndex, feature);
         featureData[feature] = mat;
-        openCVFileIO::SaveMatBinary(cache->GetFeatureName(feature),
+        openCVFileIO::SaveMatBinary(cache->GetFeature(feature)->GetEncodedNameForFile(),
                                     featureData[feature], sliceIndex);
     }
     featuresValid[feature] = true;
@@ -204,9 +208,21 @@ MLCachedAccess::MLCachedAccess(int sliceCount, bool colourImages, int fwidth, in
     SetMaxMemoryUsage(1024ul *1024ul *1024ul * 2ul); //2Gb default
 }
 
+int MLCachedAccess::GetIndexForFeature(MLFeature::FeatureType type, MLFeature::Channel channel, bool is3D, int arg1, int arg2)
+{
+    int feature = -1;
+    for (int i=0; i<features.count(); i++)
+    {
+        if (features[i]->Compare(type, channel, is3D, arg1, arg2))
+            return i;
+    }
+
+    return feature;
+}
+
 void MLCachedAccess::SetFeatureInUse(int featureID, bool inUse)
 {
-    featureInUse[featureID]= inUse;
+    features[featureID]->SetSelected(inUse);
     RebuildFeatureIDsInUse();
 }
 
@@ -214,19 +230,27 @@ QList<int> MLCachedAccess::GetFeaturesInUse()
 {
     return featureIDsInUse;
 }
+
+void MLCachedAccess::DumpFeatures()
+{
+    for (int i=0; i<features.count(); i++)
+    {
+        qDebug()<<"Feature "<<i<<":"<<features[i]->Dump();
+    }
+}
 QString MLCachedAccess::GetSourceImageFeatureName()
 {
     return "src";
 }
 
-QString MLCachedAccess::GetFeatureName(int featureID)
+MLFeature *MLCachedAccess::GetFeature(int featureID)
 {
-    return featureNameByIndex[featureID];
+    return features[featureID];
 }
 
 int MLCachedAccess::GetFeatureCount()
 {
-    return featureNameByIndex.count();
+    return features.count();
 }
 
 int MLCachedAccess::GetXSize()
@@ -272,33 +296,29 @@ cv::Mat MLCachedAccess::GetWholeSliceFeature(int z, int featureIndex)
 
 void MLCachedAccess::CalculateFeature(cv::Mat &mat, int sliceIndex, int featureID)
 {
-    MLFeatureCalculator::CalculateFeature(mat, sliceIndex, featureNameByIndex[featureID], this);
+    features[featureID]->CalculateFeature(mat, sliceIndex, this);
 }
 
-//return -1 if not found
-int MLCachedAccess::GetIndexForFeature(QString featureName)
-{
-    return featureIndexByName.value(featureName, -1);
-}
-
-int MLCachedAccess::AddFeature(QString feature)
+int MLCachedAccess::AddFeature(MLFeature *feature)
 {
     //Already exist? If so just return the index
-    if (featureIndexByName.contains(feature))
-        return featureIndexByName.value(feature);
-
+    for (int i=0; i<features.count(); i++)
+        if (features[i]->Compare(feature))
+        {
+            delete feature; //will not be using it
+            return i;
+        }
     qDebug()<<"Adding feature "<<feature;
-    auto dependencies = MLFeatureCalculator::GetDependencies(feature);
+
+    auto dependencies = feature->GetDependencies();
     for (int i=0; i<dependencies.count(); i++)
     {
         AddFeature(dependencies[i]);
     }
 
-    featureNameByIndex.append(feature);
-    featureInUse.append(false);
     //No, I have to add it
-    int nextFeatureIndex = featureIndexByName.count();
-    featureIndexByName.insert(feature, nextFeatureIndex);
+    int nextFeatureIndex = features.count();
+    features.append(feature);
 
     for (int i=0; i<cachedSlices.count(); i++)
     {
@@ -313,17 +333,14 @@ int MLCachedAccess::AddFeature(QString feature)
     return nextFeatureIndex;
 }
 
-bool MLCachedAccess::RemoveFeature(QString feature)
+bool MLCachedAccess::RemoveFeature(int featureIndex)
 {
-    int featureIndex = featureIndexByName.value(feature,-1);
-
     if (featureIndex == -1)
         //it doesn't exist - return false (error)
         return false;
 
-    featureNameByIndex.removeAt(featureIndex);
-    featureInUse.removeAt(featureIndex);
-    featureIndexByName.remove(feature);
+    features.removeAt(featureIndex);
+
     for (int i=0; i<cachedSlices.count(); i++)
     {
         if (cachedSlices[i]!=nullptr)
@@ -354,8 +371,8 @@ MLCachedSlice * MLCachedAccess::GetSlice(int sliceIndex)
 void MLCachedAccess::RebuildFeatureIDsInUse()
 {
     featureIDsInUse.clear();
-    for(int i=0; i<featureInUse.count(); i++)
-        if (featureInUse[i]) featureIDsInUse.append(i);
+    for(int i=0; i<features.count(); i++)
+        if (features[i]->IsSelected()) featureIDsInUse.append(i);
 }
 
 float MLCachedAccess::GetFeatureValueAt(int x, int y, int z, int featureID)
@@ -387,7 +404,7 @@ void MLCachedAccess::SetMaxMemoryUsage(uint64 size)
 ulong MLCachedAccess::GetMemorySizeOfSlice()
 {
     ulong size = (ulong) sourceImageSize;
-    size += (ulong) featureIndexByName.count() * (ulong)featureSize;
+    size += (ulong) features.count() * (ulong)featureSize;
     return size;
 }
 
@@ -409,7 +426,7 @@ void MLCachedAccess::ResizeCache()
         //qDebug()<<"Adding "<<entriesToAdd<<" new entries";
         for (int i=0; i<entriesToAdd; i++)
         {
-            cachedSlices.append(new MLCachedSlice(featureIndexByName.count(), -1, this));
+            cachedSlices.append(new MLCachedSlice(features.count(), -1, this));
             slicesByCacheIndex.append(-1); //points to no slice
         }
 

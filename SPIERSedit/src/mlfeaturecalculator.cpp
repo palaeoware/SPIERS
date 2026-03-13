@@ -33,11 +33,10 @@ MLFeatureCalculator::MLFeatureCalculator()
 
  *
 */
-
-QList<QString> MLFeatureCalculator::GetDependencies(QString featureName)
+/*
+QList<MLFeature> MLFeatureCalculator::GetDependencies(MLFeature feature)
 {
-    QList<QString> dependencyList;
-    QStringList elements = featureName.toLower().split('@');
+    QList<MLFeature> dependencyList;
 
     if (elements[0]=="mea3")
         dependencyList.append(QString("mea2@%1").arg(elements[1]));
@@ -65,34 +64,47 @@ QList<QString> MLFeatureCalculator::GetDependencies(QString featureName)
 
     return dependencyList;
 }
+*/
 
-
-void MLFeatureCalculator::CalculateFeature(cv::Mat &mat, int sliceID, QString featureName, MLCachedAccess *data)
+/*
+void MLFeatureCalculator::CalculateFeature(cv::Mat &mat, int sliceID, MLFeature feature, MLCachedAccess *data)
 {
     //Switchboard method
-    QStringList elements = featureName.toLower().split('@');
-
-    if (elements[0] == "int")
+    switch(feature.GetType())
     {
-        if (elements.count()==1) CalcFeatureIntensity(mat, sliceID, data);
+
+    case MLFeature::FeatureType::Gaussian:
+        if (feature.is3D())
+            CalcFeatureGaussian3D(mat, sliceID, data, feature.GetArg1());
         else
-        {
-            if (elements[1] == "t") CalcFeatureIntensity(mat, sliceID, data);
-            else CalcFeatureColor(mat, sliceID, data, elements[1]);
-        }
+            CalcFeatureGaussian2D(mat, sliceID, data, feature.GetArg1());
+    case MLFeature::FeatureType::Difference_of_gaussians:
+        if (feature.is3D())
+            CalcFeatureDifferenceOfFeatures(mat, sliceID, data, feature.GetArg1());
+        else
+            CalcFeatureDifferenceOfFeatures(mat, sliceID, data, feature.GetArg1());
+    case MLFeature::FeatureType::Intensity:
+        if (feature.GetChannel()==MLFeature::Channel::Intensity)
+            CalcFeatureIntensity(mat, sliceID, data);
+        else
+            CalcFeatureColor(mat, sliceID, data, feature.GetChannel());
+
+    case MLFeature::FeatureType::Local_mean:
+        if (feature.is3D())
+            CalcFeatureMean3D(mat, sliceID, data, feature.GetArg1());
+        else
+            CalcFeatureMean2D(mat, sliceID, data, feature.GetArg1());
+
+    case MLFeature::FeatureType::Contrast:
+    case MLFeature::FeatureType::Gradient:
+    case MLFeature::FeatureType::Laplacian_of_gaussian:
+    case MLFeature::FeatureType::Local_variance:
+    case MLFeature::FeatureType::Structure_tensor:
+    case MLFeature::FeatureType::Hessian:
+    default:
+        qDebug()<<"Not implemented";
+        break;
     }
-
-    else if (elements[0] == "mea3")
-        CalcFeatureMean3D(mat, sliceID, data, elements[1]);
-
-    else if (elements[0] == "mea2")
-        CalcFeatureMean2D(mat, sliceID, data, elements[1]);
-
-    else if (elements[0] == "gau2")
-        CalcFeatureGaussian2D(mat, sliceID, data, elements[1]);
-
-    else if (elements[0] == "gau3")
-        CalcFeatureGaussian3D(mat, sliceID, data, elements[1]);
 
     else if (elements[0] == "dog3")
     {
@@ -128,7 +140,7 @@ void MLFeatureCalculator::CalculateFeature(cv::Mat &mat, int sliceID, QString fe
 
 
 }
-
+*/
 void MLFeatureCalculator::CalcFeatureIntensity(cv::Mat &mat, int sliceID, MLCachedAccess *data)
 {
     int xSize = data->GetXSize();
@@ -202,7 +214,7 @@ void MLFeatureCalculator::CalcFeatureColor(cv::Mat &mat, int sliceID, MLCachedAc
         }
     }
 }
-
+/*
 void MLFeatureCalculator::CalcFeatureMean3D(cv::Mat &mat, int sliceID, MLCachedAccess *data, QString radius)
 {
     bool ok;
@@ -540,4 +552,4 @@ void MLFeatureCalculator::CalcFeatureGaussian3D(cv::Mat &mat, int sliceID, MLCac
         }
     }
 }
-
+*/

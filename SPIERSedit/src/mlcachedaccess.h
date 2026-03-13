@@ -1,11 +1,11 @@
-#ifndef MLCACHEDACCESS_H
-#define MLCACHEDACCESS_H
+#pragma once
 
 #include <QObject>
 #include <QHash>
 #include <QDateTime>
 #include <QColor>
 #include "opencv2/core.hpp"
+#include "mlfeature.h"
 
 class MLCachedAccess;
 
@@ -40,15 +40,16 @@ class MLCachedAccess
 {
 public:
     MLCachedAccess(int sliceCount, bool colourImages, int fwidth, int fheight, int _xyBin, int _zBin);
-    int GetIndexForFeature(QString featureName);
-    int AddFeature(QString feature);
-    bool RemoveFeature(QString feature);
+    int GetIndexForFeature(MLFeature::FeatureType type, MLFeature::Channel channel, bool is3D, int arg1, int arg2);
+    int AddFeature(MLFeature *feature);
+    bool RemoveFeature(int featureIndex);  //should take an index
     float GetFeatureValueAt(int x, int y, int z, int featureID);
     float GetIntensityAsFloat(int x, int y, int z);
     QColor GetRGBFloat(int x, int y, int z);
     void SetMaxMemoryUsage(uint64 size);
     QString GetSourceImageFeatureName();
-    QString GetFeatureName(int featureID);
+    MLFeature *GetFeature(int featureID);  //replace with either pretty or filename calls. Do need a
+                                            //fn that returns the MLFeature itself though
     int GetFeatureCount();
     int GetXSize();
     int GetYSize();
@@ -58,21 +59,21 @@ public:
     cv::Mat GetWholeSliceFeature(int z, int featureIndex);
     void SetFeatureInUse(int featureID, bool inUse);
     QList<int> GetFeaturesInUse();
+    void DumpFeatures();
 private:
     ulong GetMemorySizeOfSlice();
     void ResizeCache();
     int AssignCacheSlot(int sliceIndex);
     MLCachedSlice * GetSlice(int sliceIndex);
     uint64 maxMemoryUsage;
-    QHash<QString, int> featureIndexByName;
+
     bool sourceImageRGB;
     QList<MLCachedSlice *> cachedSlices;
     QList<int> slicesByCacheIndex;
     QList<int> cacheIndicesBySlice;
-    QList<QString> featureNameByIndex;
-    QList<bool> featureInUse;
-    void RebuildFeatureIDsInUse();
+    QList<MLFeature*> features;
     QList<int> featureIDsInUse;
+    void RebuildFeatureIDsInUse();
 
     int xyBin, zBin, xSize, ySize, zSize;
     int featureSize, sourceImageSize;
@@ -81,4 +82,3 @@ private:
     int FindReusableCacheSlot();
 };
 
-#endif // MLCACHEDACCESS_H

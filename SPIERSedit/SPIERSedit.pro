@@ -70,7 +70,13 @@ HEADERS += src/display.h \
     src/labelledpoint.h \
     src/mainwindowimpl.h \
     src/mlcachedaccess.h \
+    src/mlfeature.h \
     src/mlfeaturecalculator.h \
+    src/mlfeaturecontrast.h \
+    src/mlfeaturedifferenceofgaussians.h \
+    src/mlfeaturegaussian.h \
+    src/mlfeatureintensity.h \
+    src/mlfeaturemean.h \
     src/mlupdateblockingdialog.h \
     src/myscene.h \
     src/copyingimpl.h \
@@ -115,7 +121,13 @@ SOURCES += src/display.cpp \
     src/main.cpp \
     src/mainwindowimpl.cpp \
     src/mlcachedaccess.cpp \
+    src/mlfeature.cpp \
     src/mlfeaturecalculator.cpp \
+    src/mlfeaturecontrast.cpp \
+    src/mlfeaturedifferenceofgaussians.cpp \
+    src/mlfeaturegaussian.cpp \
+    src/mlfeatureintensity.cpp \
+    src/mlfeaturemean.cpp \
     src/mlupdateblockingdialog.cpp \
     src/myscene.cpp \
     src/copyingimpl.cpp \

@@ -9,6 +9,12 @@
 #include "labelledpoint.h"
 #include "mainwindowimpl.h"
 #include "mlupdateblockingdialog.h"
+#include "mlfeatureintensity.h"
+#include "mlfeaturegaussian.h"
+#include "mlfeaturecontrast.h"
+#include "mlfeaturedifferenceofgaussians.h"
+#include "mlfeaturemean.h"
+
 
 bool OpenCVInterface::enabled;
 
@@ -87,23 +93,24 @@ void OpenCVInterface::Generate(QListWidget *SliceSelectorList)
 
     MLUpdateBlockingDialog::showDialog(mainwin, "", "","Creating segments using ML data");
 
-    int item_count=0;
     for (int i = 0; i < Files.count(); i++)
     {
         if ((SliceSelectorList->item(i))->isSelected())
         {
             MLUpdateBlockingDialog::updateHighLevelText(QString("Slice %1").arg(i));
+            MLUpdateBlockingDialog::updateDetailText(QString("Fetching slice data"));
             LoadLocks(i);
             LoadMasks(i);
-            for (int i=0; i<SegmentCount; i++)
+            for (int s=0; s<SegmentCount; s++)
             {
-                LoadGreyData(i, i);
+                LoadGreyData(i, s);
             }
 
             ComputeSliceProbabilitiesFromVotes(i);
 
-            for (int i=0; i<SegmentCount; i++)
-                SaveGreyData(i, i);
+            MLUpdateBlockingDialog::updateDetailText(QString("Storing slice data"));
+            for (int s=0; s<SegmentCount; s++)
+                SaveGreyData(i, s);
         }
     }
 
@@ -126,9 +133,11 @@ void OpenCVInterface::ComputeSliceProbabilitiesFromVotes(int sliceID)
     // Allocate samples matrix
     cv::Mat samples(numPixels, numFeatures, CV_32F);
 
+    MLUpdateBlockingDialog::updateDetailText(QString("Assembling feature data"));
     // Fill samples matrix using raw pointers
     for (int y = 0; y < fheight; ++y)
     {
+
         for (int x = 0; x < fwidth; ++x)
         {
             int row = y * fwidth + x;
@@ -142,6 +151,7 @@ void OpenCVInterface::ComputeSliceProbabilitiesFromVotes(int sliceID)
         }
     }
 
+    MLUpdateBlockingDialog::updateDetailText(QString("Running ML model"));
     cv::Mat votes;
     rf->getVotes(samples, votes, 0);
 
@@ -152,6 +162,10 @@ void OpenCVInterface::ComputeSliceProbabilitiesFromVotes(int sliceID)
 
     for (int col = 0; col < SegmentCount; ++col)
         classForColumn[col] = labelRow[col];
+
+    MLUpdateBlockingDialog::updateDetailText(QString("Calculating segments from model outputs"));
+
+    QByteArray newLocks = DoMaskLocking();
 
     for (int y = 0; y < fheight; ++y)
     {
@@ -175,7 +189,8 @@ void OpenCVInterface::ComputeSliceProbabilitiesFromVotes(int sliceID)
                 if (v < 0) v = 0;
                 if (v > 255) v = 255;
 
-                outRows[label][x] = static_cast<uchar>(v);
+                if (!newLocks[fwidth * y + x])
+                    outRows[label][x] = static_cast<uchar>(v);
             }
         }
     }
@@ -232,14 +247,34 @@ void OpenCVInterface::CreateCacheHandlerIfNeeded()
 
 void OpenCVInterface::SetUpFeatures()
 {
-    data->SetFeatureInUse(data->AddFeature("int"),true);
-    data->SetFeatureInUse(data->AddFeature("gau3@1"),true);
-    data->SetFeatureInUse(data->AddFeature("gau3@2"),true);
-    data->SetFeatureInUse(data->AddFeature("gau3@3"),true);
-    data->SetFeatureInUse(data->AddFeature("dog3@2@1"),true);  //difference of gaussians
-    data->SetFeatureInUse(data->AddFeature("dog3@3@2"),true);  //difference of gaussians
-    data->SetFeatureInUse(data->AddFeature("cnt3@2"),true);
-    data->SetFeatureInUse(data->AddFeature("cnt3@3"),true);
+    /*data->SetFeatureInUse(data->AddFeature(new MLFeatureIntensity(MLFeature::Channel::Intensity)),true);
+
+    data->SetFeatureInUse(data->AddFeature(new MLFeatureContrast(MLFeature::Channel::Intensity, true, 2)),true);
+    data->SetFeatureInUse(data->AddFeature(new MLFeatureDifferenceOfGaussians
+                                           (MLFeature::Channel::Intensity, true, 2,1)),true);
+    data->SetFeatureInUse(data->AddFeature(new MLFeatureDifferenceOfGaussians
+                                           (MLFeature::Channel::Intensity, true, 3,2)),true);
+    */
+    /*data->SetFeatureInUse(data->AddFeature(new MLFeatureMean
+                                           (MLFeature::Channel::Intensity, false, 2)),true);
+    */
+    data->SetFeatureInUse(data->AddFeature(new MLFeatureMean
+                                           (MLFeature::Channel::Intensity, true, 2)),true);
+    /*COLOUR SET
+    data->SetFeatureInUse(data->AddFeature(new MLFeatureIntensity(MLFeature::Channel::Intensity)),true);
+    data->SetFeatureInUse(data->AddFeature(new MLFeatureGaussian(MLFeature::Channel::Intensity,true, 2)), true);
+    data->SetFeatureInUse(data->AddFeature(new MLFeatureIntensity(MLFeature::Channel::Red)),true);
+    data->SetFeatureInUse(data->AddFeature(new MLFeatureGaussian(MLFeature::Channel::Red,true, 2)), true);
+    data->SetFeatureInUse(data->AddFeature(new MLFeatureIntensity(MLFeature::Channel::Green)),true);
+    data->SetFeatureInUse(data->AddFeature(new MLFeatureGaussian(MLFeature::Channel::Green,true, 2)), true);
+    data->SetFeatureInUse(data->AddFeature(new MLFeatureIntensity(MLFeature::Channel::Blue)),true);
+    data->SetFeatureInUse(data->AddFeature(new MLFeatureGaussian(MLFeature::Channel::Blue,true, 2)), true);
+    data->SetFeatureInUse(data->AddFeature(new MLFeatureIntensity(MLFeature::Channel::R_G)),true);
+    data->SetFeatureInUse(data->AddFeature(new MLFeatureGaussian(MLFeature::Channel::R_G,true, 2)), true);
+    data->SetFeatureInUse(data->AddFeature(new MLFeatureIntensity(MLFeature::Channel::G_B)),true);
+    data->SetFeatureInUse(data->AddFeature(new MLFeatureGaussian(MLFeature::Channel::G_B,true, 2)), true);
+    */
+    data->DumpFeatures();
 }
 
 void OpenCVInterface::CalculateFeatureData(MainWindowImpl *mw)
@@ -255,8 +290,10 @@ void OpenCVInterface::CalculateFeatureData(MainWindowImpl *mw)
         {
             for (int i=0; i<featureCount; i++)
             {
-                MLUpdateBlockingDialog::updateHighLevelText(QString("Slice %1 Feature: %2").arg(k).arg(data->GetFeatureName(i)));
+                MLUpdateBlockingDialog::updateHighLevelText(QString("Slice %1 Feature: %2").arg(k).arg(data->GetFeature(i)->GetPrettyFullName()));
+
                 float dummy = data->GetFeatureValueAt(0,0,k,i);
+                Q_UNUSED(dummy);
             }
         }
     }
