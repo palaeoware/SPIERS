@@ -1363,7 +1363,7 @@
               <string>Gb</string>
              </property>
              <property name="prefix">
-              <string>Cache: </string>
+              <string>Mem: </string>
              </property>
              <property name="minimum">
               <number>1</number>
@@ -1423,7 +1423,7 @@
               </font>
              </property>
              <property name="prefix">
-              <string>Sampling: </string>
+              <string>Samp.: </string>
              </property>
              <property name="minimum">
               <double>0.050000000000000</double>

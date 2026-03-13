@@ -14,7 +14,7 @@
 #include "mlfeaturecontrast.h"
 #include "mlfeaturedifferenceofgaussians.h"
 #include "mlfeaturemean.h"
-
+#include "mlfeatureuimanager.h"
 
 bool OpenCVInterface::enabled;
 
@@ -23,6 +23,7 @@ bool OpenCVInterface::enabled;
 OpenCVInterface::OpenCVInterface()
 {
     data = nullptr;
+    uiManager = nullptr;
 
 }
 
@@ -116,6 +117,21 @@ void OpenCVInterface::Generate(QListWidget *SliceSelectorList)
 
     LoadAllData(CurrentFile);
     MLUpdateBlockingDialog::hideDialog();
+}
+
+void OpenCVInterface::UIActivateSelectedFeatures(bool activate)
+{
+    uiManager->ActivateSelectedFeatures(activate);
+}
+
+void OpenCVInterface::UIDeleteSelectedFeatures()
+{
+
+}
+
+void OpenCVInterface::UIAddFeature()
+{
+
 }
 
 void OpenCVInterface::ComputeSliceProbabilitiesFromVotes(int sliceID)
@@ -238,29 +254,36 @@ uchar OpenCVInterface::GetProbability(int x, int y, int z, int segment)
     }
 }
 
-void OpenCVInterface::CreateCacheHandlerIfNeeded()
+void OpenCVInterface::CreateSingletonsIfNeeded()
 {
     if (data==nullptr)
+    {
         data = new MLCachedAccess(FileCount, !ColArray.isGrayscale(), fwidth, fheight, ColMonoScale, ZDownsample);
+    }
 
+    if (uiManager==nullptr)
+    {
+        uiManager = new MLFeatureUIManager(data, mainwin->tblMLFeatureList);
+        uiManager->Rebuild();
+    }
 }
 
 void OpenCVInterface::SetUpFeatures()
 {
-    /*data->SetFeatureInUse(data->AddFeature(new MLFeatureIntensity(MLFeature::Channel::Intensity)),true);
+    data->SetFeatureInUse(data->AddFeature(new MLFeatureIntensity(MLFeature::Channel::Intensity)),true);
 
     data->SetFeatureInUse(data->AddFeature(new MLFeatureContrast(MLFeature::Channel::Intensity, true, 2)),true);
     data->SetFeatureInUse(data->AddFeature(new MLFeatureDifferenceOfGaussians
                                            (MLFeature::Channel::Intensity, true, 2,1)),true);
     data->SetFeatureInUse(data->AddFeature(new MLFeatureDifferenceOfGaussians
                                            (MLFeature::Channel::Intensity, true, 3,2)),true);
-    */
-    /*data->SetFeatureInUse(data->AddFeature(new MLFeatureMean
+
+    data->SetFeatureInUse(data->AddFeature(new MLFeatureMean
                                            (MLFeature::Channel::Intensity, false, 2)),true);
-    */
+
     data->SetFeatureInUse(data->AddFeature(new MLFeatureMean
                                            (MLFeature::Channel::Intensity, true, 2)),true);
-    /*COLOUR SET
+
     data->SetFeatureInUse(data->AddFeature(new MLFeatureIntensity(MLFeature::Channel::Intensity)),true);
     data->SetFeatureInUse(data->AddFeature(new MLFeatureGaussian(MLFeature::Channel::Intensity,true, 2)), true);
     data->SetFeatureInUse(data->AddFeature(new MLFeatureIntensity(MLFeature::Channel::Red)),true);
@@ -273,13 +296,14 @@ void OpenCVInterface::SetUpFeatures()
     data->SetFeatureInUse(data->AddFeature(new MLFeatureGaussian(MLFeature::Channel::R_G,true, 2)), true);
     data->SetFeatureInUse(data->AddFeature(new MLFeatureIntensity(MLFeature::Channel::G_B)),true);
     data->SetFeatureInUse(data->AddFeature(new MLFeatureGaussian(MLFeature::Channel::G_B,true, 2)), true);
-    */
+
     data->DumpFeatures();
+    uiManager->Rebuild();
 }
 
 void OpenCVInterface::CalculateFeatureData(MainWindowImpl *mw)
 {
-    CreateCacheHandlerIfNeeded();
+    CreateSingletonsIfNeeded();
     SetUpFeatures();
 
     MLUpdateBlockingDialog::showDialog(mw, "Initialising", "", "Calculating Feature Data");
@@ -302,7 +326,7 @@ void OpenCVInterface::CalculateFeatureData(MainWindowImpl *mw)
 
 void OpenCVInterface::Train(int slice, MainWindowImpl *mw)
 {
-    CreateCacheHandlerIfNeeded();
+    CreateSingletonsIfNeeded();
     SetUpFeatures();
 
     if (SegmentCount<2)

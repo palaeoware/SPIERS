@@ -131,7 +131,7 @@ void MLFeatureIntensity::CalcFeatureColor(cv::Mat &mat, int sliceID, MLCachedAcc
 
 QString MLFeatureIntensity::GetPrettyName()
 {
-    return "Intensity";
+    return "Voxel value";
 }
 
 QString MLFeatureIntensity::GetPrettyArgs()

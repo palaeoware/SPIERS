@@ -28,7 +28,7 @@ QList<MLFeature *> MLFeatureDifferenceOfGaussians::GetDependencies()
 
 QString MLFeatureDifferenceOfGaussians::GetPrettyName()
 {
-    return "Difference of Gaussians";
+    return "Difference of gaussians";
 }
 
 QString MLFeatureDifferenceOfGaussians::GetPrettyArgs()

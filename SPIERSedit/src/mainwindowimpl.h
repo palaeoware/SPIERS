@@ -294,6 +294,14 @@ private slots:
 
     void on_actionSegment_brush_applies_locks_triggered();
 
+    void on_btnMLActivateFeature_clicked();
+
+    void on_btnMLDeactivateFeature_clicked();
+
+    void on_btnMLAddFeature_clicked();
+
+    void on_btnMLRemoveFeature_clicked();
+
 private:
     void MakeUndo(QString type);
     void RefreshMasks();

@@ -2,7 +2,7 @@
 
 #include "opencvfileio.h"
 #include "globals.h"
-#include "mlfeaturecalculator.h"
+
 #include "mlupdateblockingdialog.h"
 //Slice data class constructor
 MLCachedSlice::MLCachedSlice(int featureCount, int zIndex, MLCachedAccess *parent)
@@ -308,7 +308,7 @@ int MLCachedAccess::AddFeature(MLFeature *feature)
             delete feature; //will not be using it
             return i;
         }
-    qDebug()<<"Adding feature "<<feature;
+    qDebug()<<"Adding feature "<<feature->GetPrettyFullName();
 
     auto dependencies = feature->GetDependencies();
     for (int i=0; i<dependencies.count(); i++)

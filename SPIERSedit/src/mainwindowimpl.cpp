@@ -2255,3 +2255,27 @@ void MainWindowImpl::on_actionSegment_brush_applies_locks_triggered()
     else SegmentBrushAppliesLocks = false;
 }
 
+
+void MainWindowImpl::on_btnMLActivateFeature_clicked()
+{
+    openCV->UIActivateSelectedFeatures(true);
+}
+
+
+void MainWindowImpl::on_btnMLDeactivateFeature_clicked()
+{
+    openCV->UIActivateSelectedFeatures(false);
+}
+
+
+void MainWindowImpl::on_btnMLAddFeature_clicked()
+{
+    openCV->UIAddFeature();
+}
+
+
+void MainWindowImpl::on_btnMLRemoveFeature_clicked()
+{
+    openCV->UIDeleteSelectedFeatures();
+}
+
