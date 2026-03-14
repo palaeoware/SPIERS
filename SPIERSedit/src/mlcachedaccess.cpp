@@ -3,7 +3,7 @@
 
 #include "opencvfileio.h"
 
-
+#include "globals.h"
 //Public API
 
 MLCachedAccess::MLCachedAccess(int sliceCount, bool colourImages, int fwidth, int fheight, int _xyBin, int _zBin)
@@ -61,6 +61,7 @@ int MLCachedAccess::GetMaxMemoryUsageGb()
 void MLCachedAccess::ClearFeatures()
 {
     qDeleteAll(features);
+    qDebug()<<"CLEAR from "<<features.count();
     features.clear();
 }
 
@@ -81,13 +82,27 @@ void MLCachedAccess::SetFeatures(QList<MLFeature *> newFeatures)
         ResizeCache();
     }
     RebuildFeatureIDsInUse();
+    qDebug()<<"Done Set Features "<<features.count();
+}
 
+void MLCachedAccess::Reset()
+{
+    qDebug()<<"RESET";
+    //Called after a resample change
+    qDeleteAll(cachedSlices);
+    cachedSlices.clear();
+    ResizeCache();
 }
 
 void MLCachedAccess::SetFeatureInUse(int featureID, bool inUse)
 {
+    bool oldSelected =  features[featureID]->IsSelected();
+    if (oldSelected == inUse)
+        return;
+
     features[featureID]->SetSelected(inUse);
     RebuildFeatureIDsInUse();
+    openCV->ResetRFAndSample();
 }
 
 QList<int> MLCachedAccess::GetFeaturesInUse()

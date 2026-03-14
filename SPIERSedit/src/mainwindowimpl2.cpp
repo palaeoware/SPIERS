@@ -1141,6 +1141,7 @@ void MainWindowImpl::on_SegmentAdd_pressed()
     //no need to do a showimage - am creating these files empty
     //DumpSettings();
     ResetFilesDirty();
+    openCV->ResetRFAndSample();
 }
 
 void MainWindowImpl::on_SegmentDelete_pressed()
@@ -1179,6 +1180,7 @@ void MainWindowImpl::on_SegmentDelete_pressed()
             LoadAllData(CurrentFile);
             ShowImage(graphicsView);
             ResetUndo();
+            openCV->ResetRFAndSample();
         }
     }
     ResetFilesDirty();

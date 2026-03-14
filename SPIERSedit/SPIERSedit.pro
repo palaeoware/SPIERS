@@ -76,6 +76,7 @@ HEADERS += src/display.h \
     src/mlfeaturecontrast.h \
     src/mlfeaturedifferenceofgaussians.h \
     src/mlfeaturegaussian.h \
+    src/mlfeaturegradient.h \
     src/mlfeatureintensity.h \
     src/mlfeaturemean.h \
     src/mlfeatureuimanager.h \
@@ -129,6 +130,7 @@ SOURCES += src/display.cpp \
     src/mlfeaturecontrast.cpp \
     src/mlfeaturedifferenceofgaussians.cpp \
     src/mlfeaturegaussian.cpp \
+    src/mlfeaturegradient.cpp \
     src/mlfeatureintensity.cpp \
     src/mlfeaturemean.cpp \
     src/mlfeatureuimanager.cpp \

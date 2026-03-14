@@ -26,6 +26,7 @@ bool OpenCVInterface::enabled;
 
 OpenCVInterface::OpenCVInterface()
 {
+    qDebug()<<"Here";
     data = nullptr;
     uiManager = nullptr;
     addFeatureDialog = nullptr;
@@ -37,55 +38,59 @@ void OpenCVInterface::Initialise(MainWindowImpl *mw, QLabel *statusLabel)
 {
     lblStatus = statusLabel;
     mainWin = mw;
-
+    qDebug()<<"H1";
     if (data!=nullptr)
         delete data;
-
+    qDebug()<<"H2";
     if (uiManager!=nullptr)
         delete uiManager;
 
-    //reset rf
-    rf.release();
-    rf = cv::ml::RTrees::create();
 
+    qDebug()<<"H3";
     //remake things - nullptr triggers this
     data=nullptr;
     uiManager=nullptr;
     CreateSingletonsIfNeeded();
+    ResetRFAndSample();
     UpdateStatusLabel();
+    qDebug()<<"H4";
 }
 
-void OpenCVInterface::RemoveAllCacheFiles()
+void OpenCVInterface::RemoveAllCacheFiles(bool override)
 {
     QDir dir(openCVFileIO::GetWorkingPath());
 
     qDebug()<<openCVFileIO::GetWorkingPath();
     QStringList files = dir.entryList({"ml_*"}, QDir::Files);
 
-    if (QMessageBox::question(mainWin,
-                              "Confirm",
-                              QString("This will remove %1 feature cache files - proceed?")
-                            .arg(files.count()),
-                        QMessageBox::Yes | QMessageBox::No,
-                                              QMessageBox::No)
-        == QMessageBox::Yes)
+    if (override)
     {
-        MLUpdateBlockingDialog::showDialog(mainwin, "", "","Deleting files");
 
         for (const QString &file : files)
         {
             dir.remove(file);
         }
-        MLUpdateBlockingDialog::hideDialog();
-    }
-}
 
-void OpenCVInterface::ClearSample()
-{
-    labels.clear();
-    rf.release();
-    rf = cv::ml::RTrees::create();
-    UpdateStatusLabel();
+    }
+    else
+    {
+        if (QMessageBox::question(mainWin,
+                                  "Confirm",
+                                  QString("This will remove %1 feature cache files - proceed?")
+                                .arg(files.count()),
+                            QMessageBox::Yes | QMessageBox::No,
+                                                  QMessageBox::No)
+            == QMessageBox::Yes)
+        {
+            MLUpdateBlockingDialog::showDialog(mainwin, "", "","Deleting files");
+
+            for (const QString &file : files)
+            {
+                dir.remove(file);
+            }
+            MLUpdateBlockingDialog::hideDialog();
+        }
+    }
 }
 
 QByteArray OpenCVInterface::DumpFeaturesToByteArray()
@@ -141,6 +146,7 @@ void OpenCVInterface::RetrieveFeaturesFromByteArray(QByteArray &byteArray)
 
     data->SetFeatures(newFeatures);
     uiManager->Rebuild();
+    ResetRFAndSample();
 }
 
 void OpenCVInterface::SaveFeaturesToFile()
@@ -183,6 +189,22 @@ void OpenCVInterface::LoadFeaturesFromFile()
 
     RetrieveFeaturesFromByteArray(dummy);
 
+}
+
+void OpenCVInterface::ResetRFAndSample()
+{
+    CreateSingletonsIfNeeded();
+    //reset rf
+    rf.release();
+    rf = cv::ml::RTrees::create();
+
+    labels.clear();
+    UpdateStatusLabel();
+}
+
+void OpenCVInterface::ResetCachedData()
+{
+    data->Reset();
 }
 
 
@@ -296,7 +318,8 @@ void OpenCVInterface::UIActivateSelectedFeatures(bool activate)
 void OpenCVInterface::UIDeleteSelectedFeatures()
 {
     CreateSingletonsIfNeeded();
-    uiManager->DeleteSelectedFeatures();
+    if (uiManager->DeleteSelectedFeatures()>0)
+        ResetRFAndSample();
 }
 
 void OpenCVInterface::UIAddFeature()
@@ -311,6 +334,7 @@ void OpenCVInterface::UIAddFeature()
     if (feature!=nullptr)
     {
         data->SetFeatureInUse(data->AddFeature(feature),true);
+        ResetRFAndSample();
         uiManager->Rebuild();
     }
 }
@@ -546,6 +570,12 @@ void OpenCVInterface::CreateSingletonsIfNeeded()
     if (data==nullptr)
     {
         data = new MLCachedAccess(FileCount, !ColArray.isGrayscale(), fwidth, fheight, ColMonoScale, ZDownsample);
+
+        if (uiManager!=nullptr)
+        {
+            delete uiManager;
+            uiManager=nullptr;
+        }
     }
 
     if (uiManager==nullptr)

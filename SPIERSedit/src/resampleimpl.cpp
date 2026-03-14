@@ -523,6 +523,9 @@ void resampleImpl::on_buttonBox_accepted()
         mainwin->Start();
     }
 
+    openCV->ResetRFAndSample();
+    openCV->RemoveAllCacheFiles(true);
+    openCV->ResetCachedData();
     pausetimers = false;
 }
 

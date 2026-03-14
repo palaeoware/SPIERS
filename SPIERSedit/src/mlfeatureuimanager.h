@@ -15,7 +15,7 @@ public:
     void Rebuild();
     void RefreshImportance();
     void ActivateSelectedFeatures(bool activate);
-    void DeleteSelectedFeatures();
+    int DeleteSelectedFeatures();
 
 private slots:
     void OnTableItemChanged(QTableWidgetItem *item);

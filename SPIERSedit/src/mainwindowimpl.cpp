@@ -2331,13 +2331,13 @@ void MainWindowImpl::on_actionLoad_feature_set_triggered()
 
 void MainWindowImpl::on_actionRemove_feature_files_triggered()
 {
-    openCV->RemoveAllCacheFiles();
+    openCV->RemoveAllCacheFiles(false);
 }
 
 
 void MainWindowImpl::on_actionClear_sample_triggered()
 {
-    openCV->ClearSample();
+    openCV->ResetRFAndSample();
 }
 
 

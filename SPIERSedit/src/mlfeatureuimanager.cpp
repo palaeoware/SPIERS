@@ -34,15 +34,13 @@ void MLFeatureUIManager::OnTableItemChanged(QTableWidgetItem *item)
 
     bool checked = (item->checkState() == Qt::Checked);
     int featureID = item->data(Qt::UserRole).toInt();
-
-    qDebug() << "Feature" << featureID << "enabled:" << checked;
-
+    qDebug()<<"fid"<<featureID;
     _data->SetFeatureInUse(featureID, checked);
 }
 
 void MLFeatureUIManager::Rebuild()
 {
-
+    _tableWidget->blockSignals(true);
     _tableWidget->setUpdatesEnabled(false);
     _tableWidget->setSortingEnabled(false);
     _tableWidget->setRowCount(_data->GetFeatureCount());
@@ -64,7 +62,7 @@ void MLFeatureUIManager::Rebuild()
 
         _tableWidget->setItem(i,5,newItem);
 
-        QTableWidgetItem *item = new QTableWidgetItem();
+        QTableWidgetItem *item = new QTableWidgetItem;
         item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
         if (feature->IsSelected())
             item->setCheckState(Qt::Checked);
@@ -87,6 +85,7 @@ void MLFeatureUIManager::Rebuild()
     header->setSectionResizeMode(5, QHeaderView::ResizeToContents);
     _tableWidget->setUpdatesEnabled(true);
     _tableWidget->setSortingEnabled(true);
+    _tableWidget->blockSignals(false);
     _tableWidget->clearSelection();
     _tableWidget->setCurrentItem(nullptr);
 }
@@ -110,7 +109,7 @@ void MLFeatureUIManager::RefreshImportance()
     }
 }
 
-void MLFeatureUIManager::DeleteSelectedFeatures()
+int MLFeatureUIManager::DeleteSelectedFeatures()
 {
     int maxDependencyDepth = -1;
     QList<MLFeature *> toDelete;
@@ -138,14 +137,22 @@ void MLFeatureUIManager::DeleteSelectedFeatures()
         deleteByDepth[feature->GetDependencyDepth()].append(feature);
     }
 
+    int deleteSelCount = 0;
     QList<MLFeature *> failedList;
     for (int j=maxDependencyDepth; j>=0; j--)
     {
         for (int i=0; i<deleteByDepth[j].count(); i++)
         {
             MLFeature *feature = deleteByDepth[j][i];
+            bool sel = false;
+            if (feature->IsSelected())
+                sel = true;
             if (!_data->RemoveFeature(_data->GetIndexForFeature(feature)))
                 failedList.append(feature);
+            else
+                if (sel)
+                    deleteSelCount++;
+
         }
     }
 
@@ -158,6 +165,8 @@ void MLFeatureUIManager::DeleteSelectedFeatures()
     {
         Message(QString("Could not remove %1 features as other features depend on them").arg(failedList.count()));
     }
+
+    return deleteSelCount;
 }
 
 void MLFeatureUIManager::ActivateSelectedFeatures(bool activate)

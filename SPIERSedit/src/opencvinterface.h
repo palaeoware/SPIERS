@@ -37,12 +37,13 @@ public:
 
     int GetCacheMemSizeGb();
     void Initialise(MainWindowImpl *mw,QLabel *statusLabel);
-    void RemoveAllCacheFiles();
-    void ClearSample();
+    void RemoveAllCacheFiles(bool override);
     QByteArray DumpFeaturesToByteArray();
     void RetrieveFeaturesFromByteArray(QByteArray &byteArray);
     void SaveFeaturesToFile();
     void LoadFeaturesFromFile();
+    void ResetRFAndSample();
+    void ResetCachedData();
 private:
     bool dataComputed;
     int currentSlice;

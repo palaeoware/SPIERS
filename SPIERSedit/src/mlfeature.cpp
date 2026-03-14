@@ -9,6 +9,7 @@
 #include "mlfeatureintensity.h"
 #include "mlfeaturegaussian.h"
 #include "mlfeaturemean.h"
+#include "mlfeaturegradient.h"
 
 MLFeature::MLFeature(FeatureType type, Channel channel, bool is3D, int arg1, int arg2)
 {
@@ -132,6 +133,8 @@ MLFeature *MLFeature::CreateFromData(FeatureType type, Channel channel, bool is3
         return new MLFeatureContrast(channel, is3D, arg1);
 
     case MLFeature::FeatureType::Gradient:
+        return new MLFeatureGradient(channel, is3D, arg1);
+
     case MLFeature::FeatureType::Laplacian_of_gaussian:
     case MLFeature::FeatureType::Local_variance:
     case MLFeature::FeatureType::Structure_tensor:

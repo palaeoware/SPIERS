@@ -8,6 +8,7 @@
 #include "src/mlfeatureintensity.h"
 #include "src/mlfeaturegaussian.h"
 #include "src/mlfeaturemean.h"
+#include "src/mlfeaturegradient.h"
 
 MLAddFeature::MLAddFeature(QWidget *parent)
     : QDialog(parent)
@@ -68,6 +69,7 @@ void MLAddFeature::PopulateCombos()
     dummyFeatures.append(new MLFeatureGaussian(MLFeature::Channel::Intensity, false, 1));
     dummyFeatures.append(new MLFeatureContrast(MLFeature::Channel::Intensity, false, 1));
     dummyFeatures.append(new MLFeatureDifferenceOfGaussians(MLFeature::Channel::Intensity,false, 2,1));
+    dummyFeatures.append(new MLFeatureGradient(MLFeature::Channel::Intensity,false, 2));
 
     for (int i=0; i<dummyFeatures.count(); i++)
     {

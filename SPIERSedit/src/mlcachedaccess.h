@@ -38,6 +38,7 @@ public:
     int GetMaxMemoryUsageGb();
     void ClearFeatures();
     void SetFeatures(QList<MLFeature *> newFeatures);
+    void Reset();
 private:
     ulong GetMemorySizeOfSlice();
     void ResizeCache();

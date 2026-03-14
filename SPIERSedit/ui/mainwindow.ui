@@ -358,7 +358,7 @@
    </widget>
    <widget class="QMenu" name="menuSegments">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="title">
      <string>Segments</string>
@@ -484,7 +484,7 @@
    </widget>
    <widget class="QMenu" name="menuML">
     <property name="enabled">
-     <bool>true</bool>
+     <bool>false</bool>
     </property>
     <property name="title">
      <string>ML</string>
@@ -1355,7 +1355,7 @@
              <item>
               <widget class="QPushButton" name="btnMLAddFeature">
                <property name="text">
-                <string>Add</string>
+                <string>New</string>
                </property>
               </widget>
              </item>
