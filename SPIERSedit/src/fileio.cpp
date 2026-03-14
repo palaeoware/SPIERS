@@ -1331,6 +1331,8 @@ void ApplyDefaultSettings()
     MenuSliceSelectorChecked = true;
     MenuHistSelectedOnly = false;
     MenuHistChecked = false;
+
+    FeaturesByteArray.clear();
 }
 
 
@@ -2215,6 +2217,15 @@ void WriteSettings()
     out << GradientMinDist;
     out << GradientMinDistValue;
 
+    //ML stuff
+    out << SegmentBrushAppliesLocks;
+    out << mainwin->actionIncremental_sampling->isChecked();
+    out << mainwin->spinBoxMLSampling->value();
+    out << mainwin->spinBoxMLDepth->value();
+    out << mainwin->spinBoxMLTrees->value();
+    out << mainwin->spinBoxMinSampleCount->value();
+
+    out << openCV->DumpFeaturesToByteArray();
 
     file.close();
 }
@@ -2540,6 +2551,45 @@ void ReadSettings()
         }
     }
     else Stretches = FullStretches;
+
+
+    //ML stuff
+    //ML stuff
+    bool tempBool;
+    int tempInt;
+    if (!in.atEnd()) in >> SegmentBrushAppliesLocks;
+
+    if (!in.atEnd())
+    {
+        in >> tempBool;
+        mainwin->actionIncremental_sampling->setChecked(tempBool);
+    }
+
+    if (!in.atEnd())
+    {
+        in >> tempInt; mainwin->spinBoxMLSampling->setValue(tempInt);
+    }
+
+    if (!in.atEnd())
+    {
+        in >> tempInt; mainwin->spinBoxMLDepth->setValue(tempInt);
+    }
+
+    if (!in.atEnd())
+    {
+        in >> tempInt; mainwin->spinBoxMLTrees->setValue(tempInt);
+    }
+
+    if (!in.atEnd())
+    {
+        in >> tempInt; mainwin->spinBoxMinSampleCount->setValue(tempInt);
+    }
+
+    if (!in.atEnd())
+    {
+        in >> FeaturesByteArray;
+    }
+
 
     file.close();
 

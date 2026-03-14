@@ -92,6 +92,7 @@ extern QTime LastTimeClicked;
 extern int LastColumnClicked;
 extern OpenCVInterface *openCV;
 
+extern QByteArray FeaturesByteArray;
 /**
  * @brief The Segment class
  */
@@ -296,13 +297,14 @@ struct RecentFiles
 };
 
 extern QList<RecentFiles> RecentFileList;
-extern int CacheMem;
+extern int CacheMem, CacheMemMLGb;
 extern int UndoMem;
 extern int UndoTimerSetting;
 
 extern void WriteSuperGlobals();
 extern void ReadSuperGlobals();
 extern void RecentFile(QString fname);
+extern bool IsDatasetLoaded();
 extern void ResetFilesDirty();
 
 extern QTabWidget *tabwidget;

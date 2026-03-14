@@ -2,12 +2,12 @@
 #include "ui_mladdfeature.h"
 #include "src/mlfeature.h"
 
+#include <QList>
 #include "src/mlfeaturecontrast.h"
+#include "src/mlfeaturedifferenceofgaussians.h"
 #include "src/mlfeatureintensity.h"
 #include "src/mlfeaturegaussian.h"
-#include "src/mlfeaturedifferenceofgaussians.h"
 #include "src/mlfeaturemean.h"
-#include <QList>
 
 MLAddFeature::MLAddFeature(QWidget *parent)
     : QDialog(parent)
@@ -50,33 +50,14 @@ MLFeature *MLAddFeature::CreateNewFeature()
     MLFeature *dummy = dummyFeatures[dummyIndex];
 
     MLFeature::Channel channel = (MLFeature::Channel)ui->cmbChannel->currentData().toInt();
-    switch (dummy->GetType())
-    {
-        case MLFeature::FeatureType::Gaussian:
-            return new MLFeatureGaussian(channel, ui->chk3D->isChecked(), ui->spinBoxArg1->value());
+    int arg1 = ui->spinBoxArg1->value();
+    int arg2 = ui->spinBoxArg2->value();
+    bool is3D = ui->chk3D->isChecked();
+    MLFeature::FeatureType type = dummy->GetType();
 
-        case MLFeature::FeatureType::Difference_of_gaussians:
-            return new MLFeatureDifferenceOfGaussians(channel, ui->chk3D->isChecked()
-                                         , ui->spinBoxArg1->value(), ui->spinBoxArg2->value());
+    return MLFeature::CreateFromData(
+        type, channel, is3D, arg1, arg2);
 
-        case MLFeature::FeatureType::Intensity:
-            return new MLFeatureIntensity(channel);
-
-        case MLFeature::FeatureType::Local_mean:
-            return new MLFeatureMean(channel, ui->chk3D->isChecked(), ui->spinBoxArg1->value());
-
-        case MLFeature::FeatureType::Contrast:
-            return new MLFeatureContrast(channel, ui->chk3D->isChecked(), ui->spinBoxArg1->value());
-
-        case MLFeature::FeatureType::Gradient:
-        case MLFeature::FeatureType::Laplacian_of_gaussian:
-        case MLFeature::FeatureType::Local_variance:
-        case MLFeature::FeatureType::Structure_tensor:
-        case MLFeature::FeatureType::Hessian:
-        default:
-            qDebug()<<"ERROR - not implemented in CreateNewFeature";
-            return nullptr;
-    }
 }
 
 void MLAddFeature::PopulateCombos()

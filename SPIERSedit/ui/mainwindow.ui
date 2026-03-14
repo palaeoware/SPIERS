@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>962</width>
-    <height>2039</height>
+    <height>2040</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -331,7 +331,7 @@
    </widget>
    <widget class="QMenu" name="menuBrush">
     <property name="enabled">
-     <bool>true</bool>
+     <bool>false</bool>
     </property>
     <property name="title">
      <string>Brush</string>
@@ -482,6 +482,32 @@
     <addaction name="actionChange_slice_spacing"/>
     <addaction name="actionSet_slice_position"/>
    </widget>
+   <widget class="QMenu" name="menuML">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="title">
+     <string>ML</string>
+    </property>
+    <widget class="QMenu" name="menuFeature_presets">
+     <property name="title">
+      <string>Feature presets</string>
+     </property>
+     <addaction name="actionCT_simpl"/>
+     <addaction name="actionCT_complex"/>
+     <addaction name="actionColour_simple"/>
+     <addaction name="actionColour_complex"/>
+    </widget>
+    <addaction name="actionCalculate_Features"/>
+    <addaction name="actionRemove_feature_files"/>
+    <addaction name="separator"/>
+    <addaction name="actionSave_feature_set"/>
+    <addaction name="actionLoad_feature_set"/>
+    <addaction name="menuFeature_presets"/>
+    <addaction name="separator"/>
+    <addaction name="actionIncremental_sampling"/>
+    <addaction name="actionClear_sample"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuUndo"/>
    <addaction name="menuMode"/>
@@ -492,6 +518,7 @@
    <addaction name="menuSlice_Spacing"/>
    <addaction name="menuOutput"/>
    <addaction name="menuWindow"/>
+   <addaction name="menuML"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar">
@@ -1314,7 +1341,14 @@
          <item>
           <layout class="QVBoxLayout" name="verticalLayout_12">
            <item>
-            <widget class="QTableWidget" name="tblMLFeatureList"/>
+            <widget class="QTableWidget" name="tblMLFeatureList">
+             <property name="font">
+              <font>
+               <pointsize>8</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+            </widget>
            </item>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_17">
@@ -1353,26 +1387,20 @@
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_15">
            <item>
-            <widget class="QSpinBox" name="spinBoxMLMemory">
+            <widget class="QSpinBox" name="spinBoxMinSampleCount">
              <property name="font">
               <font>
-               <pointsize>8</pointsize>
+               <pointsize>9</pointsize>
               </font>
              </property>
-             <property name="suffix">
-              <string>Gb</string>
-             </property>
              <property name="prefix">
-              <string>Mem: </string>
+              <string>min sample count: </string>
              </property>
              <property name="minimum">
-              <number>1</number>
+              <number>2</number>
              </property>
              <property name="maximum">
-              <number>64</number>
-             </property>
-             <property name="value">
-              <number>2</number>
+              <number>22</number>
              </property>
             </widget>
            </item>
@@ -1380,7 +1408,7 @@
             <widget class="QSpinBox" name="spinBoxMLTrees">
              <property name="font">
               <font>
-               <pointsize>8</pointsize>
+               <pointsize>9</pointsize>
               </font>
              </property>
              <property name="prefix">
@@ -1401,7 +1429,7 @@
             <widget class="QSpinBox" name="spinBoxMLDepth">
              <property name="font">
               <font>
-               <pointsize>8</pointsize>
+               <pointsize>9</pointsize>
               </font>
              </property>
              <property name="prefix">
@@ -1415,38 +1443,37 @@
              </property>
             </widget>
            </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_18"/>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_16">
            <item>
-            <widget class="QDoubleSpinBox" name="spinBoxMLSampling">
+            <widget class="QSpinBox" name="spinBoxMLSampling">
              <property name="font">
               <font>
                <pointsize>8</pointsize>
               </font>
              </property>
+             <property name="suffix">
+              <string>%</string>
+             </property>
              <property name="prefix">
-              <string>Samp.: </string>
+              <string/>
              </property>
              <property name="minimum">
-              <double>0.050000000000000</double>
+              <number>1</number>
              </property>
              <property name="maximum">
-              <double>1.000000000000000</double>
+              <number>100</number>
              </property>
              <property name="singleStep">
-              <double>0.050000000000000</double>
+              <number>5</number>
              </property>
              <property name="value">
-              <double>1.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_16">
-           <item>
-            <widget class="QPushButton" name="calcML">
-             <property name="text">
-              <string>Calculate</string>
+              <number>100</number>
              </property>
             </widget>
            </item>
@@ -1459,7 +1486,7 @@
               </size>
              </property>
              <property name="text">
-              <string>Train</string>
+              <string>Sample/Train</string>
              </property>
             </widget>
            </item>
@@ -1471,8 +1498,16 @@
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="font">
+              <font>
+               <pointsize>7</pointsize>
+              </font>
+             </property>
              <property name="text">
               <string>Trained on xxx samples</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -4816,6 +4851,59 @@ Interpreted Images:</string>
    </property>
    <property name="text">
     <string>Segment brush applies locks</string>
+   </property>
+  </action>
+  <action name="actionCalculate_Features">
+   <property name="text">
+    <string>Precalculate features</string>
+   </property>
+  </action>
+  <action name="actionSave_feature_set">
+   <property name="text">
+    <string>Save feature set...</string>
+   </property>
+  </action>
+  <action name="actionLoad_feature_set">
+   <property name="text">
+    <string>Load feature set...</string>
+   </property>
+  </action>
+  <action name="actionCT_simpl">
+   <property name="text">
+    <string>CT simple</string>
+   </property>
+  </action>
+  <action name="actionCT_complex">
+   <property name="text">
+    <string>CT complex</string>
+   </property>
+  </action>
+  <action name="actionColour_simple">
+   <property name="text">
+    <string>Colour simple</string>
+   </property>
+  </action>
+  <action name="actionColour_complex">
+   <property name="text">
+    <string>Colour complex</string>
+   </property>
+  </action>
+  <action name="actionRemove_feature_files">
+   <property name="text">
+    <string>Remove feature files</string>
+   </property>
+  </action>
+  <action name="actionIncremental_sampling">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Incremental sampling</string>
+   </property>
+  </action>
+  <action name="actionClear_sample">
+   <property name="text">
+    <string>Clear sample</string>
    </property>
   </action>
  </widget>

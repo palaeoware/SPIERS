@@ -425,10 +425,22 @@ QImage GenerateThresh()
 
 }
 
+//For the label generator percentage system. Chat GPT generated
+uint32_t SampleHash(int x, int y, int z)
+{
+    uint32_t h = static_cast<uint32_t>(x) * 73856093u
+                 ^ static_cast<uint32_t>(y) * 19349663u
+                 ^ static_cast<uint32_t>(z) * 83492791u;
+
+    h ^= h >> 13;
+    h *= 0x85ebca6bu;
+    h ^= h >> 16;
+    return h;
+}
 
 //Modified GenerateThresh to generate a byte array of segment numbers (=labels for ML)
 //A few other simplfications too
-QList<LabelledPoint> GenerateLabels(MainWindowImpl *mw)
+QList<LabelledPoint> GenerateLabels(MainWindowImpl *mw, int percentage)
 {
     SaveLocks(CurrentFile);
 
@@ -477,7 +489,8 @@ QList<LabelledPoint> GenerateLabels(MainWindowImpl *mw)
                         }
                         if (seg!=-1)
                         {
-                            labels.append(LabelledPoint(jx, jy, k, seg));
+                            if ((int)(SampleHash(jx,jy,k)%100)<percentage)
+                                labels.append(LabelledPoint(jx, jy, k, seg));
                         }
                     }
                 }

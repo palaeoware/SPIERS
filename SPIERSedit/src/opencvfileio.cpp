@@ -111,6 +111,13 @@ QString openCVFileIO::GetFileName(const QString &fname, int index)
 
 }
 
+QString openCVFileIO::GetWorkingPath()
+{
+    QFileInfo fi(Files.at(0));
+    return fi.path() + "/" + SettingsFileName;
+}
+
+
 cv::Mat openCVFileIO::LoadMatBinary(const QString& featureName, int x, int y, int fileIndex,  bool &ok)
 {
     MLUpdateBlockingDialog::updateDetailText(

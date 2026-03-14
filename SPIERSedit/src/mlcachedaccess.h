@@ -7,39 +7,13 @@
 #include "opencv2/core.hpp"
 #include "mlfeature.h"
 
-class MLCachedAccess;
-
-class MLCachedSlice
-{
-public:
-    MLCachedSlice(int featureCount, int zIndex, MLCachedAccess *parent);
-    cv::Mat sourceImage;
-    QList<cv::Mat> featureData;
-    QDateTime lastUsed;
-    bool sourceValid;
-    int sliceIndex;
-    MLCachedAccess *cache;
-    QList<bool> featuresValid;
-    void AddFeature();
-    void RemoveFeature(int index);
-    void Clear();
-    float GetFeatureData(int x, int y, int feature);
-    float GetIntensityGrey(int x, int y);
-    QColor GetColor(int x, int y);
-    void FetchSourceDataIfNeeded();
-    void FetchFeatureIfNeeded(int featureIndex);
-
-private:
-    void FetchSourceData();
-    void FetchFeatureData(int feature);
-
-
-};
+class MLCachedSlice;
 
 class MLCachedAccess
 {
 public:
     MLCachedAccess(int sliceCount, bool colourImages, int fwidth, int fheight, int _xyBin, int _zBin);
+    ~MLCachedAccess();
     int GetIndexForFeature(MLFeature::FeatureType type, MLFeature::Channel channel, bool is3D, int arg1, int arg2);
     int AddFeature(MLFeature *feature);
     bool RemoveFeature(int featureIndex);  //should take an index
@@ -61,6 +35,9 @@ public:
     QList<int> GetFeaturesInUse();
     void DumpFeatures();
     int GetIndexForFeature(MLFeature *feature);
+    int GetMaxMemoryUsageGb();
+    void ClearFeatures();
+    void SetFeatures(QList<MLFeature *> newFeatures);
 private:
     ulong GetMemorySizeOfSlice();
     void ResizeCache();

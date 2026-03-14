@@ -58,12 +58,16 @@ public:
     bool Compare(FeatureType type, Channel channel, bool is3D, int arg1, int arg2);
     bool Compare(MLFeature *other);
     QString Dump();
+    void SetImportance(int percent);
+    int GetImportance();
+    static MLFeature *CreateFromData(FeatureType type, Channel channel, bool is3D, int arg1, int arg2);
 protected:
     FeatureType _type;
     Channel _channel;
     bool _isSelected = false;
     bool _is3D;
     int _arg1, _arg2;
+    int _importancePercent;
 
     virtual QString GetTypeCodeForFile()=0;
     QString GetChannelCodeForFile();

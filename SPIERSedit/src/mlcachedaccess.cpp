@@ -1,186 +1,8 @@
 #include "mlcachedaccess.h"
+#include "mlcachedslice.h"
 
 #include "opencvfileio.h"
-#include "globals.h"
 
-#include "mlupdateblockingdialog.h"
-//Slice data class constructor
-MLCachedSlice::MLCachedSlice(int featureCount, int zIndex, MLCachedAccess *parent)
-{
-    cache = parent;
-    featureData.clear();
-    featuresValid.clear();
-    for (int i=0;i< featureCount; i++)
-    {
-        featureData.append(cv::Mat()); //an empty Mat
-        featuresValid.append(false);
-    }
-    sliceIndex = zIndex;
-    lastUsed = QDateTime::currentDateTime();
-    sourceValid = false;
-
-}
-
-
-
-void MLCachedSlice::AddFeature()
-{
-    featuresValid.append(false);
-    featureData.append(cv::Mat()); //an empty Mat
-}
-
-void MLCachedSlice::RemoveFeature(int index)
-{
-    featuresValid.removeAt(index);
-    featureData.removeAt(index);
-}
-
-void MLCachedSlice::Clear()
-{
-    if (sourceValid)
-        sourceImage.deallocate();
-
-    sourceValid=false;
-
-    for (int i=0;i< featuresValid.count(); i++)
-    {
-        if (featuresValid[i])
-        {
-            featureData[i].deallocate(); //probably done automatically, but just in case!
-        }
-        featuresValid[i] = false;
-    }
-}
-
-float MLCachedSlice::GetFeatureData(int x, int y, int feature)
-{
-    FetchFeatureIfNeeded(feature);
-    return featureData[feature].at<float>(y,x);
-}
-
-void MLCachedSlice::FetchSourceDataIfNeeded()
-{
-    if (!sourceValid) FetchSourceData();
-}
-
-void MLCachedSlice::FetchFeatureIfNeeded(int featureIndex)
-{
-    if (!featuresValid[featureIndex])
-        FetchFeatureData(featureIndex);
-}
-
-
-
-void MLCachedSlice::FetchFeatureData(int feature)
-{
-    bool ok;
-    cv::Mat loadedMat = openCVFileIO::LoadMatBinary(cache->GetFeature(feature)->GetEncodedNameForFile(),
-                                                    cache->GetXSize(), cache->GetYSize(),
-                                                    sliceIndex, ok);
-
-    if (ok)
-    {
-        //file loading worked OK
-        featureData[feature] = loadedMat;
-        MLUpdateBlockingDialog::updateDetailText(
-            QString("Loaded feature %1 for slice %2 from file cache")
-                .arg(cache->GetFeature(feature)->GetPrettyFullName())
-                .arg(sliceIndex));
-    }
-    else
-    {
-        cv::Mat mat;
-        mat.create(cache->GetYSize(), cache->GetXSize(), CV_32F);
-        MLUpdateBlockingDialog::updateDetailText(
-            QString("Calculating feature %1 for slice %2")
-                .arg(cache->GetFeature(feature)->GetPrettyFullName())
-                .arg(sliceIndex));
-        cache->CalculateFeature(mat, sliceIndex, feature);
-        featureData[feature] = mat;
-        openCVFileIO::SaveMatBinary(cache->GetFeature(feature)->GetEncodedNameForFile(),
-                                    featureData[feature], sliceIndex);
-    }
-    featuresValid[feature] = true;
-}
-
-void MLCachedSlice::FetchSourceData()
-{
-    bool ok;
-    cv::Mat loadedMat = openCVFileIO::LoadMatBinary(cache->GetSourceImageFeatureName(),
-                                                    cache->GetXSize(), cache->GetYSize(),
-                                                    sliceIndex, ok);
-
-    if (ok)
-    {
-        //file loading worked OK
-        sourceImage = loadedMat;
-    }
-    else
-    {
-        //Load image from source file
-        MLUpdateBlockingDialog::updateDetailText(
-            QString("Fetching raw data slice %1 from source image")
-                .arg(sliceIndex));
-        sourceImage = openCVFileIO::LoadMatFromImageFile(sliceIndex, cache->GetSourceColour());
-
-        if (ColMonoScale==1)
-        {
-            openCVFileIO::SaveMatBinary(cache->GetSourceImageFeatureName(),
-                                    sourceImage, sliceIndex);
-        }
-        else
-        {
-            //Do downsampling
-            MLUpdateBlockingDialog::updateDetailText(
-                QString("Binning raw data"));
-            cv::Mat binned;
-
-            cv::resize(sourceImage, binned,
-                       cv::Size(sourceImage.cols/ColMonoScale, sourceImage.rows/ColMonoScale),
-                       0, 0,
-                       cv::INTER_AREA);
-            sourceImage.deallocate();
-            sourceImage = binned;
-        }
-    }
-    sourceValid = true;
-}
-
-float MLCachedSlice::GetIntensityGrey(int x, int y)
-{
-    FetchSourceDataIfNeeded();
-    if (cache->GetSourceColour())
-    {
-        cv::Vec3f p = sourceImage.at<cv::Vec3f>(y, x);
-
-        float b = p[0];
-        float g = p[1];
-        float r = p[2];
-        return (r+g+b)/3.0f;
-    }
-    else
-        return sourceImage.at<float>(y,x);
-}
-
-QColor MLCachedSlice::GetColor(int x, int y)
-{
-    FetchSourceDataIfNeeded();
-    if (cache->GetSourceColour())
-    {
-        cv::Vec3f p = sourceImage.at<cv::Vec3f>(y, x);
-
-        float b = p[0];
-        float g = p[1];
-        float r = p[2];
-        return QColor::fromRgbF(r, g, b);
-    }
-    else
-    {
-        float intensity  = sourceImage.at<float>(y,x);
-        return QColor::fromRgbF(intensity, intensity, intensity);
-    }
-
-}
 
 //Public API
 
@@ -208,6 +30,12 @@ MLCachedAccess::MLCachedAccess(int sliceCount, bool colourImages, int fwidth, in
     SetMaxMemoryUsage(1024ul *1024ul *1024ul * 2ul); //2Gb default
 }
 
+MLCachedAccess::~MLCachedAccess()
+{
+    qDeleteAll(cachedSlices);
+    qDeleteAll(features);
+}
+
 int MLCachedAccess::GetIndexForFeature(MLFeature::FeatureType type, MLFeature::Channel channel, bool is3D, int arg1, int arg2)
 {
     int feature = -1;
@@ -223,6 +51,37 @@ int MLCachedAccess::GetIndexForFeature(MLFeature::FeatureType type, MLFeature::C
 int MLCachedAccess::GetIndexForFeature(MLFeature *feature)
 {
     return GetIndexForFeature(feature->GetType(), feature->GetChannel(), feature->is3D(), feature->GetArg1(),feature->GetArg2());
+}
+
+int MLCachedAccess::GetMaxMemoryUsageGb()
+{
+    return maxMemoryUsage/(1024ul*1024ul*1024ul);
+}
+
+void MLCachedAccess::ClearFeatures()
+{
+    qDeleteAll(features);
+    features.clear();
+}
+
+void MLCachedAccess::SetFeatures(QList<MLFeature *> newFeatures)
+{
+    ClearFeatures();
+    for (int i=0; i<newFeatures.count(); i++)
+    {
+        features.append(newFeatures[i]);
+
+        for (int j=0; j<cachedSlices.count(); j++)
+        {
+            if (cachedSlices[j]!=nullptr)
+            {
+                cachedSlices[j]->AddFeature();
+            }
+        }
+        ResizeCache();
+    }
+    RebuildFeatureIDsInUse();
+
 }
 
 void MLCachedAccess::SetFeatureInUse(int featureID, bool inUse)
@@ -334,7 +193,7 @@ int MLCachedAccess::AddFeature(MLFeature *feature)
     }
 
     RebuildFeatureIDsInUse();
-
+    ResizeCache();
     return nextFeatureIndex;
 }
 
@@ -380,7 +239,7 @@ bool MLCachedAccess::RemoveFeature(int featureIndex)
     }
 
     RebuildFeatureIDsInUse();
-
+    ResizeCache();
     return true;
 }
 
@@ -441,12 +300,16 @@ ulong MLCachedAccess::GetMemorySizeOfSlice()
 void MLCachedAccess::ResizeCache()
 {
     int newCacheLength = maxMemoryUsage / GetMemorySizeOfSlice();
+    qDebug()<<"Calced new max slice cache = "<<newCacheLength;
 
     if (newCacheLength > zSize) newCacheLength = zSize; //no need for more!
     int oldCacheLength= cachedSlices.count();
 
     if (newCacheLength == oldCacheLength) //nothing to do
         return;
+
+
+    qDebug()<<"Resizing cache to "<<newCacheLength<<"slices from "<<oldCacheLength<<" slices";
 
     if (newCacheLength>oldCacheLength)
     {

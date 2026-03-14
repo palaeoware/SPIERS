@@ -3,6 +3,13 @@
 #include "globals.h"
 #include "mlupdateblockingdialog.h"
 #include <QString>
+
+#include "mlfeaturecontrast.h"
+#include "mlfeaturedifferenceofgaussians.h"
+#include "mlfeatureintensity.h"
+#include "mlfeaturegaussian.h"
+#include "mlfeaturemean.h"
+
 MLFeature::MLFeature(FeatureType type, Channel channel, bool is3D, int arg1, int arg2)
 {
     _type = type;
@@ -11,6 +18,7 @@ MLFeature::MLFeature(FeatureType type, Channel channel, bool is3D, int arg1, int
     _arg1 = arg1;
     _arg2 = arg2;
     _isSelected = false;
+    _importancePercent=-1; //not calced
 }
 
 
@@ -93,6 +101,47 @@ QString MLFeature::Dump()
         .arg(_arg1);
 }
 
+void MLFeature::SetImportance(int percent)
+{
+    _importancePercent = percent;
+}
+
+
+int MLFeature::GetImportance()
+{
+    return _importancePercent;
+}
+
+MLFeature *MLFeature::CreateFromData(FeatureType type, Channel channel, bool is3D, int arg1, int arg2)
+{
+    switch (type)
+    {
+    case MLFeature::FeatureType::Gaussian:
+        return new MLFeatureGaussian(channel, is3D, arg1);
+
+    case MLFeature::FeatureType::Difference_of_gaussians:
+        return new MLFeatureDifferenceOfGaussians(channel, is3D, arg1, arg2);
+
+    case MLFeature::FeatureType::Intensity:
+        return new MLFeatureIntensity(channel);
+
+    case MLFeature::FeatureType::Local_mean:
+        return new MLFeatureMean(channel, is3D, arg1);
+
+    case MLFeature::FeatureType::Contrast:
+        return new MLFeatureContrast(channel, is3D, arg1);
+
+    case MLFeature::FeatureType::Gradient:
+    case MLFeature::FeatureType::Laplacian_of_gaussian:
+    case MLFeature::FeatureType::Local_variance:
+    case MLFeature::FeatureType::Structure_tensor:
+    case MLFeature::FeatureType::Hessian:
+    default:
+        qDebug()<<"ERROR - not implemented in CreateNewFeature";
+        return nullptr;
+    }
+}
+
 QString MLFeature::GetChannelCodeForFile()
 {
     switch (_channel)
@@ -127,11 +176,11 @@ QString MLFeature::GetPrettyChannel(Channel ch)
     case Channel::Intensity:
         return "grey";
     case Channel::Red:
-        return "red";
+        return "r";
     case Channel::Green:
-        return "green";
+        return "g";
     case Channel::Blue:
-        return "blue";
+        return "b";
     case Channel::G_B:
         return "g-b";
     case Channel::R_G:

@@ -20,6 +20,13 @@ MLFeatureUIManager::MLFeatureUIManager(MLCachedAccess *data, QTableWidget *table
 
 }
 
+MLFeatureUIManager::~MLFeatureUIManager()
+{
+    _tableWidget->clear();
+    _tableWidget->setRowCount(0);
+    _tableWidget->setColumnCount(0);
+}
+
 void MLFeatureUIManager::OnTableItemChanged(QTableWidgetItem *item)
 {
     if (item->column() != 0)   // only react to checkbox column
@@ -49,6 +56,14 @@ void MLFeatureUIManager::Rebuild()
         _tableWidget->setItem(i,3,new QTableWidgetItem(feature->GetPretty3D()));
         _tableWidget->setItem(i,4,new QTableWidgetItem(feature->GetPrettyArgs()));
 
+        auto newItem = new QTableWidgetItem;
+        if (feature->GetImportance()<0)
+            newItem->setText("-");
+        else
+            newItem->setData(Qt::DisplayRole, feature->GetImportance());
+
+        _tableWidget->setItem(i,5,newItem);
+
         QTableWidgetItem *item = new QTableWidgetItem();
         item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
         if (feature->IsSelected())
@@ -69,10 +84,30 @@ void MLFeatureUIManager::Rebuild()
     header->setSectionResizeMode(2, QHeaderView::ResizeToContents);
     header->setSectionResizeMode(3, QHeaderView::ResizeToContents);
     header->setSectionResizeMode(4, QHeaderView::ResizeToContents);
+    header->setSectionResizeMode(5, QHeaderView::ResizeToContents);
     _tableWidget->setUpdatesEnabled(true);
     _tableWidget->setSortingEnabled(true);
     _tableWidget->clearSelection();
     _tableWidget->setCurrentItem(nullptr);
+}
+
+void MLFeatureUIManager::RefreshImportance()
+{
+    for (int i=0; i<_data->GetFeatureCount(); i++)
+    {
+        auto item = _tableWidget->item(i,0);
+        int featureID = item->data(Qt::UserRole).toInt();
+        auto feature = _data->GetFeature(featureID);
+
+        auto newItem = new QTableWidgetItem;
+        if (feature->GetImportance()<0)
+            newItem->setText("-");
+        else
+            newItem->setData(Qt::DisplayRole, feature->GetImportance());
+
+        _tableWidget->setItem(i,5,newItem);
+
+    }
 }
 
 void MLFeatureUIManager::DeleteSelectedFeatures()
@@ -151,13 +186,14 @@ void MLFeatureUIManager::SetUpTableWidget()
     _tableWidget->setColumnCount(0);
 
     _tableWidget->horizontalHeader()->setStyleSheet("QHeaderView::section { padding-left: 2px; padding-right: 2px; }");
-    _tableWidget->setColumnCount(5);
+    _tableWidget->setColumnCount(6);
     _tableWidget->setHorizontalHeaderLabels({
         " ",
         "Feature",
-        "Channel",
+        "Col",
         "Dim",
-        "Args"
+        "Arg",
+        "Imp"
     });
 
     //left align them all
@@ -181,5 +217,8 @@ void MLFeatureUIManager::SetUpTableWidget()
     _tableWidget->setSortingEnabled(true);
     _tableWidget->horizontalHeader()->setSortIndicatorShown(true);
 
+    auto *vh = _tableWidget->verticalHeader();
+    vh->setSectionResizeMode(QHeaderView::Fixed);
+    vh->setDefaultSectionSize(18);
 
 }

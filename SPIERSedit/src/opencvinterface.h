@@ -9,6 +9,7 @@
 
 class MLFeatureUIManager;
 class MLAddFeature;
+class LabelledPoint;
 
 class OpenCVInterface
 {
@@ -16,15 +17,32 @@ public:
     OpenCVInterface();
     static bool TestOpenCV();
     static bool enabled;
-    cv::Mat QImageToCvMatGrayFloat(QImage &img);
-    void Train(int slice, MainWindowImpl *mw);
+    void SampleAndTrain();
     uchar GetProbability(int x, int y, int z, int segment);
-    void CalculateFeatureData(MainWindowImpl *mw);
+    void CalculateFeatureData();
     void GetProbabilitiesAllSegments(int x, int y, int z, int *segBuffer);
     void Generate(QListWidget *SliceSelectorList);
     void UIActivateSelectedFeatures(bool activate);
     void UIDeleteSelectedFeatures();
     void UIAddFeature();
+    void SetSamplePercent(int v);
+    void SetMinSampleCount(int v);
+    void SetTreeCount(int v);
+    void SetTreeDepth(int v);
+    int GetSamplePercent();
+    int GetMinSampleCount();
+    int GetTreeCount();
+    int GetTreeDepth();
+    void SetCacheMemSizeGb(int v);
+
+    int GetCacheMemSizeGb();
+    void Initialise(MainWindowImpl *mw,QLabel *statusLabel);
+    void RemoveAllCacheFiles();
+    void ClearSample();
+    QByteArray DumpFeaturesToByteArray();
+    void RetrieveFeaturesFromByteArray(QByteArray &byteArray);
+    void SaveFeaturesToFile();
+    void LoadFeaturesFromFile();
 private:
     bool dataComputed;
     int currentSlice;
@@ -36,6 +54,13 @@ private:
     void ComputeSliceProbabilitiesFromVotes(int sliceID);
     MLFeatureUIManager *uiManager;
     MLAddFeature *addFeatureDialog;
+    int samplePercent, minSampleCount, treeCount, treeDepth;
+    void UpdateStatusLabel();
+
+    QLabel *lblStatus;
+    MainWindowImpl *mainWin;
+    QString DescribeSample();
+    QList<LabelledPoint> labels;
 };
 
 #endif // OPENCVINTERFACE_H

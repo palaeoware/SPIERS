@@ -27,6 +27,7 @@ SettingsImpl::SettingsImpl(QWidget *parent, Qt::WindowFlags f)
     setWindowIcon(QIcon(":/icons/ProgramIcon.bmp"));
 
     SpinBoxCache->setValue(CacheMem);
+    spinBoxCacheMemMLGb->setValue(CacheMemMLGb);
     SpinBoxUndo->setValue(UndoMem);
     SpinBoxUndoTimer->setValue(UndoTimerSetting);
     BoxBackCache->setChecked(BackgroundCacheFilling);
@@ -50,6 +51,8 @@ void SettingsImpl::on_pushButton_clicked()
 void SettingsImpl::on_buttonBox_accepted()
 {
     CacheMem = SpinBoxCache->value();
+    CacheMemMLGb = spinBoxCacheMemMLGb->value();
+    openCV->SetCacheMemSizeGb(CacheMemMLGb);
     UndoMem = SpinBoxUndo->value();
     UndoTimerSetting = SpinBoxUndoTimer->value();
     AutoSaveFrequency = AutoSave->value();

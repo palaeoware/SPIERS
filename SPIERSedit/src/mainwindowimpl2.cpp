@@ -986,6 +986,7 @@ void MainWindowImpl::SetUpGUIFromSettings()
     DockCurvesSettings->setEnabled(true);
     DockOutputSettings->setEnabled(true);
     DockSegmentsSettings->setEnabled(true);
+    menuML->setEnabled(true);
 
     //qDebug()<<"MG3";
     SliceSelector->setVisible(MenuSliceSelectorChecked);

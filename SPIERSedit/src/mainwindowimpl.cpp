@@ -343,6 +343,8 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     DoubleClickTimer.start();
 
     centerIcon = new BeamHardeningCenterIcon();
+
+    dockWidget_Generate->setEnabled(false);
 }
 
 
@@ -953,23 +955,23 @@ void MainWindowImpl::Menu_Window_Generate()
 
 void MainWindowImpl::FileOpen()
 {
-    qDebug()<<"Try mutex";
+
     QMutexLocker locker(&mutex);
-    qDebug()<<"Done mutex";
+
     QString file = QFileDialog::getOpenFileName(
                        this,
                        "Select SPIERSedit settings file",
                        QDir::homePath(),
                        "SPIERSedit files (*.spe)");
 
-    qDebug()<<"H1";
+
     //Now we do a whole load of initialisation!
     if (file.isNull()) return; //if nothing there, cancel
     if (Active) WriteSettings();
     FullSettingsFileName = file;
-    qDebug()<<"H2";
+
     ReadSettings();
-    qDebug()<<"H3";
+
     //Now do set up - same as for
     if (Active)
     {
@@ -977,12 +979,12 @@ void MainWindowImpl::FileOpen()
         Brush.Brush_Flag_Restart();
         ClearImages();
     }
-    qDebug()<<"H4";
+
     SetUpGUIFromSettings();
     RecentFile(file);
-    qDebug()<<"H5";
+
     Start();
-    qDebug()<<"H6";
+
 }
 
 void MainWindowImpl::openRecentFile()
@@ -1101,6 +1103,17 @@ void MainWindowImpl::Start()
     rangescene->Refresh();
 
     ResetFilesDirty();
+
+    //ML stuff
+    openCV->Initialise(this, lblMLStatus);
+    openCV->SetCacheMemSizeGb(CacheMemMLGb);
+    openCV->SetMinSampleCount(spinBoxMinSampleCount->value());
+    openCV->SetSamplePercent(spinBoxMLSampling->value());
+    openCV->SetTreeCount(spinBoxMLTrees->value());
+    openCV->SetTreeDepth(spinBoxMLDepth->value());
+    openCV->RetrieveFeaturesFromByteArray(FeaturesByteArray);
+
+    dockWidget_Generate->setEnabled(true);
 }
 
 void MainWindowImpl::BuildRecentFiles()
@@ -2237,16 +2250,8 @@ void MainWindowImpl::on_actionDecrease_Size_triggered()
 
 void MainWindowImpl::on_trainML_clicked()
 {
-    openCV->Train(CurrentFile, this);
+    openCV->SampleAndTrain();
 }
-
-
-void MainWindowImpl::on_testML_clicked()
-{
-    openCV->CalculateFeatureData(this);
-}
-
-
 
 
 void MainWindowImpl::on_actionSegment_brush_applies_locks_triggered()
@@ -2278,4 +2283,61 @@ void MainWindowImpl::on_btnMLRemoveFeature_clicked()
 {
     openCV->UIDeleteSelectedFeatures();
 }
+
+
+void MainWindowImpl::on_spinBoxMinSampleCount_valueChanged(int arg1)
+{
+    openCV->SetMinSampleCount(arg1);
+}
+
+
+void MainWindowImpl::on_spinBoxMLTrees_valueChanged(int arg1)
+{
+    openCV->SetTreeCount(arg1);
+}
+
+
+void MainWindowImpl::on_spinBoxMLDepth_valueChanged(int arg1)
+{
+    openCV->SetTreeDepth(arg1);
+}
+
+
+void MainWindowImpl::on_spinBoxMLSampling_valueChanged(int arg1)
+{
+    openCV->SetSamplePercent(arg1);
+}
+
+
+
+
+void MainWindowImpl::on_actionCalculate_Features_triggered()
+{
+    openCV->CalculateFeatureData();
+}
+
+
+void MainWindowImpl::on_actionSave_feature_set_triggered()
+{
+    openCV->SaveFeaturesToFile();
+}
+
+
+void MainWindowImpl::on_actionLoad_feature_set_triggered()
+{
+    openCV->LoadFeaturesFromFile();
+}
+
+
+void MainWindowImpl::on_actionRemove_feature_files_triggered()
+{
+    openCV->RemoveAllCacheFiles();
+}
+
+
+void MainWindowImpl::on_actionClear_sample_triggered()
+{
+    openCV->ClearSample();
+}
+
 

@@ -16,7 +16,10 @@
 #include "mlfeaturemean.h"
 #include "mlfeatureuimanager.h"
 #include "ui/mlAddFeature.h"
-#
+#include <QMessageBox>
+#include "opencvfileio.h"
+#include <QFileDialog>
+
 bool OpenCVInterface::enabled;
 
 
@@ -26,9 +29,162 @@ OpenCVInterface::OpenCVInterface()
     data = nullptr;
     uiManager = nullptr;
     addFeatureDialog = nullptr;
+}
 
+//This should be called after new dataset is loaded or created
+//Or after operations that break everything, e.g. change to resampling
+void OpenCVInterface::Initialise(MainWindowImpl *mw, QLabel *statusLabel)
+{
+    lblStatus = statusLabel;
+    mainWin = mw;
+
+    if (data!=nullptr)
+        delete data;
+
+    if (uiManager!=nullptr)
+        delete uiManager;
+
+    //reset rf
+    rf.release();
+    rf = cv::ml::RTrees::create();
+
+    //remake things - nullptr triggers this
+    data=nullptr;
+    uiManager=nullptr;
+    CreateSingletonsIfNeeded();
+    UpdateStatusLabel();
+}
+
+void OpenCVInterface::RemoveAllCacheFiles()
+{
+    QDir dir(openCVFileIO::GetWorkingPath());
+
+    qDebug()<<openCVFileIO::GetWorkingPath();
+    QStringList files = dir.entryList({"ml_*"}, QDir::Files);
+
+    if (QMessageBox::question(mainWin,
+                              "Confirm",
+                              QString("This will remove %1 feature cache files - proceed?")
+                            .arg(files.count()),
+                        QMessageBox::Yes | QMessageBox::No,
+                                              QMessageBox::No)
+        == QMessageBox::Yes)
+    {
+        MLUpdateBlockingDialog::showDialog(mainwin, "", "","Deleting files");
+
+        for (const QString &file : files)
+        {
+            dir.remove(file);
+        }
+        MLUpdateBlockingDialog::hideDialog();
+    }
+}
+
+void OpenCVInterface::ClearSample()
+{
+    labels.clear();
+    rf.release();
+    rf = cv::ml::RTrees::create();
+    UpdateStatusLabel();
+}
+
+QByteArray OpenCVInterface::DumpFeaturesToByteArray()
+{
+    QByteArray outArray;
+    QDataStream out(&outArray, QIODevice::WriteOnly);
+
+    out << data->GetFeatureCount();
+    for (int i=0; i<data->GetFeatureCount(); i++)
+    {
+        MLFeature *feature = data->GetFeature(i);
+        out << (uchar)feature->GetType();
+        out << (uchar)feature->GetChannel();
+        out << feature->is3D();
+        out << feature->GetArg1();
+        out << feature->GetArg2();
+        out << feature->IsSelected();
+    }
+    return outArray;
+}
+
+void OpenCVInterface::RetrieveFeaturesFromByteArray(QByteArray &byteArray)
+{
+    data->ClearFeatures();
+    QDataStream in(&byteArray, QIODevice::ReadOnly);
+    QList<MLFeature *> newFeatures;
+    int itemCount;
+    in >> itemCount;
+    for (int i=0; i<itemCount; i++)
+    {
+        uchar dummy;
+
+        bool is3D, isSelected;
+        int arg1, arg2;
+
+        in >> dummy;
+        MLFeature::FeatureType type = (MLFeature::FeatureType)dummy;
+
+        in >> dummy;
+        MLFeature::Channel channel = (MLFeature::Channel)dummy;
+
+        in >> is3D;
+        in >> arg1;
+        in >> arg2;
+        in >> isSelected;
+
+        MLFeature *feature = MLFeature::CreateFromData
+            (type, channel, is3D, arg1, arg2);
+
+        feature->SetSelected(isSelected);
+        newFeatures.append(feature);
+    }
+
+    data->SetFeatures(newFeatures);
+    uiManager->Rebuild();
+}
+
+void OpenCVInterface::SaveFeaturesToFile()
+{
+    QString filename = QFileDialog::getSaveFileName(
+        mainWin,
+        "Save feature-set",
+        openCVFileIO::GetWorkingPath(),
+        "FEAT files (*.feat)");
+
+    if (filename.isEmpty())
+        return;
+
+    QFile file(filename);
+    file.open(QIODevice::WriteOnly);
+
+    QDataStream out(&file);
+    out << DumpFeaturesToByteArray();
+    file.close();
+}
+
+void OpenCVInterface::LoadFeaturesFromFile()
+{
+    QString filename = QFileDialog::getOpenFileName(
+        mainWin,
+        "Load feature-set",
+        openCVFileIO::GetWorkingPath(),
+        "FEAT files (*.feat)");
+
+    if (filename.isEmpty())
+        return;
+
+    QFile file(filename);
+    file.open(QIODevice::ReadOnly);
+
+    QDataStream in(&file);
+    QByteArray dummy;
+    in >> dummy;
+    file.close();
+
+    RetrieveFeaturesFromByteArray(dummy);
 
 }
+
 
 //static test method - run by main on startup.
 bool OpenCVInterface::TestOpenCV()
@@ -49,6 +205,7 @@ bool OpenCVInterface::TestOpenCV()
         return false;
     }
 }
+
 
 
 void OpenCVInterface::GetProbabilitiesAllSegments(int x, int y, int z, int *segBuffer)
@@ -94,6 +251,13 @@ void OpenCVInterface::GetProbabilitiesAllSegments(int x, int y, int z, int *segB
 void OpenCVInterface::Generate(QListWidget *SliceSelectorList)
 {
     CreateSingletonsIfNeeded();
+
+    if (!rf->isTrained())
+    {
+        Message("ML model is not trained");
+        return;
+    }
+
     WriteAllData(CurrentFile);
 
     MLUpdateBlockingDialog::showDialog(mainwin, "", "","Creating segments using ML data");
@@ -150,6 +314,62 @@ void OpenCVInterface::UIAddFeature()
         uiManager->Rebuild();
     }
 }
+
+void OpenCVInterface::SetSamplePercent(int v)
+{
+    samplePercent = v;
+}
+
+void OpenCVInterface::SetMinSampleCount(int v)
+{
+    minSampleCount = v;
+}
+
+void OpenCVInterface::SetTreeCount(int v)
+{
+    treeCount = v;
+}
+
+void OpenCVInterface::SetTreeDepth(int v)
+{
+    treeDepth = v;
+}
+
+int OpenCVInterface::GetSamplePercent()
+{
+    return samplePercent;
+}
+
+int OpenCVInterface::GetMinSampleCount()
+{
+    return minSampleCount;
+}
+
+int OpenCVInterface::GetTreeCount()
+{
+    return treeCount;
+}
+
+int OpenCVInterface::GetTreeDepth()
+{
+    return treeDepth;
+}
+
+void OpenCVInterface::SetCacheMemSizeGb(int v)
+{
+    if (!IsDatasetLoaded()) return;
+    CreateSingletonsIfNeeded();
+    data->SetMaxMemoryUsage(1024ul*1024ul*1014ul*(ulong)v);
+}
+
+
+int OpenCVInterface::GetCacheMemSizeGb()
+{
+    CreateSingletonsIfNeeded();
+    return data->GetMaxMemoryUsageGb();
+}
+
+
 
 void OpenCVInterface::ComputeSliceProbabilitiesFromVotes(int sliceID)
 {
@@ -229,6 +449,56 @@ void OpenCVInterface::ComputeSliceProbabilitiesFromVotes(int sliceID)
     }
 }
 
+QString OpenCVInterface::DescribeSample()
+{
+    if (labels.count()==0)
+    {
+        return "[Not Defined]";
+    }
+    else
+    {
+        int minSlice=9999999;
+        int maxSlice=-1;
+        QVector<int> counts(SegmentCount, 0);
+
+        for (int i=0; i<labels.count(); i++)
+        {
+            if (labels[i].z<minSlice)
+                minSlice = labels[i].z;
+            if (labels[i].z>maxSlice)
+                maxSlice = labels[i].z;
+            counts[labels[i].segment]++;
+        }
+
+        QStringList parts;
+        for (int v : counts)
+            parts << QString::number(v);
+
+        QString details = parts.join(",");
+
+        if (minSlice < maxSlice)
+            return QString("%1 samples (%2) slices %3-%4")
+                .arg(labels.count())
+                .arg(details)
+                .arg(minSlice+1)
+                .arg(maxSlice+1);
+        else
+            return QString("%1 samples (%2) slice %3")
+                .arg(labels.count())
+                .arg(details)
+                .arg(minSlice+1);
+
+    }
+}
+
+void OpenCVInterface::UpdateStatusLabel()
+{
+    if (rf->isTrained())
+        lblStatus->setText(QString("Trained on ")+DescribeSample());
+    else
+        lblStatus->setText("Not trained, no sample");
+}
+
 
 uchar OpenCVInterface::GetProbability(int x, int y, int z, int segment)
 {
@@ -280,7 +550,7 @@ void OpenCVInterface::CreateSingletonsIfNeeded()
 
     if (uiManager==nullptr)
     {
-        uiManager = new MLFeatureUIManager(data, mainwin->tblMLFeatureList);
+        uiManager = new MLFeatureUIManager(data, mainWin->tblMLFeatureList);
         uiManager->Rebuild();
     }
 }
@@ -317,15 +587,20 @@ void OpenCVInterface::TestSetUpFeatures()
     uiManager->Rebuild();
 }
 
-void OpenCVInterface::CalculateFeatureData(MainWindowImpl *mw)
+void OpenCVInterface::MakeML(int fnum)
+{
+
+}
+
+void OpenCVInterface::CalculateFeatureData()
 {
     CreateSingletonsIfNeeded();
 
-    MLUpdateBlockingDialog::showDialog(mw, "Initialising", "", "Calculating Feature Data");
+    MLUpdateBlockingDialog::showDialog(mainWin, "Initialising", "", "Calculating Feature Data");
     int featureCount = data->GetFeatureCount();
     for (int k = 0; k < Files.count(); k++)
     {
-        if (mw->SliceSelectorList->item(k)->isSelected())
+        if (mainWin->SliceSelectorList->item(k)->isSelected())
         {
             for (int i=0; i<featureCount; i++)
             {
@@ -339,7 +614,7 @@ void OpenCVInterface::CalculateFeatureData(MainWindowImpl *mw)
     MLUpdateBlockingDialog::hideDialog();
 }
 
-void OpenCVInterface::Train(int slice, MainWindowImpl *mw)
+void OpenCVInterface::SampleAndTrain()
 {
     CreateSingletonsIfNeeded();
 
@@ -349,9 +624,20 @@ void OpenCVInterface::Train(int slice, MainWindowImpl *mw)
         return;
     }
 
-    MLUpdateBlockingDialog::showDialog(mw, "Collecting training data", "", "Train");
-    QList<LabelledPoint> labels = GenerateLabels(mw);
+    qDebug()<<"Feature count "<<data->GetFeaturesInUse().count();
+    if (data->GetFeaturesInUse().count()==0)
+    {
+        Message("At least one active feature is required to perform training");
+        return;
+    }
 
+    MLUpdateBlockingDialog::showDialog(mainWin, "Collecting training data", "", "Train");
+
+    if (!mainWin->actionIncremental_sampling->isChecked())
+        labels.clear();
+
+    auto newLabels = GenerateLabels(mainWin, samplePercent);
+    labels.append(newLabels);
     QList<int> counts;
     for (int i=0; i<SegmentCount; i++)
     {
@@ -367,7 +653,7 @@ void OpenCVInterface::Train(int slice, MainWindowImpl *mw)
     if (minValue<2)
     {
         MLUpdateBlockingDialog::hideDialog();
-        Message("You need at least two sample voxels in each segment to train the model");
+        Message("You need at least two samples in each segment to perform training");
         return;
     }
 
@@ -394,16 +680,16 @@ void OpenCVInterface::Train(int slice, MainWindowImpl *mw)
         }
     }
 
-
     MLUpdateBlockingDialog::updateHighLevelText(QString("Training..."));
     MLUpdateBlockingDialog::updateDetailText(QString(""));
     rf = cv::ml::RTrees::create();
-    rf->setMaxDepth(10);
-    rf->setMinSampleCount(2);
+    rf->setCalculateVarImportance(true);
+    rf->setMaxDepth(treeDepth);
+    rf->setMinSampleCount(minSampleCount);
     rf->setRegressionAccuracy(0.0f);
     rf->setUseSurrogates(false);
     rf->setMaxCategories(2);
-    rf->setTermCriteria(cv::TermCriteria(cv::TermCriteria::MAX_ITER, 50, 0));
+    rf->setTermCriteria(cv::TermCriteria(cv::TermCriteria::MAX_ITER, treeCount, 0));
 
     auto td = cv::ml::TrainData::create(
         trainingDataMat,
@@ -411,9 +697,22 @@ void OpenCVInterface::Train(int slice, MainWindowImpl *mw)
         labelsMat
         );
 
-    bool ok = rf->train(td);
+    rf->train(td);
 
-    qDebug() << "trained! ok =" << ok;
+    UpdateStatusLabel();
+
+    //calc importances
+    auto importances = rf->getVarImportance();
+
+    double total = cv::sum(importances)[0];
+    for (int i = 0; i < importances.rows; ++i)
+    {
+        float score = importances.at<float>(i,0);
+        float pct = 100.0f * score / total;
+        data->GetFeature(featureIDs[i])->SetImportance((int)pct);
+    }
+
+    uiManager->RefreshImportance();
     MLUpdateBlockingDialog::hideDialog();
 
 }

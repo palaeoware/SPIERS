@@ -117,6 +117,8 @@ QString SettingsFileName;
 QString FileNotes;
 QTabWidget *tabwidget;
 
+QByteArray FeaturesByteArray;
+
 bool MenuHistChecked, MenuInfoChecked, MenuGenChecked, MenuMasksChecked, MenuSegsChecked, MenuCurvesChecked, MenuOutputChecked, MenuToolboxChecked, MenuSliceSelectorChecked;
 
 Mask::Mask(QString name)
@@ -318,6 +320,7 @@ bool OutputRegroupMode;
 //Now the 'superglobals - these are to be written into system settings, not .spe files
 QList<RecentFiles> RecentFileList;
 int CacheMem;
+int CacheMemMLGb;
 int UndoMem;
 int UndoTimerSetting;
 bool BackgroundCacheFilling;
@@ -344,7 +347,9 @@ void WriteSuperGlobals()
     settings.setValue("FileCompressionLevel", FileCompressionLevel);
     settings.setValue("RenderCache", RenderCache);
     settings.setValue("DefaultFilePath", DefaultPath);
+    settings.setValue("CacheMemML(Gb)", CacheMemMLGb);
 }
+
 
 void ReadSuperGlobals()
 {
@@ -370,6 +375,12 @@ void ReadSuperGlobals()
     FileCompressionLevel = settings.value("FileCompressionLevel", 0).toInt();
     RenderCache = settings.value("RenderCache", false).toBool();
     DefaultPath = settings.value("DefaultFilePath", QDir::homePath()).toString();
+    CacheMemMLGb = settings.value("CacheMemML(Gb)",2).toInt();
+}
+
+bool IsDatasetLoaded()
+{
+    return Files.count()>0;
 }
 
 void RecentFile(QString fname)

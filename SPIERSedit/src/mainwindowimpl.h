@@ -289,9 +289,6 @@ private slots:
 
     void on_trainML_clicked();
 
-    void on_testML_clicked();
-
-
     void on_actionSegment_brush_applies_locks_triggered();
 
     void on_btnMLActivateFeature_clicked();
@@ -301,6 +298,24 @@ private slots:
     void on_btnMLAddFeature_clicked();
 
     void on_btnMLRemoveFeature_clicked();
+
+    void on_spinBoxMinSampleCount_valueChanged(int arg1);
+
+    void on_spinBoxMLTrees_valueChanged(int arg1);
+
+    void on_spinBoxMLDepth_valueChanged(int arg1);
+
+    void on_spinBoxMLSampling_valueChanged(int arg1);
+
+    void on_actionCalculate_Features_triggered();
+
+    void on_actionSave_feature_set_triggered();
+
+    void on_actionLoad_feature_set_triggered();
+
+    void on_actionRemove_feature_files_triggered();
+
+    void on_actionClear_sample_triggered();
 
 private:
     void MakeUndo(QString type);

@@ -71,6 +71,7 @@ HEADERS += src/display.h \
     src/labelledpoint.h \
     src/mainwindowimpl.h \
     src/mlcachedaccess.h \
+    src/mlcachedslice.h \
     src/mlfeature.h \
     src/mlfeaturecontrast.h \
     src/mlfeaturedifferenceofgaussians.h \
@@ -123,6 +124,7 @@ SOURCES += src/display.cpp \
     src/main.cpp \
     src/mainwindowimpl.cpp \
     src/mlcachedaccess.cpp \
+    src/mlcachedslice.cpp \
     src/mlfeature.cpp \
     src/mlfeaturecontrast.cpp \
     src/mlfeaturedifferenceofgaussians.cpp \
