@@ -1,12 +1,12 @@
-#ifndef MLFEATUREMEAN_H
-#define MLFEATUREMEAN_H
+#ifndef MLFEATURESQUAREINTENSITY_H
+#define MLFEATURESQUAREINTENSITY_H
 
 #include "mlfeature.h"
 
-class MLFeatureMean : public MLFeature
+class MLFeatureSquareIntensity : public MLFeature
 {
 public:
-    MLFeatureMean(Channel channel, bool is3D, int arg1);
+    MLFeatureSquareIntensity(Channel channel);
 
     // MLFeature interface
 public:
@@ -15,23 +15,20 @@ public:
     QString GetPrettyName() override;
     QString GetPrettyArgs() override;
     QString GetPretty3D() override;
+    int GetDependencyDepth() override;
 
 protected:
     QString GetTypeCodeForFile() override;
     QString GetArgsForFile() override;
     QString Get3DForFile() override;
-private:
-    void CalcFeatureMean3D(cv::Mat &, int, MLCachedAccess *);
-    void CalcFeatureMean2D(cv::Mat &, int, MLCachedAccess *);
 
-    // MLFeature interface
-public:
-    int GetDependencyDepth() override;
-
-    // MLFeature interface
 public:
     QString GetArg1SetupString(int v) override;
     QString GetArg2SetupString(int v) override;
+
+    // MLFeature interface
+public:
+    int GetMinMaxForArgs(int arg, bool max) override;
 };
 
-#endif // MLFEATUREMEAN_H
+#endif // MLFEATURESQUAREINTENSITY_H

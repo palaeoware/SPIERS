@@ -94,9 +94,20 @@ void openCVFileIO::SaveMatBinary(const QString& featurename, const cv::Mat& mat,
     //TEST - create PNG to inspect
     if (featurename!="src")
     {
+        cv::Mat absMat;
+        cv::absdiff(mat, 0, absMat);   // abs(mat)
+
+        double minVal, maxVal;
+        cv::minMaxLoc(absMat, &minVal, &maxVal);
+
         cv::Mat tmp;
-        mat.convertTo(tmp, CV_8U, 255.0);
-        cv::imwrite((filename+QString(".png")).toStdString(), tmp);
+
+        if (maxVal > 0.0)
+            absMat.convertTo(tmp, CV_8U, 255.0 / maxVal);
+        else
+            tmp = cv::Mat::zeros(absMat.size(), CV_8U);
+
+        cv::imwrite((filename + QString(".png")).toStdString(), tmp);
     }
 }
 

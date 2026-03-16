@@ -1,15 +1,14 @@
-#ifndef MLFEATUREDIFFERENCEOFGAUSSIANS_H
-#define MLFEATUREDIFFERENCEOFGAUSSIANS_H
+#ifndef MLFEATURELOG_H
+#define MLFEATURELOG_H
 
 #include <QObject>
 #include "mlfeature.h"
 
-class MLFeatureDifferenceOfGaussians : public MLFeature
+class MLFeatureLoG : public MLFeature
 {
 public:
-    MLFeatureDifferenceOfGaussians(Channel channel, bool is3D, int arg1, int arg2);
+    MLFeatureLoG(Channel channel, bool is3D, int arg1);
 
-    // MLFeature interface
 public:
     void CalculateFeature(cv::Mat &mat, int sliceID, MLCachedAccess *data) override;
     QList<MLFeature *> GetDependencies() override;
@@ -17,23 +16,20 @@ public:
     QString GetPrettyArgs() override;
     QString GetPretty3D() override;
 
+    int GetDependencyDepth() override;
+
 protected:
     QString GetTypeCodeForFile() override;
     QString GetArgsForFile() override;
     QString Get3DForFile() override;
 
-    // MLFeature interface
-public:
-    int GetDependencyDepth() override;
+private:
+    void CalcFeatureLoG2D(cv::Mat &mat, int sliceID, MLCachedAccess *data);
+    void CalcFeatureLoG3D(cv::Mat &mat, int sliceID, MLCachedAccess *data);
 
-    // MLFeature interface
 public:
     QString GetArg1SetupString(int v) override;
     QString GetArg2SetupString(int v) override;
-
-    // MLFeature interface
-public:
-    int GetMinMaxForArgs(int arg, bool max) override;
 };
 
-#endif // MLFEATUREDIFFERENCEOFGAUSSIANS_H
+#endif // MLFEATURELOG_H

@@ -3,6 +3,7 @@
 #include <QImage>
 
 #include "globals.h"
+#include "display.h"
 #include "src/fileio.h"
 #include "display.h"
 #include <opencv2/imgproc.hpp>
@@ -13,7 +14,6 @@
 #include "mlfeaturegaussian.h"
 #include "mlfeaturecontrast.h"
 #include "mlfeaturedifferenceofgaussians.h"
-#include "mlfeaturemean.h"
 #include "mlfeatureuimanager.h"
 #include "ui/mlAddFeature.h"
 #include <QMessageBox>
@@ -140,8 +140,11 @@ void OpenCVInterface::RetrieveFeaturesFromByteArray(QByteArray &byteArray)
         MLFeature *feature = MLFeature::CreateFromData
             (type, channel, is3D, arg1, arg2);
 
-        feature->SetSelected(isSelected);
-        newFeatures.append(feature);
+        if (feature!=nullptr)
+        {
+            feature->SetSelected(isSelected);
+            newFeatures.append(feature);
+        }
     }
 
     data->SetFeatures(newFeatures);
@@ -585,42 +588,6 @@ void OpenCVInterface::CreateSingletonsIfNeeded()
     }
 }
 
-void OpenCVInterface::TestSetUpFeatures()
-{
-    data->SetFeatureInUse(data->AddFeature(new MLFeatureIntensity(MLFeature::Channel::Intensity)),true);
-
-    data->SetFeatureInUse(data->AddFeature(new MLFeatureContrast(MLFeature::Channel::Intensity, true, 2)),true);
-    data->SetFeatureInUse(data->AddFeature(new MLFeatureDifferenceOfGaussians
-                                           (MLFeature::Channel::Intensity, true, 2,1)),true);
-    data->SetFeatureInUse(data->AddFeature(new MLFeatureDifferenceOfGaussians
-                                           (MLFeature::Channel::Intensity, true, 3,2)),true);
-
-    data->SetFeatureInUse(data->AddFeature(new MLFeatureMean
-                                           (MLFeature::Channel::Intensity, false, 2)),true);
-
-    data->SetFeatureInUse(data->AddFeature(new MLFeatureMean
-                                           (MLFeature::Channel::Intensity, true, 2)),true);
-
-    data->SetFeatureInUse(data->AddFeature(new MLFeatureIntensity(MLFeature::Channel::Intensity)),true);
-    data->SetFeatureInUse(data->AddFeature(new MLFeatureGaussian(MLFeature::Channel::Intensity,true, 2)), true);
-    data->SetFeatureInUse(data->AddFeature(new MLFeatureIntensity(MLFeature::Channel::Red)),true);
-    data->SetFeatureInUse(data->AddFeature(new MLFeatureGaussian(MLFeature::Channel::Red,true, 2)), true);
-    data->SetFeatureInUse(data->AddFeature(new MLFeatureIntensity(MLFeature::Channel::Green)),true);
-    data->SetFeatureInUse(data->AddFeature(new MLFeatureGaussian(MLFeature::Channel::Green,true, 2)), true);
-    data->SetFeatureInUse(data->AddFeature(new MLFeatureIntensity(MLFeature::Channel::Blue)),true);
-    data->SetFeatureInUse(data->AddFeature(new MLFeatureGaussian(MLFeature::Channel::Blue,true, 2)), true);
-    data->SetFeatureInUse(data->AddFeature(new MLFeatureIntensity(MLFeature::Channel::R_G)),true);
-    data->SetFeatureInUse(data->AddFeature(new MLFeatureGaussian(MLFeature::Channel::R_G,true, 2)), true);
-    data->SetFeatureInUse(data->AddFeature(new MLFeatureIntensity(MLFeature::Channel::G_B)),true);
-    data->SetFeatureInUse(data->AddFeature(new MLFeatureGaussian(MLFeature::Channel::G_B,true, 2)), true);
-
-    uiManager->Rebuild();
-}
-
-void OpenCVInterface::MakeML(int fnum)
-{
-
-}
 
 void OpenCVInterface::CalculateFeatureData()
 {
@@ -644,30 +611,80 @@ void OpenCVInterface::CalculateFeatureData()
     MLUpdateBlockingDialog::hideDialog();
 }
 
-void OpenCVInterface::SampleAndTrain()
+void OpenCVInterface::AutoSampleTrainAndGenerate()
 {
-    CreateSingletonsIfNeeded();
+    if (mainWin->SliceSelectorList->selectedItems().count()!=1)
+        return;
 
+    if (!mainWin->SliceSelectorList->item(CurrentFile)->isSelected())
+        return;
+
+
+    if (!Sample(true, false))
+        return;
+
+    if (!Train(false))
+        return;
+
+    ComputeSliceProbabilitiesFromVotes(CurrentFile);
+
+    for (int i=0; i<SegmentCount; i++)
+    {
+        SaveGreyData(CurrentFile, i);
+    }
+
+    ShowImage(mainWin->graphicsView);
+    UpdateStatusLabel();
+    MLUpdateBlockingDialog::hideDialog();
+}
+
+bool OpenCVInterface::Sample(bool incremental, bool noMessages)
+{
     if (SegmentCount<2)
     {
-        Message(QString("You need at least two segments to perform training"));
-        return;
+        if (!noMessages) Message(QString("You need at least two segments to perform training"));
+        return false;
     }
 
     qDebug()<<"Feature count "<<data->GetFeaturesInUse().count();
     if (data->GetFeaturesInUse().count()==0)
     {
-        Message("At least one active feature is required to perform training");
-        return;
+        if (!noMessages) Message("At least one active feature is required to perform training");
+        return false;
     }
 
     MLUpdateBlockingDialog::showDialog(mainWin, "Collecting training data", "", "Train");
 
-    if (!mainWin->actionIncremental_sampling->isChecked())
+    if (incremental)
+    {
+        //remove any labels in selected files
+        for (int k = 0; k < Files.count(); k++)
+        {
+            if (mainWin->SliceSelectorList->item(k)->isSelected())
+            {
+                qDebug()<<"Removing labels from sllice "<<k<<" before "<<labels.count();
+
+                labels.removeIf([k](const LabelledPoint &item) {
+                    return item.z == k;
+                });
+                qDebug()<<" after "<<labels.count();
+
+            }
+        }
+    }
+    else
+    {
         labels.clear();
+    }
 
     auto newLabels = GenerateLabels(mainWin, samplePercent);
     labels.append(newLabels);
+    return true;
+
+}
+
+bool OpenCVInterface::Train(bool noMessages)
+{
     QList<int> counts;
     for (int i=0; i<SegmentCount; i++)
     {
@@ -682,9 +699,9 @@ void OpenCVInterface::SampleAndTrain()
     int minValue = *std::min_element(counts.begin(), counts.end());
     if (minValue<2)
     {
-        MLUpdateBlockingDialog::hideDialog();
-        Message("You need at least two samples in each segment to perform training");
-        return;
+        if (!noMessages) MLUpdateBlockingDialog::hideDialog();
+        if (!noMessages) Message("You need at least two samples in each segment to perform training");
+        return false;
     }
 
     QList<int> featureIDs = data->GetFeaturesInUse();
@@ -697,7 +714,7 @@ void OpenCVInterface::SampleAndTrain()
     {
         if (i%100==0)
         {    MLUpdateBlockingDialog::updateHighLevelText(QString("Fetching features for training %1%")
-                                                        .arg((i*100)/labels.count()));
+                                                            .arg((i*100)/labels.count()));
             MLUpdateBlockingDialog::updateDetailText(QString(""));
         }
         LabelledPoint point = labels[i];
@@ -705,7 +722,7 @@ void OpenCVInterface::SampleAndTrain()
 
 
         for (int j=0; j<featureCount; j++)
-        {            
+        {
             trainingDataMat.at<float>(i, j) = data->GetFeatureValueAt(point.x, point.y, point.z, featureIDs[j]);
         }
     }
@@ -729,12 +746,21 @@ void OpenCVInterface::SampleAndTrain()
 
     rf->train(td);
 
-    UpdateStatusLabel();
+    return true;
+
+}
+void OpenCVInterface::DoImportances()
+{
+    for (int i=0; i<data->GetFeatureCount();i++)
+    {
+        data->GetFeature(i)->SetImportance(-1);
+    }
 
     //calc importances
     auto importances = rf->getVarImportance();
 
     double total = cv::sum(importances)[0];
+    auto featureIDs = data->GetFeaturesInUse();
     for (int i = 0; i < importances.rows; ++i)
     {
         float score = importances.at<float>(i,0);
@@ -743,6 +769,28 @@ void OpenCVInterface::SampleAndTrain()
     }
 
     uiManager->RefreshImportance();
-    MLUpdateBlockingDialog::hideDialog();
+}
 
+void OpenCVInterface::SampleAndTrain()
+{
+    if (mainWin->GenerateAuto->checkState())
+    {
+        AutoSampleTrainAndGenerate();
+    }
+    else
+    {
+        CreateSingletonsIfNeeded();
+
+        if (!Sample(mainWin->actionIncremental_sampling->isChecked(),false))
+            return;
+
+        if (!Train(false))
+            return;
+
+        UpdateStatusLabel();
+
+        //zero all old importances
+        DoImportances();
+        MLUpdateBlockingDialog::hideDialog();
+    }
 }

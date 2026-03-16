@@ -33,7 +33,7 @@ QString MLFeatureGaussian::GetPrettyName()
 
 QString MLFeatureGaussian::GetPrettyArgs()
 {
-    return QString("Sigma=%1").arg(pow(2,_arg1));
+    return QString("Sigma=%1").arg(pow(2.0f,_arg1));
 }
 
 QString MLFeatureGaussian::GetPretty3D()
@@ -65,7 +65,7 @@ QString MLFeatureGaussian::Get3DForFile()
 void MLFeatureGaussian::CalcFeatureGaussian2D(cv::Mat &mat, int sliceID, MLCachedAccess *data)
 {
 
-    float sigma = std::pow(2,_arg1);
+    float sigma = std::pow(2.0f,_arg1);
 
     Q_ASSERT(mat.type() == CV_32F);
     Q_ASSERT(mat.cols == fwidth);
@@ -156,7 +156,7 @@ void MLFeatureGaussian::CalcFeatureGaussian2D(cv::Mat &mat, int sliceID, MLCache
 void MLFeatureGaussian::CalcFeatureGaussian3D(cv::Mat &mat, int sliceID, MLCachedAccess *data)
 {
 
-    float sigma = std::pow(2,_arg1);
+    float sigma = std::pow(2.0f,_arg1);
 
     Q_ASSERT(mat.type() == CV_32F);
     Q_ASSERT(mat.cols == fwidth);
@@ -237,7 +237,7 @@ int MLFeatureGaussian::GetDependencyDepth()
 QString MLFeatureGaussian::GetArg1SetupString(int v)
 {
     return QString("sigma=%1")
-        .arg(pow(2,v));
+        .arg(pow(2.0f,v));
 }
 
 QString MLFeatureGaussian::GetArg2SetupString(int v)

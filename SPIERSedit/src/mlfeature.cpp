@@ -3,13 +3,16 @@
 #include "globals.h"
 #include "mlupdateblockingdialog.h"
 #include <QString>
-
+#include "opencv2/imgproc.hpp"
 #include "mlfeaturecontrast.h"
 #include "mlfeaturedifferenceofgaussians.h"
 #include "mlfeatureintensity.h"
 #include "mlfeaturegaussian.h"
-#include "mlfeaturemean.h"
 #include "mlfeaturegradient.h"
+#include "mlfeaturesquareintensity.h"
+#include "mlfeaturevariance.h"
+#include "mlfeaturelog.h"
+#include "mlfeaturehessian.h"
 
 MLFeature::MLFeature(FeatureType type, Channel channel, bool is3D, int arg1, int arg2)
 {
@@ -126,23 +129,38 @@ MLFeature *MLFeature::CreateFromData(FeatureType type, Channel channel, bool is3
     case MLFeature::FeatureType::Intensity:
         return new MLFeatureIntensity(channel);
 
-    case MLFeature::FeatureType::Local_mean:
-        return new MLFeatureMean(channel, is3D, arg1);
-
     case MLFeature::FeatureType::Contrast:
         return new MLFeatureContrast(channel, is3D, arg1);
 
     case MLFeature::FeatureType::Gradient:
         return new MLFeatureGradient(channel, is3D, arg1);
 
-    case MLFeature::FeatureType::Laplacian_of_gaussian:
     case MLFeature::FeatureType::Local_variance:
-    case MLFeature::FeatureType::Structure_tensor:
+        return new MLFeatureVariance(channel, is3D, arg1);
+
+    case MLFeature::FeatureType::Square:
+        return new MLFeatureSquareIntensity(channel);
+
+    case MLFeature::FeatureType::Laplacian_of_gaussian:
+        return new MLFeatureLoG(channel, is3D, arg1);
+
     case MLFeature::FeatureType::Hessian:
+        return new MLFeatureHessian(channel, is3D, arg1, arg2);
+
+    case MLFeature::FeatureType::Structure_tensor:
+
     default:
         qDebug()<<"ERROR - not implemented in CreateNewFeature";
         return nullptr;
     }
+}
+
+//Default - works for one sigma-like argument
+int MLFeature::GetMinMaxForArgs(int arg, bool max)
+{
+    if (arg==1 && !max) return 0;
+    if (arg==1 && max) return 6;
+    if (arg==2) return 0;
 }
 
 QString MLFeature::GetChannelCodeForFile()
@@ -216,3 +234,358 @@ void MLFeature::CalcFeatureDifferenceOfFeatures(cv::Mat &mat, int sliceID,
     cv::subtract(data1, data2, mat);
 }
 
+void MLFeature::CalcLocalMean2D(cv::Mat &out, const cv::Mat &in, int radiusLog2)
+{
+    int r = pow(2.0f,radiusLog2);
+
+    for (int y = 0; y < fheight; ++y)
+    {
+
+        if (y%50==0)
+            MLUpdateBlockingDialog::updateDetailText(
+                QString("Calculating 2D mean: %1%")
+                    .arg((y*100)/fheight)
+                );
+        float* outRow = out.ptr<float>(y);
+
+        for (int x = 0; x < fwidth; ++x)
+        {
+            double sum = 0.0;
+            int count = 0;
+
+            int y0 = std::max(0, y - r);
+            int y1 = std::min(fheight - 1, y + r);
+
+            int x0 = std::max(0, x - r);
+            int x1 = std::min(fwidth - 1, x + r);
+
+
+            for (int yy = y0; yy <= y1; ++yy)
+            {
+                const float *row = in.ptr<float>(yy);
+                for (int xx = x0; xx <= x1; ++xx)
+                {
+                    sum += row[xx];
+                    ++count;
+                }
+            }
+
+
+            outRow[x] = (count > 0) ? static_cast<float>(sum / count) : 0.0f;
+        }
+    }
+}
+
+//assumed slicesIn contains slice data in z order, but not necessarily the full volume
+//centralSliceIndex is index of slicesIn for the central slice
+void MLFeature::CalcZMean(cv::Mat &out,
+                          const QVector<cv::Mat> &slicesIn,
+                          int centralSliceIndex,
+                          int radiusLog2)
+{
+    int r = pow(2.0f, radiusLog2);
+
+    int z0 = centralSliceIndex - r;
+    int z1 = centralSliceIndex + r;
+
+    Q_ASSERT(z0 >= 0);
+    Q_ASSERT(z1 < slicesIn.count());
+
+    for (int y = 0; y < fheight; ++y)
+    {
+        if (y % 50 == 0)
+            MLUpdateBlockingDialog::updateDetailText(
+                QString("Calculating mean Z %1%")
+                    .arg((y * 100) / fheight)
+                );
+
+        float* outRow = out.ptr<float>(y);
+
+        // cache row pointers for this y across slices
+        QVector<const float*> rows;
+        rows.reserve(z1 - z0 + 1);
+
+        for (int z = z0; z <= z1; ++z)
+            rows.append(slicesIn[z].ptr<float>(y));
+
+        for (int x = 0; x < fwidth; ++x)
+        {
+            double sum = 0.0;
+            int count = 0;
+
+            for (int i = 0; i < rows.size(); ++i)
+            {
+                sum += rows[i][x];
+                ++count;
+            }
+
+            outRow[x] = (count > 0) ? static_cast<float>(sum / count) : 0.0f;
+        }
+    }
+}
+
+
+void MLFeature::CalcLaplacian2D(cv::Mat &out, const cv::Mat &in, float scaleFactor)
+{
+    Q_ASSERT(in.type() == CV_32F);
+    Q_ASSERT(in.cols == fwidth);
+    Q_ASSERT(in.rows == fheight);
+
+    MLUpdateBlockingDialog::updateDetailText(
+        QString("Calculating Laplacian XY")
+        );
+
+    cv::Laplacian(in, out, CV_32F, 1, scaleFactor, 0.0, cv::BORDER_REPLICATE);
+}
+
+
+void MLFeature::CalcSecondDerivativeXX(cv::Mat &out, const cv::Mat &in, float scaleFactor)
+{
+    Q_ASSERT(in.type() == CV_32F);
+    Q_ASSERT(in.cols == fwidth);
+    Q_ASSERT(in.rows == fheight);
+
+    out.create(fheight, fwidth, CV_32F);
+
+    for (int y = 0; y < fheight; ++y)
+    {
+        if (y % 50 == 0)
+            MLUpdateBlockingDialog::updateDetailText(
+                QString("Calculating second derivative XX %1%")
+                    .arg((y * 100) / fheight)
+                );
+
+        const float *inRow = in.ptr<float>(y);
+        float *outRow = out.ptr<float>(y);
+
+        for (int x = 0; x < fwidth; ++x)
+        {
+            int xm1 = std::max(0, x - 1);
+            int xp1 = std::min(fwidth - 1, x + 1);
+
+            outRow[x] = scaleFactor * (inRow[xp1] - 2.0f * inRow[x] + inRow[xm1]);
+        }
+    }
+}
+
+
+void MLFeature::CalcSecondDerivativeYY(cv::Mat &out, const cv::Mat &in, float scaleFactor)
+{
+    Q_ASSERT(in.type() == CV_32F);
+    Q_ASSERT(in.cols == fwidth);
+    Q_ASSERT(in.rows == fheight);
+
+    out.create(fheight, fwidth, CV_32F);
+
+    for (int y = 0; y < fheight; ++y)
+    {
+        if (y % 50 == 0)
+            MLUpdateBlockingDialog::updateDetailText(
+                QString("Calculating second derivative YY %1%")
+                    .arg((y * 100) / fheight)
+                );
+
+        int ym1 = std::max(0, y - 1);
+        int yp1 = std::min(fheight - 1, y + 1);
+
+        const float *rowM1 = in.ptr<float>(ym1);
+        const float *row0  = in.ptr<float>(y);
+        const float *rowP1 = in.ptr<float>(yp1);
+        float *outRow = out.ptr<float>(y);
+
+        for (int x = 0; x < fwidth; ++x)
+            outRow[x] = scaleFactor * (rowP1[x] - 2.0f * row0[x] + rowM1[x]);
+    }
+}
+
+
+void MLFeature::CalcSecondDerivativeXY(cv::Mat &out, const cv::Mat &in, float scaleFactor)
+{
+    Q_ASSERT(in.type() == CV_32F);
+    Q_ASSERT(in.cols == fwidth);
+    Q_ASSERT(in.rows == fheight);
+
+    out.create(fheight, fwidth, CV_32F);
+
+    for (int y = 0; y < fheight; ++y)
+    {
+        if (y % 50 == 0)
+            MLUpdateBlockingDialog::updateDetailText(
+                QString("Calculating second derivative XY %1%")
+                    .arg((y * 100) / fheight)
+                );
+
+        int ym1 = std::max(0, y - 1);
+        int yp1 = std::min(fheight - 1, y + 1);
+
+        const float *rowM1 = in.ptr<float>(ym1);
+        const float *rowP1 = in.ptr<float>(yp1);
+        float *outRow = out.ptr<float>(y);
+
+        for (int x = 0; x < fwidth; ++x)
+        {
+            int xm1 = std::max(0, x - 1);
+            int xp1 = std::min(fwidth - 1, x + 1);
+
+            float v =
+                rowP1[xp1]
+                - rowM1[xp1]
+                - rowP1[xm1]
+                + rowM1[xm1];
+
+            outRow[x] = scaleFactor * 0.25f * v;
+        }
+    }
+}
+
+
+// assumed slicesIn contains slice data in z order
+// centralSliceIndex is the index of the central slice within slicesIn
+void MLFeature::CalcSecondDerivativeZZ(cv::Mat &out,
+                                       const QVector<cv::Mat> &slicesIn,
+                                       int centralSliceIndex,
+                                       float scaleFactor)
+{
+    Q_ASSERT(!slicesIn.isEmpty());
+    Q_ASSERT(centralSliceIndex >= 0);
+    Q_ASSERT(centralSliceIndex < slicesIn.count());
+
+    int prevIndex = std::max(0, centralSliceIndex - 1);
+    int nextIndex = std::min((int)slicesIn.count() - 1, centralSliceIndex + 1);
+
+    const cv::Mat &prev = slicesIn[prevIndex];
+    const cv::Mat &cur  = slicesIn[centralSliceIndex];
+    const cv::Mat &next = slicesIn[nextIndex];
+
+    Q_ASSERT(prev.type() == CV_32F);
+    Q_ASSERT(cur.type() == CV_32F);
+    Q_ASSERT(next.type() == CV_32F);
+
+    Q_ASSERT(prev.cols == fwidth && prev.rows == fheight);
+    Q_ASSERT(cur.cols == fwidth && cur.rows == fheight);
+    Q_ASSERT(next.cols == fwidth && next.rows == fheight);
+
+    out.create(fheight, fwidth, CV_32F);
+
+    for (int y = 0; y < fheight; ++y)
+    {
+        if (y % 50 == 0)
+            MLUpdateBlockingDialog::updateDetailText(
+                QString("Calculating second derivative ZZ %1%")
+                    .arg((y * 100) / fheight)
+                );
+
+        const float *prevRow = prev.ptr<float>(y);
+        const float *curRow  = cur.ptr<float>(y);
+        const float *nextRow = next.ptr<float>(y);
+        float *outRow = out.ptr<float>(y);
+
+        for (int x = 0; x < fwidth; ++x)
+            outRow[x] = scaleFactor * (nextRow[x] - 2.0f * curRow[x] + prevRow[x]);
+    }
+}
+
+
+void MLFeature::CalcSecondDerivativeXZ(cv::Mat &out,
+                                       const QVector<cv::Mat> &slicesIn,
+                                       int centralSliceIndex,
+                                       float scaleFactor)
+{
+    Q_ASSERT(!slicesIn.isEmpty());
+    Q_ASSERT(centralSliceIndex >= 0);
+    Q_ASSERT(centralSliceIndex < slicesIn.count());
+
+    int prevIndex = std::max(0, centralSliceIndex - 1);
+    int nextIndex = std::min((int)slicesIn.count() - 1, (int)centralSliceIndex + 1);
+
+    const cv::Mat &prev = slicesIn[prevIndex];
+    const cv::Mat &next = slicesIn[nextIndex];
+
+    Q_ASSERT(prev.type() == CV_32F);
+    Q_ASSERT(next.type() == CV_32F);
+    Q_ASSERT(prev.cols == fwidth && prev.rows == fheight);
+    Q_ASSERT(next.cols == fwidth && next.rows == fheight);
+
+    out.create(fheight, fwidth, CV_32F);
+
+    for (int y = 0; y < fheight; ++y)
+    {
+        if (y % 50 == 0)
+            MLUpdateBlockingDialog::updateDetailText(
+                QString("Calculating second derivative XZ %1%")
+                    .arg((y * 100) / fheight)
+                );
+
+        const float *prevRow = prev.ptr<float>(y);
+        const float *nextRow = next.ptr<float>(y);
+        float *outRow = out.ptr<float>(y);
+
+        for (int x = 0; x < fwidth; ++x)
+        {
+            int xm1 = std::max(0, x - 1);
+            int xp1 = std::min(fwidth - 1, x + 1);
+
+            float v =
+                nextRow[xp1]
+                - prevRow[xp1]
+                - nextRow[xm1]
+                + prevRow[xm1];
+
+            outRow[x] = scaleFactor * 0.25f * v;
+        }
+    }
+}
+
+
+void MLFeature::CalcSecondDerivativeYZ(cv::Mat &out,
+                                       const QVector<cv::Mat> &slicesIn,
+                                       int centralSliceIndex,
+                                       float scaleFactor)
+{
+    Q_ASSERT(!slicesIn.isEmpty());
+    Q_ASSERT(centralSliceIndex >= 0);
+    Q_ASSERT(centralSliceIndex < slicesIn.count());
+
+    int prevIndex = std::max(0, centralSliceIndex - 1);
+    int nextIndex = std::min((int)slicesIn.count() - 1, centralSliceIndex + 1);
+
+    const cv::Mat &prev = slicesIn[prevIndex];
+    const cv::Mat &next = slicesIn[nextIndex];
+
+    Q_ASSERT(prev.type() == CV_32F);
+    Q_ASSERT(next.type() == CV_32F);
+    Q_ASSERT(prev.cols == fwidth && prev.rows == fheight);
+    Q_ASSERT(next.cols == fwidth && next.rows == fheight);
+
+    out.create(fheight, fwidth, CV_32F);
+
+    for (int y = 0; y < fheight; ++y)
+    {
+        if (y % 50 == 0)
+            MLUpdateBlockingDialog::updateDetailText(
+                QString("Calculating second derivative YZ %1%")
+                    .arg((y * 100) / fheight)
+                );
+
+        int ym1 = std::max(0, y - 1);
+        int yp1 = std::min(fheight - 1, y + 1);
+
+        const float *prevRowM1 = prev.ptr<float>(ym1);
+        const float *prevRowP1 = prev.ptr<float>(yp1);
+        const float *nextRowM1 = next.ptr<float>(ym1);
+        const float *nextRowP1 = next.ptr<float>(yp1);
+
+        float *outRow = out.ptr<float>(y);
+
+        for (int x = 0; x < fwidth; ++x)
+        {
+            float v =
+                nextRowP1[x]
+                - prevRowP1[x]
+                - nextRowM1[x]
+                + prevRowM1[x];
+
+            outRow[x] = scaleFactor * 0.25f * v;
+        }
+    }
+}

@@ -29,7 +29,7 @@ QString MLFeatureGradient::GetPrettyName()
 
 QString MLFeatureGradient::GetPrettyArgs()
 {
-    return QString("Sigma=%1").arg(pow(2, _arg1));
+    return QString("sigma=%1").arg(pow(2.0f, _arg1));
 }
 
 QString MLFeatureGradient::GetPretty3D()
@@ -150,7 +150,7 @@ int MLFeatureGradient::GetDependencyDepth()
 QString MLFeatureGradient::GetArg1SetupString(int v)
 {
     return QString("sigma=%1")
-        .arg(pow(2, v));
+        .arg(pow(2.0f, v));
 }
 
 QString MLFeatureGradient::GetArg2SetupString(int v)

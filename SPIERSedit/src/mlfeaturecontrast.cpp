@@ -32,7 +32,7 @@ QString MLFeatureContrast::GetPrettyName()
 
 QString MLFeatureContrast::GetPrettyArgs()
 {
-    return QString("Sigma=%1").arg(pow(2,_arg1));
+    return QString("sigma=%1").arg(pow(2.0f,_arg1));
 }
 
 QString MLFeatureContrast::GetPretty3D()
@@ -73,8 +73,8 @@ int MLFeatureContrast::GetDependencyDepth()
 
 QString MLFeatureContrast::GetArg1SetupString(int v)
 {
-    return QString("Gaussian sigma=%1")
-        .arg(pow(2,v));
+    return QString("sigma=%1")
+        .arg(pow(2.0f,v));
 }
 
 QString MLFeatureContrast::GetArg2SetupString(int v)

@@ -77,9 +77,12 @@ HEADERS += src/display.h \
     src/mlfeaturedifferenceofgaussians.h \
     src/mlfeaturegaussian.h \
     src/mlfeaturegradient.h \
+    src/mlfeaturehessian.h \
     src/mlfeatureintensity.h \
-    src/mlfeaturemean.h \
+    src/mlfeaturelog.h \
+    src/mlfeaturesquareintensity.h \
     src/mlfeatureuimanager.h \
+    src/mlfeaturevariance.h \
     src/mlupdateblockingdialog.h \
     src/myscene.h \
     src/copyingimpl.h \
@@ -131,9 +134,12 @@ SOURCES += src/display.cpp \
     src/mlfeaturedifferenceofgaussians.cpp \
     src/mlfeaturegaussian.cpp \
     src/mlfeaturegradient.cpp \
+    src/mlfeaturehessian.cpp \
     src/mlfeatureintensity.cpp \
-    src/mlfeaturemean.cpp \
+    src/mlfeaturelog.cpp \
+    src/mlfeaturesquareintensity.cpp \
     src/mlfeatureuimanager.cpp \
+    src/mlfeaturevariance.cpp \
     src/mlupdateblockingdialog.cpp \
     src/myscene.cpp \
     src/copyingimpl.cpp \

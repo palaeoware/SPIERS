@@ -44,14 +44,13 @@ public:
     void LoadFeaturesFromFile();
     void ResetRFAndSample();
     void ResetCachedData();
+    void AutoSampleTrainAndGenerate();
 private:
     bool dataComputed;
     int currentSlice;
     cv::Ptr<cv::ml::RTrees> rf;
     MLCachedAccess *data;
     void CreateSingletonsIfNeeded();
-    void TestSetUpFeatures();
-    void MakeML(int fnum);
     void ComputeSliceProbabilitiesFromVotes(int sliceID);
     MLFeatureUIManager *uiManager;
     MLAddFeature *addFeatureDialog;
@@ -61,7 +60,10 @@ private:
     QLabel *lblStatus;
     MainWindowImpl *mainWin;
     QString DescribeSample();
-    QList<LabelledPoint> labels;
+    QVector<LabelledPoint> labels;
+    bool Sample(bool incremental, bool noMessages);
+    bool Train(bool noMessages);
+    void DoImportances();
 };
 
 #endif // OPENCVINTERFACE_H

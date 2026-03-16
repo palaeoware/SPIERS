@@ -2557,8 +2557,11 @@ void ReadSettings()
     //ML stuff
     bool tempBool;
     int tempInt;
-    if (!in.atEnd()) in >> SegmentBrushAppliesLocks;
-
+    if (!in.atEnd())
+    {
+        in >> SegmentBrushAppliesLocks;
+        mainwin->actionSegment_brush_applies_locks->setChecked(SegmentBrushAppliesLocks);
+    }
     if (!in.atEnd())
     {
         in >> tempBool;

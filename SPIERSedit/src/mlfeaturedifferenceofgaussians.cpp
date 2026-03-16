@@ -34,8 +34,8 @@ QString MLFeatureDifferenceOfGaussians::GetPrettyName()
 QString MLFeatureDifferenceOfGaussians::GetPrettyArgs()
 {
     return QString("(%1-%2)")
-        .arg(pow(2,_arg1))
-        .arg(pow(2,_arg2));
+        .arg(pow(2.0f,_arg1))
+        .arg(pow(2.0f,_arg2));
 
 }
 
@@ -77,11 +77,20 @@ int MLFeatureDifferenceOfGaussians::GetDependencyDepth()
 QString MLFeatureDifferenceOfGaussians::GetArg1SetupString(int v)
 {
     return QString("sigma=%1")
-        .arg(pow(2,v));
+        .arg(pow(2.0f,v));
 }
 
 QString MLFeatureDifferenceOfGaussians::GetArg2SetupString(int v)
 {
     return QString("sigma=%1")
-        .arg(pow(2,v));
+        .arg(pow(2.0f,v));
+}
+
+
+int MLFeatureDifferenceOfGaussians::GetMinMaxForArgs(int arg, bool max)
+{
+    if (arg==1 && !max) return 0;
+    if (arg==1 && max) return 6;
+    if (arg==2 && !max) return 0;
+    if (arg==2 && max) return 6;
 }

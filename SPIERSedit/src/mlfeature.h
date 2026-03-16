@@ -14,13 +14,13 @@ public:
         Gaussian,
         Difference_of_gaussians,
         Intensity,
-        Local_mean,
         Contrast,
         Gradient,
         Laplacian_of_gaussian,
         Local_variance,
         Structure_tensor,
-        Hessian
+        Hessian,
+        Square
     };
 
     enum class Channel
@@ -32,8 +32,6 @@ public:
         R_G,
         G_B
     };
-
-
 
     MLFeature(FeatureType type, Channel channel, bool is3D, int arg1=0, int arg2=0);
     virtual QList<MLFeature *>GetDependencies() =0;
@@ -53,7 +51,7 @@ public:
     int GetArg2();
     bool is3D();
     QString GetEncodedNameForFile();
-    
+
     QString GetPrettyFullName();
     bool Compare(FeatureType type, Channel channel, bool is3D, int arg1, int arg2);
     bool Compare(MLFeature *other);
@@ -61,6 +59,7 @@ public:
     void SetImportance(int percent);
     int GetImportance();
     static MLFeature *CreateFromData(FeatureType type, Channel channel, bool is3D, int arg1, int arg2);
+    virtual int GetMinMaxForArgs(int arg, bool max);
 protected:
     FeatureType _type;
     Channel _channel;
@@ -73,6 +72,31 @@ protected:
     QString GetChannelCodeForFile();
     virtual QString GetArgsForFile()=0;
     virtual QString Get3DForFile()=0;
+
     void CalcFeatureDifferenceOfFeatures(cv::Mat &mat, int sliceID,
                                          MLCachedAccess *data, int featureIndex1, int featureIndex2);
+    void CalcLocalMean2D(cv::Mat &out, const cv::Mat &in, int radiusLog2);
+    void CalcZMean(cv::Mat &out, const QVector<cv::Mat> &slicesIn, int centralSliceIndex, int radiusLog2);
+
+    void CalcLaplacian2D(cv::Mat &out, const cv::Mat &in, float scaleFactor = 1.0f);
+
+    void CalcSecondDerivativeXX(cv::Mat &out, const cv::Mat &in, float scaleFactor = 1.0f);
+    void CalcSecondDerivativeYY(cv::Mat &out, const cv::Mat &in, float scaleFactor = 1.0f);
+    void CalcSecondDerivativeXY(cv::Mat &out, const cv::Mat &in, float scaleFactor = 1.0f);
+
+    void CalcSecondDerivativeZZ(cv::Mat &out,
+                                const QVector<cv::Mat> &slicesIn,
+                                int centralSliceIndex,
+                                float scaleFactor = 1.0f);
+
+    void CalcSecondDerivativeXZ(cv::Mat &out,
+                                const QVector<cv::Mat> &slicesIn,
+                                int centralSliceIndex,
+                                float scaleFactor = 1.0f);
+
+    void CalcSecondDerivativeYZ(cv::Mat &out,
+                                const QVector<cv::Mat> &slicesIn,
+                                int centralSliceIndex,
+                                float scaleFactor = 1.0f);
+
 };

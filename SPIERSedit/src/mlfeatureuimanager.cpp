@@ -15,7 +15,7 @@ MLFeatureUIManager::MLFeatureUIManager(MLCachedAccess *data, QTableWidget *table
             &QTableWidget::itemChanged,
             this,
             &MLFeatureUIManager::OnTableItemChanged);
-    qDebug()<<"Set up table widget";
+
     SetUpTableWidget();
 
 }
@@ -180,10 +180,11 @@ void MLFeatureUIManager::ActivateSelectedFeatures(bool activate)
                 _tableWidget->item(i,0)->setCheckState(Qt::Checked);
             else
                 _tableWidget->item(i,0)->setCheckState(Qt::Unchecked);
+
+            int featureID = _tableWidget->item(i,0)->data(Qt::UserRole).toInt();
+            _data->SetFeatureInUse(featureID,activate);
         }
 
-        int featureID = _tableWidget->item(i,0)->data(Qt::UserRole).toInt();
-        _data->SetFeatureInUse(featureID,activate);
     }
      _tableWidget->setUpdatesEnabled(true);
 }

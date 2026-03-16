@@ -34,6 +34,10 @@ public:
 public:
     QString GetArg1SetupString(int v) override;
     QString GetArg2SetupString(int v) override;
+
+    // MLFeature interface
+public:
+    int GetMinMaxForArgs(int arg, bool max) override;
 };
 
 #endif // MLFEATUREINTENSITY_H

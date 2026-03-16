@@ -7,8 +7,10 @@
 #include "src/mlfeaturedifferenceofgaussians.h"
 #include "src/mlfeatureintensity.h"
 #include "src/mlfeaturegaussian.h"
-#include "src/mlfeaturemean.h"
 #include "src/mlfeaturegradient.h"
+#include "src/mlfeaturevariance.h"
+#include "src/mlfeaturelog.h"
+#include "src/mlfeaturehessian.h"
 
 MLAddFeature::MLAddFeature(QWidget *parent)
     : QDialog(parent)
@@ -19,14 +21,6 @@ MLAddFeature::MLAddFeature(QWidget *parent)
     PopulateCombos();
     connect(ui->cmbType,
             &QComboBox::currentIndexChanged,
-            this,
-            &MLAddFeature::Refresh);
-    connect(ui->spinBoxArg1,
-            &QSpinBox::valueChanged,
-            this,
-            &MLAddFeature::Refresh);
-    connect(ui->spinBoxArg2,
-            &QSpinBox::valueChanged,
             this,
             &MLAddFeature::Refresh);
 
@@ -51,8 +45,8 @@ MLFeature *MLAddFeature::CreateNewFeature()
     MLFeature *dummy = dummyFeatures[dummyIndex];
 
     MLFeature::Channel channel = (MLFeature::Channel)ui->cmbChannel->currentData().toInt();
-    int arg1 = ui->spinBoxArg1->value();
-    int arg2 = ui->spinBoxArg2->value();
+    int arg1 = ui->cmbArg1->currentData().toInt();
+    int arg2 = ui->cmbArg2->currentData().toInt();
     bool is3D = ui->chk3D->isChecked();
     MLFeature::FeatureType type = dummy->GetType();
 
@@ -65,11 +59,13 @@ void MLAddFeature::PopulateCombos()
 {
     //Make dummy features, to get at their methods
     dummyFeatures.append(new MLFeatureIntensity(MLFeature::Channel::Intensity));
-    dummyFeatures.append(new MLFeatureMean(MLFeature::Channel::Intensity,false,1));
     dummyFeatures.append(new MLFeatureGaussian(MLFeature::Channel::Intensity, false, 1));
     dummyFeatures.append(new MLFeatureContrast(MLFeature::Channel::Intensity, false, 1));
     dummyFeatures.append(new MLFeatureDifferenceOfGaussians(MLFeature::Channel::Intensity,false, 2,1));
     dummyFeatures.append(new MLFeatureGradient(MLFeature::Channel::Intensity,false, 2));
+    dummyFeatures.append(new MLFeatureVariance(MLFeature::Channel::Intensity,false, 2));
+    dummyFeatures.append(new MLFeatureLoG(MLFeature::Channel::Intensity,false, 2));
+    dummyFeatures.append(new MLFeatureHessian(MLFeature::Channel::Intensity,false, 2, MLFeatureHessian::HessianMode::Determinant));
 
     for (int i=0; i<dummyFeatures.count(); i++)
     {
@@ -86,7 +82,7 @@ void MLAddFeature::PopulateCombos()
 
 
 
-void MLAddFeature::Refresh()
+void MLAddFeature::Refresh() //changed type
 {
     int dummyIndex = ui->cmbType->currentData().toInt();
     MLFeature *feature = dummyFeatures[dummyIndex];
@@ -96,32 +92,32 @@ void MLAddFeature::Refresh()
     else
         ui->chk3D->show();
 
-    QString arg1String = feature->GetArg1SetupString(ui->spinBoxArg1->value());
-    QString arg2String = feature->GetArg2SetupString(ui->spinBoxArg2->value());
+    int arg1min = feature->GetMinMaxForArgs(1,false);
+    int arg2min = feature->GetMinMaxForArgs(2,false);
+    int arg1max = feature->GetMinMaxForArgs(1,true);
+    int arg2max = feature->GetMinMaxForArgs(2,true);
 
-    if (arg1String=="")
+    ui->cmbArg1->clear();
+    for (int i=arg1min; i<=arg1max; i++)
     {
-        ui->spinBoxArg1->hide();
-        ui->lblArg1->hide();
-    }
-    else
-    {
-        ui->spinBoxArg1->show();
-        ui->lblArg1->show();
-        ui->lblArg1->setText(arg1String);
+        ui->cmbArg1->addItem(feature->GetArg1SetupString(i),i);
     }
 
-    if (arg2String=="")
+    ui->cmbArg2->clear();
+    for (int i=arg2min; i<=arg2max; i++)
     {
-        ui->spinBoxArg2->hide();
-        ui->lblArg2->hide();
+        ui->cmbArg2->addItem(feature->GetArg2SetupString(i),i);
     }
+
+    if (arg1max==arg1min)
+        ui->cmbArg1->hide();
     else
-    {
-        ui->spinBoxArg2->show();
-        ui->lblArg2->show();
-        ui->lblArg2->setText(arg2String);
-    }
+        ui->cmbArg1->show();
+
+    if (arg2max==arg2min)
+        ui->cmbArg2->hide();
+    else
+        ui->cmbArg2->show();
 
 }
 
