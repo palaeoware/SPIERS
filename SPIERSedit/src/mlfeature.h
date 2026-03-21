@@ -15,12 +15,21 @@ public:
         Difference_of_gaussians,
         Intensity,
         Contrast,
-        Gradient,
+        Gradient_magnitude,
         Laplacian_of_gaussian,
         Local_variance,
-        Structure_tensor,
+        Tensor_component_local,
+        Tensor_component_wide,
+        Tensor_determinant_local,
+        Tensor_determinant_wide,
+        Tensor_coherence_local,
+        Tensor_coherence_wide,
+        Tensor_trace_local,
+        Tensor_trace_wide,
+
         Hessian,
-        Square
+        Square,
+        Gradient_component
     };
 
     enum class Channel
@@ -98,5 +107,15 @@ protected:
                                 const QVector<cv::Mat> &slicesIn,
                                 int centralSliceIndex,
                                 float scaleFactor = 1.0f);
+
+    void CalcGaussian1DKernel(QVector<float> &kernel, float sigma);
+    void CalcGaussian2D(cv::Mat &out, const cv::Mat &in, float sigma);
+    void CalcFirstDerivativeX(cv::Mat &out, const cv::Mat &in, float scaleFactor = 1.0f);
+    void CalcFirstDerivativeY(cv::Mat &out, const cv::Mat &in, float scaleFactor = 1.0f);
+    void CalcFirstDerivativeZ(cv::Mat &out, const QVector<cv::Mat> &slicesIn, int centralSliceIndex, float scaleFactor = 1.0f);
+    void CalcFeatureProductOfFeatures(cv::Mat &mat, int sliceID,
+                                      MLCachedAccess *data, int featureIndex1, int featureIndex2);
+
+    void CalcMatrixProduct(cv::Mat &out, const cv::Mat &in1, const cv::Mat &in2);
 
 };

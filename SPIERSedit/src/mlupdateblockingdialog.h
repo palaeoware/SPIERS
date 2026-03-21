@@ -22,11 +22,12 @@ public:
     static void updateHighLevelText(const QString &text);
     static void updateDetailText(const QString &text);
     static void hideDialog();
+    static bool isCancelled();
 
 private:
     QLabel *m_highLevelLabel;
     QLabel *m_detailLabel;
-
+    bool cancelled;
     static MLUpdateBlockingDialog *s_instance;
     static int s_animationState;
     static QString s_highLevelBaseText;
@@ -38,8 +39,11 @@ private:
     void refreshAndProcessEvents();
     void applyCurrentTexts();
     void centerOverParent();
-
+    
     static QString animatedText(const QString &baseText);
+
+private slots:
+    void Cancelled();
 };
 
 #endif // MLUPDATEBLOCKINGDIALOG_H

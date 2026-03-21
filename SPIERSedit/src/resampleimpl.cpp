@@ -522,10 +522,10 @@ void resampleImpl::on_buttonBox_accepted()
         mainwin->SetUpGUIFromSettings();
         mainwin->Start();
     }
-
-    openCV->ResetRFAndSample();
-    openCV->RemoveAllCacheFiles(true);
-    openCV->ResetCachedData();
+    
+    mlInterface->ResetRFAndSample();
+    mlInterface->RemoveAllCacheFiles(true);
+    mlInterface->ResetCachedData();
     pausetimers = false;
 }
 

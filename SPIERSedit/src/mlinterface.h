@@ -1,5 +1,5 @@
-#ifndef OPENCVINTERFACE_H
-#define OPENCVINTERFACE_H
+#ifndef MLINTERFACE_H
+#define MLINTERFACE_H
 
 #include <QObject>
 #include <opencv2/core.hpp>
@@ -11,11 +11,11 @@ class MLFeatureUIManager;
 class MLAddFeature;
 class LabelledPoint;
 
-class OpenCVInterface
+class MLInterface
 {
 public:
-    OpenCVInterface();
-    static bool TestOpenCV();
+    MLInterface();
+    static bool TestML();
     static bool enabled;
     void SampleAndTrain();
     uchar GetProbability(int x, int y, int z, int segment);
@@ -33,9 +33,7 @@ public:
     int GetMinSampleCount();
     int GetTreeCount();
     int GetTreeDepth();
-    void SetCacheMemSizeGb(int v);
 
-    int GetCacheMemSizeGb();
     void Initialise(MainWindowImpl *mw,QLabel *statusLabel);
     void RemoveAllCacheFiles(bool override);
     QByteArray DumpFeaturesToByteArray();
@@ -45,6 +43,7 @@ public:
     void ResetRFAndSample();
     void ResetCachedData();
     void AutoSampleTrainAndGenerate();
+    void ResizeCache();
 private:
     bool dataComputed;
     int currentSlice;
@@ -66,4 +65,4 @@ private:
     void DoImportances();
 };
 
-#endif // OPENCVINTERFACE_H
+#endif // MLINTERFACE_H

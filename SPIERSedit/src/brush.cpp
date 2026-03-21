@@ -749,7 +749,7 @@ void Brush_class::recalcForML(int x, int y, QByteArray *locks)
                         int pos4 = ay * fwidth4 + ax;
                         if (locks->at(pos)==0)
                         {
-                            openCV->GetProbabilitiesAllSegments(ax,ay,CurrentFile,segBuffer);
+                            mlInterface->GetProbabilitiesAllSegments(ax,ay,CurrentFile,segBuffer);
                             for (int i=0; i<SegmentCount; i++)
                             {
                                 if (!Segments[i]->Locked)

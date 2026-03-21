@@ -37,7 +37,7 @@
 #include "backthread.h"
 #include "histogram.h"
 #include "../../SPIERScommon/src/netmodule.h"
-#include "opencvinterface.h"
+#include "mlinterface.h"
 
 #include <QColorDialog>
 #include <QFileDialog>
@@ -1105,13 +1105,12 @@ void MainWindowImpl::Start()
     ResetFilesDirty();
 
     //ML stuff
-    openCV->Initialise(this, lblMLStatus);
-    openCV->SetCacheMemSizeGb(CacheMemMLGb);
-    openCV->SetMinSampleCount(spinBoxMinSampleCount->value());
-    openCV->SetSamplePercent(spinBoxMLSampling->value());
-    openCV->SetTreeCount(spinBoxMLTrees->value());
-    openCV->SetTreeDepth(spinBoxMLDepth->value());
-    openCV->RetrieveFeaturesFromByteArray(FeaturesByteArray);
+    mlInterface->Initialise(this, lblMLStatus);
+    mlInterface->SetMinSampleCount(spinBoxMinSampleCount->value());
+    mlInterface->SetSamplePercent(spinBoxMLSampling->value());
+    mlInterface->SetTreeCount(spinBoxMLTrees->value());
+    mlInterface->SetTreeDepth(spinBoxMLDepth->value());
+    mlInterface->RetrieveFeaturesFromByteArray(FeaturesByteArray);
 
     dockWidget_Generate->setEnabled(true);
 }
@@ -2250,7 +2249,7 @@ void MainWindowImpl::on_actionDecrease_Size_triggered()
 
 void MainWindowImpl::on_trainML_clicked()
 {
-    openCV->SampleAndTrain();
+    mlInterface->SampleAndTrain();
 }
 
 
@@ -2263,49 +2262,49 @@ void MainWindowImpl::on_actionSegment_brush_applies_locks_triggered()
 
 void MainWindowImpl::on_btnMLActivateFeature_clicked()
 {
-    openCV->UIActivateSelectedFeatures(true);
+    mlInterface->UIActivateSelectedFeatures(true);
 }
 
 
 void MainWindowImpl::on_btnMLDeactivateFeature_clicked()
 {
-    openCV->UIActivateSelectedFeatures(false);
+    mlInterface->UIActivateSelectedFeatures(false);
 }
 
 
 void MainWindowImpl::on_btnMLAddFeature_clicked()
 {
-    openCV->UIAddFeature();
+    mlInterface->UIAddFeature();
 }
 
 
 void MainWindowImpl::on_btnMLRemoveFeature_clicked()
 {
-    openCV->UIDeleteSelectedFeatures();
+    mlInterface->UIDeleteSelectedFeatures();
 }
 
 
 void MainWindowImpl::on_spinBoxMinSampleCount_valueChanged(int arg1)
 {
-    openCV->SetMinSampleCount(arg1);
+    mlInterface->SetMinSampleCount(arg1);
 }
 
 
 void MainWindowImpl::on_spinBoxMLTrees_valueChanged(int arg1)
 {
-    openCV->SetTreeCount(arg1);
+    mlInterface->SetTreeCount(arg1);
 }
 
 
 void MainWindowImpl::on_spinBoxMLDepth_valueChanged(int arg1)
 {
-    openCV->SetTreeDepth(arg1);
+    mlInterface->SetTreeDepth(arg1);
 }
 
 
 void MainWindowImpl::on_spinBoxMLSampling_valueChanged(int arg1)
 {
-    openCV->SetSamplePercent(arg1);
+    mlInterface->SetSamplePercent(arg1);
 }
 
 
@@ -2313,31 +2312,31 @@ void MainWindowImpl::on_spinBoxMLSampling_valueChanged(int arg1)
 
 void MainWindowImpl::on_actionCalculate_Features_triggered()
 {
-    openCV->CalculateFeatureData();
+    mlInterface->CalculateFeatureData();
 }
 
 
 void MainWindowImpl::on_actionSave_feature_set_triggered()
 {
-    openCV->SaveFeaturesToFile();
+    mlInterface->SaveFeaturesToFile();
 }
 
 
 void MainWindowImpl::on_actionLoad_feature_set_triggered()
 {
-    openCV->LoadFeaturesFromFile();
+    mlInterface->LoadFeaturesFromFile();
 }
 
 
 void MainWindowImpl::on_actionRemove_feature_files_triggered()
 {
-    openCV->RemoveAllCacheFiles(false);
+    mlInterface->RemoveAllCacheFiles(false);
 }
 
 
 void MainWindowImpl::on_actionClear_sample_triggered()
 {
-    openCV->ResetRFAndSample();
+    mlInterface->ResetRFAndSample();
 }
 
 

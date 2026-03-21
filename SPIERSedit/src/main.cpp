@@ -31,7 +31,7 @@
 #include "mainwindowimpl.h"
 #include "display.h"
 #include "globals.h"
-#include "opencvinterface.h"
+#include "mlinterface.h"
 #include "../../SPIERScommon/src/darkstyletheme.h"
 #include "../../SPIERScommon/src/netmodule.h"
 
@@ -90,12 +90,12 @@ void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const Q
 int main(int argc, char **argv)
 {
     
-    OpenCVInterface::TestOpenCV();
-
-    qDebug()<<"OpenCV enabled? "<<OpenCVInterface::enabled;
-    if (OpenCVInterface::enabled)
+    MLInterface::TestML();
+    
+    qDebug()<<"OpenCV enabled? "<<MLInterface::enabled;
+    if (MLInterface::enabled)
     {
-        openCV = new OpenCVInterface();
+        mlInterface = new MLInterface();
     }
 
     //This has the app draw at HiDPI scaling on HiDPI displays, usually two pixels for every one logical pixel

@@ -11,6 +11,15 @@
 #include "src/mlfeaturevariance.h"
 #include "src/mlfeaturelog.h"
 #include "src/mlfeaturehessian.h"
+#include "src/mlfeaturegradientcomponent.h"
+#include "src/mlfeaturetensorcomponentlocal.h"
+#include "src/mlfeaturetensorcomponentwide.h"
+#include "src/mlfeaturetensortracelocal.h"
+#include "src/mlfeaturetensortracewide.h"
+#include "src/mlfeaturetensordeterminantlocal.h"
+#include "src/mlfeaturetensordeterminantwide.h"
+#include "src/mlfeaturetensorcoherencelocal.h"
+#include "src/mlfeaturetensorcoherencewide.h"
 
 MLAddFeature::MLAddFeature(QWidget *parent)
     : QDialog(parent)
@@ -66,6 +75,15 @@ void MLAddFeature::PopulateCombos()
     dummyFeatures.append(new MLFeatureVariance(MLFeature::Channel::Intensity,false, 2));
     dummyFeatures.append(new MLFeatureLoG(MLFeature::Channel::Intensity,false, 2));
     dummyFeatures.append(new MLFeatureHessian(MLFeature::Channel::Intensity,false, 2, MLFeatureHessian::HessianMode::Determinant));
+    dummyFeatures.append(new MLFeatureGradientComponent(MLFeature::Channel::Intensity, 2, MLFeatureGradientComponent::GradientDirection::X));
+    dummyFeatures.append(new MLFeatureTensorComponentLocal(MLFeature::Channel::Intensity, 2, MLFeatureTensorComponentLocal::TensorComponent::XX));
+    dummyFeatures.append(new MLFeatureTensorComponentWide(MLFeature::Channel::Intensity, 2, MLFeatureTensorComponentWide::TensorComponent::XX));
+    dummyFeatures.append(new MLFeatureTensorTraceLocal(MLFeature::Channel::Intensity, false, 2));
+    dummyFeatures.append(new MLFeatureTensorTraceWide(MLFeature::Channel::Intensity, false, 2));
+    dummyFeatures.append(new MLFeatureTensorDeterminantLocal(MLFeature::Channel::Intensity, false, 2));
+    dummyFeatures.append(new MLFeatureTensorDeterminantWide(MLFeature::Channel::Intensity, false, 2));
+    dummyFeatures.append(new MLFeatureTensorCoherenceLocal(MLFeature::Channel::Intensity, 2));
+    dummyFeatures.append(new MLFeatureTensorCoherenceWide(MLFeature::Channel::Intensity, 2));
 
     for (int i=0; i<dummyFeatures.count(); i++)
     {

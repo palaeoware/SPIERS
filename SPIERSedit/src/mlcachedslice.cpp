@@ -1,7 +1,7 @@
 #include "mlcachedslice.h"
 #include "mlcachedaccess.h"
 
-#include "opencvfileio.h"
+#include "mlfileio.h"
 #include "globals.h"
 
 #include "mlupdateblockingdialog.h"
@@ -17,16 +17,16 @@ MLCachedSlice::MLCachedSlice(int featureCount, int zIndex, MLCachedAccess *paren
         featuresValid.append(false);
     }
     sliceIndex = zIndex;
-    lastUsed = QDateTime::currentDateTime();
+    lastUsed = parent->timeStamp;
     sourceValid = false;
 
 }
 
 MLCachedSlice::~MLCachedSlice()
 {
-    sourceImage.deallocate();
+    sourceImage.release();
     for (int i=0; i<featureData.count(); i++)
-        featureData[i].deallocate();
+        featureData[i].release();
 }
 
 
@@ -45,17 +45,13 @@ void MLCachedSlice::RemoveFeature(int index)
 
 void MLCachedSlice::Clear()
 {
-    if (sourceValid)
-        sourceImage.deallocate();
+    sourceImage.release();
 
     sourceValid=false;
 
     for (int i=0;i< featuresValid.count(); i++)
     {
-        if (featuresValid[i])
-        {
-            featureData[i].deallocate(); //probably done automatically, but just in case!
-        }
+        featureData[i].release(); //probably done automatically, but just in case!
         featuresValid[i] = false;
     }
 }
@@ -81,8 +77,10 @@ void MLCachedSlice::FetchFeatureIfNeeded(int featureIndex)
 
 void MLCachedSlice::FetchFeatureData(int feature)
 {
+    cache->IncrementTimestamp();
+    lastUsed = cache->timeStamp;
     bool ok;
-    cv::Mat loadedMat = openCVFileIO::LoadMatBinary(cache->GetFeature(feature)->GetEncodedNameForFile(),
+    cv::Mat loadedMat = MLFileIO::LoadMatBinary(cache->GetFeature(feature)->GetEncodedNameForFile(),
                                                     cache->GetXSize(), cache->GetYSize(),
                                                     sliceIndex, ok);
 
@@ -104,8 +102,12 @@ void MLCachedSlice::FetchFeatureData(int feature)
                 .arg(cache->GetFeature(feature)->GetPrettyFullName())
                 .arg(sliceIndex));
         cache->CalculateFeature(mat, sliceIndex, feature);
+        if (!featureData[feature].empty())
+        {
+            qDebug()<<"Overwriting a mat of size "<<featureData[feature].total() * featureData[feature].elemSize();
+        }
         featureData[feature] = mat;
-        openCVFileIO::SaveMatBinary(cache->GetFeature(feature)->GetEncodedNameForFile(),
+        MLFileIO::SaveMatBinary(cache->GetFeature(feature)->GetEncodedNameForFile(),
                                     featureData[feature], sliceIndex);
     }
     featuresValid[feature] = true;
@@ -113,8 +115,10 @@ void MLCachedSlice::FetchFeatureData(int feature)
 
 void MLCachedSlice::FetchSourceData()
 {
+    cache->IncrementTimestamp();
+    lastUsed = cache->timeStamp;
     bool ok;
-    cv::Mat loadedMat = openCVFileIO::LoadMatBinary(cache->GetSourceImageFeatureName(),
+    cv::Mat loadedMat = MLFileIO::LoadMatBinary(cache->GetSourceImageFeatureName(),
                                                     cache->GetXSize(), cache->GetYSize(),
                                                     sliceIndex, ok);
 
@@ -129,11 +133,11 @@ void MLCachedSlice::FetchSourceData()
         MLUpdateBlockingDialog::updateDetailText(
             QString("Fetching raw data slice %1 from source image")
                 .arg(sliceIndex));
-        sourceImage = openCVFileIO::LoadMatFromImageFile(sliceIndex, cache->GetSourceColour());
+        sourceImage = MLFileIO::LoadMatFromImageFile(sliceIndex, cache->GetSourceColour());
 
         if (ColMonoScale==1)
         {
-            openCVFileIO::SaveMatBinary(cache->GetSourceImageFeatureName(),
+            MLFileIO::SaveMatBinary(cache->GetSourceImageFeatureName(),
                                         sourceImage, sliceIndex);
         }
         else
@@ -147,7 +151,7 @@ void MLCachedSlice::FetchSourceData()
                        cv::Size(sourceImage.cols/ColMonoScale, sourceImage.rows/ColMonoScale),
                        0, 0,
                        cv::INTER_AREA);
-            sourceImage.deallocate();
+            sourceImage.release();
             sourceImage = binned;
         }
     }
@@ -172,6 +176,7 @@ float MLCachedSlice::GetIntensityGrey(int x, int y)
 
 QColor MLCachedSlice::GetColor(int x, int y)
 {
+    lastUsed = cache->timeStamp;
     FetchSourceDataIfNeeded();
     if (cache->GetSourceColour())
     {

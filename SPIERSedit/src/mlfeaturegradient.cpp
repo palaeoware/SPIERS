@@ -4,7 +4,7 @@
 #include "mlfeaturegaussian.h"
 
 MLFeatureGradient::MLFeatureGradient(Channel channel, bool is3D, int arg1)
-    : MLFeature(FeatureType::Gradient, channel, is3D, arg1, 0)
+    : MLFeature(FeatureType::Gradient_magnitude, channel, is3D, arg1, 0)
 {}
 
 void MLFeatureGradient::CalculateFeature(cv::Mat &mat, int sliceID, MLCachedAccess *data)

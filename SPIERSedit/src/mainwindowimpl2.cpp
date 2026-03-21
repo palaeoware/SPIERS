@@ -28,7 +28,6 @@
 #include "slicespacingdialogimpl.h"
 #include "resizedialogimpl.h"
 #include "curves.h"
-#include "findpolynomialimpl.h"
 #include "undo.h"
 #include "myrangescene.h"
 #include "brush.h"
@@ -1141,7 +1140,7 @@ void MainWindowImpl::on_SegmentAdd_pressed()
     //no need to do a showimage - am creating these files empty
     //DumpSettings();
     ResetFilesDirty();
-    openCV->ResetRFAndSample();
+    mlInterface->ResetRFAndSample();
 }
 
 void MainWindowImpl::on_SegmentDelete_pressed()
@@ -1180,7 +1179,7 @@ void MainWindowImpl::on_SegmentDelete_pressed()
             LoadAllData(CurrentFile);
             ShowImage(graphicsView);
             ResetUndo();
-            openCV->ResetRFAndSample();
+            mlInterface->ResetRFAndSample();
         }
     }
     ResetFilesDirty();
@@ -1221,7 +1220,7 @@ void MainWindowImpl::on_GenerateButton_clicked()
     //save all my data
     CopyingImpl dialog;
     if (tabwidget->currentIndex() == 0) dialog.GenerateLinear(SliceSelectorList);
-    if (tabwidget->currentIndex() == 1) openCV->Generate(SliceSelectorList);
+    if (tabwidget->currentIndex() == 1) mlInterface->Generate(SliceSelectorList);
     if (tabwidget->currentIndex() == 2) dialog.GenerateRange(SliceSelectorList);
     if (tabwidget->currentIndex() == 3) dialog.GenerateLCE(SliceSelectorList);
     if (tabwidget->currentIndex() == 4) dialog.GenerateRadial(SliceSelectorList, bh);
@@ -1265,42 +1264,6 @@ void MainWindowImpl::on_LinearGlobalSpinBox_valueChanged(int value )
     Segments[CurrentSegment]->LinGlobal = value;
     if (GenerateAuto->checkState()) on_GenerateButton_clicked();
 }
-
-void MainWindowImpl::on_SpinBoxSparsity_valueChanged(int value)
-{
-    Segments[CurrentSegment]->PolySparse = value;
-
-}
-
-void MainWindowImpl::on_SpinBoxOrder_valueChanged(int value )
-{
-    Segments[CurrentSegment]->PolyOrder = value; //NO idea why this is a double
-}
-
-void MainWindowImpl::on_SpinBoxRetries_valueChanged(int value)
-{
-    Segments[CurrentSegment]->PolyRetries = value;
-}
-
-void MainWindowImpl::on_SpinBoxContrast_valueChanged(int value)
-{
-    Segments[CurrentSegment]->PolyContrast = value;
-    if (GenerateAuto->checkState()) on_GenerateButton_clicked();
-}
-
-void MainWindowImpl::on_SpinBoxConverge_valueChanged(int value)
-{
-    QString s;
-    int v;
-    v = 1;
-    for (int i = 0; i < value; i++) v *= 2;
-
-    QTextStream(&s) << " (" << 125 * v << ")";
-    //SpinBoxConverge->setSuffix(s);
-    Segments[CurrentSegment]->PolyConverge = value;
-}
-
-
 
 void MainWindowImpl::on_CurvesTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
 {
@@ -3074,13 +3037,6 @@ void MainWindowImpl::on_actionSet_slice_position_triggered()
     FixUpStretches();
 }
 
-
-void MainWindowImpl::on_FindPolynomial_pressed()
-{
-    WriteAllData(CurrentFile);
-    findpolynomialImpl dialog;
-    dialog.find();
-}
 
 void MainWindowImpl::on_SpinBoxRangeBase_valueChanged(int v )
 {

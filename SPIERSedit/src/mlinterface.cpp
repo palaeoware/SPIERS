@@ -1,4 +1,4 @@
-#include "opencvinterface.h"
+#include "mlinterface.h"
 #include <QDebug>
 #include <QImage>
 
@@ -17,14 +17,14 @@
 #include "mlfeatureuimanager.h"
 #include "ui/mlAddFeature.h"
 #include <QMessageBox>
-#include "opencvfileio.h"
+#include "mlfileio.h"
 #include <QFileDialog>
 
-bool OpenCVInterface::enabled;
+bool MLInterface::enabled;
 
 
 
-OpenCVInterface::OpenCVInterface()
+MLInterface::MLInterface()
 {
     qDebug()<<"Here";
     data = nullptr;
@@ -34,33 +34,31 @@ OpenCVInterface::OpenCVInterface()
 
 //This should be called after new dataset is loaded or created
 //Or after operations that break everything, e.g. change to resampling
-void OpenCVInterface::Initialise(MainWindowImpl *mw, QLabel *statusLabel)
+void MLInterface::Initialise(MainWindowImpl *mw, QLabel *statusLabel)
 {
     lblStatus = statusLabel;
     mainWin = mw;
-    qDebug()<<"H1";
+
     if (data!=nullptr)
         delete data;
-    qDebug()<<"H2";
+
     if (uiManager!=nullptr)
         delete uiManager;
 
-
-    qDebug()<<"H3";
     //remake things - nullptr triggers this
     data=nullptr;
     uiManager=nullptr;
     CreateSingletonsIfNeeded();
     ResetRFAndSample();
     UpdateStatusLabel();
-    qDebug()<<"H4";
+    data->ResizeCache();
 }
 
-void OpenCVInterface::RemoveAllCacheFiles(bool override)
+void MLInterface::RemoveAllCacheFiles(bool override)
 {
-    QDir dir(openCVFileIO::GetWorkingPath());
+    QDir dir(MLFileIO::GetWorkingPath());
 
-    qDebug()<<openCVFileIO::GetWorkingPath();
+    qDebug()<<MLFileIO::GetWorkingPath();
     QStringList files = dir.entryList({"ml_*"}, QDir::Files);
 
     if (override)
@@ -93,7 +91,7 @@ void OpenCVInterface::RemoveAllCacheFiles(bool override)
     }
 }
 
-QByteArray OpenCVInterface::DumpFeaturesToByteArray()
+QByteArray MLInterface::DumpFeaturesToByteArray()
 {
     QByteArray outArray;
     QDataStream out(&outArray, QIODevice::WriteOnly);
@@ -112,7 +110,7 @@ QByteArray OpenCVInterface::DumpFeaturesToByteArray()
     return outArray;
 }
 
-void OpenCVInterface::RetrieveFeaturesFromByteArray(QByteArray &byteArray)
+void MLInterface::RetrieveFeaturesFromByteArray(QByteArray &byteArray)
 {
     data->ClearFeatures();
     QDataStream in(&byteArray, QIODevice::ReadOnly);
@@ -152,12 +150,12 @@ void OpenCVInterface::RetrieveFeaturesFromByteArray(QByteArray &byteArray)
     ResetRFAndSample();
 }
 
-void OpenCVInterface::SaveFeaturesToFile()
+void MLInterface::SaveFeaturesToFile()
 {
     QString filename = QFileDialog::getSaveFileName(
         mainWin,
         "Save feature-set",
-        openCVFileIO::GetWorkingPath(),
+        MLFileIO::GetWorkingPath(),
         "FEAT files (*.feat)");
 
     if (filename.isEmpty())
@@ -171,12 +169,12 @@ void OpenCVInterface::SaveFeaturesToFile()
     file.close();
 }
 
-void OpenCVInterface::LoadFeaturesFromFile()
+void MLInterface::LoadFeaturesFromFile()
 {
     QString filename = QFileDialog::getOpenFileName(
         mainWin,
         "Load feature-set",
-        openCVFileIO::GetWorkingPath(),
+        MLFileIO::GetWorkingPath(),
         "FEAT files (*.feat)");
 
     if (filename.isEmpty())
@@ -194,7 +192,7 @@ void OpenCVInterface::LoadFeaturesFromFile()
 
 }
 
-void OpenCVInterface::ResetRFAndSample()
+void MLInterface::ResetRFAndSample()
 {
     CreateSingletonsIfNeeded();
     //reset rf
@@ -205,14 +203,14 @@ void OpenCVInterface::ResetRFAndSample()
     UpdateStatusLabel();
 }
 
-void OpenCVInterface::ResetCachedData()
+void MLInterface::ResetCachedData()
 {
     data->Reset();
 }
 
 
 //static test method - run by main on startup.
-bool OpenCVInterface::TestOpenCV()
+bool MLInterface::TestML()
 {
     cv::Mat m = cv::Mat::eye(3, 3, CV_32F);
     auto rf = cv::ml::RTrees::create();
@@ -233,7 +231,7 @@ bool OpenCVInterface::TestOpenCV()
 
 
 
-void OpenCVInterface::GetProbabilitiesAllSegments(int x, int y, int z, int *segBuffer)
+void MLInterface::GetProbabilitiesAllSegments(int x, int y, int z, int *segBuffer)
 {
     //segbuffer is votes 0-255 for each segment. Zero it.
     for (int i=0; i<SegmentCount; i++)
@@ -273,7 +271,7 @@ void OpenCVInterface::GetProbabilitiesAllSegments(int x, int y, int z, int *segB
 
 //Replaces the CopyingImpl progress bar system
 
-void OpenCVInterface::Generate(QListWidget *SliceSelectorList)
+void MLInterface::Generate(QListWidget *SliceSelectorList)
 {
     CreateSingletonsIfNeeded();
 
@@ -289,6 +287,7 @@ void OpenCVInterface::Generate(QListWidget *SliceSelectorList)
 
     for (int i = 0; i < Files.count(); i++)
     {
+
         if ((SliceSelectorList->item(i))->isSelected())
         {
             MLUpdateBlockingDialog::updateHighLevelText(QString("Slice %1").arg(i));
@@ -306,26 +305,30 @@ void OpenCVInterface::Generate(QListWidget *SliceSelectorList)
             for (int s=0; s<SegmentCount; s++)
                 SaveGreyData(i, s);
         }
+
+        if (MLUpdateBlockingDialog::isCancelled())
+            break;
+
     }
 
     LoadAllData(CurrentFile);
     MLUpdateBlockingDialog::hideDialog();
 }
 
-void OpenCVInterface::UIActivateSelectedFeatures(bool activate)
+void MLInterface::UIActivateSelectedFeatures(bool activate)
 {
     CreateSingletonsIfNeeded();
     uiManager->ActivateSelectedFeatures(activate);
 }
 
-void OpenCVInterface::UIDeleteSelectedFeatures()
+void MLInterface::UIDeleteSelectedFeatures()
 {
     CreateSingletonsIfNeeded();
     if (uiManager->DeleteSelectedFeatures()>0)
         ResetRFAndSample();
 }
 
-void OpenCVInterface::UIAddFeature()
+void MLInterface::UIAddFeature()
 {
     CreateSingletonsIfNeeded();
     if (addFeatureDialog==nullptr)
@@ -342,63 +345,47 @@ void OpenCVInterface::UIAddFeature()
     }
 }
 
-void OpenCVInterface::SetSamplePercent(int v)
+void MLInterface::SetSamplePercent(int v)
 {
     samplePercent = v;
 }
 
-void OpenCVInterface::SetMinSampleCount(int v)
+void MLInterface::SetMinSampleCount(int v)
 {
     minSampleCount = v;
 }
 
-void OpenCVInterface::SetTreeCount(int v)
+void MLInterface::SetTreeCount(int v)
 {
     treeCount = v;
 }
 
-void OpenCVInterface::SetTreeDepth(int v)
+void MLInterface::SetTreeDepth(int v)
 {
     treeDepth = v;
 }
 
-int OpenCVInterface::GetSamplePercent()
+int MLInterface::GetSamplePercent()
 {
     return samplePercent;
 }
 
-int OpenCVInterface::GetMinSampleCount()
+int MLInterface::GetMinSampleCount()
 {
     return minSampleCount;
 }
 
-int OpenCVInterface::GetTreeCount()
+int MLInterface::GetTreeCount()
 {
     return treeCount;
 }
 
-int OpenCVInterface::GetTreeDepth()
+int MLInterface::GetTreeDepth()
 {
     return treeDepth;
 }
 
-void OpenCVInterface::SetCacheMemSizeGb(int v)
-{
-    if (!IsDatasetLoaded()) return;
-    CreateSingletonsIfNeeded();
-    data->SetMaxMemoryUsage(1024ul*1024ul*1014ul*(ulong)v);
-}
-
-
-int OpenCVInterface::GetCacheMemSizeGb()
-{
-    CreateSingletonsIfNeeded();
-    return data->GetMaxMemoryUsageGb();
-}
-
-
-
-void OpenCVInterface::ComputeSliceProbabilitiesFromVotes(int sliceID)
+void MLInterface::ComputeSliceProbabilitiesFromVotes(int sliceID)
 {
     QList<int> featureIndices = data->GetFeaturesInUse();
     const int numFeatures = featureIndices.count();
@@ -476,7 +463,7 @@ void OpenCVInterface::ComputeSliceProbabilitiesFromVotes(int sliceID)
     }
 }
 
-QString OpenCVInterface::DescribeSample()
+QString MLInterface::DescribeSample()
 {
     if (labels.count()==0)
     {
@@ -518,7 +505,7 @@ QString OpenCVInterface::DescribeSample()
     }
 }
 
-void OpenCVInterface::UpdateStatusLabel()
+void MLInterface::UpdateStatusLabel()
 {
     if (rf->isTrained())
         lblStatus->setText(QString("Trained on ")+DescribeSample());
@@ -527,7 +514,7 @@ void OpenCVInterface::UpdateStatusLabel()
 }
 
 
-uchar OpenCVInterface::GetProbability(int x, int y, int z, int segment)
+uchar MLInterface::GetProbability(int x, int y, int z, int segment)
 {
     if (data == nullptr || !rf->isTrained())
     {
@@ -568,7 +555,7 @@ uchar OpenCVInterface::GetProbability(int x, int y, int z, int segment)
     }
 }
 
-void OpenCVInterface::CreateSingletonsIfNeeded()
+void MLInterface::CreateSingletonsIfNeeded()
 {
     if (data==nullptr)
     {
@@ -589,7 +576,7 @@ void OpenCVInterface::CreateSingletonsIfNeeded()
 }
 
 
-void OpenCVInterface::CalculateFeatureData()
+void MLInterface::CalculateFeatureData()
 {
     CreateSingletonsIfNeeded();
 
@@ -607,11 +594,13 @@ void OpenCVInterface::CalculateFeatureData()
                 Q_UNUSED(dummy);
             }
         }
+        if (MLUpdateBlockingDialog::isCancelled())
+            break;
     }
     MLUpdateBlockingDialog::hideDialog();
 }
 
-void OpenCVInterface::AutoSampleTrainAndGenerate()
+void MLInterface::AutoSampleTrainAndGenerate()
 {
     if (mainWin->SliceSelectorList->selectedItems().count()!=1)
         return;
@@ -638,7 +627,13 @@ void OpenCVInterface::AutoSampleTrainAndGenerate()
     MLUpdateBlockingDialog::hideDialog();
 }
 
-bool OpenCVInterface::Sample(bool incremental, bool noMessages)
+void MLInterface::ResizeCache()
+{
+    if (data!=nullptr)
+        data->ResizeCache();
+}
+
+bool MLInterface::Sample(bool incremental, bool noMessages)
 {
     if (SegmentCount<2)
     {
@@ -683,7 +678,7 @@ bool OpenCVInterface::Sample(bool incremental, bool noMessages)
 
 }
 
-bool OpenCVInterface::Train(bool noMessages)
+bool MLInterface::Train(bool noMessages)
 {
     QList<int> counts;
     for (int i=0; i<SegmentCount; i++)
@@ -749,7 +744,7 @@ bool OpenCVInterface::Train(bool noMessages)
     return true;
 
 }
-void OpenCVInterface::DoImportances()
+void MLInterface::DoImportances()
 {
     for (int i=0; i<data->GetFeatureCount();i++)
     {
@@ -771,7 +766,7 @@ void OpenCVInterface::DoImportances()
     uiManager->RefreshImportance();
 }
 
-void OpenCVInterface::SampleAndTrain()
+void MLInterface::SampleAndTrain()
 {
     if (mainWin->GenerateAuto->checkState())
     {

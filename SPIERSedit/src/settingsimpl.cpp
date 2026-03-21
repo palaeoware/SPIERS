@@ -52,7 +52,7 @@ void SettingsImpl::on_buttonBox_accepted()
 {
     CacheMem = SpinBoxCache->value();
     CacheMemMLGb = spinBoxCacheMemMLGb->value();
-    openCV->SetCacheMemSizeGb(CacheMemMLGb);
+    mlInterface->ResizeCache();
     UndoMem = SpinBoxUndo->value();
     UndoTimerSetting = SpinBoxUndoTimer->value();
     AutoSaveFrequency = AutoSave->value();

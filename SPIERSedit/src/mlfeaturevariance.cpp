@@ -128,17 +128,19 @@ void MLFeatureVariance::CalcFeatureVariance3D(cv::Mat &mat, int sliceID, MLCache
 
     int r = static_cast<int>(pow(2.0f, _arg1));
 
-    int z0 = std::max(0, sliceID - r);
-    int z1 = std::min(FileCount - 1, sliceID + r);
+
 
     QVector<cv::Mat> intensitySlices2DMean;
     QVector<cv::Mat> squareSlices2DMean;
 
-    intensitySlices2DMean.reserve(z1 - z0 + 1);
-    squareSlices2DMean.reserve(z1 - z0 + 1);
+    intensitySlices2DMean.reserve(r*2+1);
+    squareSlices2DMean.reserve(r*2+1);
 
-    for (int z = z0; z <= z1; ++z)
+    for (int i = -r; i <= r; ++i)
     {
+        int z = sliceID + i;
+        if (z<0) z=0;
+        if (z>FileCount - 1) z = FileCount - 1;
         cv::Mat intensity = data->GetWholeSliceFeature(z, idxIntensity);
         cv::Mat square    = data->GetWholeSliceFeature(z, idxSquare);
 
@@ -152,13 +154,11 @@ void MLFeatureVariance::CalcFeatureVariance3D(cv::Mat &mat, int sliceID, MLCache
         squareSlices2DMean.append(meanI22D);
     }
 
-    int central = sliceID - z0;
-
     cv::Mat meanI3D(fheight, fwidth, CV_32F);
     cv::Mat meanI23D(fheight, fwidth, CV_32F);
 
-    CalcZMean(meanI3D, intensitySlices2DMean, central, _arg1);
-    CalcZMean(meanI23D, squareSlices2DMean, central, _arg1);
+    CalcZMean(meanI3D, intensitySlices2DMean, r, _arg1);
+    CalcZMean(meanI23D, squareSlices2DMean, r, _arg1);
 
     for (int y = 0; y < fheight; ++y)
     {

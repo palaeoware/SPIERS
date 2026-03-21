@@ -2224,8 +2224,8 @@ void WriteSettings()
     out << mainwin->spinBoxMLDepth->value();
     out << mainwin->spinBoxMLTrees->value();
     out << mainwin->spinBoxMinSampleCount->value();
-
-    out << openCV->DumpFeaturesToByteArray();
+    
+    out << mlInterface->DumpFeaturesToByteArray();
 
     file.close();
 }

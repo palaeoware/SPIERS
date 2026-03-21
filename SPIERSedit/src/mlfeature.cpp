@@ -3,6 +3,7 @@
 #include "globals.h"
 #include "mlupdateblockingdialog.h"
 #include <QString>
+#include <cmath>
 #include "opencv2/imgproc.hpp"
 #include "mlfeaturecontrast.h"
 #include "mlfeaturedifferenceofgaussians.h"
@@ -13,6 +14,15 @@
 #include "mlfeaturevariance.h"
 #include "mlfeaturelog.h"
 #include "mlfeaturehessian.h"
+#include "mlfeaturegradientcomponent.h"
+#include "mlfeaturetensorcomponentlocal.h"
+#include "mlfeaturetensorcomponentwide.h"
+#include "mlfeaturetensortracelocal.h"
+#include "mlfeaturetensortracewide.h"
+#include "mlfeaturetensordeterminantlocal.h"
+#include "mlfeaturetensordeterminantwide.h"
+#include "mlfeaturetensorcoherencelocal.h"
+#include "mlfeaturetensorcoherencewide.h"
 
 MLFeature::MLFeature(FeatureType type, Channel channel, bool is3D, int arg1, int arg2)
 {
@@ -132,7 +142,7 @@ MLFeature *MLFeature::CreateFromData(FeatureType type, Channel channel, bool is3
     case MLFeature::FeatureType::Contrast:
         return new MLFeatureContrast(channel, is3D, arg1);
 
-    case MLFeature::FeatureType::Gradient:
+    case MLFeature::FeatureType::Gradient_magnitude:
         return new MLFeatureGradient(channel, is3D, arg1);
 
     case MLFeature::FeatureType::Local_variance:
@@ -147,7 +157,30 @@ MLFeature *MLFeature::CreateFromData(FeatureType type, Channel channel, bool is3
     case MLFeature::FeatureType::Hessian:
         return new MLFeatureHessian(channel, is3D, arg1, arg2);
 
-    case MLFeature::FeatureType::Structure_tensor:
+    case MLFeature::FeatureType::Gradient_component:
+        return new MLFeatureGradientComponent(channel, arg1, arg2);
+
+    case MLFeature::FeatureType::Tensor_component_local:
+        return new MLFeatureTensorComponentLocal(channel, arg1, arg2);
+
+    case MLFeature::FeatureType::Tensor_component_wide:
+        return new MLFeatureTensorComponentWide(channel, arg1, arg2);
+
+    case MLFeature::FeatureType::Tensor_trace_local:
+        return new MLFeatureTensorTraceLocal(channel, is3D, arg1);
+    case MLFeature::FeatureType::Tensor_trace_wide:
+        return new MLFeatureTensorTraceWide(channel, is3D, arg1);
+
+
+    case MLFeature::FeatureType::Tensor_coherence_local:
+        return new MLFeatureTensorCoherenceLocal(channel, arg1);
+    case MLFeature::FeatureType::Tensor_coherence_wide:
+        return new MLFeatureTensorCoherenceWide(channel, arg1);
+
+    case MLFeature::FeatureType::Tensor_determinant_local:
+        return new MLFeatureTensorDeterminantLocal(channel, is3D, arg1);
+    case MLFeature::FeatureType::Tensor_determinant_wide:
+        return new MLFeatureTensorDeterminantWide(channel, is3D, arg1);
 
     default:
         qDebug()<<"ERROR - not implemented in CreateNewFeature";
@@ -588,4 +621,224 @@ void MLFeature::CalcSecondDerivativeYZ(cv::Mat &out,
             outRow[x] = scaleFactor * 0.25f * v;
         }
     }
+}
+
+
+void MLFeature::CalcGaussian1DKernel(QVector<float> &kernel, float sigma)
+{
+    Q_ASSERT(sigma > 0.0f);
+
+    int r = static_cast<int>(std::ceil(3.0f * sigma));
+    int ksize = 2 * r + 1;
+
+    kernel.resize(ksize);
+
+    double sum = 0.0;
+    for (int k = -r; k <= r; ++k)
+    {
+        double v = std::exp(-(k * k) / (2.0 * sigma * sigma));
+        kernel[k + r] = static_cast<float>(v);
+        sum += v;
+    }
+
+    if (sum > 0.0)
+    {
+        for (int i = 0; i < kernel.size(); ++i)
+            kernel[i] = static_cast<float>(kernel[i] / sum);
+    }
+}
+
+void MLFeature::CalcGaussian2D(cv::Mat &out, const cv::Mat &in, float sigma)
+{
+    Q_ASSERT(in.type() == CV_32F);
+    Q_ASSERT(in.cols == fwidth);
+    Q_ASSERT(in.rows == fheight);
+    Q_ASSERT(sigma > 0.0f);
+
+    QVector<float> kernel;
+    CalcGaussian1DKernel(kernel, sigma);
+
+    int r = (kernel.size() - 1) / 2;
+
+    cv::Mat temp(fheight, fwidth, CV_32F);
+
+    // horizontal pass
+    for (int y = 0; y < fheight; ++y)
+    {
+        if (y % 50 == 0)
+            MLUpdateBlockingDialog::updateDetailText(
+                QString("Calculating Gaussian 2D: %1%")
+                    .arg((y * 50) / fheight)
+                );
+
+        const float *inRow = in.ptr<float>(y);
+        float *tempRow = temp.ptr<float>(y);
+
+        for (int x = 0; x < fwidth; ++x)
+        {
+            double acc = 0.0;
+
+            for (int k = -r; k <= r; ++k)
+            {
+                int xx = std::max(0, std::min(fwidth - 1, x + k));
+                acc += kernel[k + r] * inRow[xx];
+            }
+
+            tempRow[x] = static_cast<float>(acc);
+        }
+    }
+
+    out.create(fheight, fwidth, CV_32F);
+
+    // vertical pass
+    for (int y = 0; y < fheight; ++y)
+    {
+        if (y % 50 == 0)
+            MLUpdateBlockingDialog::updateDetailText(
+                QString("Calculating Gaussian 2D: %1%")
+                    .arg(50 + (y * 50) / fheight)
+                );
+
+        float *outRow = out.ptr<float>(y);
+
+        for (int x = 0; x < fwidth; ++x)
+        {
+            double acc = 0.0;
+
+            for (int k = -r; k <= r; ++k)
+            {
+                int yy = std::max(0, std::min(fheight - 1, y + k));
+                const float *tempRow = temp.ptr<float>(yy);
+                acc += kernel[k + r] * tempRow[x];
+            }
+
+            outRow[x] = static_cast<float>(acc);
+        }
+    }
+}
+
+void MLFeature::CalcFirstDerivativeX(cv::Mat &out, const cv::Mat &in, float scaleFactor)
+{
+    Q_ASSERT(in.type() == CV_32F);
+    Q_ASSERT(in.cols == fwidth);
+    Q_ASSERT(in.rows == fheight);
+
+    out.create(fheight, fwidth, CV_32F);
+
+    for (int y = 0; y < fheight; ++y)
+    {
+        if (y % 50 == 0)
+            MLUpdateBlockingDialog::updateDetailText(
+                QString("Calculating first derivative X %1%")
+                    .arg((y * 100) / fheight)
+                );
+
+        const float *inRow = in.ptr<float>(y);
+        float *outRow = out.ptr<float>(y);
+
+        for (int x = 0; x < fwidth; ++x)
+        {
+            int xm1 = std::max(0, x - 1);
+            int xp1 = std::min(fwidth - 1, x + 1);
+
+            outRow[x] = scaleFactor * 0.5f * (inRow[xp1] - inRow[xm1]);
+        }
+    }
+}
+
+void MLFeature::CalcFirstDerivativeY(cv::Mat &out, const cv::Mat &in, float scaleFactor)
+{
+    Q_ASSERT(in.type() == CV_32F);
+    Q_ASSERT(in.cols == fwidth);
+    Q_ASSERT(in.rows == fheight);
+
+    out.create(fheight, fwidth, CV_32F);
+
+    for (int y = 0; y < fheight; ++y)
+    {
+        if (y % 50 == 0)
+            MLUpdateBlockingDialog::updateDetailText(
+                QString("Calculating first derivative Y %1%")
+                    .arg((y * 100) / fheight)
+                );
+
+        int ym1 = std::max(0, y - 1);
+        int yp1 = std::min(fheight - 1, y + 1);
+
+        const float *rowM1 = in.ptr<float>(ym1);
+        const float *rowP1 = in.ptr<float>(yp1);
+        float *outRow = out.ptr<float>(y);
+
+        for (int x = 0; x < fwidth; ++x)
+            outRow[x] = scaleFactor * 0.5f * (rowP1[x] - rowM1[x]);
+    }
+}
+
+void MLFeature::CalcFirstDerivativeZ(cv::Mat &out,
+                                     const QVector<cv::Mat> &slicesIn,
+                                     int centralSliceIndex,
+                                     float scaleFactor)
+{
+    Q_ASSERT(!slicesIn.isEmpty());
+    Q_ASSERT(centralSliceIndex >= 0);
+    Q_ASSERT(centralSliceIndex < slicesIn.count());
+
+    int prevIndex = std::max(0, centralSliceIndex - 1);
+    int nextIndex = std::min((int)slicesIn.count() - 1, centralSliceIndex + 1);
+
+    const cv::Mat &prev = slicesIn[prevIndex];
+    const cv::Mat &next = slicesIn[nextIndex];
+
+    Q_ASSERT(prev.type() == CV_32F);
+    Q_ASSERT(next.type() == CV_32F);
+    Q_ASSERT(prev.cols == fwidth && prev.rows == fheight);
+    Q_ASSERT(next.cols == fwidth && next.rows == fheight);
+
+    out.create(fheight, fwidth, CV_32F);
+
+    for (int y = 0; y < fheight; ++y)
+    {
+        if (y % 50 == 0)
+            MLUpdateBlockingDialog::updateDetailText(
+                QString("Calculating first derivative Z %1%")
+                    .arg((y * 100) / fheight)
+                );
+
+        const float *prevRow = prev.ptr<float>(y);
+        const float *nextRow = next.ptr<float>(y);
+        float *outRow = out.ptr<float>(y);
+
+        for (int x = 0; x < fwidth; ++x)
+            outRow[x] = scaleFactor * 0.5f * (nextRow[x] - prevRow[x]);
+    }
+}
+
+void MLFeature::CalcFeatureProductOfFeatures(cv::Mat &mat, int sliceID,
+                                             MLCachedAccess *data, int featureIndex1, int featureIndex2)
+{
+    Q_ASSERT(mat.type() == CV_32F);
+    Q_ASSERT(mat.cols == fwidth);
+    Q_ASSERT(mat.rows == fheight);
+    Q_ASSERT(sliceID >= 0 && sliceID < FileCount);
+
+    MLUpdateBlockingDialog::updateDetailText(
+        QString("Calculating %1")
+            .arg(GetPrettyFullName())
+        );
+
+    cv::Mat data1 = data->GetWholeSliceFeature(sliceID, featureIndex1);
+    cv::Mat data2 = data->GetWholeSliceFeature(sliceID, featureIndex2);
+
+    cv::multiply(data1, data2, mat);
+}
+
+void MLFeature::CalcMatrixProduct(cv::Mat &out, const cv::Mat &in1, const cv::Mat &in2)
+{
+    Q_ASSERT(in1.type() == CV_32F);
+    Q_ASSERT(in2.type() == CV_32F);
+    Q_ASSERT(in1.cols == fwidth && in1.rows == fheight);
+    Q_ASSERT(in2.cols == fwidth && in2.rows == fheight);
+
+    out.create(fheight, fwidth, CV_32F);
+    cv::multiply(in1, in2, out);
 }

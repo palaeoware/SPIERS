@@ -1,7 +1,7 @@
 #include "mlcachedaccess.h"
 #include "mlcachedslice.h"
 
-#include "opencvfileio.h"
+#include "mlfileio.h"
 
 #include "globals.h"
 //Public API
@@ -23,11 +23,13 @@ MLCachedAccess::MLCachedAccess(int sliceCount, bool colourImages, int fwidth, in
     featureSize = fwidth * fheight * 4;
     sourceImageSize = featureSize;
 
+    qDebug()<<"feature size is "<<featureSize;
     if (colourImages) sourceImageSize *=3;
 
     sourceImageRGB = colourImages;
 
-    SetMaxMemoryUsage(1024ul *1024ul *1024ul * 2ul); //2Gb default
+    ResizeCache();
+    timeStamp = 0;
 }
 
 MLCachedAccess::~MLCachedAccess()
@@ -53,10 +55,6 @@ int MLCachedAccess::GetIndexForFeature(MLFeature *feature)
     return GetIndexForFeature(feature->GetType(), feature->GetChannel(), feature->is3D(), feature->GetArg1(),feature->GetArg2());
 }
 
-int MLCachedAccess::GetMaxMemoryUsageGb()
-{
-    return maxMemoryUsage/(1024ul*1024ul*1024ul);
-}
 
 void MLCachedAccess::ClearFeatures()
 {
@@ -82,7 +80,7 @@ void MLCachedAccess::SetFeatures(QList<MLFeature *> newFeatures)
         ResizeCache();
     }
     RebuildFeatureIDsInUse();
-    qDebug()<<"Done Set Features "<<features.count();
+    //qDebug()<<"Done Set Features "<<features.count();
 }
 
 void MLCachedAccess::Reset()
@@ -92,6 +90,12 @@ void MLCachedAccess::Reset()
     qDeleteAll(cachedSlices);
     cachedSlices.clear();
     ResizeCache();
+    timeStamp = 0;
+}
+
+void MLCachedAccess::IncrementTimestamp()
+{
+    timeStamp++;
 }
 
 void MLCachedAccess::SetFeatureInUse(int featureID, bool inUse)
@@ -102,7 +106,7 @@ void MLCachedAccess::SetFeatureInUse(int featureID, bool inUse)
 
     features[featureID]->SetSelected(inUse);
     RebuildFeatureIDsInUse();
-    openCV->ResetRFAndSample();
+    mlInterface->ResetRFAndSample();
 }
 
 QList<int> MLCachedAccess::GetFeaturesInUse()
@@ -297,15 +301,9 @@ QColor MLCachedAccess::GetRGBFloat(int x, int y, int z)
     return slice->GetColor(x,y);
 }
 
-void MLCachedAccess::SetMaxMemoryUsage(uint64 size)
-{
-    maxMemoryUsage = size;
-    ResizeCache();
-}
-
 
 //Private
-ulong MLCachedAccess::GetMemorySizeOfSlice()
+uint64_t MLCachedAccess::GetMemorySizeOfSlice()
 {
     ulong size = (ulong) sourceImageSize;
     size += (ulong) features.count() * (ulong)featureSize;
@@ -314,8 +312,7 @@ ulong MLCachedAccess::GetMemorySizeOfSlice()
 
 void MLCachedAccess::ResizeCache()
 {
-    int newCacheLength = maxMemoryUsage / GetMemorySizeOfSlice();
-    qDebug()<<"Calced new max slice cache = "<<newCacheLength;
+    int newCacheLength = (int)(((uint64_t) CacheMemMLGb * 1024ull * 1024ull * 1024ull)/ GetMemorySizeOfSlice());
 
     if (newCacheLength > zSize) newCacheLength = zSize; //no need for more!
     int oldCacheLength= cachedSlices.count();
@@ -349,7 +346,7 @@ void MLCachedAccess::ResizeCache()
         {
             int removeIndex = FindReusableCacheSlot();
 
-            qDebug()<<"Removing index "<<removeIndex<< " for slice "<<slicesByCacheIndex[removeIndex];
+            //qDebug()<<"Removing index "<<removeIndex<< " for slice "<<slicesByCacheIndex[removeIndex];
             if (slicesByCacheIndex[removeIndex] !=-1)
             {
                 //Shuffle all indices in the pointer array by one where needed
@@ -370,7 +367,14 @@ void MLCachedAccess::ResizeCache()
 
             //and remove this slice from the other list
             slicesByCacheIndex.removeAt(removeIndex);
+            delete cachedSlices[removeIndex];
+            cachedSlices.removeAt(removeIndex);
+
         }
+
+        //qDebug()<<"After reduction, slicesByCacheIndex count "<<slicesByCacheIndex.count();
+        //qDebug()<<"After reduction, cacheIndicesBySlice count "<<cacheIndicesBySlice.count();
+
         return;
     }
 
@@ -378,7 +382,7 @@ void MLCachedAccess::ResizeCache()
 
 int MLCachedAccess::FindReusableCacheSlot()
 {
-    QDateTime oldest;
+    uint64 oldest;
     int useCacheIndex = -1;
 
     for (int i=0; i<cachedSlices.count();i++)
@@ -409,6 +413,7 @@ int MLCachedAccess::FindReusableCacheSlot()
     if (slicesByCacheIndex[useCacheIndex]!=-1)
     {
         //re-using, so clear it
+        qDebug()<<"Resuing cache index "<<useCacheIndex;
         cacheIndicesBySlice[cachedSlices[useCacheIndex]->sliceIndex]=-1;
         slicesByCacheIndex[useCacheIndex] = -1;
         cachedSlices[useCacheIndex]->Clear();

@@ -20,7 +20,6 @@ public:
     float GetFeatureValueAt(int x, int y, int z, int featureID);
     float GetIntensityAsFloat(int x, int y, int z);
     QColor GetRGBFloat(int x, int y, int z);
-    void SetMaxMemoryUsage(uint64 size);
     QString GetSourceImageFeatureName();
     MLFeature *GetFeature(int featureID);  //replace with either pretty or filename calls. Do need a
                                             //fn that returns the MLFeature itself though
@@ -33,18 +32,19 @@ public:
     cv::Mat GetWholeSliceFeature(int z, int featureIndex);
     void SetFeatureInUse(int featureID, bool inUse);
     QList<int> GetFeaturesInUse();
+    uint64 timeStamp;
     void DumpFeatures();
     int GetIndexForFeature(MLFeature *feature);
-    int GetMaxMemoryUsageGb();
     void ClearFeatures();
     void SetFeatures(QList<MLFeature *> newFeatures);
     void Reset();
-private:
-    ulong GetMemorySizeOfSlice();
+    void IncrementTimestamp();
     void ResizeCache();
+private:
+    uint64_t GetMemorySizeOfSlice();
+
     int AssignCacheSlot(int sliceIndex);
     MLCachedSlice * GetSlice(int sliceIndex);
-    uint64 maxMemoryUsage;
 
     bool sourceImageRGB;
     QList<MLCachedSlice *> cachedSlices;
@@ -60,5 +60,6 @@ private:
 
     int FindReusableCacheSlot();
     bool IsFeatureADependency(MLFeature *feature);
+
 };
 

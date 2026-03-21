@@ -1076,8 +1076,8 @@ uchar MLPixel(int w, int h, int s)
 {
     w *= ColMonoScale;
     h *= ColMonoScale;
-
-    return openCV->GetProbability(w, h, CurrentFile, s);
+    
+    return mlInterface->GetProbability(w, h, CurrentFile, s);
  }
 
 uchar RangePixel(int w, int h, int bot, int top, double cen, double gra, int seg)

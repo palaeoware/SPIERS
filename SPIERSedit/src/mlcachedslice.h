@@ -17,7 +17,7 @@ public:
     ~MLCachedSlice();
     cv::Mat sourceImage;
     QList<cv::Mat> featureData;
-    QDateTime lastUsed;
+    uint64 lastUsed;
     bool sourceValid;
     int sliceIndex;
     MLCachedAccess *cache;

@@ -1,4 +1,4 @@
-#include "opencvfileio.h"
+#include "mlfileio.h"
 #include <opencv2/opencv.hpp>
 
 #include <QFile>
@@ -9,7 +9,7 @@
 #include "globals.h"
 #include "mlupdateblockingdialog.h"
 
-openCVFileIO::openCVFileIO()
+MLFileIO::MLFileIO()
 {}
 
 static constexpr quint32 kMagic = 0x4D415431; // "MAT1"
@@ -25,7 +25,7 @@ struct MatFileHeader
     quint64 dataSize = 0;
 };
 
-void openCVFileIO::SaveMatBinary(const QString& featurename, const cv::Mat& mat, int fileIndex)
+void MLFileIO::SaveMatBinary(const QString& featurename, const cv::Mat& mat, int fileIndex)
 {
     MLUpdateBlockingDialog::updateDetailText(
         QString("Writing cache file for feature %1 for slice %2").arg(featurename)
@@ -90,28 +90,45 @@ void openCVFileIO::SaveMatBinary(const QString& featurename, const cv::Mat& mat,
         }
     }
 
-
+/*
     //TEST - create PNG to inspect
     if (featurename!="src")
     {
-        cv::Mat absMat;
-        cv::absdiff(mat, 0, absMat);   // abs(mat)
+        if (featurename.left(3)=="tow" || featurename.left(3)=="tol")
+        {
+            //Different approach for coherence
+            //qDebug()<<"TO output!";
+            cv::Mat clamped;
+            cv::min(mat, 1.0f, clamped);
+            cv::max(clamped, 0.0f, clamped);
 
-        double minVal, maxVal;
-        cv::minMaxLoc(absMat, &minVal, &maxVal);
+            cv::Mat tmp;
+            clamped.convertTo(tmp, CV_8U, 255.0);
 
-        cv::Mat tmp;
-
-        if (maxVal > 0.0)
-            absMat.convertTo(tmp, CV_8U, 255.0 / maxVal);
+            cv::imwrite((filename + QString(".png")).toStdString(), tmp);
+        }
         else
-            tmp = cv::Mat::zeros(absMat.size(), CV_8U);
+        {
+            cv::Mat absMat;
+            cv::absdiff(mat, 0, absMat);   // abs(mat)
 
-        cv::imwrite((filename + QString(".png")).toStdString(), tmp);
+            double minVal, maxVal;
+            cv::minMaxLoc(absMat, &minVal, &maxVal);
+
+            cv::Mat tmp;
+
+            if (maxVal > 0.0)
+                absMat.convertTo(tmp, CV_8U, 255.0 / maxVal);
+            else
+                tmp = cv::Mat::zeros(absMat.size(), CV_8U);
+
+            cv::imwrite((filename + QString(".png")).toStdString(), tmp);
+        }
     }
+*/
 }
 
-QString openCVFileIO::GetFileName(const QString &fname, int index)
+QString MLFileIO::GetFileName(const QString &fname, int index)
 {
     QString Fname = Files.at(index);
     int lastsep = lastsep = qMax(Fname.lastIndexOf("\\"), Fname.lastIndexOf("/")); //this is last separator in path
@@ -122,14 +139,14 @@ QString openCVFileIO::GetFileName(const QString &fname, int index)
 
 }
 
-QString openCVFileIO::GetWorkingPath()
+QString MLFileIO::GetWorkingPath()
 {
     QFileInfo fi(Files.at(0));
     return fi.path() + "/" + SettingsFileName;
 }
 
 
-cv::Mat openCVFileIO::LoadMatBinary(const QString& featureName, int x, int y, int fileIndex,  bool &ok)
+cv::Mat MLFileIO::LoadMatBinary(const QString& featureName, int x, int y, int fileIndex,  bool &ok)
 {
     MLUpdateBlockingDialog::updateDetailText(
         QString("Loading cache file for feature %1 for slice %2").arg(featureName)
@@ -217,7 +234,7 @@ cv::Mat openCVFileIO::LoadMatBinary(const QString& featureName, int x, int y, in
     return mat;
 }
 
-cv::Mat openCVFileIO::LoadMatFromImageFile(int sliceIndex, bool expectColour)
+cv::Mat MLFileIO::LoadMatFromImageFile(int sliceIndex, bool expectColour)
 {
     MLUpdateBlockingDialog::updateDetailText(
         QString("Converting source file for slice %1").arg(sliceIndex)

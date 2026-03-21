@@ -111,7 +111,7 @@ int GradientMinDistValue;
 int GradientMaxDist;
 int GradientMaxDistValue;
 
-OpenCVInterface *openCV;
+MLInterface *mlInterface;
 
 QString SettingsFileName;
 QString FileNotes;
@@ -376,6 +376,7 @@ void ReadSuperGlobals()
     RenderCache = settings.value("RenderCache", false).toBool();
     DefaultPath = settings.value("DefaultFilePath", QDir::homePath()).toString();
     CacheMemMLGb = settings.value("CacheMemML(Gb)",2).toInt();
+    qDebug()<<"Read CacheMemMLGb"<<CacheMemMLGb;
 }
 
 bool IsDatasetLoaded()

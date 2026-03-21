@@ -1,12 +1,12 @@
-#ifndef OPENCVFILEIO_H
-#define OPENCVFILEIO_H
+#ifndef MLFILEIO_H
+#define MLFILEIO_H
 
 #include <QString>
 #include <opencv2/opencv.hpp>
-class openCVFileIO
+class MLFileIO
 {
 public:
-    openCVFileIO();
+    MLFileIO();
 
     static cv::Mat LoadMatBinary(const QString &featureName, int x, int y, int fileIndex, bool &ok);
     static void SaveMatBinary(const QString &featurename, const cv::Mat &mat, int fileIndex);
@@ -17,4 +17,4 @@ private:
 
 };
 
-#endif // OPENCVFILEIO_H
+#endif // MLFILEIO_H

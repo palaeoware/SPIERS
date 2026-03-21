@@ -54,7 +54,6 @@ FORMS += ui/import.ui \
     ui/selectsegment.ui \
     ui/curveresize.ui \
     ui/slicespacing.ui \
-    ui/findpolynomial.ui \
     ui/distribute.ui \
     ui/resample.ui \
     ui/about.ui
@@ -77,18 +76,27 @@ HEADERS += src/display.h \
     src/mlfeaturedifferenceofgaussians.h \
     src/mlfeaturegaussian.h \
     src/mlfeaturegradient.h \
+    src/mlfeaturegradientcomponent.h \
     src/mlfeaturehessian.h \
     src/mlfeatureintensity.h \
     src/mlfeaturelog.h \
     src/mlfeaturesquareintensity.h \
+    src/mlfeaturetensorcoherencelocal.h \
+    src/mlfeaturetensorcoherencewide.h \
+    src/mlfeaturetensorcomponentlocal.h \
+    src/mlfeaturetensorcomponentwide.h \
+    src/mlfeaturetensordeterminantlocal.h \
+    src/mlfeaturetensordeterminantwide.h \
+    src/mlfeaturetensortracelocal.h \
+    src/mlfeaturetensortracewide.h \
     src/mlfeatureuimanager.h \
     src/mlfeaturevariance.h \
+    src/mlfileio.h \
+    src/mlinterface.h \
     src/mlupdateblockingdialog.h \
     src/myscene.h \
     src/copyingimpl.h \
     src/moreimpl.h \
-    src/opencvfileio.h \
-    src/opencvinterface.h \
     src/undo.h \
     src/contrastimpl.h \
     src/deletemaskdialogimpl.h \
@@ -100,7 +108,6 @@ HEADERS += src/display.h \
     src/exportdxf.h \
     src/info.h \
     src/slicespacingdialogimpl.h \
-    src/findpolynomialimpl.h \
     src/myrangescene.h \
     src/mygraphicsview.h \
     src/distributedialogimpl.h \
@@ -134,18 +141,27 @@ SOURCES += src/display.cpp \
     src/mlfeaturedifferenceofgaussians.cpp \
     src/mlfeaturegaussian.cpp \
     src/mlfeaturegradient.cpp \
+    src/mlfeaturegradientcomponent.cpp \
     src/mlfeaturehessian.cpp \
     src/mlfeatureintensity.cpp \
     src/mlfeaturelog.cpp \
     src/mlfeaturesquareintensity.cpp \
+    src/mlfeaturetensorcoherencelocal.cpp \
+    src/mlfeaturetensorcoherencewide.cpp \
+    src/mlfeaturetensorcomponentlocal.cpp \
+    src/mlfeaturetensorcomponentwide.cpp \
+    src/mlfeaturetensordeterminantlocal.cpp \
+    src/mlfeaturetensordeterminantwide.cpp \
+    src/mlfeaturetensortracelocal.cpp \
+    src/mlfeaturetensortracewide.cpp \
     src/mlfeatureuimanager.cpp \
     src/mlfeaturevariance.cpp \
+    src/mlfileio.cpp \
+    src/mlinterface.cpp \
     src/mlupdateblockingdialog.cpp \
     src/myscene.cpp \
     src/copyingimpl.cpp \
     src/moreimpl.cpp \
-    src/opencvfileio.cpp \
-    src/opencvinterface.cpp \
     src/undo.cpp \
     src/contrastimpl.cpp \
     src/mainwindowimpl2.cpp \
@@ -158,7 +174,6 @@ SOURCES += src/display.cpp \
     src/exportdxf.cpp \
     src/info.cpp \
     src/slicespacingdialogimpl.cpp \
-    src/findpolynomialimpl.cpp \
     src/myrangescene.cpp \
     src/mygraphicsvew.cpp \
     src/distributedialogimpl.cpp \

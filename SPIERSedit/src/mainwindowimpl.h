@@ -79,7 +79,6 @@ private slots:
     void on_SpinBoxRangeTop_valueChanged(int v);
     void on_actionHidden_masks_locked_for_generation_triggered();
     void on_actionSegment_brush_applies_masks_triggered();
-    void on_FindPolynomial_pressed();
     void on_actionShow_position_slice_selector_toggled(bool );
     void on_actionChange_slice_spacing_triggered();
     void on_actionSet_slice_position_triggered();
@@ -131,10 +130,6 @@ private slots:
     void on_actionHistogram_shows_selected_triggered(bool checked);
     void on_actionHistorgram_triggered(bool checked);
     void on_actionSettings_triggered();
-    void on_SpinBoxSparsity_valueChanged(int );
-    void on_SpinBoxOrder_valueChanged(int );
-    void on_SpinBoxRetries_valueChanged(int );
-    void on_SpinBoxContrast_valueChanged(int );
     void on_LinearGreenSpinBox_valueChanged(int );
     void on_LinearRedSpinBox_valueChanged(int );
     void on_LinearGreenSpinBox_editingFinished();
@@ -172,7 +167,6 @@ private slots:
     void on_actionUnWrite_Selected_Masks_triggered();
     void on_MasksTreeWidget_itemChanged(QTreeWidgetItem *item, int column);
     void on_MasksTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column);
-    void on_SpinBoxConverge_valueChanged(int );
     void on_FirstFile_valueChanged(int );
     void on_LastFile_valueChanged(int );
     void on_DownsampleXY_valueChanged(int );

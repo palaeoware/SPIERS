@@ -31,7 +31,7 @@
 #include <QMutex>
 #include <QGraphicsRectItem>
 #include <QGraphicsTextItem>
-#include "opencvinterface.h"
+#include "mlinterface.h"
 #include "mainwindowimpl.h"
 
 // Internal versions for input/output file purposes
@@ -90,7 +90,7 @@ extern double CurrentPolyContrast;
 extern QTreeWidgetItem *LastItemClicked;
 extern QTime LastTimeClicked;
 extern int LastColumnClicked;
-extern OpenCVInterface *openCV;
+extern MLInterface *mlInterface;
 
 extern QByteArray FeaturesByteArray;
 /**

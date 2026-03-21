@@ -12,6 +12,7 @@
 #include <QRect>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <QPushButton>
 
 MLUpdateBlockingDialog *MLUpdateBlockingDialog::s_instance = nullptr;
 int MLUpdateBlockingDialog::s_animationState = 0;
@@ -47,9 +48,15 @@ MLUpdateBlockingDialog::MLUpdateBlockingDialog(QWidget *parent)
     m_detailLabel->setMinimumWidth(420);
     m_detailLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
 
+    QPushButton *cancelBtn = new QPushButton("Cancel", this);
+
+    connect(cancelBtn, &QPushButton::clicked,
+            this, &MLUpdateBlockingDialog::Cancelled);
+
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->addWidget(m_highLevelLabel);
     layout->addWidget(m_detailLabel);
+    layout->addWidget(cancelBtn);
     layout->setContentsMargins(16, 16, 16, 16);
     layout->setSpacing(10);
 
@@ -88,6 +95,12 @@ QString MLUpdateBlockingDialog::animatedText(const QString &baseText)
     return baseText + dots;
 }
 
+void MLUpdateBlockingDialog::Cancelled()
+{
+    qDebug()<<"cancelled";
+    cancelled = true;
+}
+
 void MLUpdateBlockingDialog::applyCurrentTexts()
 {
     setHighLevelStatusText(animatedText(s_highLevelBaseText));
@@ -102,7 +115,7 @@ void MLUpdateBlockingDialog::refreshAndProcessEvents()
     m_detailLabel->repaint();
     repaint();
 
-    QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+    QCoreApplication::processEvents(); //QEventLoop::ExcludeUserInputEvents
 }
 
 void MLUpdateBlockingDialog::centerOverParent()
@@ -139,6 +152,7 @@ void MLUpdateBlockingDialog::showDialog(QWidget *parent,
     s_instance->raise();
     s_instance->activateWindow();
 
+    s_instance->cancelled = false;
     s_instance->refreshAndProcessEvents();
 }
 
@@ -174,4 +188,13 @@ void MLUpdateBlockingDialog::hideDialog()
     s_animationState = 0;
 
     QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+}
+
+bool MLUpdateBlockingDialog::isCancelled()
+{
+    if (!s_instance)
+        return false;
+
+    return s_instance->cancelled;
+
 }
