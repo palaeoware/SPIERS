@@ -1395,7 +1395,12 @@ void CopyingImpl::ExportSPV_2(int flag)  //0 for export, 1 for export and launch
 //RJG - Windows launch SPIERSview
 #ifdef _WIN64
         QString program = "\"" + qApp->applicationDirPath() + "/SPIERSview64.exe" + "\"" + " \"" + outputfile + "\"";
-        QProcess::startDetached(program);
+        //qDebug()<<program;
+        if (!QProcess::startDetached(program))
+        {
+            //Could not run by finding it in the right place, so do it by file association
+            QDesktopServices::openUrl(QUrl::fromLocalFile(outputfile));
+        }
 #endif
     }
 }

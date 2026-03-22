@@ -274,7 +274,7 @@ void MLFeature::CalcLocalMean2D(cv::Mat &out, const cv::Mat &in, int radiusLog2)
     for (int y = 0; y < fheight; ++y)
     {
 
-        if (y%50==0)
+        if (y%150==0)
             MLUpdateBlockingDialog::updateDetailText(
                 QString("Calculating 2D mean: %1%")
                     .arg((y*100)/fheight)

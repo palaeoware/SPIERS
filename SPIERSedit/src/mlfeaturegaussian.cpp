@@ -100,7 +100,7 @@ void MLFeatureGaussian::CalcFeatureGaussian2D(cv::Mat &mat, int sliceID, MLCache
         float *inRow = slice.ptr<float>(y);
         float *outRow = temp.ptr<float>(y);
 
-        if (y%50==0)
+        if (y%150==0)
             MLUpdateBlockingDialog::updateDetailText(
                 QString("Calculating %1: %2%")
                     .arg(GetPrettyFullName())
@@ -126,7 +126,7 @@ void MLFeatureGaussian::CalcFeatureGaussian2D(cv::Mat &mat, int sliceID, MLCache
     for (int y = 0; y < fheight; ++y)
     {
 
-        if (y%50==0)
+        if (y%150==0)
             MLUpdateBlockingDialog::updateDetailText(
                 QString("Calculating %1: %2%")
                     .arg(GetPrettyFullName())
@@ -201,7 +201,7 @@ void MLFeatureGaussian::CalcFeatureGaussian3D(cv::Mat &mat, int sliceID, MLCache
 
     for (int y = 0; y < fheight; ++y)
     {
-        if (y%50==0)
+        if (y%150==0)
             MLUpdateBlockingDialog::updateDetailText(
                 QString("Calculating %1: %2%")
                     .arg(GetPrettyFullName())

@@ -18,7 +18,7 @@ public:
     MLInterface();
     static bool TestML();
     static bool enabled;
-    void SampleAndTrain();
+    void SampleAndTrain(bool autoGen = false);
     void CalculateFeatureData();
     void GetProbabilitiesAllSegments(int x, int y, int z, int *segBuffer);
     void Generate(QListWidget *SliceSelectorList);

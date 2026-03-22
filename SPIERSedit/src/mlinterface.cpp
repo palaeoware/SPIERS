@@ -376,6 +376,8 @@ void MLInterface::ComputeSliceProbabilitiesFromVotes(int sliceID)
 
             if (!newLocks[fwidth * y + x])
             {
+                int high = -1;
+                int highSeg = -1;
                 for (int c = 0; c < SegmentCount; ++c)
                 {
                     int v = static_cast<int>(probRow[c] * 255.0f + 0.5f);
@@ -383,7 +385,16 @@ void MLInterface::ComputeSliceProbabilitiesFromVotes(int sliceID)
                     if (v < 0) v = 0;
                     if (v > 255) v = 255;
 
+                    if (v>high)
+                    {
+                        high = v;
+                        highSeg = c;
+                    }
                     outRows[c][x] = static_cast<uchar>(v);
+                }
+                if (high<128) //ensure no black!
+                {
+                    outRows[highSeg][x] = static_cast<uchar>(128);
                 }
             }
         }
@@ -662,9 +673,9 @@ void MLInterface::DoImportances()
     uiManager->RefreshImportance();
 }
 
-void MLInterface::SampleAndTrain()
+void MLInterface::SampleAndTrain(bool autoGen)
 {
-    if (mainWin->GenerateAuto->checkState())
+    if (autoGen)
     {
         AutoSampleTrainAndGenerate();
     }
@@ -819,6 +830,8 @@ void MLInterface::GetProbabilitiesAllSegments(int x, int y, int z, int *segBuffe
     const int row = y * fwidth + x;
     const float *probRow = cachedSliceProbabilities.ptr<float>(row);
 
+    int high = -1;
+    int highseg = -1;
     for (int i = 0; i < SegmentCount; i++)
     {
         int v = static_cast<int>(probRow[i] * 255.0f + 0.5f);
@@ -826,7 +839,16 @@ void MLInterface::GetProbabilitiesAllSegments(int x, int y, int z, int *segBuffe
         if (v < 0) v = 0;
         if (v > 255) v = 255;
 
+        if (v>high)
+        {
+            high = v;
+            highseg = i;
+        }
         segBuffer[i] = v;
+    }
+    if (high<128)
+    {
+        segBuffer[highseg] = 128; //ensure no black
     }
 }
 

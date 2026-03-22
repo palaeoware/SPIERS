@@ -319,6 +319,8 @@ private slots:
 
     void on_actionColour_complex_triggered();
 
+    void on_actionMLAuto_Update_triggered();
+
 private:
     void MakeUndo(QString type);
     void RefreshMasks();

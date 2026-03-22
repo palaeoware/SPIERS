@@ -23,7 +23,7 @@ void MLFeatureIntensity::CalcFeatureIntensity(cv::Mat &mat, int sliceID, MLCache
 
     for (int y=0; y<ySize; y++)
     {
-        if (y%50==0)
+        if (y%250==0)
             MLUpdateBlockingDialog::updateDetailText(
                 QString("Calculating intensity feature for slice %1: %2%").arg(sliceID)
                     .arg((y*100)/ySize)
@@ -49,7 +49,7 @@ void MLFeatureIntensity::CalcFeatureColor(cv::Mat &mat, int sliceID, MLCachedAcc
     case MLFeature::Channel::Red:
         for (int y=0; y<ySize; y++)
         {
-            if (y%50==0)
+            if (y%250==0)
                 MLUpdateBlockingDialog::updateDetailText(
                     QString("Calculating red intensity feature for slice %1: %2%")
                         .arg(sliceID)
@@ -64,7 +64,7 @@ void MLFeatureIntensity::CalcFeatureColor(cv::Mat &mat, int sliceID, MLCachedAcc
     case MLFeature::Channel::Green:
         for (int y=0; y<ySize; y++)
         {
-            if (y%50==0)
+            if (y%250==0)
                 MLUpdateBlockingDialog::updateDetailText(
                     QString("Calculating green intensity feature for slice %1: %2%")
                         .arg(sliceID)
@@ -79,7 +79,7 @@ void MLFeatureIntensity::CalcFeatureColor(cv::Mat &mat, int sliceID, MLCachedAcc
     case MLFeature::Channel::Blue:
         for (int y=0; y<ySize; y++)
         {
-            if (y%50==0)
+            if (y%250==0)
                 MLUpdateBlockingDialog::updateDetailText(
                     QString("Calculating blue intensity feature for slice %1: %2%")
                         .arg(sliceID)
@@ -94,7 +94,7 @@ void MLFeatureIntensity::CalcFeatureColor(cv::Mat &mat, int sliceID, MLCachedAcc
     case MLFeature::Channel::R_G:
         for (int y=0; y<ySize; y++)
         {
-            if (y%50==0)
+            if (y%250==0)
                 MLUpdateBlockingDialog::updateDetailText(
                     QString("Calculating red-green for slice %1: %2%")
                         .arg(sliceID)
@@ -110,7 +110,7 @@ void MLFeatureIntensity::CalcFeatureColor(cv::Mat &mat, int sliceID, MLCachedAcc
     case MLFeature::Channel::G_B:
         for (int y=0; y<ySize; y++)
         {
-            if (y%50==0)
+            if (y%250==0)
                 MLUpdateBlockingDialog::updateDetailText(
                     QString("Calculating green-blue for slice %1: %2%")
                         .arg(sliceID)

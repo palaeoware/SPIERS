@@ -507,6 +507,8 @@
     <addaction name="separator"/>
     <addaction name="actionIncremental_sampling"/>
     <addaction name="actionClear_sample"/>
+    <addaction name="separator"/>
+    <addaction name="actionMLAuto_Update"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuUndo"/>
@@ -4904,6 +4906,14 @@ Interpreted Images:</string>
   <action name="actionClear_sample">
    <property name="text">
     <string>Clear sample</string>
+   </property>
+  </action>
+  <action name="actionMLAuto_Update">
+   <property name="text">
+    <string>Train/Generate this slice</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
    </property>
   </action>
  </widget>

@@ -2147,7 +2147,11 @@ void MainWindowImpl::on_tabWidget_currentChanged(int index)
     GenerateAuto->setVisible(true);
 
     if (index == 1 || index == 2 || index == 3 || index == 4 || index == 5) GenInvert->setVisible(false);
-    if (index == 3 || index == 4 || index == 5) GenerateAuto->setVisible(false);
+    if (index == 1 || index == 3 || index == 4 || index == 5)
+    {
+        GenerateAuto->setCheckState(Qt::CheckState::Unchecked);
+        GenerateAuto->setVisible(false);
+    }
     if (index!=5)
     {
         if (chkGradientsPreview->isChecked())
@@ -2364,5 +2368,11 @@ void MainWindowImpl::on_actionColour_simple_triggered()
 void MainWindowImpl::on_actionColour_complex_triggered()
 {
     mlInterface->DoPreset((int)MLFeaturePresets::Preset::Colour_Complex);
+}
+
+
+void MainWindowImpl::on_actionMLAuto_Update_triggered()
+{
+    mlInterface->SampleAndTrain(true);
 }
 
