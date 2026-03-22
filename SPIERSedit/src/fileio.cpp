@@ -756,7 +756,7 @@ void SaveGreyData(int fnum, int seg)
 void LoadMasks(int fnum)
 //Load the masks as a byte array
 {
-//  qDebug()<<"In Load Masks"<<fnum;
+
     mutex.lock();
 
     //check cache
@@ -2235,6 +2235,9 @@ void WriteSettings()
  */
 void ReadSettings()
 {
+
+    Active = false;
+
     // Initially SettingsFileName has full name and path
     QString dummy;
     int version, dummy_int;
@@ -2595,6 +2598,7 @@ void ReadSettings()
 
 
     file.close();
+    Active = true;
 
 }
 

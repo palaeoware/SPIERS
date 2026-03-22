@@ -59,7 +59,6 @@ int MLCachedAccess::GetIndexForFeature(MLFeature *feature)
 void MLCachedAccess::ClearFeatures()
 {
     qDeleteAll(features);
-    qDebug()<<"CLEAR from "<<features.count();
     features.clear();
 }
 
