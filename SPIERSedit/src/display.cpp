@@ -1072,13 +1072,6 @@ uchar PolyPixel(int w, int h, int s)
     return static_cast<uchar>(temp);
 }
 
-uchar MLPixel(int w, int h, int s)
-{
-    w *= ColMonoScale;
-    h *= ColMonoScale;
-    
-    return mlInterface->GetProbability(w, h, CurrentFile, s);
- }
 
 uchar RangePixel(int w, int h, int bot, int top, double cen, double gra, int seg)
 {

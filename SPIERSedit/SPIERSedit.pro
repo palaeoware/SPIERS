@@ -93,6 +93,7 @@ HEADERS += src/display.h \
     src/mlfeaturevariance.h \
     src/mlfileio.h \
     src/mlinterface.h \
+    src/mlparallelforest.h \
     src/mlupdateblockingdialog.h \
     src/myscene.h \
     src/copyingimpl.h \
@@ -158,6 +159,7 @@ SOURCES += src/display.cpp \
     src/mlfeaturevariance.cpp \
     src/mlfileio.cpp \
     src/mlinterface.cpp \
+    src/mlparallelforest.cpp \
     src/mlupdateblockingdialog.cpp \
     src/myscene.cpp \
     src/copyingimpl.cpp \

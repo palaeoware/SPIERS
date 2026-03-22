@@ -10,6 +10,7 @@
 class MLFeatureUIManager;
 class MLAddFeature;
 class LabelledPoint;
+class MLParallelForest;
 
 class MLInterface
 {
@@ -18,7 +19,6 @@ public:
     static bool TestML();
     static bool enabled;
     void SampleAndTrain();
-    uchar GetProbability(int x, int y, int z, int segment);
     void CalculateFeatureData();
     void GetProbabilitiesAllSegments(int x, int y, int z, int *segBuffer);
     void Generate(QListWidget *SliceSelectorList);
@@ -47,7 +47,7 @@ public:
 private:
     bool dataComputed;
     int currentSlice;
-    cv::Ptr<cv::ml::RTrees> rf;
+    std::unique_ptr<MLParallelForest> rf;
     MLCachedAccess *data;
     void CreateSingletonsIfNeeded();
     void ComputeSliceProbabilitiesFromVotes(int sliceID);
@@ -63,6 +63,16 @@ private:
     bool Sample(bool incremental, bool noMessages);
     bool Train(bool noMessages);
     void DoImportances();
+
+
+    //Probabity cache system for recalc brush
+    cv::Mat cachedSliceProbabilities;
+    int cachedProbabilitySliceID = -1;
+    bool cachedProbabilitySliceValid = false;
+
+    void InvalidateProbabilityCache();
+    bool BuildSliceSampleMatrix(int sliceID, cv::Mat &samples);
+    bool EnsureSliceProbabilityCache(int sliceID);
 };
 
 #endif // MLINTERFACE_H

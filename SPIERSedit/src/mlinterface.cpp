@@ -19,6 +19,8 @@
 #include <QMessageBox>
 #include "mlfileio.h"
 #include <QFileDialog>
+#include <QThread>
+#include "mlparallelforest.h"
 
 bool MLInterface::enabled;
 
@@ -26,10 +28,10 @@ bool MLInterface::enabled;
 
 MLInterface::MLInterface()
 {
-    qDebug()<<"Here";
     data = nullptr;
     uiManager = nullptr;
     addFeatureDialog = nullptr;
+    rf = std::make_unique<MLParallelForest>();
 }
 
 //This should be called after new dataset is loaded or created
@@ -52,6 +54,7 @@ void MLInterface::Initialise(MainWindowImpl *mw, QLabel *statusLabel)
     ResetRFAndSample();
     UpdateStatusLabel();
     data->ResizeCache();
+    InvalidateProbabilityCache();
 }
 
 void MLInterface::RemoveAllCacheFiles(bool override)
@@ -196,16 +199,16 @@ void MLInterface::ResetRFAndSample()
 {
     CreateSingletonsIfNeeded();
     //reset rf
-    rf.release();
-    rf = cv::ml::RTrees::create();
-
+    rf->Clear();
     labels.clear();
+    InvalidateProbabilityCache();
     UpdateStatusLabel();
 }
 
 void MLInterface::ResetCachedData()
 {
     data->Reset();
+    InvalidateProbabilityCache();
 }
 
 
@@ -229,53 +232,11 @@ bool MLInterface::TestML()
     }
 }
 
-
-
-void MLInterface::GetProbabilitiesAllSegments(int x, int y, int z, int *segBuffer)
-{
-    //segbuffer is votes 0-255 for each segment. Zero it.
-    for (int i=0; i<SegmentCount; i++)
-        segBuffer[i]=0;
-
-    if (data == nullptr || !rf->isTrained()) return;
-
-    QList<int> featureIDs = data->GetFeaturesInUse();
-    int featureCount = featureIDs.count();
-    cv::Mat sample(1, featureCount, CV_32F);
-
-    for (int i=0; i<featureCount; i++)
-    {
-        float v = data->GetFeatureValueAt(x,y,z,featureIDs[i]);
-        sample.at<float>(0,i)= v;
-    }
-
-    cv::Mat votes;
-    rf->getVotes(sample, votes, 0);
-
-    //extract votes into buffer
-    int tot=0;
-    for (int i=0; i<SegmentCount; i++)
-    {
-        int thisSeg = votes.at<int>(0,i);
-        int theseVotes = votes.at<int>(1,i);
-        segBuffer[thisSeg] = theseVotes;
-        tot += theseVotes;
-    }
-
-    //normalise
-    for (int i=0; i<SegmentCount; i++)
-    {
-        segBuffer[i] = (segBuffer[i] * 255)/tot;
-    }
-}
-
-//Replaces the CopyingImpl progress bar system
-
 void MLInterface::Generate(QListWidget *SliceSelectorList)
 {
     CreateSingletonsIfNeeded();
 
-    if (!rf->isTrained())
+    if (!rf->IsValid())
     {
         Message("ML model is not trained");
         return;
@@ -319,6 +280,7 @@ void MLInterface::UIActivateSelectedFeatures(bool activate)
 {
     CreateSingletonsIfNeeded();
     uiManager->ActivateSelectedFeatures(activate);
+        ResetRFAndSample();
 }
 
 void MLInterface::UIDeleteSelectedFeatures()
@@ -387,48 +349,13 @@ int MLInterface::GetTreeDepth()
 
 void MLInterface::ComputeSliceProbabilitiesFromVotes(int sliceID)
 {
-    QList<int> featureIndices = data->GetFeaturesInUse();
-    const int numFeatures = featureIndices.count();
-    const int numPixels = fwidth * fheight;
-
-    QVector<cv::Mat> featureSlices;
-    featureSlices.reserve(numFeatures);
-
-    for (int f = 0; f < numFeatures; ++f)
-        featureSlices.append(data->GetWholeSliceFeature(sliceID, featureIndices[f]));
-
-    // Allocate samples matrix
-    cv::Mat samples(numPixels, numFeatures, CV_32F);
-
-    MLUpdateBlockingDialog::updateDetailText(QString("Assembling feature data"));
-    // Fill samples matrix using raw pointers
-    for (int y = 0; y < fheight; ++y)
-    {
-
-        for (int x = 0; x < fwidth; ++x)
-        {
-            int row = y * fwidth + x;
-            float *sampleRow = samples.ptr<float>(row);
-
-            for (int f = 0; f < numFeatures; ++f)
-            {
-                const float *srcRow = featureSlices[f].ptr<float>(y);
-                sampleRow[f] = srcRow[x];
-            }
-        }
-    }
+    if (!rf || !rf->IsValid())
+        return;
 
     MLUpdateBlockingDialog::updateDetailText(QString("Running ML model"));
-    cv::Mat votes;
-    rf->getVotes(samples, votes, 0);
 
-    int numTrees = static_cast<int>(rf->getRoots().size());
-
-    QVector<int> classForColumn(SegmentCount);
-    const int *labelRow = votes.ptr<int>(0);
-
-    for (int col = 0; col < SegmentCount; ++col)
-        classForColumn[col] = labelRow[col];
+    if (!EnsureSliceProbabilityCache(sliceID))
+        return;
 
     MLUpdateBlockingDialog::updateDetailText(QString("Calculating segments from model outputs"));
 
@@ -442,22 +369,20 @@ void MLInterface::ComputeSliceProbabilitiesFromVotes(int sliceID)
 
         for (int x = 0; x < fwidth; ++x)
         {
-            int sampleRow = y * fwidth + x + 1;
-            const int *voteRow = votes.ptr<int>(sampleRow);
+            const int sampleRow = y * fwidth + x;
+            const float *probRow = cachedSliceProbabilities.ptr<float>(sampleRow);
 
-            for (int col = 0; col < SegmentCount; ++col)
+            if (!newLocks[fwidth * y + x])
             {
-                int label = classForColumn[col];
-                int voteCount = voteRow[col];
+                for (int c = 0; c < SegmentCount; ++c)
+                {
+                    int v = static_cast<int>(probRow[c] * 255.0f + 0.5f);
 
-                float prob = static_cast<float>(voteCount) / numTrees;
-                int v = static_cast<int>(prob * 255.0f + 0.5f);
+                    if (v < 0) v = 0;
+                    if (v > 255) v = 255;
 
-                if (v < 0) v = 0;
-                if (v > 255) v = 255;
-
-                if (!newLocks[fwidth * y + x])
-                    outRows[label][x] = static_cast<uchar>(v);
+                    outRows[c][x] = static_cast<uchar>(v);
+                }
             }
         }
     }
@@ -507,53 +432,12 @@ QString MLInterface::DescribeSample()
 
 void MLInterface::UpdateStatusLabel()
 {
-    if (rf->isTrained())
+    if (rf->IsValid())
         lblStatus->setText(QString("Trained on ")+DescribeSample());
     else
         lblStatus->setText("Not trained, no sample");
 }
 
-
-uchar MLInterface::GetProbability(int x, int y, int z, int segment)
-{
-    if (data == nullptr || !rf->isTrained())
-    {
-        return 0;
-    }
-
-    QList<int> featureIDs = data->GetFeaturesInUse();
-    int featureCount = featureIDs.count();
-    cv::Mat sample(1, featureCount, CV_32F);
-
-    for (int i=0; i<featureCount; i++)
-    {
-        float v = data->GetFeatureValueAt(x,y,z,featureIDs[i]);
-        sample.at<float>(0,i)= v;
-    }
-
-    cv::Mat votes;
-    rf->getVotes(sample, votes, 0);
-
-    int tot=0;
-    int thisCount = -1;
-    for (int i=0; i<SegmentCount; i++)
-    {
-        if (votes.at<int>(0,i)==segment)
-            thisCount = votes.at<int>(1,i);
-        tot += votes.at<int>(1,i);
-
-    }
-
-    if (thisCount == -1)
-    {
-        qDebug()<<"Error!";
-        return 0;
-    }
-    else
-    {
-        return (thisCount * 255)/tot;
-    }
-}
 
 void MLInterface::CreateSingletonsIfNeeded()
 {
@@ -678,21 +562,18 @@ bool MLInterface::Sample(bool incremental, bool noMessages)
 
 }
 
+
 bool MLInterface::Train(bool noMessages)
 {
     QList<int> counts;
-    for (int i=0; i<SegmentCount; i++)
-    {
+    for (int i = 0; i < SegmentCount; i++)
         counts.append(0);
-    }
 
-    for (int i=0; i<labels.count(); i++)
-    {
+    for (int i = 0; i < labels.count(); i++)
         counts[labels[i].segment]++;
-    }
 
     int minValue = *std::min_element(counts.begin(), counts.end());
-    if (minValue<2)
+    if (minValue < 2)
     {
         if (!noMessages) MLUpdateBlockingDialog::hideDialog();
         if (!noMessages) Message("You need at least two samples in each segment to perform training");
@@ -701,65 +582,79 @@ bool MLInterface::Train(bool noMessages)
 
     QList<int> featureIDs = data->GetFeaturesInUse();
     int featureCount = featureIDs.count();
-    auto trainingDataMat = cv::Mat(labels.count(), featureCount, CV_32F);
-    auto labelsMat = cv::Mat(labels.count(), 1, CV_32S);
 
+    cv::Mat trainingDataMat(labels.count(), featureCount, CV_32F);
+    cv::Mat labelsMat(labels.count(), 1, CV_32S);
 
-    for (int i=0; i<labels.count(); i++)
+    for (int i = 0; i < labels.count(); i++)
     {
-        if (i%100==0)
-        {    MLUpdateBlockingDialog::updateHighLevelText(QString("Fetching features for training %1%")
-                                                            .arg((i*100)/labels.count()));
+        if (i % 100 == 0)
+        {
+            MLUpdateBlockingDialog::updateHighLevelText(
+                QString("Fetching features for training %1%").arg((i * 100) / labels.count()));
             MLUpdateBlockingDialog::updateDetailText(QString(""));
         }
+
         LabelledPoint point = labels[i];
         labelsMat.at<int>(i, 0) = point.segment;
 
-
-        for (int j=0; j<featureCount; j++)
-        {
+        for (int j = 0; j < featureCount; j++)
             trainingDataMat.at<float>(i, j) = data->GetFeatureValueAt(point.x, point.y, point.z, featureIDs[j]);
-        }
     }
 
     MLUpdateBlockingDialog::updateHighLevelText(QString("Training..."));
     MLUpdateBlockingDialog::updateDetailText(QString(""));
-    rf = cv::ml::RTrees::create();
-    rf->setCalculateVarImportance(true);
-    rf->setMaxDepth(treeDepth);
-    rf->setMinSampleCount(minSampleCount);
-    rf->setRegressionAccuracy(0.0f);
-    rf->setUseSurrogates(false);
-    rf->setMaxCategories(2);
-    rf->setTermCriteria(cv::TermCriteria(cv::TermCriteria::MAX_ITER, treeCount, 0));
 
-    auto td = cv::ml::TrainData::create(
-        trainingDataMat,
-        cv::ml::ROW_SAMPLE,
-        labelsMat
-        );
+    InvalidateProbabilityCache();
 
-    rf->train(td);
+    rf.reset(new MLParallelForest());
+    rf->SetShardCount(qMax(1, QThread::idealThreadCount() / 2));
+    rf->SetTreeCount(treeCount);
+    rf->SetMinSampleCount(minSampleCount);
+    rf->SetMaxDepth(treeDepth);
 
-    return true;
-
-}
-void MLInterface::DoImportances()
-{
-    for (int i=0; i<data->GetFeatureCount();i++)
+    if (!rf->Train(trainingDataMat, labelsMat, SegmentCount))
     {
-        data->GetFeature(i)->SetImportance(-1);
+        if (!noMessages) MLUpdateBlockingDialog::hideDialog();
+        if (!noMessages) Message("Training failed");
+        return false;
     }
 
-    //calc importances
-    auto importances = rf->getVarImportance();
+    InvalidateProbabilityCache();
+    return true;
+}
+
+void MLInterface::DoImportances()
+{
+    for (int i = 0; i < data->GetFeatureCount(); i++)
+        data->GetFeature(i)->SetImportance(-1);
+
+    if (!rf || !rf->IsValid())
+    {
+        uiManager->RefreshImportance();
+        return;
+    }
+
+    cv::Mat importances = rf->GetVarImportance();
+    if (importances.empty())
+    {
+        uiManager->RefreshImportance();
+        return;
+    }
 
     double total = cv::sum(importances)[0];
+    if (total <= 0.0)
+    {
+        uiManager->RefreshImportance();
+        return;
+    }
+
     auto featureIDs = data->GetFeaturesInUse();
+
     for (int i = 0; i < importances.rows; ++i)
     {
-        float score = importances.at<float>(i,0);
-        float pct = 100.0f * score / total;
+        float score = importances.at<float>(i, 0);
+        float pct = 100.0f * score / static_cast<float>(total);
         data->GetFeature(featureIDs[i])->SetImportance((int)pct);
     }
 
@@ -789,3 +684,110 @@ void MLInterface::SampleAndTrain()
         MLUpdateBlockingDialog::hideDialog();
     }
 }
+
+
+//Recalc brush stuff
+
+
+void MLInterface::InvalidateProbabilityCache()
+{
+    cachedSliceProbabilities.release();
+    cachedProbabilitySliceID = -1;
+    cachedProbabilitySliceValid = false;
+}
+
+bool MLInterface::BuildSliceSampleMatrix(int sliceID, cv::Mat &samples)
+{
+    if (data == nullptr)
+        return false;
+
+    QList<int> featureIndices = data->GetFeaturesInUse();
+    const int numFeatures = featureIndices.count();
+    const int numPixels = fwidth * fheight;
+
+    if (numFeatures < 1 || numPixels < 1)
+        return false;
+
+    QVector<cv::Mat> featureSlices;
+    featureSlices.reserve(numFeatures);
+
+    for (int f = 0; f < numFeatures; ++f)
+        featureSlices.append(data->GetWholeSliceFeature(sliceID, featureIndices[f]));
+
+    samples.create(numPixels, numFeatures, CV_32F);
+
+    for (int y = 0; y < fheight; ++y)
+    {
+        for (int x = 0; x < fwidth; ++x)
+        {
+            const int row = y * fwidth + x;
+            float *sampleRow = samples.ptr<float>(row);
+
+            for (int f = 0; f < numFeatures; ++f)
+            {
+                const float *srcRow = featureSlices[f].ptr<float>(y);
+                sampleRow[f] = srcRow[x];
+            }
+        }
+    }
+
+    return true;
+}
+
+bool MLInterface::EnsureSliceProbabilityCache(int sliceID)
+{
+    if (data == nullptr)
+        return false;
+
+    if (!rf || !rf->IsValid())
+        return false;
+
+    if (cachedProbabilitySliceValid && cachedProbabilitySliceID == sliceID)
+        return true;
+
+    cv::Mat samples;
+    if (!BuildSliceSampleMatrix(sliceID, samples))
+        return false;
+
+    cv::Mat probabilities;
+    if (!rf->PredictProbabilities(samples, probabilities))
+        return false;
+
+    cachedSliceProbabilities = probabilities;
+    cachedProbabilitySliceID = sliceID;
+    cachedProbabilitySliceValid = true;
+
+    return true;
+}
+
+void MLInterface::GetProbabilitiesAllSegments(int x, int y, int z, int *segBuffer)
+{
+    if (segBuffer == nullptr)
+        return;
+
+    for (int i = 0; i < SegmentCount; i++)
+        segBuffer[i] = 0;
+
+    if (data == nullptr || !rf || !rf->IsValid())
+        return;
+
+    if (x < 0 || x >= fwidth || y < 0 || y >= fheight)
+        return;
+
+    if (!EnsureSliceProbabilityCache(z))
+        return;
+
+    const int row = y * fwidth + x;
+    const float *probRow = cachedSliceProbabilities.ptr<float>(row);
+
+    for (int i = 0; i < SegmentCount; i++)
+    {
+        int v = static_cast<int>(probRow[i] * 255.0f + 0.5f);
+
+        if (v < 0) v = 0;
+        if (v > 255) v = 255;
+
+        segBuffer[i] = v;
+    }
+}
+
