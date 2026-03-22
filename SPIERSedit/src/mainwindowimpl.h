@@ -311,6 +311,14 @@ private slots:
 
     void on_actionClear_sample_triggered();
 
+    void on_actionCT_simpl_triggered();
+
+    void on_actionCT_complex_triggered();
+
+    void on_actionColour_simple_triggered();
+
+    void on_actionColour_complex_triggered();
+
 private:
     void MakeUndo(QString type);
     void RefreshMasks();

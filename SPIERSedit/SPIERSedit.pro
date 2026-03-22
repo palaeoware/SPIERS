@@ -80,6 +80,7 @@ HEADERS += src/display.h \
     src/mlfeaturehessian.h \
     src/mlfeatureintensity.h \
     src/mlfeaturelog.h \
+    src/mlfeaturepresets.h \
     src/mlfeaturesquareintensity.h \
     src/mlfeaturetensorcoherencelocal.h \
     src/mlfeaturetensorcoherencewide.h \
@@ -146,6 +147,7 @@ SOURCES += src/display.cpp \
     src/mlfeaturehessian.cpp \
     src/mlfeatureintensity.cpp \
     src/mlfeaturelog.cpp \
+    src/mlfeaturepresets.cpp \
     src/mlfeaturesquareintensity.cpp \
     src/mlfeaturetensorcoherencelocal.cpp \
     src/mlfeaturetensorcoherencewide.cpp \
@@ -192,6 +194,7 @@ SOURCES += src/display.cpp \
     ui/mladdfeature.cpp
 
 OPENCV_DIR = C:/opencv/opencv
+
 INCLUDEPATH += $$OPENCV_DIR/build/include
 LIBS += -L$$OPENCV_DIR/build/x64/vc16/lib
 CONFIG(debug, debug|release) {

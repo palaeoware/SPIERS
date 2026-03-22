@@ -1,8 +1,7 @@
 #include "mlparallelforest.h"
 #include <QtConcurrent/QtConcurrentRun>
 #include <QDebug>
-
-#define MAX_CAT 2
+#include "globals.h"
 
 MLParallelForest::MLParallelForest()
 {
@@ -144,7 +143,7 @@ MLParallelForest::Shard MLParallelForest::TrainOneShard(const cv::Mat &trainData
     shard.model->setMinSampleCount(minSampleCount);
     shard.model->setRegressionAccuracy(0.0f);
     shard.model->setUseSurrogates(false);
-    shard.model->setMaxCategories(MAX_CAT);
+    shard.model->setMaxCategories(SegmentCount);
     shard.model->setTermCriteria(cv::TermCriteria(cv::TermCriteria::MAX_ITER, treeCount, 0));
 
     cv::Ptr<cv::ml::TrainData> td = cv::ml::TrainData::create(

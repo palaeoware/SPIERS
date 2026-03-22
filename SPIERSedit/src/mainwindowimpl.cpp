@@ -52,6 +52,7 @@
 #include <QMutexLocker>
 #include <QTextStream>
 #include <QStandardPaths>
+#include "mlfeaturepresets.h"
 
 bool temptestflag = false;
 
@@ -2144,7 +2145,8 @@ void MainWindowImpl::on_tabWidget_currentChanged(int index)
 {
     GenInvert->setVisible(true);
     GenerateAuto->setVisible(true);
-    if (index == 2 || index == 3 || index == 4 || index == 5) GenInvert->setVisible(false);
+
+    if (index == 1 || index == 2 || index == 3 || index == 4 || index == 5) GenInvert->setVisible(false);
     if (index == 3 || index == 4 || index == 5) GenerateAuto->setVisible(false);
     if (index!=5)
     {
@@ -2339,4 +2341,28 @@ void MainWindowImpl::on_actionClear_sample_triggered()
     mlInterface->ResetRFAndSample();
 }
 
+
+
+void MainWindowImpl::on_actionCT_simpl_triggered()
+{
+    mlInterface->DoPreset((int)MLFeaturePresets::Preset::CT_Simple);
+}
+
+
+void MainWindowImpl::on_actionCT_complex_triggered()
+{
+    mlInterface->DoPreset((int)MLFeaturePresets::Preset::CT_Complex);
+}
+
+
+void MainWindowImpl::on_actionColour_simple_triggered()
+{
+    mlInterface->DoPreset((int)MLFeaturePresets::Preset::Colour_Simple);
+}
+
+
+void MainWindowImpl::on_actionColour_complex_triggered()
+{
+    mlInterface->DoPreset((int)MLFeaturePresets::Preset::Colour_Complex);
+}
 

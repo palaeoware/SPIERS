@@ -58,8 +58,17 @@ int MLCachedAccess::GetIndexForFeature(MLFeature *feature)
 
 void MLCachedAccess::ClearFeatures()
 {
+    for (int i=0; i<cachedSlices.count(); i++)
+    {
+        if (cachedSlices[i]!=nullptr)
+        {
+            cachedSlices[i]->RemoveAllFeatures();
+        }
+    }
     qDeleteAll(features);
     features.clear();
+    featureIDsInUse.clear();
+
 }
 
 void MLCachedAccess::SetFeatures(QList<MLFeature *> newFeatures)

@@ -21,6 +21,8 @@
 #include <QFileDialog>
 #include <QThread>
 #include "mlparallelforest.h"
+#include "mlfeaturepresets.h"
+#include <QMessageBox>
 
 bool MLInterface::enabled;
 
@@ -517,6 +519,8 @@ void MLInterface::ResizeCache()
         data->ResizeCache();
 }
 
+
+
 bool MLInterface::Sample(bool incremental, bool noMessages)
 {
     if (SegmentCount<2)
@@ -541,12 +545,9 @@ bool MLInterface::Sample(bool incremental, bool noMessages)
         {
             if (mainWin->SliceSelectorList->item(k)->isSelected())
             {
-                qDebug()<<"Removing labels from sllice "<<k<<" before "<<labels.count();
-
                 labels.removeIf([k](const LabelledPoint &item) {
                     return item.z == k;
                 });
-                qDebug()<<" after "<<labels.count();
 
             }
         }
@@ -684,6 +685,44 @@ void MLInterface::SampleAndTrain()
         MLUpdateBlockingDialog::hideDialog();
     }
 }
+
+void MLInterface::DoPreset(int presetCode)
+{
+    MLFeaturePresets::Preset preset = (MLFeaturePresets::Preset)presetCode;
+
+    if (data==nullptr) return;
+
+    if (data->GetFeatureCount()!=0)
+    {
+        if (QMessageBox::question
+            (mainWin, "Confirm", "This will remove all features and replace them with a predefined set. Are you sure?", QMessageBox::Yes | QMessageBox::No) != QMessageBox::Yes)
+            return;
+    }
+
+    data->ClearFeatures();
+
+    //Use a loop and add features to include them all along with their prereqs
+    QList<MLFeature *> newList = MLFeaturePresets::GetPresetFeatureList(preset);
+
+    for (int i=0; i<newList.count(); i++)
+    {
+        data->AddFeature(newList[i]);
+    }
+
+
+    for (int i=0; i<newList.count(); i++)
+    {
+        if (data->GetIndexForFeature(newList[i])==-1)
+        {
+            qDebug()<<"-1: "<<i<<data->GetIndexForFeature(newList[i]);
+        }
+        data->SetFeatureInUse(data->GetIndexForFeature(newList[i]),true);
+    }
+    uiManager->Rebuild();
+
+    ResetRFAndSample();
+}
+
 
 
 //Recalc brush stuff

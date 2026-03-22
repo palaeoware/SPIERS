@@ -56,6 +56,16 @@ void MLCachedSlice::Clear()
     }
 }
 
+void MLCachedSlice::RemoveAllFeatures()
+{
+    for (int i=0;i< featuresValid.count(); i++)
+    {
+        featureData[i].release(); //probably done automatically, but just in case!
+    }
+    featureData.clear();
+    featuresValid.clear();
+}
+
 float MLCachedSlice::GetFeatureData(int x, int y, int feature)
 {
     FetchFeatureIfNeeded(feature);

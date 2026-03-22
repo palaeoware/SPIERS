@@ -31,6 +31,7 @@ public:
     void FetchSourceDataIfNeeded();
     void FetchFeatureIfNeeded(int featureIndex);
 
+    void RemoveAllFeatures();
 private:
     void FetchSourceData();
     void FetchFeatureData(int feature);

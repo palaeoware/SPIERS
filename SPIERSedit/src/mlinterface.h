@@ -44,6 +44,7 @@ public:
     void ResetCachedData();
     void AutoSampleTrainAndGenerate();
     void ResizeCache();
+    void DoPreset(int presetCode);
 private:
     bool dataComputed;
     int currentSlice;
