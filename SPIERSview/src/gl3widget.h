@@ -62,7 +62,6 @@ public:
     QOpenGLVertexArrayObject vao;
     QOpenGLFunctions *glfunctions;
     QOpenGLShaderProgram lightingShaderProgram;
-    QOpenGLShaderProgram lightingShaderProgramForColour;
     QMatrix4x4 pMatrix;
 
     bool CanISee(int index);

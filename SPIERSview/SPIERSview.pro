@@ -6,7 +6,7 @@ TARGET = SPIERSview64
 
 TEMPLATE = app
 
-QT += network xml gui core widgets opengl openglwidgets
+QT += network xml gui core widgets opengl openglwidgets concurrent
 
 # Allow debug in release
 #QMAKE_CXXFLAGS_RELEASE += -g
@@ -67,6 +67,7 @@ SOURCES += src/main.cpp \
     src/mainwindow.cpp \
     ../SPIERScommon/src/darkstyletheme.cpp \
     src/globals.cpp \
+    src/meshfilters.cpp \
     src/spvreader.cpp \
     src/svobject.cpp \
     src/spv.cpp \
@@ -101,10 +102,12 @@ SOURCES += src/main.cpp \
     src/inftrees.c \
     src/trees.c \
     src/uncompr.c \
-    src/zutil.c
+    src/zutil.c \
+    src/meshfilters.cpp
 HEADERS += src/mainwindow.h \
     ../SPIERScommon/src/darkstyletheme.h \
     src/globals.h \
+    src/meshfilters.h \
     src/spvreader.h \
     src/svobject.h \
     src/spv.h \
@@ -130,7 +133,8 @@ HEADERS += src/mainwindow.h \
     src/staticfunctions.h \
     src/drawglscalegrid.h \
     src/drawglscaleball.h \
-    src/gridfontsizedialog.h
+    src/gridfontsizedialog.h \
+    src/meshfilters.h
 
 FORMS += ui/mainwindow.ui \
     ui/movetogroup.ui \

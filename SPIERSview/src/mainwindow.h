@@ -236,6 +236,7 @@ private slots:
     void on_actionScale_Grid_Font_Size_triggered();
     void on_actionReset_Scale_Grid_to_Defaults_triggered();
     void on_actionShow_Minor_Scale_Lines_triggered();
+    void on_actionQuadric_Fidelity_Reduction_triggered();
 };
 
 extern MainWindow *mainWindow;

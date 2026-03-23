@@ -33,6 +33,7 @@
 #include "isosurface.h"
 #include "spv.h"
 #include "compressedslice.h"
+#include "meshfilters.h"
 
 /**
  * @brief Plain C++ replacement for vtkPolyData.
@@ -44,9 +45,8 @@ struct MeshData
     QVector<float> vertices;   // x,y,z per vertex (3 floats each)
     QVector<float> normals;    // nx,ny,nz per vertex (3 floats each)
     QVector<int>   triangles;  // 3 vertex indices per triangle
-    QVector<float> colours;    // r,g,b per vertex (3 floats each), optional
 
-    void clear() { vertices.clear(); normals.clear(); triangles.clear(); colours.clear(); }
+    void clear() { vertices.clear(); normals.clear(); triangles.clear(); }
     int vertexCount()   const { return vertices.size()  / 3; }
     int triangleCount() const { return triangles.size() / 3; }
 };
@@ -97,14 +97,12 @@ public:
     int Triangles;
     int voxels;
     int Shininess;  //codes 0-3
-    bool colour; //does it have colour data?
     QTreeWidgetItem *widgetitem;
     bool Expanded;
     QList <int> displaylists;
 
     //Newer VBO stuff
     QList <QOpenGLBuffer *> VertexBuffers;
-    QList <QOpenGLBuffer *> ColourBuffers;
     QList <int> VBOVertexCounts;
 
     double objectxmin, objectymin, objectzmin, objectxmax, objectymax, objectzmax;
@@ -124,7 +122,7 @@ public:
     bool killme;
     double scale;
     bool buggedData;
-
+    bool isSurfacing;
 private:
     void GetFinalPolyData();
     void MakePolyVerts(int slice, int VertexBase);
@@ -138,6 +136,7 @@ private:
     QVector <float> normalx;
     QVector <float> normaly;
     QVector <float> normalz;
+
 };
 
 extern QList <SVObject *> SVObjects;

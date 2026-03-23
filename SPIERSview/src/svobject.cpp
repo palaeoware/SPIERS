@@ -23,7 +23,6 @@ QList <SVObject *> SVObjects;
  */
 SVObject::SVObject(int index)
 {
-    colour = false;
     Index = index;
     Position = index;
     InGroup = -1;
@@ -54,6 +53,7 @@ SVObject::SVObject(int index)
     donebox = false;
     voxels = 0;
     spv = nullptr;
+    isSurfacing = false;
 }
 
 /**
@@ -67,7 +67,6 @@ SVObject::~SVObject()
     if (AllSlicesCompressed != nullptr)
         free(AllSlicesCompressed);
     qDeleteAll(VertexBuffers);
-    qDeleteAll(ColourBuffers);
 }
 
 /**
@@ -130,21 +129,56 @@ void SVObject::GetFinalPolyData()
 {
     if (IsGroup) return;
 
-    if (!isVaxmlMode)
+
+    if (polyDataCompressed) UnCompressPolyData();
+
+    // --- Stub: copy localMesh to finalMesh (no decimation/smoothing/island removal) ---
+    finalMesh = localMesh;
+
+    if (IslandRemoval != 0)
     {
-        if (polyDataCompressed) UnCompressPolyData();
-
-        // --- Stub: copy localMesh to finalMesh (no decimation/smoothing/island removal) ---
-        finalMesh = localMesh;
-
-        if (finalMesh.triangleCount() == 0)
-        {
-            normalx.clear();
-            normaly.clear();
-            normalz.clear();
-            return;
-        }
+        MeshAdjacency adj;
+        adj.build(finalMesh);
+        finalMesh = MeshFilters::removeIslands(finalMesh, adj, IslandRemoval);
     }
+
+    if (Smoothing != 0)
+    {
+        MeshAdjacency adj;
+        adj.build(finalMesh);
+        mainWindow->setSpecificLabel("Smoothing");
+        mainWindow->setSpecificProgress(0);
+        qApp->processEvents();
+        finalMesh = MeshFilters::smooth(finalMesh, adj, Smoothing,
+                                        [](int pass, int total) {
+                                            mainWindow->setSpecificProgress((pass * 100) / total);
+                                            qApp->processEvents();
+                                        });
+    }
+
+    if (Resample != 100)
+    {
+        MeshAdjacency adj;
+        adj.build(finalMesh);
+        mainWindow->setSpecificLabel("Simplifying Object");
+        mainWindow->setSpecificProgress(0);
+        qApp->processEvents();
+        int effectiveResampleType = mainWindow->ui->actionQuadric_Fidelity_Reduction->isChecked() ? 1 : ResampleType;
+        finalMesh = MeshFilters::decimate(finalMesh, adj, Resample, effectiveResampleType,
+                                          [](int current, int total) {
+                                              mainWindow->setSpecificProgress((current * 100) / total);
+                                              qApp->processEvents();
+                                          });
+    }
+
+    if (finalMesh.triangleCount() == 0)
+    {
+        normalx.clear();
+        normaly.clear();
+        normalz.clear();
+        return;
+    }
+
 
     mainWindow->setSpecificLabel("Calculating Normals");
     qApp->processEvents();
@@ -186,6 +220,18 @@ void SVObject::GetFinalPolyData()
             qApp->processEvents();
         }
     }
+
+    // Normalise accumulated normals
+    for (int i = 0; i < pcount; i++)
+    {
+        float len = sqrtf(normalx[i]*normalx[i] + normaly[i]*normaly[i] + normalz[i]*normalz[i]);
+        if (len > 1e-6f)
+        {
+            normalx[i] /= len;
+            normaly[i] /= len;
+            normalz[i] /= len;
+        }
+    }
 }
 
 /**
@@ -193,13 +239,13 @@ void SVObject::GetFinalPolyData()
  */
 void SVObject::MakeVBOs()
 {
+    if (isSurfacing) return;
+    isSurfacing = true;
     if (IsGroup) return;
 
     QVector<QVector3D> vertices;
     QVector<QVector3D> normals;
-    QVector<QVector3D> colours;
 
-    colours.resize(3 * MAXDLISTSIZE);
     vertices.resize(3 * MAXDLISTSIZE);
     normals.resize(3 * MAXDLISTSIZE);
 
@@ -207,8 +253,6 @@ void SVObject::MakeVBOs()
 
     qDeleteAll(VertexBuffers);
     VertexBuffers.clear();
-    qDeleteAll(ColourBuffers);
-    ColourBuffers.clear();
     VBOVertexCounts.clear();
 
     GetFinalPolyData();
@@ -303,9 +347,6 @@ void SVObject::MakeVBOs()
     int tcount = finalMesh.triangleCount();
     Triangles = tcount;
 
-    // Per-vertex colour: stubbed as false until PLY import is refactored
-    colour = false;
-
     mainWindow->setSpecificLabel("Creating VBO objects");
     qApp->processEvents();
 
@@ -359,6 +400,7 @@ void SVObject::MakeVBOs()
     modelKTr -= object_ktr;
     object_ktr = tcount;
     modelKTr += tcount;
+    isSurfacing = false;
 }
 
 
@@ -759,21 +801,6 @@ void SVObject::MakePolyData()
             localMesh.triangles[trigBase * 3 + 1] = Isosurfaces[i]->triangles[t * 3 + 1];
             localMesh.triangles[trigBase * 3 + 2] = Isosurfaces[i]->triangles[t * 3 + 2];
             trigBase++;
-        }
-
-        // Debug: validate indices
-        qDebug() << "totalVertices=" << localMesh.vertexCount() << "totalTriangles=" << localMesh.triangleCount();
-        // Debug: validate indices
-        bool reported = false;
-        int vcount = localMesh.vertexCount();
-        for (int t = 0; t < localMesh.triangleCount(); t++) {
-            int i0 = localMesh.triangles[t*3];
-            int i1 = localMesh.triangles[t*3+1];
-            int i2 = localMesh.triangles[t*3+2];
-            if (!reported && (i0 < 0 || i0 >= vcount || i1 < 0 || i1 >= vcount || i2 < 0 || i2 >= vcount)) {
-                qDebug() << "BAD TRIANGLE" << t << i0 << i1 << i2 << "vcount=" << vcount;
-                reported = true;
-            }
         }
 
         vertexBase += Isosurfaces[i]->nVertices;

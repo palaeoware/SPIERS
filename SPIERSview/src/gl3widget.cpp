@@ -64,9 +64,7 @@ GlWidget::GlWidget(QWidget *parent)
 GlWidget::~GlWidget()
 {
     lightingShaderProgram.release();
-    lightingShaderProgramForColour.release();
     lightingShaderProgram.deleteLater();
-    lightingShaderProgramForColour.deleteLater();
 
 #ifdef __APPLE__
     vao.release();
@@ -100,19 +98,14 @@ void GlWidget::initializeGL()
     // We have slightly different shaders for macOS as OpenGL is version 3.3 Core
     lightingShaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/lightingVertexShader_mac.vsh");
     lightingShaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/lightingFragmentShader_mac.fsh");
-    lightingShaderProgramForColour.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/lightingVertexShaderTextured_mac.vsh");
-    lightingShaderProgramForColour.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/lightingFragmentShaderTextured_mac.fsh");
 #endif
 
 #ifndef __APPLE__
     lightingShaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/lightingVertexShader.vsh");
     lightingShaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/lightingFragmentShader.fsh");
-    lightingShaderProgramForColour.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/lightingVertexShaderTextured.vsh");
-    lightingShaderProgramForColour.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/lightingFragmentShaderTextured.fsh");
 #endif
 
     lightingShaderProgram.link();
-    lightingShaderProgramForColour.link();
 
     // Initalize the GL Scale grid
     scaleGrid->initializeGL();
@@ -169,6 +162,7 @@ void GlWidget::DoPMatrix(int width, int height)
  */
 void GlWidget::DrawObjects(bool rightview, bool halfsize)
 {
+
     //qDebug() << "[Where I'm I?] In DrawObjects";
 
     Q_UNUSED(halfsize)
@@ -210,7 +204,7 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
             isFileLoaded = true;
 
             if (!(SVObjects[i]->IsGroup))
-                if (CanISee(i))
+                if (!SVObjects[i]->isSurfacing && CanISee(i))
                 {
                     QMatrix4x4 mMatrix(SVObjects[i]->matrix); //model view matrix - transform the objects
 
@@ -226,10 +220,7 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
 
                     if ((SVObjects[i]->Transparency == 0 && trans == 0) || (SVObjects[i]->Transparency != 0 && trans == 1)) //do trans on second run
                     {
-                        if (SVObjects[i]->colour)
-                            useshader = &lightingShaderProgramForColour;
-                        else
-                            useshader = &lightingShaderProgram;
+                        useshader = &lightingShaderProgram;
 
                         useshader->bind();
                         useshader->setUniformValue("mvpMatrix", pMatrix * mvMatrix);
@@ -299,24 +290,21 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
                             if (SVObjects[i]->Transparency < 0) t = (static_cast<float>(100 + SVObjects[i]->Transparency)) / static_cast<float>(100.0);
                             useshader->setUniformValue("alpha", t);
 
-                            if (!(SVObjects[i]->colour))
-                            {
-                                useshader->setUniformValue("ambientColor", QColor(
-                                                               static_cast<int>(mcolor[0]) / 5,
-                                                               static_cast<int>(mcolor[1]) / 5,
-                                                               static_cast<int>(mcolor[2]) / 5
-                                                           ));
-                                useshader->setUniformValue("diffuseColor", QColor(
-                                                               static_cast<int>(mcolor[0] / static_cast<float>(1.5)),
-                                                               static_cast<int>(mcolor[1] / static_cast<float>(1.5)),
-                                                               static_cast<int>(mcolor[2] / static_cast<float>(1.5))
-                                                           ));
-                                useshader->setUniformValue("specularColor", QColor(
-                                                               static_cast<int>(mcolor[0]),
-                                                               static_cast<int>(mcolor[1]),
-                                                               static_cast<int>(mcolor[2])
-                                                           ));
-                            }
+                            useshader->setUniformValue("ambientColor", QColor(
+                                                                           static_cast<int>(mcolor[0]) / 5,
+                                                                           static_cast<int>(mcolor[1]) / 5,
+                                                                           static_cast<int>(mcolor[2]) / 5
+                                                                           ));
+                            useshader->setUniformValue("diffuseColor", QColor(
+                                                                           static_cast<int>(mcolor[0] / static_cast<float>(1.5)),
+                                                                           static_cast<int>(mcolor[1] / static_cast<float>(1.5)),
+                                                                           static_cast<int>(mcolor[2] / static_cast<float>(1.5))
+                                                                           ));
+                            useshader->setUniformValue("specularColor", QColor(
+                                                                            static_cast<int>(mcolor[0]),
+                                                                            static_cast<int>(mcolor[1]),
+                                                                            static_cast<int>(mcolor[2])
+                                                                            ));
 
                             for (int j = 0; j < SVObjects[i]->VertexBuffers.count(); j++)
                             {
@@ -328,13 +316,6 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
                                 useshader->enableAttributeArray("normal");
                                 SVObjects[i]->VertexBuffers[j]->release();
 
-                                if (SVObjects[i]->colour)
-                                {
-                                    SVObjects[i]->ColourBuffers[j]->bind();
-                                    useshader->setAttributeBuffer("colour", GL_FLOAT, 0, 3, 0);
-                                    useshader->enableAttributeArray("colour");
-                                    SVObjects[i]->ColourBuffers[j]->release();
-                                }
                                 glfunctions->glDrawArrays(GL_TRIANGLES, 0, SVObjects[i]->VBOVertexCounts[j]);
 
                             }
@@ -375,7 +356,7 @@ void GlWidget::paintGL()
         static_cast<float>(colorBackgroundGreen) / static_cast<float>(255),
         static_cast<float>(colorBackgroundBlue) / static_cast<float>(255),
         0.5f
-    );
+        );
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
@@ -520,7 +501,7 @@ void GlWidget::mouseMoveEvent(QMouseEvent *event)
         event->buttons() & Qt::RightButton
         || ((event->buttons() & Qt::LeftButton) && event->modifiers() == Qt::CTRL)
         || ((event->buttons() & Qt::LeftButton) && mainWindow->ui->actionRotate_Lock->isChecked())
-    )
+        )
     {
         rotmode = true;
     }
@@ -878,7 +859,7 @@ bool GlWidget::event(QEvent *event)
 void GlWidget::grabGestures(const QList<Qt::GestureType> &gestures)
 {
     foreach (Qt::GestureType gesture, gestures)
-        grabGesture(gesture);
+    grabGesture(gesture);
 }
 
 /**

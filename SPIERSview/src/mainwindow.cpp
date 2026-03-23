@@ -1805,10 +1805,8 @@ void MainWindow::on_actionResurface_Now_triggered()
             if (SVObjects[i]->Dirty)
             {
                 qDeleteAll(SVObjects[i]->VertexBuffers);
-                qDeleteAll(SVObjects[i]->ColourBuffers);
                 SVObjects[i]->boundingBoxBuffer.destroy();
                 SVObjects[i]->VertexBuffers.clear();
-                SVObjects[i]->ColourBuffers.clear();
             }
         }
 
@@ -3150,9 +3148,7 @@ void MainWindow::setSamples(int i)
     for (int i = 0; i < SVObjects.count(); i++) //have to clear VBOs first or there are problems
     {
         qDeleteAll(SVObjects[i]->VertexBuffers);
-        qDeleteAll(SVObjects[i]->ColourBuffers);
         SVObjects[i]->VertexBuffers.clear();
-        SVObjects[i]->ColourBuffers.clear();
         SVObjects[i]->boundingBoxBuffer.destroy();
     }
 
@@ -4122,4 +4118,18 @@ void MainWindow::on_actionReset_Scale_Grid_to_Defaults_triggered()
     fontSizeGrid = 3;
 
     UpdateGL();
+}
+
+/**
+ * @brief MainWindow::on_actionQuadric_Fidelity_Reduction_triggered
+ * Toggles between fast and quadric decimation algorithms.
+ * Marks all objects dirty so next resurface picks up the change.
+ */
+void MainWindow::on_actionQuadric_Fidelity_Reduction_triggered()
+{
+    for (int i = 0; i < SVObjects.count(); i++)
+        if (!SVObjects[i]->IsGroup)
+            SVObjects[i]->Dirty = true;
+    if (ui->actionAuto_Resurface->isChecked() && ui->actionResurface_Now->isEnabled())
+        on_actionResurface_Now_triggered();
 }

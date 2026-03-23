@@ -18,33 +18,177 @@
 
 
 // ---------------------------------------------------------------------------
-// Stub mesh loaders — replace vtkSTLReader / vtkPLYReader
-// Returns an empty MeshData for now; full parsers can be added later.
+// ---------------------------------------------------------------------------
+// STL mesh loader — supports binary and ASCII formats
 // ---------------------------------------------------------------------------
 
 /**
- * @brief loadSTL  Stub binary/ASCII STL loader.
- * Returns empty MeshData until a real parser is wired in.
+ * @brief weldVertices
+ * Converts a triangle soup (duplicated vertices, one set per triangle) into
+ * a proper indexed mesh by merging coincident vertices.
+ *
+ * STL stores each triangle independently with its own 3 vertices, so a
+ * shared edge between two triangles appears as 2 pairs of duplicate vertices.
+ * Welding merges these using exact float equality — safe here because STL
+ * vertices from marching cubes are bit-for-bit identical at shared positions.
+ *
+ * @param soup   Flat array of xyz triples, 3 consecutive vertices per triangle
+ * @param nTris  Number of triangles
+ * @return       Welded MeshData
  */
-static MeshData loadSTL(const QString &filepath)
+static MeshData weldVertices(const QVector<float> &soup, int nTris)
 {
-    Q_UNUSED(filepath)
-    // TODO: implement binary STL parsing
-    // Binary STL: 80-byte header, uint32 triangle count,
-    //   then per triangle: 3×float normal, 3×(3×float) vertices, uint16 attrib.
     MeshData mesh;
+    if (nTris == 0) return mesh;
+
+    // Hash map: encoded vertex -> new index
+    // Encode 3 floats as a QByteArray key for use in QHash
+    auto encodeVertex = [](float x, float y, float z) -> QByteArray {
+        QByteArray key(12, Qt::Uninitialized);
+        memcpy(key.data(),     &x, 4);
+        memcpy(key.data() + 4, &y, 4);
+        memcpy(key.data() + 8, &z, 4);
+        return key;
+    };
+
+    QHash<QByteArray, int> vertexMap;
+    vertexMap.reserve(nTris * 2); // estimate ~half the soup vertices are unique
+
+    mesh.triangles.resize(nTris * 3);
+
+    for (int t = 0; t < nTris; t++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            int soupIdx = (t * 3 + j) * 3;
+            float x = soup[soupIdx];
+            float y = soup[soupIdx + 1];
+            float z = soup[soupIdx + 2];
+
+            QByteArray key = encodeVertex(x, y, z);
+            auto it = vertexMap.find(key);
+            int vertIdx;
+            if (it == vertexMap.end())
+            {
+                vertIdx = mesh.vertices.size() / 3;
+                mesh.vertices.append(x);
+                mesh.vertices.append(y);
+                mesh.vertices.append(z);
+                vertexMap.insert(key, vertIdx);
+            }
+            else
+            {
+                vertIdx = it.value();
+            }
+            mesh.triangles[t * 3 + j] = vertIdx;
+        }
+    }
+
     return mesh;
 }
 
 /**
- * @brief loadPLY  Stub PLY loader.
- * Returns empty MeshData until a real parser is wired in.
+ * @brief loadSTL
+ * Loads a binary or ASCII STL file into a MeshData.
+ *
+ * Detection: binary STL has a fixed record size so we can verify
+ * filesize == 80 + 4 + triCount * 50. If this matches, treat as binary.
+ * Otherwise parse as ASCII. (Binary files can start with "solid" too,
+ * so we never rely solely on that string for detection.)
+ *
+ * Per-face normals in the STL are ignored — normals are recalculated
+ * from geometry in GetFinalPolyData().
+ *
+ * Returns empty MeshData on any read error.
  */
-static MeshData loadPLY(const QString &filepath)
+static MeshData loadSTL(const QString &filepath)
 {
-    Q_UNUSED(filepath)
-    // TODO: implement PLY parsing (header + element data)
     MeshData mesh;
+    QFile file(filepath);
+    if (!file.open(QIODevice::ReadOnly))
+        return mesh;
+
+    qint64 fileSize = file.size();
+
+    // -----------------------------------------------------------------------
+    // Detect binary vs ASCII
+    // -----------------------------------------------------------------------
+    bool isBinary = false;
+    quint32 binaryTriCount = 0;
+
+    if (fileSize >= 84)
+    {
+        // Read triangle count from bytes 80-83
+        file.seek(80);
+        file.read(reinterpret_cast<char *>(&binaryTriCount), 4);
+        qint64 expectedSize = 80 + 4 + static_cast<qint64>(binaryTriCount) * 50;
+        isBinary = (expectedSize == fileSize);
+    }
+
+    // -----------------------------------------------------------------------
+    // Binary STL
+    // -----------------------------------------------------------------------
+    if (isBinary)
+    {
+        file.seek(84); // skip header (80) + triangle count (4)
+
+        QVector<float> soup;
+        soup.reserve(static_cast<int>(binaryTriCount) * 9);
+
+        for (quint32 t = 0; t < binaryTriCount; t++)
+        {
+            float buf[12]; // normal(3) + v0(3) + v1(3) + v2(3)
+            if (file.read(reinterpret_cast<char *>(buf), 48) != 48) break;
+            file.seek(file.pos() + 2); // skip 2-byte attribute
+
+            // buf[0..2] = normal (ignored)
+            // buf[3..5] = v0, buf[6..8] = v1, buf[9..11] = v2
+            for (int j = 0; j < 3; j++)
+            {
+                soup.append(buf[3 + j*3]);
+                soup.append(buf[3 + j*3 + 1]);
+                soup.append(buf[3 + j*3 + 2]);
+            }
+        }
+
+        mesh = weldVertices(soup, static_cast<int>(binaryTriCount));
+    }
+    // -----------------------------------------------------------------------
+    // ASCII STL
+    // -----------------------------------------------------------------------
+    else
+    {
+        file.seek(0);
+        QTextStream in(&file);
+
+        QVector<float> soup;
+        int triCount = 0;
+        QString token;
+
+        while (!in.atEnd())
+        {
+            in >> token;
+            if (token.compare("vertex", Qt::CaseInsensitive) == 0)
+            {
+                float x, y, z;
+                in >> x >> y >> z;
+                soup.append(x);
+                soup.append(y);
+                soup.append(z);
+
+                // Every 3 vertices completes a triangle
+                if (soup.size() % 9 == 0)
+                    triCount++;
+            }
+        }
+
+        // Discard any incomplete trailing triangle
+        triCount = soup.size() / 9;
+        soup.resize(triCount * 9);
+
+        mesh = weldVertices(soup, triCount);
+    }
+
     return mesh;
 }
 
@@ -367,7 +511,7 @@ bool VAXML::readSPVF(QString fname)
                                 {
                                     QString text = xml.readElementText();
                                     if (text.length() == 0) xmlError("invalid (empty) object name");
-                                    if (new_obj->name != "[Unnamed object]") return xmlError("multiple names for an object");
+                                    if (new_obj->name != QLatin1String("[Unnamed object]")) return xmlError("multiple names for an object");
                                     new_obj->name = text;
 
                                 }
@@ -843,7 +987,7 @@ bool VAXML::readVAXML(QString fname)
                                 {
                                     QString text = xml.readElementText();
                                     if (text.length() == 0) xmlError("invalid (empty) object name");
-                                    if (new_obj->name != "[Unnamed object]") return xmlError("multiple names for an object");
+                                    if (new_obj->name != QLatin1String("[Unnamed object]")) return xmlError("multiple names for an object");
                                     new_obj->name = text;
 
                                 }
@@ -995,7 +1139,10 @@ bool VAXML::readVAXML(QString fname)
         //Is this stl or ply?
         if (QString(o->file.right(4)).toUpper() == QString(".stl").toUpper())
         {
+            qDebug() << "Loading STL:" << (fpath + "/" + o->file);
             MeshData mesh = loadSTL(fpath + "/" + o->file);
+            qDebug() << "Loaded" << mesh.triangleCount() << "triangles";
+            //MeshData mesh = loadSTL(fpath + "/" + o->file);
             localPolyData.append(mesh);
             f += (100.0 / objects.count());
             mainWindow->ui->ProgBarOverall->setValue(static_cast<int>(f / static_cast<double>(2.0)));
@@ -1016,24 +1163,12 @@ bool VAXML::readVAXML(QString fname)
         }
         else if (QString(o->file.right(4)).toUpper() == QString(".ply").toUpper())
         {
-            MeshData mesh = loadPLY(fpath + "/" + o->file);
-            localPolyData.append(mesh);
+            // PLY format is no longer supported — log error and append empty mesh
+            xmlError("File '" + o->file + "' is PLY format, which is no longer supported. Please convert to STL.");
+            localPolyData.append(MeshData());
             f += (100.0 / objects.count());
             mainWindow->ui->ProgBarOverall->setValue(static_cast<int>(f / static_cast<double>(2.0)));
             qApp->processEvents();
-
-            //now add some bytes from the PLY to the hash - pick 50 bytes scattered through file.
-            QFile plyfile((fpath + "/" + o->file).toLatin1());
-            QFileInfo plyfi((fpath + "/" + o->file).toLatin1());
-            plyfile.open(QIODevice::ReadOnly);
-            int inc = static_cast<int>(plyfi.size()) / 50;
-            for (int i = 1; i < 50; i++)
-            {
-                plyfile.seek(i * inc);
-                char buffer;
-                plyfile.read(&buffer, 1);
-                shasharray.append(buffer);
-            }
         }
         else xmlError("File '" + file.fileName() + "' is not STL or PLY format");
     }
@@ -1105,6 +1240,7 @@ bool VAXML::readVAXML(QString fname)
         svo->Transparency = convTrans(objects[i]->transparency);
         for (int j = 0; j < 16; j++) svo->matrix[j] = objects[i]->matrix[j];
         svo->spv = spv;
+        qDebug()<<"Here"<<localPolyData[i].triangleCount()<<isVaxmlMode;
         svo->setMesh(localPolyData[i]);
     }
 
@@ -1174,13 +1310,13 @@ bool VAXML::writeVAXML(QString fname, bool mode) //mode true means this is part 
                 if (o->Name == o2->Name && o2 != o && o2->IsGroup)
                 {
                     if (mode == true) QMessageBox::critical(nullptr,
-                                                                "SPV save",
-                                                                "Finalised mode requires that all groups have unique names: please fix your group names before saving",
-                                                                QMessageBox::Ok);
+                                              "SPV save",
+                                              "Finalised mode requires that all groups have unique names: please fix your group names before saving",
+                                              QMessageBox::Ok);
                     else QMessageBox::critical(nullptr,
-                                                   "VAXML writer",
-                                                   "VAXML requires that all groups have unique names: please fix your group names before exporting",
-                                                   QMessageBox::Ok);
+                                              "VAXML writer",
+                                              "VAXML requires that all groups have unique names: please fix your group names before exporting",
+                                              QMessageBox::Ok);
                     return false;
                 }
             }
@@ -1193,13 +1329,13 @@ bool VAXML::writeVAXML(QString fname, bool mode) //mode true means this is part 
         if (o->Name.length() < 1)
         {
             if (mode == true) QMessageBox::critical(nullptr,
-                                                        "SPV save",
-                                                        "Finalised mode requires that all objects and groups have names: please name all items before saving",
-                                                        QMessageBox::Ok);
+                                      "SPV save",
+                                      "Finalised mode requires that all objects and groups have names: please name all items before saving",
+                                      QMessageBox::Ok);
             else QMessageBox::critical(nullptr,
-                                           "VAXML writer",
-                                           "VAXML requires that all objects and groups have names: please name all items before exporting",
-                                           QMessageBox::Ok);
+                                      "VAXML writer",
+                                      "VAXML requires that all objects and groups have names: please name all items before exporting",
+                                      QMessageBox::Ok);
             return false;
         }
     }
