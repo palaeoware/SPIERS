@@ -25,31 +25,31 @@
 #include <QVector>
 #include <QOpenGLBuffer>
 #include <QOpenGLVertexArrayObject>
-#include <QGLShaderProgram>
+#include <QOpenGLShaderProgram>
 #include <QObject>
 #include <QFile>
 #include <QTreeWidgetItem>
 
 #include "isosurface.h"
-#include "dataconnectivityfilter.h"
 #include "spv.h"
 #include "compressedslice.h"
 
-#include "vtkPolyData.h"
-#include "vtkPoints.h"
-#include "vtkPolyDataNormals.h"
-#include "vtkSmoothPolyDataFilter.h"
-#include "vtkWindowedSincPolyDataFilter.h"
-#include "vtkDecimatePro.h"
-#include "vtkIdTypeArray.h"
-#include "vtkPointData.h"
-#include "vtkTriangle.h"
-#include "vtkDataArray.h"
-#include "vtkQuadricDecimation.h"
-#include "vtkDecimatePro.h"
-#include "vtkCallbackCommand.h"
-#include "vtkCellArray.h"
-#include "vtkIdTypeArray.h"
+/**
+ * @brief Plain C++ replacement for vtkPolyData.
+ * Holds triangle mesh geometry as flat arrays of vertices and triangle indices,
+ * plus per-vertex normals computed without VTK.
+ */
+struct MeshData
+{
+    QVector<float> vertices;   // x,y,z per vertex (3 floats each)
+    QVector<float> normals;    // nx,ny,nz per vertex (3 floats each)
+    QVector<int>   triangles;  // 3 vertex indices per triangle
+    QVector<float> colours;    // r,g,b per vertex (3 floats each), optional
+
+    void clear() { vertices.clear(); normals.clear(); triangles.clear(); colours.clear(); }
+    int vertexCount()   const { return vertices.size()  / 3; }
+    int triangleCount() const { return triangles.size() / 3; }
+};
 
 /**
  * @brief The SVObject class
@@ -73,6 +73,7 @@ public:
     void MakeDlists();
     int AppendCompressedFaces(QString mainfile, QString internalfile, QDataStream *out);
     void MakeVBOs();
+    void setMesh(const MeshData &mesh); // used by vaxml.cpp to inject imported geometry
     void ResetMatrix();
 
     int Index;
@@ -123,30 +124,16 @@ public:
     bool killme;
     double scale;
     bool buggedData;
-    vtkPolyData *polydata;
 
 private:
-    void DeleteVTKObjects();
     void GetFinalPolyData();
     void MakePolyVerts(int slice, int VertexBase);
     QString DoMatrixDXFoutput(int v, float x, float y, float z);
-    int NextVertex;
-    vtkPolyData *localPolyData; //Currently one object for whole thing
-    vtkPoints *verts;
-    vtkCellArray *cellarray;
-    vtkIdTypeArray *actualarray;
+
+    MeshData localMesh;   // input mesh (built from Isosurfaces)
+    MeshData finalMesh;   // output mesh (after processing - currently a direct copy)
 
     int object_ktr;
-
-    vtkPolyDataNormals *normals;
-    vtkWindowedSincPolyDataFilter *smoother;
-    vtkDecimatePro *decimator;
-    vtkQuadricDecimation *qdecimator;
-    vtkCallbackCommand *cb;
-    vtkCallbackCommand *cberror;
-    vtkPolyData *pdislands;
-
-    DataConnectivityFilter *islandfinder;
 
     QVector <float> normalx;
     QVector <float> normaly;

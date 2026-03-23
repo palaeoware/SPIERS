@@ -1,20 +1,20 @@
 #include "dataconnectivityfilter.h"
-#include "vtkIdTypeArray.h"
 
 /**
  * @brief DataConnectivityFilter::DataConnectivityFilter
+ * Stub constructor — no VTK base class to initialise.
  */
-DataConnectivityFilter::DataConnectivityFilter() :  vtkPolyDataConnectivityFilter()
+DataConnectivityFilter::DataConnectivityFilter()
 {
-    ;
 }
 
 /**
  * @brief DataConnectivityFilter::GetRegionCount
- * @param i
- * @return
+ * Stub — always returns 0.
+ * @param i  (unused)
+ * @return 0
  */
-int DataConnectivityFilter::GetRegionCount(int i)
+int DataConnectivityFilter::GetRegionCount(int /*i*/)
 {
-    return static_cast<int>(RegionSizes->GetValue(i));
+    return 0;
 }

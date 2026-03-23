@@ -6,7 +6,7 @@
 VAXMLGroup::VAXMLGroup()
 {
     name = "";
-    key = 0;
+    key = QChar(0);;
     visible = true;
     ingroup = "";
     position = -1;

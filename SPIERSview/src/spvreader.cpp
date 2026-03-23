@@ -5,7 +5,7 @@
 #include <QFile>
 #include <QDataStream>
 #include <QTextStream>
-#include <QTime>
+#include <QElapsedTimer>
 #include <QDebug>
 
 #include "globals.h"
@@ -16,7 +16,6 @@
 #include "compressedslice.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "vtkProperty2D.h"
 #include "vaxml.h"
 #include "staticfunctions.h"
 
@@ -71,8 +70,8 @@ void SPVReader::fixKeyCodeData()
     {
         int key = static_cast<int>(SVObjects[i]->Key.toLatin1());
         if (key >= 97 && key <= 122) SVObjects[i]->Key = (QChar(key - 64)); //to Upper
-        if (key < 48 || key > 90) SVObjects[i]->Key = 0;
-        if (key >= 58 && key <= 64) SVObjects[i]->Key = 0;
+        if (key < 48 || key > 90) SVObjects[i]->Key = QChar(0);
+        if (key >= 58 && key <= 64) SVObjects[i]->Key = QChar(0);
     }
 }
 
@@ -196,10 +195,7 @@ int SPVReader::processSPV(QString filename, float *passedMatrix = nullptr)
     FILE *file;
     int errnum = 0;
 
-    QFile f(filename);
-    f.open(QIODevice::ReadOnly);
-    //qDebug() << "File Handle = " << f.handle();
-    file = fdopen(f.handle(), "rb");
+    file = fopen(filename.toLocal8Bit().constData(), "rb");
 
     if (file == nullptr)
     {
@@ -278,9 +274,7 @@ void SPVReader::version5Below(QString filename, float *passedMatrix = nullptr)
     int firstgroup;
     int errnum = 0;
 
-    QFile f(filename);
-    f.open(QIODevice::ReadOnly);
-    file = fdopen(f.handle(), "rb");
+    file = fopen(filename.toLocal8Bit().constData(), "rb");
 
     if (file == nullptr)
     {
@@ -433,7 +427,7 @@ void SPVReader::version5Below(QString filename, float *passedMatrix = nullptr)
     for (int m = 0; m < items; m++) //for each item in the file
     {
         QString status;
-        status.sprintf("Processing object %d of %d", m + 1, items);
+        status = QString::asprintf("Processing object %d of %d", m + 1, items);
         mainWindow->ui->OutputLabelOverall->setText(status);
         mainWindow->ui->ProgBarOverall->setValue((m * 100) / items);
 
@@ -576,7 +570,7 @@ void SPVReader::version5Below(QString filename, float *passedMatrix = nullptr)
     int ttrig = 0;
     for (int i = 0; i < SVObjects.count(); i++) ttrig += SVObjects[i]->Triangles;
     QString status;
-    status.sprintf("Completed");
+    status = QString::asprintf("Completed");
     mainWindow->ui->OutputLabelOverall->setText(status);
     mainWindow->ui->ProgBarOverall->setValue(100);
     qApp->processEvents();
@@ -900,7 +894,7 @@ void SPVReader::version6Plus(QString filename)
         }
 
         //Now the data
-        QTime t;
+        QElapsedTimer t;
         t.start();
         for (int i = 0; i < objectcount; i++)
         {

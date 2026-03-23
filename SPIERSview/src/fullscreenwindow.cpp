@@ -1,9 +1,8 @@
 #include <QHBoxLayout>
 #include <QApplication>
-#include <QDesktopWidget>
+#include <QScreen>
 #include <QDebug>
 #include <QShortcut>
-#include <QScreen>
 
 #include "fullscreenwindow.h"
 #include "globals.h"
@@ -14,7 +13,7 @@ FullScreenWindow::FullScreenWindow(QWidget *parent, GlWidget *gl3widget)
     glwidget = gl3widget;
 
 #ifdef __linux__
-    currentScreen = availableScreens.at(QApplication::desktop()->screenNumber(this));
+    QScreen *currentScreen = (parent != nullptr) ? parent->screen() : QGuiApplication::primaryScreen();
     if (parent != nullptr)
         setGeometry(currentScreen->geometry());
     else

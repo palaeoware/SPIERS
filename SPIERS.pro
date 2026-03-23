@@ -4,5 +4,5 @@ SUBDIRS = SPIERSalign \
           SPIERSview \
           SPIERSutility/SPIERSversion \
 
-CONFIG +=
+CONFIG +=qt debug_and_release
     sdk_no_version_check

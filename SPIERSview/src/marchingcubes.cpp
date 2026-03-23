@@ -1,7 +1,7 @@
 #include <QTextStream>
 #include <QApplication>
 #include <QDebug>
-#include <QTime>
+#include <QElapsedTimer>
 
 #include "marchingcubes.h"
 #include "svobject.h"
@@ -368,7 +368,7 @@ void MarchingCubes::surfaceObject()
  */
 void MarchingCubes::surfaceChunked()
 {
-    QTime t;
+    QElapsedTimer t;
     t.start();
 
     ScalarFieldLayer *layer; // scalar field data and edges

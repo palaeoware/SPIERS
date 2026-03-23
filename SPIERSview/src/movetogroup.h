@@ -26,7 +26,7 @@ class MoveToGroup : public QDialog, public Ui::movetogroup
 {
     Q_OBJECT
 public:
-    MoveToGroup(QWidget *parent = 0, Qt::WindowFlags f = 0);
+    MoveToGroup(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags{});
     int Group;
     bool valid;
 

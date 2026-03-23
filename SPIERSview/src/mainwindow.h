@@ -23,14 +23,14 @@
 #include <QTimer>
 #include <QtWidgets/QListWidgetItem>
 #include <QHBoxLayout>
-#include <QtWidgets/QShortcut>
+#include <QShortcut>
+#include <QElapsedTimer>
 
 #include "gl3widget.h"
 #include "fullscreenwindow.h"
 
 class QTreeWidgetItem;
 
-class vtkObject;
 class SPV;
 
 namespace Ui {
@@ -92,7 +92,7 @@ private:
     QTimer *SpinTimer;
     QTimer *PBtimer;
 
-    QTime *time;
+    QElapsedTimer  *time;
     void UnsetAllStereo();
     void DrawChildObjects(QList <bool> selflags, int parent);
     void RefreshOneItem(QTreeWidgetItem *item, int i);

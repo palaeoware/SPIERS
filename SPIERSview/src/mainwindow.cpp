@@ -16,12 +16,12 @@
  */
 
 #include <QtWidgets/QApplication>
-#include <QtWidgets/QActionGroup>
+#include <QActionGroup>
 #include <QFileDialog>
 #include <QMenuBar>
 #include <QDebug>
 #include <QtWidgets/QHBoxLayout>
-#include <QTime>
+#include <QElapsedTimer>
 #include <QtWidgets/QMessageBox>
 #include <QTextStream>
 #include <QtWidgets/QFileDialog>
@@ -36,9 +36,9 @@
 #include <QMutableListIterator>
 #include <QStandardPaths>
 #include <QDesktopServices>
-#include <QGLFormat>
-#include <QtWidgets/QShortcut>
-#include <QDesktopWidget>
+
+
+
 #include <QScreen>
 
 #include "mainwindow.h"
@@ -52,7 +52,6 @@
 #include "spvreader.h"
 #include "spvwriter.h"
 #include "../SPIERScommon/src/netmodule.h"
-#include <vtkProperty2D.h>
 #include "movetogroup.h"
 #include "gridfontsizedialog.h"
 
@@ -110,7 +109,7 @@ MainWindow::MainWindow(QWidget *parent)
     gllayout = new QHBoxLayout;
     gllayout->addWidget(gl3widget);
     gllayout->setSpacing(2);
-    gllayout->setMargin(2);
+    gllayout->setContentsMargins(2, 2, 2, 2);
     ui->frameVTK->setLayout(gllayout);
 
     QObject::connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close())); //quit
@@ -134,7 +133,7 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(PBtimer, SIGNAL(timeout()), this, SLOT(showSpecificProgress()));
     PBtimer->start();
 
-    time = new QTime(); //used by spin timer
+    time = new QElapsedTimer(); //used by spin timer
     time->start();
 
     ui->dockWidgetPieces->setVisible(false);
@@ -262,14 +261,14 @@ void MainWindow::StartTimer_fired()
     if (fname == "") //no filename provided
     {
         //qDebug() << "[Where I'm I?] In StartTimer_fired - no fname provided... opening file dialog";
-agin:
+    agin:
         FilterKeys = false;
 
         fname = QFileDialog::getOpenFileName(
-                    this,
-                    "Select " + QString(PRODUCTNAME) + " file",
-                    QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),
-                    QString(PRODUCTNAME) + " files (*.spv *.sp2 *spvf *.xml *.vaxml)");
+            this,
+            "Select " + QString(PRODUCTNAME) + " file",
+            QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),
+            QString(PRODUCTNAME) + " files (*.spv *.sp2 *spvf *.xml *.vaxml)");
         FilterKeys = true;
 
         if (macClickedNoForUpdateDownload == true && fname.isNull())
@@ -412,7 +411,7 @@ QString MainWindow::DegConvert(float angle)
         angle += 360;
 
     QString retval;
-    retval.sprintf("%05.1f", static_cast<double>(angle));
+    retval = QString::asprintf("%05.1f", static_cast<double>(angle));
     return retval;
 }
 
@@ -424,7 +423,7 @@ QString MainWindow::DegConvert(float angle)
 QString MainWindow::TransConvert(float trans)
 {
     QString retval;
-    retval.sprintf("%04.1f", static_cast<double>(trans));
+    retval = QString::asprintf("%04.1f", static_cast<double>(trans));
     return retval;
 }
 
@@ -494,7 +493,7 @@ void MainWindow::SpinTimer_fired()
 
     int aheight = static_cast<int>(static_cast<double>(wheight) / (static_cast<double>(wwidth) / static_cast<double>(ui->AnimRescaleX->value())));
     QString s;
-    s.sprintf("%d px", aheight);
+    s = QString::asprintf("%d px", aheight);
     ui->LabelAnimHeight->setText(s);
 
     if (ui->actionAuto_Spin->isChecked())
@@ -534,7 +533,7 @@ void MainWindow::SpinTimer_fired()
     }
 
     if (ObjCount == 0)
-        mess.sprintf("Whole Model: %d KTr  ", modelKTr / 1000);
+        mess = QString::asprintf("Whole Model: %d KTr  ", modelKTr / 1000);
     else
     {
         QString oc;
@@ -760,11 +759,11 @@ void MainWindow::on_actionScreen_Capture_triggered()
 
     FilterKeys = false;
     QString fileName = QFileDialog::getSaveFileName(
-                           this,
-                           tr("Save Current View"),
-                           "",
-                           tr(availableFormats.toLocal8Bit())
-                       );
+        this,
+        tr("Save Current View"),
+        "",
+        tr(availableFormats.toLocal8Bit())
+        );
     FilterKeys = true;
 
     // Only save if there is a file name, otherwise assume it is canceled
@@ -946,7 +945,7 @@ void MainWindow::RefreshOneItem(QTreeWidgetItem *item, int i)
         if (SVObjects[i]->Transparency == 2) t = "Lowish";
         if (SVObjects[i]->Transparency == 3) t = "Med";
         if (SVObjects[i]->Transparency == 4) t = "High";
-        if (SVObjects[i]->Transparency < 0) t.sprintf("Custom (%d%%)", 0 - SVObjects[i]->Transparency);
+        if (SVObjects[i]->Transparency < 0) t = QString::asprintf("Custom (%d%%)", 0 - SVObjects[i]->Transparency);
         item->setText(5, t);
 
         if (SVObjects[i]->IslandRemoval == 0) t = "Off";
@@ -955,7 +954,7 @@ void MainWindow::RefreshOneItem(QTreeWidgetItem *item, int i)
         if (SVObjects[i]->IslandRemoval == 3) t = "Remove Medium";
         if (SVObjects[i]->IslandRemoval == 4) t = "Remove Large";
         if (SVObjects[i]->IslandRemoval == 5) t = "Remove All";
-        if (SVObjects[i]->IslandRemoval < 0) t.sprintf("Custom (%d)", 0 - SVObjects[i]->IslandRemoval);
+        if (SVObjects[i]->IslandRemoval < 0) t = QString::asprintf("Custom (%d)", 0 - SVObjects[i]->IslandRemoval);
         item->setText(6, t);
 
         if (SVObjects[i]->Smoothing == 0) t = "Off";
@@ -965,14 +964,14 @@ void MainWindow::RefreshOneItem(QTreeWidgetItem *item, int i)
         if (SVObjects[i]->Smoothing == 4) t = "Strongish";
         if (SVObjects[i]->Smoothing == 5) t = "Strong";
         if (SVObjects[i]->Smoothing == 6) t = "Strongest";
-        if (SVObjects[i]->Smoothing < 0) t.sprintf("Custom (%d)", 0 - SVObjects[i]->Smoothing);
+        if (SVObjects[i]->Smoothing < 0) t = QString::asprintf("Custom (%d)", 0 - SVObjects[i]->Smoothing);
         item->setText(7, t);
 
         if (SVObjects[i]->Shininess == 0) t = "Off";
         if (SVObjects[i]->Shininess == 1) t = "Less";
         if (SVObjects[i]->Shininess == 2) t = "Default";
         if (SVObjects[i]->Shininess == 3) t = "Full";
-        if (SVObjects[i]->Shininess < 0) t.sprintf("Custom (%d%%)", 0 - SVObjects[i]->Shininess);
+        if (SVObjects[i]->Shininess < 0) t = QString::asprintf("Custom (%d%%)", 0 - SVObjects[i]->Shininess);
         item->setText(8, t);
     }
 
@@ -1358,7 +1357,7 @@ void MainWindow::deleteinfo()
     if (item->text(0) == "Classification") title = "classification item";
 
     if (item->type() == QTreeWidgetItem::UserType)
-        //all of something
+    //all of something
     {
         if (item->text(0) == "Comments") title = "comment";
         if (item->text(0) == "Title") title = "title";
@@ -1385,7 +1384,7 @@ void MainWindow::deleteinfo()
         }
     }
     else
-        //single item
+    //single item
     {
         if (item->parent()->text(0) == "Title") title = "title";
         if (item->parent()->text(0) == "Comments") title = "comment";
@@ -1508,8 +1507,8 @@ void MainWindow::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int colu
                 if (ok && !qitem.isEmpty())
                 {
                     isFileDirty = true;
-                    if (qitem == "[None]") SVObjects[i]->Key = 0;
-                    else SVObjects[i]->Key = static_cast<int>(qitem.toLatin1()[0]);
+                    if (qitem == "[None]") SVObjects[i]->Key = QChar(0);
+                    else SVObjects[i]->Key = QChar(qitem.toLatin1()[0]);
                 }
                 RefreshOneItem(item, i);
             }
@@ -2156,10 +2155,10 @@ void MainWindow::on_actionSave_Changes_triggered()
     if (containsPresurfaced && containsNonPresurfaced)
     {
         if (QMessageBox::question(
-                    this,
-                    "Ambiguous save",
-                    "This file contains items with both presurfaced and compact data. Proceeding will save as compact - is this OK?",
-                    QMessageBox::Yes | QMessageBox::No
+                this,
+                "Ambiguous save",
+                "This file contains items with both presurfaced and compact data. Proceeding will save as compact - is this OK?",
+                QMessageBox::Yes | QMessageBox::No
                 ) != QMessageBox::Yes) return;
     }
 
@@ -2182,11 +2181,11 @@ void MainWindow::on_actionSave_As_triggered()
     FilterKeys = false;
 
     QString f = QFileDialog::getSaveFileName(
-                    this,
-                    tr("Save File (Compact Mode)"),
-                    cpath,
-                    tr("SPV files (*.spv)")
-                );
+        this,
+        tr("Save File (Compact Mode)"),
+        cpath,
+        tr("SPV files (*.spv)")
+        );
     FilterKeys = true;
 
     if (f.isEmpty()) return;
@@ -2214,11 +2213,11 @@ void MainWindow::on_actionSave_Presurfaced_triggered()
 
     FilterKeys = false;
     QString f = QFileDialog::getSaveFileName(
-                    this,
-                    tr("Save File (Presurfaced Mode)"),
-                    cpath,
-                    tr("SPV files (*.spv)")
-                );
+        this,
+        tr("Save File (Presurfaced Mode)"),
+        cpath,
+        tr("SPV files (*.spv)")
+        );
     FilterKeys = true;
 
     if (f.isEmpty()) return;
@@ -2246,10 +2245,10 @@ void MainWindow::on_actionDXF_triggered()
     FilterKeys = false;
 
     QString filename = QFileDialog::getSaveFileName(
-                           this,
-                           "Filename for DXF export",
-                           "",
-                           "DXF files (*.dxf)");
+        this,
+        "Filename for DXF export",
+        "",
+        "DXF files (*.dxf)");
     FilterKeys = true;
 
     //Now we do a whole load of initialisation!
@@ -2279,7 +2278,7 @@ void MainWindow::on_actionDXF_triggered()
             {
                 counto++;
                 QString name;
-                if (SVObjects[i]->Name.isEmpty()) name.sprintf("%d", counto);
+                if (SVObjects[i]->Name.isEmpty()) name = QString::asprintf("%d", counto);
                 else name = SVObjects[i]->Name;
                 dxf << "LAYER\n2\n" << name.toLatin1() << "\n70\n64\n62\n7\n6\nCONTINUOUS\n0\n";
             }
@@ -2300,7 +2299,7 @@ void MainWindow::on_actionDXF_triggered()
             if (!(SVObjects[i]->IsGroup) && (SVObjects[i]->Visible || ui->actionExport_Hidden_Objects->isChecked()))
             {
                 QString status;
-                status.sprintf("Exporting object %d of %d", i + 1, SVObjects.count());
+                status = QString::asprintf("Exporting object %d of %d", i + 1, SVObjects.count());
                 ui->OutputLabelOverall->setText(status);
                 ui->ProgBarOverall->setValue((i * 100) / SVObjects.count());
                 //find name
@@ -2352,13 +2351,13 @@ void MainWindow::on_actionSave_Finalised_As_triggered()
         if (!(SVObjects[i]->IsGroup && (SVObjects[i]->Visible || ui->actionExport_Hidden_Objects->isChecked())))
         {
             QString status;
-            status.sprintf("Saving object %d of %d", i + 1, objcount);
+            status = QString::asprintf("Saving object %d of %d", i + 1, objcount);
             ui->OutputLabelOverall->setText(status);
             ui->ProgBarOverall->setValue((i * 100) / objcount);
 
             //find name
             QString fname2;
-            fname2.sprintf("%d", SVObjects[i]->Index + 1);
+            fname2 = QString::asprintf("%d", SVObjects[i]->Index + 1);
             if (!(SVObjects[i]->Name.isEmpty()))
             {
                 fname2.append("-");
@@ -2403,7 +2402,7 @@ void MainWindow::on_actionSTL_triggered()
     for (int i = 0; i < SVObjects.count(); i++)
         if (!(SVObjects[i]->IsGroup)) objcount++;
 
-//    //qDebug()<<fname;
+    //    //qDebug()<<fname;
     //Now write the vaxml file - use current file name - do first to avoid finding problems after long STL export!
     VAXML v;
     if (v.writeVAXML(fname, false) == false)
@@ -2420,13 +2419,13 @@ void MainWindow::on_actionSTL_triggered()
         if (!(SVObjects[i]->IsGroup))
         {
             QString status;
-            status.sprintf("Exporting object %d of %d", i + 1, objcount);
+            status = QString::asprintf("Exporting object %d of %d", i + 1, objcount);
             ui->OutputLabelOverall->setText(status);
             ui->ProgBarOverall->setValue((i * 100) / objcount);
             //find name
 
             QString fname2;
-            fname2.sprintf("%d", SVObjects[i]->Index + 1);
+            fname2 = QString::asprintf("%d", SVObjects[i]->Index + 1);
             if (!(SVObjects[i]->Name.isEmpty()))
             {
                 fname2.append("-");
@@ -2549,10 +2548,10 @@ void MainWindow::on_actionImport_SPV_triggered()
     FilterKeys = false;
 
     QString ifname = QFileDialog::getOpenFileName(
-                         this,
-                         "Select " + QString(PRODUCTNAME) + " file to import",
-                         "",
-                         QString(PRODUCTNAME) + " files (*.spv)");
+        this,
+        "Select " + QString(PRODUCTNAME) + " file to import",
+        "",
+        QString(PRODUCTNAME) + " files (*.spv)");
     FilterKeys = true;
 
     //Now we do a whole load of initialisation!
@@ -2679,10 +2678,10 @@ void MainWindow::on_actionImport_Replacement_triggered()
         FilterKeys = false;
 
         QString ifname = QFileDialog::getOpenFileName(
-                             this,
-                             "Select " + QString(PRODUCTNAME) + " file to import",
-                             "",
-                             QString(PRODUCTNAME) + " files (*.spv)");
+            this,
+            "Select " + QString(PRODUCTNAME) + " file to import",
+            "",
+            QString(PRODUCTNAME) + " files (*.spv)");
         FilterKeys = true;
 
         //Now we do a whole load of initialisation!
@@ -2709,7 +2708,7 @@ void MainWindow::RefreshPieces()
     for (int i = 0; i < SPVs.count(); i++)
     {
         QString name;
-        name.sprintf("%d: ", i + 1);
+        name = QString::asprintf("%d: ", i + 1);
         name.append(SPVs[i]->filenamenopath);
         ui->PiecesList->addItem(name);
     }
@@ -2972,7 +2971,7 @@ void MainWindow::on_actionGroup_triggered()
                 }
 
         SVObject *o = new SVObject(nextindex);
-        o->Key = 0; //no key
+        o->Key = QChar(0); //no key
         o->Visible = true;
         o->Name = "Group";
         o->IsGroup = true;
@@ -3157,11 +3156,7 @@ void MainWindow::setSamples(int i)
         SVObjects[i]->boundingBoxBuffer.destroy();
     }
 
-    QGLFormat fmt;
-    fmt.setVersion(GL_MAJOR, GL_MINOR);
-    fmt.setSampleBuffers(true);
-    fmt.setSamples(i);
-    fmt.setStereo(ui->actionQuadBuffer_Stereo->isChecked());
+    // (Qt6: QGLFormat removed; fmt was already commented out of GlWidget constructor)
     GlWidget *gl3widget2 = new GlWidget(ui->frameVTK); //,fmt);
 
     gl3widget2->ClipStart = gl3widget->ClipStart;
@@ -3299,9 +3294,9 @@ void MainWindow::on_actionManual_triggered()
 void MainWindow::wheelEvent(QWheelEvent *event)
 {
     if (ui->actionInvert_Mouse_Wheel->isChecked())
-        ui->ClipAngle->setValue(ui->ClipAngle->value() - event->delta() / 12);
+        ui->ClipAngle->setValue(ui->ClipAngle->value() - event->angleDelta().y() / 12);
     else
-        ui->ClipAngle->setValue(ui->ClipAngle->value() + event->delta() / 12);
+        ui->ClipAngle->setValue(ui->ClipAngle->value() + event->angleDelta().y() / 12);
 }
 
 /**
@@ -3409,7 +3404,7 @@ void MainWindow::animationSaveImage()
     QTextStream s(&fileName);
 
     QString num;
-    num.sprintf("%.5d", ui->AnimSpinFileNum->value());
+    num = QString::asprintf("%.5d", ui->AnimSpinFileNum->value());
 
     QString formatstring = ".bmp";
     int qual = 100;
@@ -3614,7 +3609,7 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
             ui->actionApply_Step->activate(QAction::Trigger);
             return true;
         }
-        if (kevent->key() ==  Qt::Key_N  && kevent->modifiers() == Qt::ControlModifier + Qt::ShiftModifier && ui->actionSave_Image_and_Apply_Step->isEnabled())
+        if (kevent->key() ==  Qt::Key_N  && kevent->modifiers() == (Qt::ControlModifier | Qt::ShiftModifier) && ui->actionSave_Image_and_Apply_Step->isEnabled())
         {
             ui->actionSave_Image_and_Apply_Step->activate(QAction::Trigger);
             return true;
@@ -3769,12 +3764,12 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
             ui->actionLarge_Rotate_Anticlockwise->activate(QAction::Trigger);
             return true;
         }
-        if (kevent->key() ==  Qt::Key_D  && kevent->modifiers() == Qt::ControlModifier + Qt::AltModifier && ui->actionSet_new_default_position->isEnabled())
+        if (kevent->key() ==  Qt::Key_D  && kevent->modifiers() == (Qt::ControlModifier | Qt::AltModifier) && ui->actionSet_new_default_position->isEnabled())
         {
             ui->actionSet_new_default_position->activate(QAction::Trigger);
             return true;
         }
-        if (kevent->key() ==  Qt::Key_R  && kevent->modifiers() == Qt::ControlModifier + Qt::AltModifier && ui->actionReset_to_default_position->isEnabled())
+        if (kevent->key() ==  Qt::Key_R  && kevent->modifiers() == (Qt::ControlModifier | Qt::AltModifier) && ui->actionReset_to_default_position->isEnabled())
         {
             ui->actionReset_to_default_position->activate(QAction::Trigger);
             return true;
@@ -3968,7 +3963,7 @@ void MainWindow::updateScreenRatio()
 {
     //qDebug() << "[SCREEN UPDATE] Main Window has been resized.";
 
-    currentScreen = availableScreens.at(QApplication::desktop()->screenNumber(this));
+    currentScreen = this->screen();
 
     double ratio = currentScreen->devicePixelRatio();
     applicationScaleX = ratio;

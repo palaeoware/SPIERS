@@ -2,11 +2,11 @@
 
 /**
  * @brief VAXMLObject::VAXMLObject
- */
+*/
 VAXMLObject::VAXMLObject()
 {
     name = "[Unnamed object]";
-    key = 0;
+    key = QChar(0);
     visible = true;
     ingroup = "";
     file = "";

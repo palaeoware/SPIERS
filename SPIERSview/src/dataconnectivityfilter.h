@@ -1,6 +1,6 @@
 /**
  * @file
- * Header: Data connectivitity Filter
+ * Header: Data Connectivity Filter (stub — VTK removed)
  *
  * All SPIERSview code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
@@ -18,9 +18,13 @@
 #ifndef DATACONNECTIVITYFILTER_H
 #define DATACONNECTIVITYFILTER_H
 
-#include "vtkPolyDataConnectivityFilter.h"
-
-class DataConnectivityFilter : public vtkPolyDataConnectivityFilter
+/**
+ * @brief Stub replacement for the old vtkPolyDataConnectivityFilter subclass.
+ *
+ * The island-removal logic that used this class is a no-op stub in svobject.cpp,
+ * so this class just needs to exist and compile. All methods return safe defaults.
+ */
+class DataConnectivityFilter
 {
 public:
     DataConnectivityFilter();
