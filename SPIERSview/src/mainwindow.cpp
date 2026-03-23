@@ -1551,7 +1551,7 @@ void MainWindow::SetResample()
     bool flag;
     FilterKeys = false;
 
-    int temp = QInputDialog::getInt (this, "Resample Percentage", "Enter new resample value for all selected objects", 100, 0, 100, 1, &flag);;
+    int temp = QInputDialog::getInt (this, "Fidelity Percentage", "Enter new fidelity value for all selected objects", 50, 10, 100, 5, &flag);;
     FilterKeys = true;
     if (flag)
     {
