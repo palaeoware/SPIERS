@@ -237,6 +237,11 @@ private slots:
     void on_actionReset_Scale_Grid_to_Defaults_triggered();
     void on_actionShow_Minor_Scale_Lines_triggered();
     void on_actionQuadric_Fidelity_Reduction_triggered();
+    void on_actionLighting_Panel_triggered();
+    void on_mainLightColourButton_clicked();
+    void on_dialMainLightXY_valueChanged(int value);
+    void on_verticalSlider_valueChanged(int value);
+    void on_horizontalSlider_valueChanged(int value);
 };
 
 extern MainWindow *mainWindow;

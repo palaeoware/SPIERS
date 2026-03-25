@@ -94,16 +94,9 @@ void GlWidget::initializeGL()
     vao.bind();
 #endif
 
-#ifdef __APPLE__
-    // We have slightly different shaders for macOS as OpenGL is version 3.3 Core
-    lightingShaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/lightingVertexShader_mac.vsh");
-    lightingShaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/lightingFragmentShader_mac.fsh");
-#endif
 
-#ifndef __APPLE__
     lightingShaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/lightingVertexShader.vsh");
     lightingShaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/lightingFragmentShader.fsh");
-#endif
 
     lightingShaderProgram.link();
 
@@ -184,7 +177,6 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
 
     glDepthMask(true);
 
-
     for (int trans = 0; trans < 2; trans++) //two runs - opaques first
     {
         if (trans == 1)
@@ -199,7 +191,6 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
         }
         for (int i = 0; i < SVObjects.count(); i++)
         {
-
             // We must have a file load by this point so set the global to true.
             isFileLoaded = true;
 
@@ -226,20 +217,56 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
                         useshader->setUniformValue("mvpMatrix", pMatrix * mvMatrix);
                         useshader->setUniformValue("mvMatrix", mvMatrix);
                         useshader->setUniformValue("normalMatrix", normalMatrix);
-                        useshader->setUniformValue("lightPosition", vMatrix * camera);
 
+
+                        bool headlightEnabled = true;
+                        bool light2Enabled = false;
+
+                        // Build light list
+                        QVector3D directions[3];
+                        QVector3D colors[3];
+                        int lightCount = 0;
+
+                        // Primary key light (always on)
+                        directions[lightCount] = QVector3D(-0.7f, 0.7f, 1.5f).normalized();
+                        colors[lightCount]     = QVector3D(5.0f, 5.0f, 5.0f);
+                        lightCount++;
+
+                        // Optional headlight
+                        if (headlightEnabled)
+                        {
+                            directions[lightCount] = QVector3D(0.0f, 0.0f, 1.0f);
+                            colors[lightCount]     = QVector3D(0.0f, 5.0f, 0.0f); // dimmer than key
+                            lightCount++;
+                        }
+
+                        // Optional second configurable light
+                        if (light2Enabled)
+                        {
+                            directions[lightCount] = QVector3D(0.7f, -0.7f, 1.5f).normalized();
+                            colors[lightCount]     = QVector3D(4.0f, 0.0f, 5.0f);
+                            lightCount++;
+                        }
+
+                        useshader->setUniformValueArray("lightDirections", directions, lightCount);
+                        useshader->setUniformValueArray("lightColors",     colors,     lightCount);
+                        useshader->setUniformValue("lightCount", lightCount);
+
+
+
+                        // Object colour — muted or full
                         float mcolor[3];
                         if (mainWindow->ui->actionMute_Colours->isChecked())
                         {
-                            mcolor[0] = (static_cast<GLfloat>(SVObjects[i]->Colour[0] / 3 + 170));
-                            mcolor[1] = (static_cast<GLfloat>(SVObjects[i]->Colour[1] / 3 + 170));
-                            mcolor[2] = (static_cast<GLfloat>(SVObjects[i]->Colour[2] / 3 + 170));
+                            mcolor[0] = static_cast<GLfloat>(SVObjects[i]->Colour[0] / 3 + 170);
+                            mcolor[1] = static_cast<GLfloat>(SVObjects[i]->Colour[1] / 3 + 170);
+                            mcolor[2] = static_cast<GLfloat>(SVObjects[i]->Colour[2] / 3 + 170);
                         }
                         else
                         {
-                            mcolor[0] = (static_cast<GLfloat>(SVObjects[i]->Colour[0]));
-                            mcolor[1] = (static_cast<GLfloat>(SVObjects[i]->Colour[1]));
-                            mcolor[2] = (static_cast<GLfloat>(SVObjects[i]->Colour[2]));
+                            mcolor[0] = static_cast<GLfloat>(SVObjects[i]->Colour[0]);
+                            mcolor[1] = static_cast<GLfloat>(SVObjects[i]->Colour[1]);
+                            mcolor[2] = static_cast<GLfloat>(SVObjects[i]->Colour[2]);
                         }
 
                         if (mainWindow->ui->actionBounding_Box->isChecked())
@@ -247,77 +274,66 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
                             if (SVObjects[i]->boundingBoxBuffer.isCreated())
                             {
                                 //qDebug()<<"Exists, drawing";
-                                useshader->setUniformValue("ambientColor", QColor(static_cast<int>(mcolor[0]), static_cast<int>(mcolor[1]), static_cast<int>(mcolor[2])));
-                                useshader->setUniformValue("diffuseColor", QColor(0.0, 0.0, 0.0));
-                                useshader->setUniformValue("specularColor", QColor(0.0, 0.0, 0.0));
-                                useshader->setUniformValue("alpha", static_cast<GLfloat>(1.0));
-                                useshader->setUniformValue("ambientReflection", static_cast<GLfloat>(1.0));
-                                useshader->setUniformValue("diffuseReflection", static_cast<GLfloat>(1.0));
-                                useshader->setUniformValue("specularReflection", static_cast<GLfloat>(0.0));
-                                useshader->setUniformValue("shininess", static_cast<GLfloat>(100.0));
+
+                                // Bounding box: flat ambient-only, full roughness, no specular
+                                useshader->setUniformValue("albedo", QVector3D(
+                                                                         mcolor[0] / 255.0f,
+                                                                         mcolor[1] / 255.0f,
+                                                                         mcolor[2] / 255.0f));
+                                useshader->setUniformValue("roughness",       static_cast<GLfloat>(1.0f));
+                                useshader->setUniformValue("metallic",        static_cast<GLfloat>(0.0f));
+                                useshader->setUniformValue("alpha",           static_cast<GLfloat>(1.0f));
+                                useshader->setUniformValue("ambientStrength", static_cast<GLfloat>(1.0f));
+
                                 SVObjects[i]->boundingBoxBuffer.bind();
                                 useshader->setAttributeBuffer("vertex", GL_FLOAT, 0, 3, 0);
                                 useshader->enableAttributeArray("vertex");
                                 useshader->setAttributeBuffer("normal", GL_FLOAT, 12 * 6 * sizeof(GLfloat), 3, 0);
                                 useshader->enableAttributeArray("normal");
-
                                 SVObjects[i]->boundingBoxBuffer.release();
+
                                 glfunctions->glDrawArrays(GL_LINES, 0, 24);
                             }
                             //else //qDebug()<<"Not created";
                         }
                         else
                         {
+                            // Map Shininess presets to roughness (inverted — high shininess = low roughness)
+                            GLfloat roughness = 0.6f; // default mid-matte
+                            if      (SVObjects[i]->Shininess == 3) roughness = 0.15f; // very shiny
+                            else if (SVObjects[i]->Shininess == 2) roughness = 0.35f; // shiny
+                            else if (SVObjects[i]->Shininess == 1) roughness = 0.55f; // medium
+                            else if (SVObjects[i]->Shininess == 0) roughness = 0.75f; // matte
+                            else if (SVObjects[i]->Shininess < 0)
+                                roughness = 1.0f - (static_cast<GLfloat>(0 - SVObjects[i]->Shininess) / 100.0f);
 
-                            GLfloat shininess = 0.0;
-                            if (SVObjects[i]->Shininess == 3) shininess = static_cast<float>(1.0);
-                            if (SVObjects[i]->Shininess == 2) shininess = static_cast<float>(.7);
-                            if (SVObjects[i]->Shininess == 1) shininess = static_cast<float>(.3);
-                            if (SVObjects[i]->Shininess == 0) shininess = static_cast<float>(0.0);
-                            if (SVObjects[i]->Shininess < 0) shininess = (static_cast<GLfloat>(0 - SVObjects[i]->Shininess)) / static_cast<float>(100.0);
+                            // Calculate alpha from transparency preset
+                            float t = 1.0f;
+                            if      (SVObjects[i]->Transparency == 4) t = 0.25f;
+                            else if (SVObjects[i]->Transparency == 3) t = 0.45f;
+                            else if (SVObjects[i]->Transparency == 2) t = 0.60f;
+                            else if (SVObjects[i]->Transparency == 1) t = 0.80f;
+                            else if (SVObjects[i]->Transparency < 0)
+                                t = static_cast<float>(100 + SVObjects[i]->Transparency) / 100.0f;
 
-                            useshader->setUniformValue("ambientReflection", static_cast<GLfloat>(1.0));
-                            useshader->setUniformValue("diffuseReflection", static_cast<GLfloat>(1.0));
-                            useshader->setUniformValue("specularReflection", shininess);
-                            useshader->setUniformValue("shininess", static_cast<GLfloat>(200.0 - pow(static_cast<double>(180.0), shininess)));
-
-                            //calculate alpha
-                            float t = 1.0;
-                            if (SVObjects[i]->Transparency == 4) t = static_cast<float>(.25);
-                            if (SVObjects[i]->Transparency == 3) t = static_cast<float>(.45);
-                            if (SVObjects[i]->Transparency == 2) t = static_cast<float>(.6);
-                            if (SVObjects[i]->Transparency == 1) t = static_cast<float>(.8);
-                            if (SVObjects[i]->Transparency < 0) t = (static_cast<float>(100 + SVObjects[i]->Transparency)) / static_cast<float>(100.0);
-                            useshader->setUniformValue("alpha", t);
-
-                            useshader->setUniformValue("ambientColor", QColor(
-                                                                           static_cast<int>(mcolor[0]) / 5,
-                                                                           static_cast<int>(mcolor[1]) / 5,
-                                                                           static_cast<int>(mcolor[2]) / 5
-                                                                           ));
-                            useshader->setUniformValue("diffuseColor", QColor(
-                                                                           static_cast<int>(mcolor[0] / static_cast<float>(1.5)),
-                                                                           static_cast<int>(mcolor[1] / static_cast<float>(1.5)),
-                                                                           static_cast<int>(mcolor[2] / static_cast<float>(1.5))
-                                                                           ));
-                            useshader->setUniformValue("specularColor", QColor(
-                                                                            static_cast<int>(mcolor[0]),
-                                                                            static_cast<int>(mcolor[1]),
-                                                                            static_cast<int>(mcolor[2])
-                                                                            ));
+                            useshader->setUniformValue("albedo", QVector3D(
+                                                                     mcolor[0] / 255.0f,
+                                                                     mcolor[1] / 255.0f,
+                                                                     mcolor[2] / 255.0f));
+                            useshader->setUniformValue("roughness", roughness);
+                            useshader->setUniformValue("metallic",  static_cast<GLfloat>(0.0f));
+                            useshader->setUniformValue("alpha",     static_cast<GLfloat>(t));
 
                             for (int j = 0; j < SVObjects[i]->VertexBuffers.count(); j++)
                             {
-
                                 SVObjects[i]->VertexBuffers[j]->bind();
                                 useshader->setAttributeBuffer("vertex", GL_FLOAT, 0, 3, 0);
                                 useshader->enableAttributeArray("vertex");
-                                useshader->setAttributeBuffer("normal", GL_FLOAT, 3 * static_cast<int>(SVObjects[i]->VBOVertexCounts[j])*static_cast<int>(sizeof(GLfloat)), 3, 0);
+                                useshader->setAttributeBuffer("normal", GL_FLOAT, 3 * static_cast<int>(SVObjects[i]->VBOVertexCounts[j]) * static_cast<int>(sizeof(GLfloat)), 3, 0);
                                 useshader->enableAttributeArray("normal");
                                 SVObjects[i]->VertexBuffers[j]->release();
 
                                 glfunctions->glDrawArrays(GL_TRIANGLES, 0, SVObjects[i]->VBOVertexCounts[j]);
-
                             }
                         }
                         useshader->release();
@@ -325,7 +341,6 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
                 }
         }
     }
-
 
     glDepthMask(true);
 

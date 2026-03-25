@@ -68,3 +68,8 @@ QStringList infoClassificationName;
 QStringList infoClassificationRank;
 QStringList infoTitle;
 QMatrix4x4 globalMatrix;
+
+int mainXYAngle = 120;
+int mainZPos = -10;
+int mainPower = 4;
+QColor mainColour = Qt::white;

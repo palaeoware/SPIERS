@@ -134,4 +134,11 @@ extern QStringList infoClassificationRank;
 extern QStringList infoTitle;
 extern QString stlHash;
 
+//Lighting panel
+extern int mainXYAngle;
+extern int mainZPos;
+extern int mainPower;
+extern QColor mainColour;
+
+
 #endif // GLOBALS_H

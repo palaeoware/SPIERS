@@ -4133,3 +4133,35 @@ void MainWindow::on_actionQuadric_Fidelity_Reduction_triggered()
     if (ui->actionAuto_Resurface->isChecked() && ui->actionResurface_Now->isEnabled())
         on_actionResurface_Now_triggered();
 }
+
+void MainWindow::on_actionLighting_Panel_triggered()
+{
+    qDebug()<<"HERE";
+    ui->dockWidgetLighting->setVisible(ui->actionLighting_Panel->isChecked());
+}
+
+
+
+void MainWindow::on_mainLightColourButton_clicked()
+{
+    qDebug()<<"Col clicked";
+    //See new globals to set...
+}
+
+
+void MainWindow::on_dialMainLightXY_valueChanged(int value)
+{
+    qDebug()<<"xy changed "<<value;
+}
+
+
+void MainWindow::on_verticalSlider_valueChanged(int value)
+{
+    qDebug()<<"z changed "<<value;
+}
+
+
+void MainWindow::on_horizontalSlider_valueChanged(int value)
+{
+    qDebug()<<"power changed "<<value;
+}
