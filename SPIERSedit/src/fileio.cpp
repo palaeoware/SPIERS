@@ -1433,7 +1433,7 @@ QString GetString(QDataStream *in)
     {
         *in >> a;
         Counter++;
-        text.append(QChar(a));
+        text.append(QChar::fromLatin1(char(a)));
     }
     while (a != 0);
     *in >> a;

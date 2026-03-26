@@ -1,4 +1,4 @@
-#include "mlfeaturetensorcomponentlocal.h".h"
+#include "mlfeaturetensorcomponentlocal.h"
 
 #include "globals.h"
 #include "mlfeaturegradientcomponent.h"

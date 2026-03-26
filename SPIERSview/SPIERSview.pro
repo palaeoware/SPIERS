@@ -102,8 +102,7 @@ SOURCES += src/main.cpp \
     src/inftrees.c \
     src/trees.c \
     src/uncompr.c \
-    src/zutil.c \
-    src/meshfilters.cpp
+    src/zutil.c
 HEADERS += src/mainwindow.h \
     ../SPIERScommon/src/darkstyletheme.h \
     src/globals.h \
@@ -133,8 +132,7 @@ HEADERS += src/mainwindow.h \
     src/staticfunctions.h \
     src/drawglscalegrid.h \
     src/drawglscaleball.h \
-    src/gridfontsizedialog.h \
-    src/meshfilters.h
+    src/gridfontsizedialog.h
 
 FORMS += ui/mainwindow.ui \
     ui/movetogroup.ui \
