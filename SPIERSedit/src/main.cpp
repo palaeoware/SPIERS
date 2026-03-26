@@ -89,14 +89,6 @@ void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const Q
 #ifndef __APPLE__
 int main(int argc, char **argv)
 {
-    MLInterface::TestML();
-
-    qDebug() << "OpenCV enabled? " << MLInterface::enabled;
-    if (MLInterface::enabled)
-    {
-        mlInterface = new MLInterface();
-    }
-
     QApplication app( argc, argv );
 
     //Style program with our dark style
@@ -108,6 +100,14 @@ int main(int argc, char **argv)
     splash->showMessage("<font><b>" + QString(PRODUCTNAME) + " v" + QString(SOFTWARE_VERSION) + " </b></font>", Qt::AlignHCenter, Qt::white);
     app.processEvents();
     QTimer::singleShot(3000, splash, &QSplashScreen::close);
+
+    MLInterface::TestML();
+
+    qDebug() << "OpenCV enabled? " << MLInterface::enabled;
+    if (MLInterface::enabled)
+    {
+        mlInterface = new MLInterface();
+    }
 
     NetModule n;
     n.checkForNew();
