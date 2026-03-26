@@ -141,6 +141,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->ProgressDock->setVisible(true);
     ui->ClipDock->setVisible(false);
     ui->AnimDock->setVisible(false);
+    ui->dockWidgetLighting->setVisible(false);
 
     QPalette p = ui->PiecesList->palette();
     p.setColor(QPalette::Highlight, Qt::blue);
