@@ -1,7 +1,6 @@
 #------------------------------------------------------------------------------------------------
 # SPIERSview
 #------------------------------------------------------------------------------------------------
-
 TARGET = SPIERSview64
 
 TEMPLATE = app
@@ -29,7 +28,9 @@ UI_DIR += ui
 include(../version.pri)
 
 #Needed to make binaries launchable from file in Ubuntu - GCC default link flag -pie on newer Ubuntu versions this so otherwise recognised as shared library
-QMAKE_LFLAGS += -no-pie
+unix:!macx {
+    QMAKE_LFLAGS += -no-pie
+}
 
 RC_FILE = resources/icon.rc
 
@@ -44,22 +45,6 @@ OBJECTS_DIR += build
 # Unix/Linux common build here
 unix:!macx {
     LIBS += -lstdc++
-}
-
-# MacOS build here
-macx {
-    LIBS += -L/usr/local/homebrew/opt/icu4c/lib/ \
-    -licudata \
-    -licuuc \
-    -lstdc++
-
-    INCLUDEPATH += /usr/local/homebrew/opt/icu4c/include/
-    DEPENDPATH += /usr/local/homebrew/opt/icu4c/include/
-
-    # Mac icon
-    ICON = resources/SPIERSviewIcon.icns
-
-    QMAKE_INFO_PLIST = Info.plist
 }
 
 SOURCES += src/main.cpp \
@@ -101,8 +86,7 @@ SOURCES += src/main.cpp \
     src/inftrees.c \
     src/trees.c \
     src/uncompr.c \
-    src/zutil.c \
-    src/meshfilters.cpp
+    src/zutil.c
 HEADERS += src/mainwindow.h \
     ../SPIERScommon/src/darkstyletheme.h \
     src/globals.h \
@@ -132,11 +116,28 @@ HEADERS += src/mainwindow.h \
     src/staticfunctions.h \
     src/drawglscalegrid.h \
     src/drawglscaleball.h \
-    src/gridfontsizedialog.h \
-    src/meshfilters.h
+    src/gridfontsizedialog.h
 
 FORMS += ui/mainwindow.ui \
     ui/movetogroup.ui \
     ui/quickhelpbox.ui \
     ui/aboutdialog.ui \
     ui/gridfontsizedialog.ui
+
+# MacOS build here
+macx {
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 26.0
+
+    LIBS += -L/usr/local/homebrew/opt/icu4c/lib/ \
+    -licudata \
+    -licuuc \
+    -lstdc++
+
+    INCLUDEPATH += /usr/local/homebrew/opt/icu4c/include/
+    DEPENDPATH += /usr/local/homebrew/opt/icu4c/include/
+
+    # Mac icon
+    ICON = resources/SPIERSviewIcon.icns
+
+    QMAKE_INFO_PLIST = Info.plist
+}

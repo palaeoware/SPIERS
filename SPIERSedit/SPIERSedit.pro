@@ -26,7 +26,9 @@ UI_DIR += ui
 include(../version.pri)
 
 #Needed to make binaries launchable from file in Ubuntu - GCC default link flag -pie on newer Ubuntu versions this so otherwise recognised as shared library
-QMAKE_LFLAGS += -no-pie
+unix:!macx {
+    QMAKE_LFLAGS += -no-pie
+}
 
 DESTDIR \
     += \
@@ -190,27 +192,34 @@ SOURCES += src/display.cpp \
     ../SPIERScommon/src/darkstyletheme.cpp \
     ../SPIERScommon/src/netmodule.cpp \
     ../SPIERScommon/src/semanticversion.cpp \
-    ../SPIERScommon/src//prereleasecomponent.cpp \
+    ../SPIERScommon/src/prereleasecomponent.cpp \
     ui/mladdfeature.cpp
 
-OPENCV_DIR = C:/opencv/opencv
+win {
+    OPENCV_DIR = C:/opencv/opencv
 
-INCLUDEPATH += $$OPENCV_DIR/build/include
-LIBS += -L$$OPENCV_DIR/build/x64/vc16/lib
-CONFIG(debug, debug|release) {
-        LIBS += -lopencv_world4130d
-    } else {
-        LIBS += -lopencv_world4130
-    }
+    INCLUDEPATH += $$OPENCV_DIR/build/include
+    LIBS += -L$$OPENCV_DIR/build/x64/vc16/lib
+    CONFIG(debug, debug|release) {
+            LIBS += -lopencv_world4130d
+        } else {
+            LIBS += -lopencv_world4130
+        }
+}
 # MacOS common build here
 macx {
-    #Mac icon
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 26.0
+
+    OPENCV_DIR = /opt/homebrew/opt/opencv
+
+    INCLUDEPATH += $$OPENCV_DIR/include/opencv4
+    LIBS += -L$$OPENCV_DIR/lib \
+            -lopencv_core \
+            -lopencv_imgproc \
+            -lopencv_imgcodecs \
+            -lopencv_highgui \
+            -lopencv_ml
+
     ICON = resources/SPIERSeditIcon.icns
-
-
-    # macOS file associations are done through the Info.plist files under the application pakages
-    # QT/qmake should be able to overwrite the default generated file with this custom file
-    # We need to make sure that the custom Info.plist (below) is in XML format and not binary
-    # as qmake uses sed for string replacements within it.
     QMAKE_INFO_PLIST = Info.plist
 }

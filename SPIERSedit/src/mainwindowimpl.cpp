@@ -1106,12 +1106,15 @@ void MainWindowImpl::Start()
     ResetFilesDirty();
 
     //ML stuff
-    mlInterface->Initialise(this, lblMLStatus);
-    mlInterface->SetMinSampleCount(spinBoxMinSampleCount->value());
-    mlInterface->SetSamplePercent(spinBoxMLSampling->value());
-    mlInterface->SetTreeCount(spinBoxMLTrees->value());
-    mlInterface->SetTreeDepth(spinBoxMLDepth->value());
-    mlInterface->RetrieveFeaturesFromByteArray(FeaturesByteArray);
+    if (mlInterface)
+    {
+        mlInterface->Initialise(this, lblMLStatus);
+        mlInterface->SetMinSampleCount(spinBoxMinSampleCount->value());
+        mlInterface->SetSamplePercent(spinBoxMLSampling->value());
+        mlInterface->SetTreeCount(spinBoxMLTrees->value());
+        mlInterface->SetTreeDepth(spinBoxMLDepth->value());
+        mlInterface->RetrieveFeaturesFromByteArray(FeaturesByteArray);
+    }
 
     dockWidget_Generate->setEnabled(true);
 }
