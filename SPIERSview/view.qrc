@@ -5,5 +5,9 @@
         <file>resources/SPIERSviewIcon.svg</file>
         <file alias="shadowDepthFragmentShader.fsh">resources/shadowDepthFragmentShader.fsh</file>
         <file alias="shadowDepthVertexShader.vsh">resources/shadowDepthVertexShader.vsh</file>
-    </qresource>
+        <file alias="oitAccumFragmentShader.fsh">resources/oitAccumFragmentShader.fsh</file>
+        <file alias="oitAccumVertexShader.vsh">resources/oitAccumVertexShader.vsh</file>
+        <file alias="oitCompositeFragmentShader.fsh">resources/oitCompositeFragmentShader.fsh</file>
+        <file alias="oitCompositeVertexShader.vsh">resources/oitCompositeVertexShader.vsh</file>
+		</qresource>
 </RCC>
