@@ -26,7 +26,9 @@ UI_DIR += ui
 include(../version.pri)
 
 #Needed to make binaries launchable from file in Ubuntu - GCC default link flag -pie on newer Ubuntu versions this so otherwise recognised as shared library
-QMAKE_LFLAGS += -no-pie
+unix:!macx {
+    QMAKE_LFLAGS += -no-pie
+}
 
 DESTDIR \
     += \
@@ -206,6 +208,8 @@ win {
 }
 # MacOS common build here
 macx {
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 26.0
+
     OPENCV_DIR = /opt/homebrew/opt/opencv
 
     INCLUDEPATH += $$OPENCV_DIR/include/opencv4

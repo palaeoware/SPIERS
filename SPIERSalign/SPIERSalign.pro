@@ -26,7 +26,9 @@ DESTDIR \
     bin
 
 # Needed to make binaries launchable from file in Ubuntu - GCC default link flag -pie on newer Ubuntu versions this so otherwise recognised as shared library
-QMAKE_LFLAGS += -no-pie
+unix:!macx {
+    QMAKE_LFLAGS += -no-pie
+}
 
 RC_FILE += resources/icon.rc
 
@@ -62,6 +64,8 @@ SOURCES += src/mainwindowimpl.cpp \
 
 # MacOS common build here
 macx {
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 26.0
+
     #Mac icon
     ICON = resources/SPIERSalignIcon.icns
 
