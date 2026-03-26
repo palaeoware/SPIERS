@@ -89,23 +89,13 @@ void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const Q
 #ifndef __APPLE__
 int main(int argc, char **argv)
 {
-    
     MLInterface::TestML();
-    
-    qDebug()<<"OpenCV enabled? "<<MLInterface::enabled;
+
+    qDebug() << "OpenCV enabled? " << MLInterface::enabled;
     if (MLInterface::enabled)
     {
         mlInterface = new MLInterface();
     }
-
-    //This has the app draw at HiDPI scaling on HiDPI displays, usually two pixels for every one logical pixel
-    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-
-    //This has QPixmap images use the @2x images when available
-    //See this bug for more details on how to get this right: https://bugreports.qt.io/browse/QTBUG-44486#comment-327410
-#if (QT_VERSION >= 0x050600)
-    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-#endif
 
     QApplication app( argc, argv );
 
@@ -117,9 +107,7 @@ int main(int argc, char **argv)
     splash->show();
     splash->showMessage("<font><b>" + QString(PRODUCTNAME) + " v" + QString(SOFTWARE_VERSION) + " </b></font>", Qt::AlignHCenter, Qt::white);
     app.processEvents();
-    QTimer::singleShot(3000, splash, SLOT(close()));
-
-    app.connect( &app, SIGNAL( lastWindowClosed() ), &app, SLOT( quit() ) );
+    QTimer::singleShot(3000, splash, &QSplashScreen::close);
 
     NetModule n;
     n.checkForNew();
@@ -297,6 +285,14 @@ int main(int argc, char *argv[])
 
 
     qDebug() << "Moving to start application mainwindow...";
+
+    MLInterface::TestML();
+
+    qDebug() << "OpenCV enabled? " << MLInterface::enabled;
+    if (MLInterface::enabled)
+    {
+        mlInterface = new MLInterface();
+    }
 
     NetModule n;
     n.checkForNew();

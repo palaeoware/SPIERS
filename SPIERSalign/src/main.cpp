@@ -40,10 +40,6 @@ int main(int argc, char **argv)
 
     //This has QPixmap images use the @2x images when available
     //See this bug for more details on how to get this right: https://bugreports.qt.io/browse/QTBUG-44486#comment-327410
-#if (QT_VERSION >= 0x050600)
-    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-#endif
-
     QApplication app(argc, argv);
 
     //Style program with our dark style
@@ -54,9 +50,7 @@ int main(int argc, char **argv)
     splash->show();
     splash->showMessage("<font><b>" + QString(PRODUCTNAME) + " v" + QString(SOFTWARE_VERSION) + " </b></font>", Qt::AlignHCenter, Qt::white);
     app.processEvents();
-    QTimer::singleShot(3000, splash, SLOT(close()));
-
-    app.connect( &app, SIGNAL( lastWindowClosed() ), &app, SLOT( quit() ) );
+    QTimer::singleShot(3000, splash, &QSplashScreen::close);
 
     NetModule netModule;
     netModule.checkForNew();

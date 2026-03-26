@@ -26,7 +26,6 @@ MLUpdateBlockingDialog::MLUpdateBlockingDialog(QWidget *parent)
 {
     setWindowTitle("Working");
 
-    setModal(true);
     setWindowModality(Qt::ApplicationModal);
 
     // Remove close/help buttons, and keep the dialog above its parent.

@@ -56,7 +56,7 @@ class MainWindow;
 #define SPINTIMERINTERVAL 10
 #define SPINRATE .02
 #define SPVFILEVERSION 11
-#define GL_MAJOR 2
+#define GL_MAJOR 3
 #define GL_MINOR 1
 #define GL_MAJOR_MAC 3
 #define GL_MINOR_MAC 3

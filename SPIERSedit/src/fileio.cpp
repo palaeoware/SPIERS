@@ -573,7 +573,7 @@ void OldLoadGreyData(int fnum, int seg)
             QString sfname=Fname.left(lastsep);
             QString actfn=Fname.mid(lastsep+1, lastdot-lastsep-1);
             QString temp = "/" + SettingsFileName + "/" + "s";
-            QString t2; t2.sprintf("%d_",seg+1);
+            QString t2 = QString::asprintf("%d_", seg + 1);
             temp.append(t2); temp.append(actfn);
             sfname.append(temp);
 

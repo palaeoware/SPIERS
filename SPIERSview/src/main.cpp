@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
     //splash->show();
     //splash->showMessage("<font><b>" + QString(PRODUCTNAME) + " v" + QString(SOFTWARE_VERSION) + " </b></font>", Qt::AlignHCenter, Qt::white);
     app.processEvents();
-    QTimer::singleShot(2000, splash, SLOT(close()));
+    QTimer::singleShot(2000, splash, &QSplashScreen::close);
 
     app.setQuitOnLastWindowClosed(true);
 
