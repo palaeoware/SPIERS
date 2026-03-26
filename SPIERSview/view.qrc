@@ -3,5 +3,7 @@
         <file alias="lightingFragmentShader.fsh">resources/lightingFragmentShader.fsh</file>
         <file alias="lightingVertexShader.vsh">resources/lightingVertexShader.vsh</file>
         <file>resources/SPIERSviewIcon.svg</file>
+        <file alias="shadowDepthFragmentShader.fsh">resources/shadowDepthFragmentShader.fsh</file>
+        <file alias="shadowDepthVertexShader.vsh">resources/shadowDepthVertexShader.vsh</file>
     </qresource>
 </RCC>

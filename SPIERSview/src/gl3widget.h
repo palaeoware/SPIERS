@@ -26,10 +26,14 @@
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLDebugLogger>
 #include <QOpenGLContext>
+#include <QOpenGLExtraFunctions>
 
 #include "globals.h"
 #include "drawglscalegrid.h"
 #include "drawglscaleball.h"
+
+// Resolution of each shadow depth map — 2048x2048 per light
+#define SHADOW_MAP_SIZE 2048
 
 class GlWidget : public QOpenGLWidget, protected QOpenGLFunctions
 {
@@ -61,7 +65,16 @@ public:
 
     QOpenGLVertexArrayObject vao;
     QOpenGLFunctions *glfunctions;
-    QOpenGLShaderProgram lightingShaderProgram;
+    QOpenGLExtraFunctions *glextrafunctions;
+
+    // Main lighting shader — compiled in three variants
+    QOpenGLShaderProgram lightingShaderProgram;        // no shadows
+    QOpenGLShaderProgram lightingShaderProgramShadow;  // hard shadows
+    QOpenGLShaderProgram lightingShaderProgramPCF;     // soft shadows (PCF)
+
+    // Depth-only shader for shadow pass
+    QOpenGLShaderProgram shadowDepthShaderProgram;
+
     QMatrix4x4 pMatrix;
 
     bool CanISee(int index);
@@ -83,7 +96,6 @@ public:
     void updateFOV();
 
 protected:
-    // Overrides
     bool event(QEvent *event) override;
     void initializeGL() override;
     void resizeGL(int width, int height) override;
@@ -93,6 +105,26 @@ protected:
 private:
     bool gestureEvent(QGestureEvent *event);
     void pinchTriggered(QPinchGesture *gesture);
+    QVector3D GetLightColour(int lightPower, QColor lightColour);
+    QVector3D GetLightDirection(int xyAngle, int zPos);
+    float GetLightPowerMultiplier(int power);
+
+    // Shadow map infrastructure
+    void initShadowFBOs();
+    void renderShadowPass(int lightIndex, QVector3D lightDir, QMatrix4x4 &lightSpaceMatrixOut);
+    QMatrix4x4 computeLightSpaceMatrix(QVector3D lightDir);
+    QOpenGLShaderProgram *selectShader();
+
+    // One FBO + depth texture per light slot (always allocated, used when shadow enabled)
+    GLuint shadowFBO[3];
+    GLuint shadowDepthTexture[3];
+
+    // Light space matrices — recomputed each frame for active shadow lights
+    QMatrix4x4 lightSpaceMatrix[3];
+
+    // Dummy 1x1 white texture bound to shadow slots that aren't casting shadows
+    // Prevents undefined behaviour from unbound sampler2DShadow uniforms
+    GLuint dummyShadowTexture;
 
     DrawGLScaleGrid *scaleGrid;
     DrawGLScaleBall *scaleBall;

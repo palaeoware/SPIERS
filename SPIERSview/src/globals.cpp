@@ -69,7 +69,16 @@ QStringList infoClassificationRank;
 QStringList infoTitle;
 QMatrix4x4 globalMatrix;
 
-int mainXYAngle = 120;
-int mainZPos = -10;
-int mainPower = 4;
-QColor mainColour = Qt::white;
+int mainLightXYAngle = 120;
+int mainLightZPos = -20;
+int mainLightPower = 5;
+QColor mainLightColour = Qt::white;
+bool secondaryLightActive=true, headlightActive=false;
+int secondaryLightXYAngle= 260;;
+int secondaryLightZPos = -10;
+int secondaryLightPower = 4;
+QColor secondaryLightColour = Qt::white;
+int headlightPower = 3;
+QColor headlightColour = Qt::white;
+ShadowMode mainLightShadows = ShadowMode::Soft, secondaryLightShadows = ShadowMode::None,
+    headlightShadows= ShadowMode::None; //always

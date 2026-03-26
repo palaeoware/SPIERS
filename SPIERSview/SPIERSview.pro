@@ -7,7 +7,6 @@ TARGET = SPIERSview64
 TEMPLATE = app
 
 QT += network xml gui core widgets opengl openglwidgets concurrent
-
 # Allow debug in release
 #QMAKE_CXXFLAGS_RELEASE += -g
 #QMAKE_CFLAGS_RELEASE += -g

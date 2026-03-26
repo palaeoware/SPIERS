@@ -52,7 +52,7 @@ public:
     void RefreshObjects();
     void EnableRenderCommands();
     void DisableRenderCommands();
-    void RefreshInfo();
+    void RefreshUIFromData();
     void setSamples(int i);
     void setSpecificProgress(int p);
     void setSpecificLabel(QString t);
@@ -62,6 +62,7 @@ public:
     GlWidget *gl3widget;
     QHBoxLayout *gllayout;
 
+    void updateLightColourButtons();
 public slots:
     void showSpecificProgress();
 
@@ -240,8 +241,23 @@ private slots:
     void on_actionLighting_Panel_triggered();
     void on_mainLightColourButton_clicked();
     void on_dialMainLightXY_valueChanged(int value);
-    void on_verticalSlider_valueChanged(int value);
-    void on_horizontalSlider_valueChanged(int value);
+    void on_mainLightZ_valueChanged(int value);
+    void on_mainLightPower_valueChanged(int value);
+    void on_secondaryLightColourButton_clicked();
+    void on_headlightColourButton_clicked();
+    void on_dialSecondaryLightXY_valueChanged(int value);
+    void on_secondaryLightZ_valueChanged(int value);
+    void on_secondaryLightPower_valueChanged(int value);
+    void on_headlightPower_valueChanged(int value);
+
+
+    void on_chkSecondaryLightActive_stateChanged(int newState);
+    void on_chkHeadlightActive_stateChanged(int newState);
+    void on_cmbShadowsMain_currentIndexChanged(int index);
+    void on_cmbShadowsSecondary_currentIndexChanged(int index);
+
+
+
 };
 
 extern MainWindow *mainWindow;

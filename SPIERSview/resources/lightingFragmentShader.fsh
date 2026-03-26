@@ -1,49 +1,52 @@
 #version 330 core
 
 // ---------------------------------------------------------------------------
-// Cook-Torrance BRDF fragment shader â€” multi-light version
+// Cook-Torrance BRDF fragment shader — multi-light + optional shadow mapping
 //
-// Supports up to MAX_LIGHTS directional (distant) lights.
-// Active light count is controlled by the lightCount uniform â€” unused
-// slots in the arrays are never evaluated.
+// Compiled in three variants via preprocessor defines prepended at runtime:
+//   #define SHADOWS_ENABLED 0  — no shadow code, zero overhead
+//   #define SHADOWS_ENABLED 1, PCF_ENABLED 0  — hard shadows
+//   #define SHADOWS_ENABLED 1, PCF_ENABLED 1  — soft shadows (PCF)
 //
-// The loop is bounded by the compile-time constant MAX_LIGHTS (3), so the
-// driver will unroll it entirely. Performance with lightCount=1 is
-// identical to a single-light shader.
-//
-// BRDF components:
-//   NDF : GGX/Trowbridge-Reitz normal distribution
-//   G   : Smith/Schlick-GGX geometry (masking + shadowing)
-//   F   : Fresnel-Schlick approximation
-//
-// Material parameters:
-//   albedo    - object colour, 0-1 per channel
-//   roughness - 0.0 (mirror) to 1.0 (fully matte)
-//   metallic  - always 0.0 for fossil/biological surfaces
-//   alpha     - transparency
-//
-// Lighting parameters:
-//   lightDirections[i] - normalised direction TO light, in eye space
-//   lightColors[i]     - RGB intensity (values > 1.0 allowed, tone-mapped)
-//   lightCount         - number of active lights (1-3)
-//   ambientStrength    - global ambient scale, 0.0-1.0
+// Shadow notes:
+//   Each shadow-casting light has its own depth texture (sampler2DShadow)
+//   and light-space matrix. sampler2DShadow performs hardware depth
+//   comparison, returning 1.0 (lit) or 0.0 (shadowed).
+//   PCF samples a 3x3 neighbourhood and averages results for soft edges.
 // ---------------------------------------------------------------------------
 
 #define MAX_LIGHTS 3
 
+// Material
 uniform vec3  albedo;
 uniform float roughness;
 uniform float metallic;
 uniform float alpha;
 uniform float ambientStrength;
 
+// Lighting
 uniform vec3  lightDirections[MAX_LIGHTS];
 uniform vec3  lightColors[MAX_LIGHTS];
 uniform int   lightCount;
 
+#if SHADOWS_ENABLED
+// One shadow map per light slot — bound/unbound based on which lights
+// have shadows enabled. Lights without shadows use a dummy 1x1 white texture.
+uniform sampler2DShadow shadowMaps[MAX_LIGHTS];
+uniform int   lightCastsShadow[MAX_LIGHTS]; // 1 if this light casts shadows
+uniform float shadowBias;                   // typically 0.005
+#if PCF_ENABLED
+uniform float shadowMapTexelSize;           // 1.0 / SHADOW_MAP_SIZE (e.g. 1/2048)
+#endif
+#endif
+
 in vec3 varyingNormal;
 in vec3 varyingViewDir;
 in vec3 varyingFragPos;
+
+#if SHADOWS_ENABLED
+in vec4 fragPosLightSpace[MAX_LIGHTS];
+#endif
 
 out vec4 fragColor;
 
@@ -61,7 +64,7 @@ float distributionGGX(vec3 N, vec3 H, float rough)
 }
 
 // ---------------------------------------------------------------------------
-// Schlick-GGX Geometry Function (single term)
+// Schlick-GGX Geometry Function
 // ---------------------------------------------------------------------------
 float geometrySchlickGGX(float NdotV, float rough)
 {
@@ -70,7 +73,6 @@ float geometrySchlickGGX(float NdotV, float rough)
     return NdotV / (NdotV * (1.0 - k) + k);
 }
 
-// Smith method â€” view and light terms combined
 float geometrySmith(float NdotV, float NdotL, float rough)
 {
     return geometrySchlickGGX(NdotV, rough)
@@ -78,26 +80,68 @@ float geometrySmith(float NdotV, float NdotL, float rough)
 }
 
 // ---------------------------------------------------------------------------
-// Fresnel-Schlick Approximation
-// F0 = 0.04 for all non-metals (correct for bone, shell, rock, etc.)
+// Fresnel-Schlick
 // ---------------------------------------------------------------------------
 vec3 fresnelSchlick(float cosTheta, vec3 F0)
 {
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
 
+// ---------------------------------------------------------------------------
+// Shadow sampling
+// ---------------------------------------------------------------------------
+#if SHADOWS_ENABLED
+float sampleShadow(int lightIndex, vec4 lightSpacePos, float NdotL)
+{
+    // Perspective divide to NDC, then remap [-1,1] -> [0,1] for texture lookup
+    vec3 projCoords = lightSpacePos.xyz / lightSpacePos.w;
+    projCoords = projCoords * 0.5 + 0.5;
+
+    // Fragment outside the light frustum — treat as fully lit
+    if (projCoords.z > 1.0) return 1.0;
+
+    // Slope-scaled bias reduces shadow acne on surfaces angled away from light
+    float bias = max(shadowBias * (1.0 - NdotL), shadowBias * 0.1);
+    float compareDepth = projCoords.z - bias;
+
+#if PCF_ENABLED
+    // 5x5 PCF kernel — average 25 shadow tests for soft edges
+    float shadow = 0.0;
+    for (int x = -2; x <= 2; x++)
+    {
+        for (int y = -2; y <= 2; y++)
+        {
+            vec2 offset = vec2(x, y) * shadowMapTexelSize;
+            vec3 uvz = vec3(projCoords.xy + offset, compareDepth);
+            if      (lightIndex == 0) shadow += texture(shadowMaps[0], uvz);
+            else if (lightIndex == 1) shadow += texture(shadowMaps[1], uvz);
+            else                      shadow += texture(shadowMaps[2], uvz);
+        }
+    }
+    return shadow / 25.0;
+#else
+    // Hard shadow — single sample
+    vec3 uvz = vec3(projCoords.xy, compareDepth);
+    if      (lightIndex == 0) return texture(shadowMaps[0], uvz);
+    else if (lightIndex == 1) return texture(shadowMaps[1], uvz);
+    else                      return texture(shadowMaps[2], uvz);
+#endif
+}
+#endif
+
+// ---------------------------------------------------------------------------
+// Main
+// ---------------------------------------------------------------------------
 void main(void)
 {
     vec3 N = normalize(varyingNormal);
     if (!gl_FrontFacing) N = -N;
 
-    vec3 V    = normalize(varyingViewDir);
+    vec3  V     = normalize(varyingViewDir);
     float NdotV = max(dot(N, V), 0.0);
 
-    // Base reflectance at normal incidence â€” 0.04 for all non-metals
     vec3 F0 = mix(vec3(0.04), albedo, metallic);
 
-    // Accumulate contribution from each active light
     vec3 Lo = vec3(0.0);
     for (int i = 0; i < MAX_LIGHTS; i++)
     {
@@ -107,33 +151,32 @@ void main(void)
         vec3  H     = normalize(V + L);
         float NdotL = max(dot(N, L), 0.0);
 
-        // Cook-Torrance specular BRDF
-        float NDF     = distributionGGX(N, H, roughness);
-        float G       = geometrySmith(NdotV, NdotL, roughness);
-        vec3  F       = fresnelSchlick(max(dot(H, V), 0.0), F0);
+        // Cook-Torrance BRDF
+        float NDF      = distributionGGX(N, H, roughness);
+        float G        = geometrySmith(NdotV, NdotL, roughness);
+        vec3  F        = fresnelSchlick(max(dot(H, V), 0.0), F0);
+        vec3  specular = (NDF * G * F) / (4.0 * NdotV * NdotL + 0.0001);
 
-        vec3  numerator   = NDF * G * F;
-        float denominator = 4.0 * NdotV * NdotL + 0.0001;
-        vec3  specular    = numerator / denominator;
-
-        // Energy-conserving diffuse: kD + kS <= 1
-        // F represents the specular fraction (kS)
-        // Metals have no diffuse component
         vec3 kD      = (vec3(1.0) - F) * (1.0 - metallic);
         vec3 diffuse = kD * albedo / 3.14159265;
 
-        Lo += (diffuse + specular) * lightColors[i] * NdotL;
+        // Shadow factor — 1.0 fully lit, 0.0 fully shadowed
+        float shadowFactor = 1.0;
+#if SHADOWS_ENABLED
+        if (lightCastsShadow[i] == 1)
+            shadowFactor = sampleShadow(i, fragPosLightSpace[i], NdotL);
+#endif
+
+        Lo += (diffuse + specular) * lightColors[i] * NdotL * shadowFactor;
     }
 
-    // Ambient â€” single global term, not per-light
     vec3 ambient = ambientStrength * albedo;
+    vec3 color   = ambient + Lo;
 
-    vec3 color = ambient + Lo;
-
-    // Reinhard tone mapping â€” prevents highlight blowout without HDR framebuffer
+    // Reinhard tone mapping
     color = color / (color + vec3(1.0));
 
-    // Gamma correction (approximate sRGB)
+    // Gamma correction
     color = pow(color, vec3(1.0 / 2.2));
 
     fragColor = vec4(color, alpha);

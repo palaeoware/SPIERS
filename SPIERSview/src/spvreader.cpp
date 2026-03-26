@@ -1108,7 +1108,7 @@ void SPVReader::version6Plus(QString filename)
     mainWindow->RefreshObjects();
 
     //qDebug() << "[Where I'm I?] In version6Plus calling RefreshInfo()";
-    mainWindow->RefreshInfo();
+    mainWindow->RefreshUIFromData();
 
     int items = 0;
     for (int z = BaseIndex; z < SVObjects.count(); z++)

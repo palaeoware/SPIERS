@@ -52,6 +52,8 @@ private slots:
     void startTimerFired();
     void on_selectDirectoryButton_clicked();
 
+
+
 };
 
 extern MainWindow *mainWindow;

@@ -135,10 +135,17 @@ extern QStringList infoTitle;
 extern QString stlHash;
 
 //Lighting panel
-extern int mainXYAngle;
-extern int mainZPos;
-extern int mainPower;
-extern QColor mainColour;
-
-
+extern int mainLightXYAngle;
+extern int mainLightZPos;
+extern int mainLightPower;
+extern QColor mainLightColour;
+extern bool secondaryLightActive, headlightActive;
+extern int secondaryLightXYAngle;
+extern int secondaryLightZPos;
+extern int secondaryLightPower;
+extern QColor secondaryLightColour;
+extern int headlightPower;
+extern QColor headlightColour;
+enum ShadowMode { None=0, Hard=1, Soft=2};
+extern ShadowMode mainLightShadows, secondaryLightShadows, headlightShadows;
 #endif // GLOBALS_H

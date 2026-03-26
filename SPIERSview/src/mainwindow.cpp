@@ -209,6 +209,11 @@ MainWindow::MainWindow(QWidget *parent)
     containsPresurfaced = false;
     containsNonPresurfaced = false;
 
+    mainLightPower = 5;
+    mainLightColour = Qt::white;
+    mainLightXYAngle = 120;
+    mainLightZPos = -20;
+
     AnimOutputDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
     mainWindowReady = true;
 }
@@ -295,7 +300,7 @@ void MainWindow::StartTimer_fired()
             StripDownForVoxml(); //reduce interface to view-only level
 
             //qDebug() << "[Where I'm I?] In StartTimer_fired - about to call RefreshInfo()";
-            RefreshInfo();
+            RefreshUIFromData();
 
             //qDebug() << "[Where I'm I?] In StartTimer_fired - about to call UpdateGL()";
             UpdateGL();
@@ -316,7 +321,7 @@ void MainWindow::StartTimer_fired()
             StripDownForVoxml(); //reduce interface to view-only level
 
             //qDebug() << "[Where I'm I?] In StartTimer_fired - about to call RefreshInfo()";
-            RefreshInfo();
+            RefreshUIFromData();
 
             //qDebug() << "[Where I'm I?] In StartTimer_fired - about to call UpdateGL()";
             UpdateGL();
@@ -333,7 +338,7 @@ void MainWindow::StartTimer_fired()
         reader.processFile(fname);
 
         //qDebug() << "[Where I'm I?] In StartTimer_fired - about to call RefreshInfo()";
-        RefreshInfo();
+        RefreshUIFromData();
 
         //qDebug() << "[Where I'm I?] In StartTimer_fired - about to call UpdateGL()";
         UpdateGL();
@@ -1085,9 +1090,9 @@ void MainWindow::RefreshObjects()
 }
 
 /**
- * @brief MainWindow::RefreshInfo
+ * @brief MainWindow::RefreshUIFromData
  */
-void MainWindow::RefreshInfo()
+void MainWindow::RefreshUIFromData()
 {
     //redo the info window
     if (SPVs.count() == 0) return;
@@ -1201,6 +1206,28 @@ void MainWindow::RefreshInfo()
     ui->infoTreeWidget->addTopLevelItem(comments);
 
     RedoInfoText();
+
+
+
+    //Lighting UI
+    updateLightColourButtons();
+    ui->dialMainLightXY->setValue(mainLightXYAngle);
+    ui->mainLightZ->setValue(mainLightZPos);
+    ui->mainLightPower->setValue(mainLightPower);
+    ui->dialSecondaryLightXY->setValue(secondaryLightXYAngle);
+    ui->secondaryLightZ->setValue(secondaryLightZPos);
+    ui->secondaryLightPower->setValue(secondaryLightPower);
+    if (secondaryLightActive)
+        ui->chkSecondaryLightActive->setCheckState(Qt::Checked);
+    else
+        ui->chkSecondaryLightActive->setCheckState(Qt::Unchecked);
+    if (headlightActive)
+        ui->chkHeadlightActive->setCheckState(Qt::Checked);
+    else
+        ui->chkHeadlightActive->setCheckState(Qt::Unchecked);
+
+    ui->cmbShadowsMain->setCurrentIndex((int)mainLightShadows);
+    ui->cmbShadowsSecondary->setCurrentIndex((int)secondaryLightShadows);
 }
 
 /**
@@ -1263,7 +1290,7 @@ void MainWindow::on_infoTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int 
             infoClassificationRank.append(text1);
             infoClassificationName.append(text2);
 
-            RefreshInfo();
+            RefreshUIFromData();
         }
         else
         {
@@ -1278,7 +1305,7 @@ void MainWindow::on_infoTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int 
                 if (item->text(0) == "References") infoReference.append(text);
                 if (item->text(0) == "Provenance") infoProvenance.append(text);
                 if (item->text(0) == "Specimen") infoSpecimen.append(text);
-                RefreshInfo();
+                RefreshUIFromData();
             }
         }
     }
@@ -1307,7 +1334,7 @@ void MainWindow::on_infoTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int 
                     infoClassificationName[i] = text2;
                 }
 
-            RefreshInfo();
+            RefreshUIFromData();
         }
         else
         {
@@ -1330,7 +1357,7 @@ void MainWindow::on_infoTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int 
                 if (item->parent()->text(0) == "References")
                     for (int i = 0; i < infoReference.count(); i++) if (infoReference[i] == oldtext) infoReference[i] = text;
 
-                RefreshInfo();
+                RefreshUIFromData();
             }
         }
     }
@@ -1380,7 +1407,7 @@ void MainWindow::deleteinfo()
                 infoClassificationName.clear();
                 infoClassificationRank.clear();
             }
-            RefreshInfo();
+            RefreshUIFromData();
         }
     }
     else
@@ -1435,7 +1462,7 @@ void MainWindow::deleteinfo()
                         infoClassificationName.removeAt(i);
                         break;
                     }
-            RefreshInfo();
+            RefreshUIFromData();
         }
     }
 }
@@ -2559,7 +2586,7 @@ void MainWindow::on_actionImport_SPV_triggered()
     SPVReader r;
     r.processFile(ifname);
     isFileDirty = true;
-    RefreshInfo();
+    RefreshUIFromData();
 }
 
 /**
@@ -4136,7 +4163,6 @@ void MainWindow::on_actionQuadric_Fidelity_Reduction_triggered()
 
 void MainWindow::on_actionLighting_Panel_triggered()
 {
-    qDebug()<<"HERE";
     ui->dockWidgetLighting->setVisible(ui->actionLighting_Panel->isChecked());
 }
 
@@ -4144,24 +4170,165 @@ void MainWindow::on_actionLighting_Panel_triggered()
 
 void MainWindow::on_mainLightColourButton_clicked()
 {
-    qDebug()<<"Col clicked";
-    //See new globals to set...
+    QColor chosen = QColorDialog::getColor(
+        mainLightColour,          // start from the current colour
+        this,                   // parent — keeps it modal to this window
+        "Select Colour"
+        );
+
+    if (chosen.isValid()) {     // user didn't cancel
+        mainLightColour = chosen;
+        updateLightColourButtons();
+        UpdateGL();
+    }
 }
 
+void MainWindow::updateLightColourButtons()
+{
+    ui->mainLightColourButton->setStyleSheet(
+        QString("QPushButton { background-color: %1; border: 1px solid #555; border-radius: 4px; }"
+                "QPushButton:hover { border: 2px solid #000; }")
+            .arg(mainLightColour.name(QColor::HexArgb))
+        );
+
+    ui->secondaryLightColourButton->setStyleSheet(
+        QString("QPushButton { background-color: %1; border: 1px solid #555; border-radius: 4px; }"
+                "QPushButton:hover { border: 2px solid #000; }")
+            .arg(secondaryLightColour.name(QColor::HexArgb))
+        );
+
+    ui->headlightColourButton->setStyleSheet(
+        QString("QPushButton { background-color: %1; border: 1px solid #555; border-radius: 4px; }"
+                "QPushButton:hover { border: 2px solid #000; }")
+            .arg(headlightColour.name(QColor::HexArgb))
+        );
+}
 
 void MainWindow::on_dialMainLightXY_valueChanged(int value)
 {
-    qDebug()<<"xy changed "<<value;
+    mainLightXYAngle = value;
+    UpdateGL();
 }
 
 
-void MainWindow::on_verticalSlider_valueChanged(int value)
+void MainWindow::on_mainLightZ_valueChanged(int value)
 {
-    qDebug()<<"z changed "<<value;
+    mainLightZPos = value;
+    UpdateGL();
 }
 
 
-void MainWindow::on_horizontalSlider_valueChanged(int value)
+void MainWindow::on_mainLightPower_valueChanged(int value)
 {
-    qDebug()<<"power changed "<<value;
+    mainLightPower = value;
+    UpdateGL();
+}
+
+
+void MainWindow::on_secondaryLightColourButton_clicked()
+{
+    QColor chosen = QColorDialog::getColor(
+        secondaryLightColour,          // start from the current colour
+        this,                   // parent — keeps it modal to this window
+        "Select Colour"
+        );
+
+    if (chosen.isValid()) {     // user didn't cancel
+        secondaryLightColour = chosen;
+        updateLightColourButtons();
+        UpdateGL();
+    }
+}
+
+void MainWindow::on_headlightColourButton_clicked()
+{
+    QColor chosen = QColorDialog::getColor(
+        headlightColour,          // start from the current colour
+        this,                   // parent — keeps it modal to this window
+        "Select Colour"
+        );
+
+    if (chosen.isValid()) {     // user didn't cancel
+        headlightColour = chosen;
+        updateLightColourButtons();
+        UpdateGL();
+    }
+}
+
+void MainWindow::on_dialSecondaryLightXY_valueChanged(int value)
+{
+    secondaryLightXYAngle = value;
+    UpdateGL();
+}
+
+
+void MainWindow::on_secondaryLightZ_valueChanged(int value)
+{
+    secondaryLightZPos = value;
+    UpdateGL();
+}
+
+
+void MainWindow::on_secondaryLightPower_valueChanged(int value)
+{
+    secondaryLightPower = value;
+    UpdateGL();
+}
+
+void MainWindow::on_headlightPower_valueChanged(int value)
+{
+    headlightPower = value;
+    //qDebug()<<"Headlightpower now "<<headlightPower;
+    UpdateGL();
+}
+
+void MainWindow::on_chkSecondaryLightActive_stateChanged(int newState)
+{
+    //qDebug()<<"HERE sec"<<newState;
+    secondaryLightActive = (newState == Qt::Checked);
+    UpdateGL();
+}
+
+
+void MainWindow::on_chkHeadlightActive_stateChanged(int newState)
+{
+    //qDebug()<<"HERE headlight"<<newState;;
+    headlightActive = (newState == Qt::Checked);
+    UpdateGL();
+}
+
+void MainWindow::on_cmbShadowsMain_currentIndexChanged(int index)
+{
+    switch (index)
+    {
+    case 0:
+        mainLightShadows = ShadowMode::None;
+        break;
+    case 1:
+        mainLightShadows = ShadowMode::Hard;
+        break;
+    case 2:
+        mainLightShadows = ShadowMode::Soft;
+        break;
+    }
+    UpdateGL();
+}
+
+
+void MainWindow::on_cmbShadowsSecondary_currentIndexChanged(int index)
+{
+    switch (index)
+    {
+    case 0:
+        secondaryLightShadows = ShadowMode::None;
+        break;
+    case 1:
+        secondaryLightShadows = ShadowMode::Hard;
+        break;
+    case 2:
+        secondaryLightShadows = ShadowMode::Soft;
+        break;
+    }
+    //qDebug()<<"Secondary shadow mode = "<<secondaryLightShadows;
+    UpdateGL();
 }
