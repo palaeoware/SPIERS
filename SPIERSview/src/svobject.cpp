@@ -552,7 +552,7 @@ void SVObject::WritePD(QFile *outfile)
 
     QDataStream out(outfile);
     out.setByteOrder(QDataStream::LittleEndian);
-    out << compressedPolyData.size();
+    out << (int)compressedPolyData.size();
     outfile->write(compressedPolyData);
 }
 

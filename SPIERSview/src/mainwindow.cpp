@@ -36,7 +36,7 @@
 #include <QMutableListIterator>
 #include <QStandardPaths>
 #include <QDesktopServices>
-
+#include "scalegridoverlay.h"
 
 
 #include <QScreen>
@@ -53,7 +53,6 @@
 #include "spvwriter.h"
 #include "../SPIERScommon/src/netmodule.h"
 #include "movetogroup.h"
-#include "gridfontsizedialog.h"
 
 /**
  * @brief MainWindow::MainWindow
@@ -105,6 +104,14 @@ MainWindow::MainWindow(QWidget *parent)
     ui->actionNo_Stereo->setChecked(true);
 
     gl3widget = new GlWidget(ui->frameVTK);
+    gridOverlay = new ScaleGridOverlay(gl3widget, ui->frameVTK);
+    gridOverlay->setGeometry(gl3widget->geometry());
+    gridOverlay->show();
+    // And connect to resize events so it stays aligned:
+    connect(gl3widget, &GlWidget::resized, this, [=]() {
+        gridOverlay->setGeometry(gl3widget->geometry());
+        gridOverlay->update();
+    });
 
     gllayout = new QHBoxLayout;
     gllayout->addWidget(gl3widget);
@@ -4093,16 +4100,6 @@ void MainWindow::on_actionShow_Minor_Values_triggered()
     UpdateGL();
 }
 
-/**
- * @brief MainWindow::on_actionScale_Grid_Font_Size_triggered
- */
-void MainWindow::on_actionScale_Grid_Font_Size_triggered()
-{
-    GridFontSizeDialog gridFontSizeDialog;
-    FilterKeys = false;
-    gridFontSizeDialog.exec();
-    FilterKeys = true;
-}
 
 /**
  * @brief MainWindow::on_actionShow_Minor_Scale_Lines_triggered
@@ -4141,9 +4138,6 @@ void MainWindow::on_actionReset_Scale_Grid_to_Defaults_triggered()
     colorGridMinorRed = 168;
     colorGridMinorGreen = 181;
     colorGridMinorBlue = 212;
-
-    // Reset grid font size
-    fontSizeGrid = 3;
 
     UpdateGL();
 }

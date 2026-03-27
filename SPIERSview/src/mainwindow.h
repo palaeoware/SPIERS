@@ -32,6 +32,7 @@
 class QTreeWidgetItem;
 
 class SPV;
+class ScaleGridOverlay;
 
 namespace Ui {
 class MainWindow;
@@ -60,6 +61,8 @@ public:
 
     Ui::MainWindow *ui;
     GlWidget *gl3widget;
+    ScaleGridOverlay *gridOverlay;
+
     QHBoxLayout *gllayout;
 
     void updateLightColourButtons();
@@ -234,7 +237,6 @@ private slots:
     void on_actionBounding_Box_triggered();
     void on_MultipleStepButton_pressed();
     void on_actionFull_Screen_triggered();
-    void on_actionScale_Grid_Font_Size_triggered();
     void on_actionReset_Scale_Grid_to_Defaults_triggered();
     void on_actionShow_Minor_Scale_Lines_triggered();
     void on_actionQuadric_Fidelity_Reduction_triggered();

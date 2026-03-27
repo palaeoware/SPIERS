@@ -27,12 +27,14 @@ GlWidget::GlWidget(QWidget *parent)
     QList<Qt::GestureType> gestures;
     gestures << Qt::PinchGesture;
     grabGestures(gestures);
-    scaleGrid = new DrawGLScaleGrid(this);
     scaleBall = new DrawGLScaleBall(this);
     for (int i = 0; i < 3; i++) { shadowFBO[i] = 0; shadowDepthTexture[i] = 0; }
     dummyShadowTexture = 0;
     oitFBO = 0; oitAccumTexture = 0; oitRevealTexture = 0;
     oitDepthRBO = 0; fullscreenQuadVBO = 0;
+
+    realOrthoHeightMm = 0;
+    realOrthoWidthMm = 0;
 }
 
 GlWidget::~GlWidget()
@@ -170,7 +172,6 @@ void GlWidget::initializeGL()
         initShadowFBOs();
     initOIT();
 
-    scaleGrid->initializeGL();
     scaleBall->initializeGL();
 }
 
@@ -435,6 +436,7 @@ void GlWidget::resizeGL(int width, int height)
     // OIT textures must match viewport size
     if (oitFBO) resizeOIT(xdim, ydim);
     update();
+    emit resized(); //for the painter overlay
 }
 
 void GlWidget::DoPMatrix(int width, int height)
@@ -837,8 +839,7 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
     glDepthMask(true);
     updateFOV();
     scaleBall->draw(vMatrix, vMatrix * camera);
-    if (mainWindow->ui->actionShow_Scale_Grid->isChecked())
-        scaleGrid->draw(vMatrix, vMatrix * camera);
+
 }
 
 // ---------------------------------------------------------------------------
@@ -1066,7 +1067,13 @@ float    GlWidget::GetLightPowerMultiplier(int power) { return float(pow(1.5f, f
 QVector3D GlWidget::GetLightColour(int lightPower, QColor lightColour) { float p=GetLightPowerMultiplier(lightPower); return QVector3D(lightColour.redF()*p, lightColour.greenF()*p, lightColour.blueF()*p); }
 QVector3D GlWidget::GetLightDirection(int xyAngle, int zPos) { float rad=qDegreesToRadians(static_cast<double>(xyAngle)); return QVector3D(-sin(rad),-cos(rad),-(static_cast<double>(zPos-25)/50.0)).normalized(); }
 double   GlWidget::getFOV() { return currentFOV; }
-void     GlWidget::updateFOV() { float scale=1.0f/static_cast<float>(mmPerUnit); float divider=(this->height()*globalRescale)/30.0f; currentFOV=static_cast<double>(ClipAngle/(divider*scale)); }
+
+void GlWidget::updateFOV()
+{
+    float scale=1.0f/static_cast<float>(mmPerUnit); float divider=(this->height()*globalRescale)/30.0f; currentFOV=static_cast<double>(ClipAngle/(divider*scale));
+    realOrthoWidthMm = (ClipAngle * xdim * mmPerUnit) / (6500.0f * globalRescale);
+    realOrthoHeightMm = (ClipAngle * ydim * mmPerUnit) / (6500.0f * globalRescale);
+}
 
 void GlWidget::glDebug(QString string)
 {

@@ -1077,7 +1077,8 @@ void SPVReader::version6Plus(QString filename)
 
         if (version >= 11)
         {
-            in >> fontSizeGrid;
+            int dummy;
+            in >> dummy; //was font size
             in >> showMinorGridLines;
             mainWindow->ui->actionShow_Minor_Scale_Lines->setChecked(showMinorGridLines);
             in >> showMinorGridValues;
@@ -1101,6 +1102,24 @@ void SPVReader::version6Plus(QString filename)
             }
         }
 
+    if (!(in.atEnd())) //lighting block
+    {
+        in >> mainLightXYAngle;
+        in >> mainLightZPos;
+        in >> mainLightPower;
+        in >> mainLightColour;
+        in >> secondaryLightActive;
+        in >> headlightActive;
+        in >> secondaryLightXYAngle;
+        in >> secondaryLightZPos;
+        in >> secondaryLightPower;
+        in >> secondaryLightColour;
+        in >> headlightPower;
+        in >> headlightColour;
+        in >> mainLightShadows;
+        in >> secondaryLightShadows;
+        in >> headlightShadows;
+    }
     //qDebug() << "[Where I'm I?] In version6Plus calling fixKeyCodeData();";
     fixKeyCodeData();
 

@@ -17,7 +17,6 @@
 #include <QOpenGLExtraFunctions>
 
 #include "globals.h"
-#include "drawglscalegrid.h"
 #include "drawglscaleball.h"
 
 #define SHADOW_MAP_SIZE 2048
@@ -25,6 +24,9 @@
 class GlWidget : public QOpenGLWidget, protected QOpenGLFunctions
 {
     Q_OBJECT
+
+signals:
+    void resized();  //for comms with the overlying painter
 
 public:
     GlWidget(QWidget *parent);
@@ -79,6 +81,7 @@ public:
     double getFOV();
     void updateFOV();
 
+    double realOrthoWidthMm, realOrthoHeightMm;
 protected:
     bool event(QEvent *event) override;
     void initializeGL() override;
@@ -123,7 +126,6 @@ private:
     GLuint oitDepthRBO;       // shared depth renderbuffer (matches opaque pass)
     GLuint fullscreenQuadVBO; // [-1,1] quad for composite pass
 
-    DrawGLScaleGrid *scaleGrid;
     DrawGLScaleBall *scaleBall;
 };
 

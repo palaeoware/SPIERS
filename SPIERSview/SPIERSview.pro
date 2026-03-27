@@ -52,6 +52,7 @@ SOURCES += src/main.cpp \
     ../SPIERScommon/src/darkstyletheme.cpp \
     src/globals.cpp \
     src/meshfilters.cpp \
+    src/scalegridoverlay.cpp \
     src/spvreader.cpp \
     src/svobject.cpp \
     src/spv.cpp \
@@ -73,9 +74,7 @@ SOURCES += src/main.cpp \
     src/fullscreenwindow.cpp \
     src/spvwriter.cpp \
     src/staticfunctions.cpp \
-    src/drawglscalegrid.cpp \
     src/drawglscaleball.cpp \
-    src/gridfontsizedialog.cpp\
     src/adler32.c \
     src/compress.c \
     src/crc32.c \
@@ -91,6 +90,7 @@ HEADERS += src/mainwindow.h \
     ../SPIERScommon/src/darkstyletheme.h \
     src/globals.h \
     src/meshfilters.h \
+    src/scalegridoverlay.h \
     src/spvreader.h \
     src/svobject.h \
     src/spv.h \
@@ -102,7 +102,6 @@ HEADERS += src/mainwindow.h \
     src/quickhelpbox.h \
     src/aboutdialog.h \
     src/gl3widget.h \
-    src/rowmans.h \
     src/main.h \
     ../SPIERScommon/src/netmodule.h \
     ../SPIERScommon/src/semanticversion.h \
@@ -114,15 +113,12 @@ HEADERS += src/mainwindow.h \
     src/fullscreenwindow.h \
     src/spvwriter.h \
     src/staticfunctions.h \
-    src/drawglscalegrid.h \
-    src/drawglscaleball.h \
-    src/gridfontsizedialog.h
+    src/drawglscaleball.h
 
 FORMS += ui/mainwindow.ui \
     ui/movetogroup.ui \
     ui/quickhelpbox.ui \
-    ui/aboutdialog.ui \
-    ui/gridfontsizedialog.ui
+    ui/aboutdialog.ui
 
 # MacOS build here
 macx {
