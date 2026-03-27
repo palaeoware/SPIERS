@@ -17,7 +17,6 @@
 #include <QOpenGLExtraFunctions>
 
 #include "globals.h"
-#include "drawglscalegrid.h"
 #include "drawglscaleball.h"
 
 #define SHADOW_MAP_SIZE 2048
@@ -127,7 +126,6 @@ private:
     GLuint oitDepthRBO;       // shared depth renderbuffer (matches opaque pass)
     GLuint fullscreenQuadVBO; // [-1,1] quad for composite pass
 
-    DrawGLScaleGrid *scaleGrid;
     DrawGLScaleBall *scaleBall;
 };
 

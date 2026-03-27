@@ -27,7 +27,6 @@ GlWidget::GlWidget(QWidget *parent)
     QList<Qt::GestureType> gestures;
     gestures << Qt::PinchGesture;
     grabGestures(gestures);
-    scaleGrid = new DrawGLScaleGrid(this);
     scaleBall = new DrawGLScaleBall(this);
     for (int i = 0; i < 3; i++) { shadowFBO[i] = 0; shadowDepthTexture[i] = 0; }
     dummyShadowTexture = 0;
@@ -173,7 +172,6 @@ void GlWidget::initializeGL()
         initShadowFBOs();
     initOIT();
 
-    scaleGrid->initializeGL();
     scaleBall->initializeGL();
 }
 
@@ -438,7 +436,6 @@ void GlWidget::resizeGL(int width, int height)
     // OIT textures must match viewport size
     if (oitFBO) resizeOIT(xdim, ydim);
     update();
-    qDebug()<<"Emit resized";
     emit resized(); //for the painter overlay
 }
 
@@ -842,8 +839,7 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
     glDepthMask(true);
     updateFOV();
     scaleBall->draw(vMatrix, vMatrix * camera);
-    if (mainWindow->ui->actionShow_Scale_Grid->isChecked())
-        scaleGrid->draw(vMatrix, vMatrix * camera);
+
 }
 
 // ---------------------------------------------------------------------------

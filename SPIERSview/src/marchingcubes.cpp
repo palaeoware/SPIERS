@@ -432,6 +432,10 @@ void MarchingCubes::surfaceChunked()
     // allocate storage to hold the indexing tags for edges in the layer
     layer->edges = static_cast<int *>(malloc(static_cast<unsigned long long>(iDim - 1) * static_cast<unsigned long long>(jDim - 1) * 12 * sizeof(int)));
 
+    if (layer->edges==NULL)
+    {
+        qDebug()<<"OOPS"<<static_cast<unsigned long long>(iDim - 1) * static_cast<unsigned long long>(jDim - 1) * 12 * sizeof(int);
+    }
     // initialize the edge table to EMPTY
     for (i = 0; i < (iDim - 1) * (jDim - 1) * 12; i++)
     {

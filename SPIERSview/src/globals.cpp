@@ -50,7 +50,6 @@ int modelKTr;
 int nextActualDlist = 1;
 int totalTriangles = 0;
 int scaleBallColour[3]; //info stuff
-int fontSizeGrid = 3;
 
 QList<QScreen *> availableScreens;
 QSurfaceFormat surfaceFormat;

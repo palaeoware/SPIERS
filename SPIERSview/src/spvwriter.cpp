@@ -75,7 +75,7 @@ void SPVWriter::writeSPV(bool withPolydata)
 
     // Total count of objects (for progress bar)
     int c = 0;
-    out << SPVs.count();
+    out << (int)SPVs.count();
     for (int i = 0; i < SPVs.count(); i++)
         c += SPVs[i]->ComponentObjects.count();
     out << c;
@@ -88,7 +88,7 @@ void SPVWriter::writeSPV(bool withPolydata)
     {
         SPV *s = SPVs[i];
         out << s->filenamenopath; //NEW
-        out << s->ComponentObjects.count();
+        out << (int)s->ComponentObjects.count();
         out << s->PixPerMM;
         out << s->SlicePerMM;
         out << s->SkewDown / s->PixPerMM;;
@@ -206,7 +206,7 @@ void SPVWriter::writeSPV(bool withPolydata)
         }
 
     // AllObs should now just list orphan groups
-    out << AllObs.count();
+    out << (int)AllObs.count();
     for (int i = 0; i < AllObs.count(); i++)
     {
         SVObject *o = AllObs[i];
@@ -251,7 +251,9 @@ void SPVWriter::writeSPV(bool withPolydata)
     // Scale Grid - colour, options, fonts
     out << colorGridRed << colorGridGreen << colorGridBlue;
     out << colorGridMinorRed << colorGridMinorGreen << colorGridMinorBlue;
-    out << fontSizeGrid << showMinorGridLines << showMinorGridValues << showScaleGrid;
+    out << int(3) << showMinorGridLines << showMinorGridValues << showScaleGrid;
+
+    //int(0) was font size, no longer used
 
     // This tagged on the end to keep some sort of file compatibility
     for (int i = 0; i < SPVs.count(); i++) //NEW - do each SPV
@@ -266,6 +268,25 @@ void SPVWriter::writeSPV(bool withPolydata)
             out << o->Smoothing; //these might now be <0
         }
     }
+
+    //lighting block
+
+    out << mainLightXYAngle;
+    out << mainLightZPos;
+    out << mainLightPower;
+    out << mainLightColour;
+    out << secondaryLightActive;
+    out << headlightActive;
+    out << secondaryLightXYAngle;
+    out << secondaryLightZPos;
+    out << secondaryLightPower;
+    out << secondaryLightColour;
+    out << headlightPower;
+    out << headlightColour;
+    out << mainLightShadows;
+    out << secondaryLightShadows;
+    out << headlightShadows;
+
 
     // Show saved message
     mainWindow->ui->statusBar->showMessage("Save Complete");

@@ -115,7 +115,6 @@ extern int colorGridMinorGreen;
 extern int colorGridMinorBlue;
 extern int scaleBallColour[3];
 extern int modelKTr;
-extern int fontSizeGrid;
 
 extern QList<QScreen *> availableScreens;
 extern QMatrix4x4 globalMatrix;

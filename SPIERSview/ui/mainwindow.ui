@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1071</width>
-    <height>1117</height>
+    <height>1121</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -286,7 +286,6 @@
      <addaction name="actionShow_Minor_Values"/>
      <addaction name="actionScale_Grid_Colour"/>
      <addaction name="actionMinor_Grid_Colour"/>
-     <addaction name="actionScale_Grid_Font_Size"/>
      <addaction name="actionReset_Scale_Grid_to_Defaults"/>
     </widget>
     <addaction name="actionShow_Scale_Grid"/>
@@ -2955,7 +2954,7 @@
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Lighting Panel</string>

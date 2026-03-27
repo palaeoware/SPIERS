@@ -2,7 +2,6 @@
 #define SCALEGRIDOVERLAY_H
 
 #include <QWidget>
-#include <QPainter>
 
 class GlWidget;
 
