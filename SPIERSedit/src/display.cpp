@@ -202,12 +202,12 @@ QImage GenerateThresh()
             {
                 if (Segments[i]->Activated)
                 {
-                if (previewGradient)
+                    if (previewGradient)
                         gradientAddition = ((int)(gradientArray->at(jy * fwidth + jx)));
                     else
                         gradientAddition = 0;
 
-                    temp = (int)  * ((GA[i]->bits()) + jy * fwidth4 + jx);
+                    temp = (int)  * ((GApointers[i]) + jy * fwidth4 + jx);
                     temp += gradientAddition;
                     if (temp>255) temp=255;
                     if (temp<0) temp=0;
@@ -239,8 +239,6 @@ QImage GenerateThresh()
 
     if (greymode)   // just copy the image
     {
-
-
         //but modify for gradient preview
         if (previewGradient)
         {

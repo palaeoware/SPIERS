@@ -1331,6 +1331,7 @@ void ApplyDefaultSettings()
     MenuSliceSelectorChecked = true;
     MenuHistSelectedOnly = false;
     MenuHistChecked = false;
+    Menu3DPreviewChecked = true;
 
     FeaturesByteArray.clear();
 }
@@ -2227,6 +2228,8 @@ void WriteSettings()
     
     out << mlInterface->DumpFeaturesToByteArray();
 
+    out << Menu3DPreviewChecked;
+
     file.close();
 }
 
@@ -2596,6 +2599,8 @@ void ReadSettings()
         in >> FeaturesByteArray;
     }
 
+    // Added after FeaturesByteArray so old .spe files default to visible
+    if (!in.atEnd()) in >> Menu3DPreviewChecked; else Menu3DPreviewChecked = true;
 
     file.close();
     Active = true;

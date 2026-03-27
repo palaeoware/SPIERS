@@ -64,6 +64,9 @@ public:
 
 private slots:
     void Moveimage(int);
+    /** Refresh 3D-preview XY-step combo: label items with size estimates and
+     *  disable any mode whose texture would exceed available GPU VRAM. */
+    void updatePreview3DStepCombo();
     void on_action3D_Brush_toggled(bool );
     void on_actionInterpolate_over_selected_slices_triggered();
     void on_actionRefresh_triggered();

@@ -27,6 +27,7 @@
 #include <QScreen>
 #include <QGuiApplication>
 #include <QDebug>
+#include <QSurfaceFormat>
 
 #include "mainwindowimpl.h"
 #include "display.h"
@@ -89,6 +90,16 @@ void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const Q
 #ifndef __APPLE__
 int main(int argc, char **argv)
 {
+    // Set OpenGL surface format as global
+    surfaceFormat.setMajorVersion(GL_MAJOR);
+    surfaceFormat.setMinorVersion(GL_MINOR);
+    surfaceFormat.setRenderableType(QSurfaceFormat::OpenGL);
+    surfaceFormat.setProfile(QSurfaceFormat::CoreProfile);
+    QSurfaceFormat::setDefaultFormat(surfaceFormat);
+
+    // Allow OpenGL context sharing between normal and full screen mode
+    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+
     QApplication app( argc, argv );
 
     //Style program with our dark style
@@ -229,6 +240,18 @@ int main(int argc, char *argv[])
         qDebug() << "argc == " << argc << " argv = " << QString(argv[1]) << "argv[2]" << QString(argv[1]);
     }
 
+
+    // Set OpenGL surface format as global
+    {
+        surfaceFormat.setDepthBufferSize(24);
+        surfaceFormat.setMajorVersion(GL_MAJOR_MAC);
+        surfaceFormat.setMinorVersion(GL_MINOR_MAC);
+        surfaceFormat.setRenderableType(QSurfaceFormat::OpenGL);
+        surfaceFormat.setProfile(QSurfaceFormat::CoreProfile);
+        QSurfaceFormat::setDefaultFormat(surfaceFormat);
+    }
+    // Allow OpenGL context sharing between normal and full screen mode
+    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 
     class main app(argc, argv);
 

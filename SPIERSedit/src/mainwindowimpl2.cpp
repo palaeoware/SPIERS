@@ -32,6 +32,7 @@
 #include "myrangescene.h"
 #include "brush.h"
 #include "beamhardening.h"
+#include "previewwidget.h"
 
 #include <QTimer>
 #include <QTime>
@@ -1006,6 +1007,8 @@ void MainWindowImpl::SetUpGUIFromSettings()
     actionHistorgram->setChecked(MenuHistChecked);
     DockInfo->setVisible(MenuInfoChecked);
     actionHistorgram->setChecked(MenuInfoChecked);
+    DockPreview3D->setVisible(Menu3DPreviewChecked);
+    action3DPreview->setChecked(Menu3DPreviewChecked);
     actionHistogram_shows_selected->setChecked(MenuHistSelectedOnly);
 
     //Do the generation stuff
@@ -2004,6 +2007,7 @@ void MainWindowImpl::on_SegmentsTreeWidget_itemDoubleClicked(QTreeWidgetItem *it
             SegmentsTreeWidget->resizeColumnToContents(1);
 
             ShowImage(graphicsView);
+            previewWidget3D->rebuildAll(); // colour is baked into texture
         }
     DoubleClickTimer.restart();
 }
@@ -2081,6 +2085,10 @@ void MainWindowImpl::on_OOTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, in
                         if (OutputObjects[i]->Outputarray.isEmpty()) FilesDirty[x] = true;
 
                 RefreshOneOOItem(OutputObjects[i]->widgetitem, i);
+
+                // Rebuild 3D preview if in Output mode
+                if (previewWidget3D->renderMode() == PreviewWidget::RenderMode::OutputMode)
+                    previewWidget3D->rebuildAll();
             }
 
             if (column == 5)   //merge
