@@ -129,8 +129,6 @@ macx {
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 26.0
 
     LIBS += -L/usr/local/homebrew/opt/icu4c/lib/ \
-    -licudata \
-    -licuuc \
     -lstdc++
 
     INCLUDEPATH += /usr/local/homebrew/opt/icu4c/include/
