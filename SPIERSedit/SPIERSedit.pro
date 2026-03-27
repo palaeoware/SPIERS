@@ -195,7 +195,7 @@ SOURCES += src/display.cpp \
     ../SPIERScommon/src/prereleasecomponent.cpp \
     ui/mladdfeature.cpp
 
-win {
+win32 {
     OPENCV_DIR = C:/opencv/opencv
 
     INCLUDEPATH += $$OPENCV_DIR/build/include
