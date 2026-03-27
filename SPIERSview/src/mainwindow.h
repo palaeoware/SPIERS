@@ -32,6 +32,7 @@
 class QTreeWidgetItem;
 
 class SPV;
+class ScaleGridOverlay;
 
 namespace Ui {
 class MainWindow;
@@ -60,6 +61,8 @@ public:
 
     Ui::MainWindow *ui;
     GlWidget *gl3widget;
+    ScaleGridOverlay *gridOverlay;
+
     QHBoxLayout *gllayout;
 
     void updateLightColourButtons();

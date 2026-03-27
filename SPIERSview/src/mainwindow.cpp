@@ -36,7 +36,7 @@
 #include <QMutableListIterator>
 #include <QStandardPaths>
 #include <QDesktopServices>
-
+#include "scalegridoverlay.h"
 
 
 #include <QScreen>
@@ -105,6 +105,14 @@ MainWindow::MainWindow(QWidget *parent)
     ui->actionNo_Stereo->setChecked(true);
 
     gl3widget = new GlWidget(ui->frameVTK);
+    gridOverlay = new ScaleGridOverlay(gl3widget, ui->frameVTK);
+    gridOverlay->setGeometry(gl3widget->geometry());
+
+    // And connect to resize events so it stays aligned:
+    connect(gl3widget, &GlWidget::resized, this, [=]() {
+        gridOverlay->setGeometry(gl3widget->geometry());
+        gridOverlay->update();
+    });
 
     gllayout = new QHBoxLayout;
     gllayout->addWidget(gl3widget);

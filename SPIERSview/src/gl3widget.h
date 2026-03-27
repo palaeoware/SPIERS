@@ -26,6 +26,9 @@ class GlWidget : public QOpenGLWidget, protected QOpenGLFunctions
 {
     Q_OBJECT
 
+signals:
+    void resized();  //for comms with the overlying painter
+
 public:
     GlWidget(QWidget *parent);
     ~GlWidget();
@@ -79,6 +82,7 @@ public:
     double getFOV();
     void updateFOV();
 
+    double realOrthoWidthMm, realOrthoHeightMm;
 protected:
     bool event(QEvent *event) override;
     void initializeGL() override;

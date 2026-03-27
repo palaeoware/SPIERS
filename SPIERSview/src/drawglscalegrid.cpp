@@ -143,7 +143,9 @@ void DrawGLScaleGrid::initializeGL()
  */
 void DrawGLScaleGrid::draw(QMatrix4x4 vMatrix, QVector3D lPosition)
 {
+
     //qDebug() << "[Where I'm I?] In DrawScaleGrid";
+
 
 
     glWidget->lightingShaderProgram.bind();
