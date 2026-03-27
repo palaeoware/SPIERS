@@ -28,6 +28,7 @@
 #include "myrangescene.h"
 #include "mygraphicsview.h"
 #include "brush.h"
+#include "previewwidget.h"
 #include "fileio.h"
 #include "moreimpl.h"
 #include "undo.h"
@@ -42,6 +43,8 @@
 #include <QColorDialog>
 #include <QFileDialog>
 #include <QShortcut>
+#include <QApplication>
+#include <QStandardItemModel>
 #include <QTimer>
 #include <QTime>
 #include <QInputDialog>
@@ -212,6 +215,60 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     addAction(shortcutright2);
     addAction(shortcutspace);
 
+    // --- 3D Preview dock controls ---
+    // Mode dropdown: index 0 = Segments, index 1 = Outputs
+    connect(preview3DModeCombo,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            [this](int idx)
+            {
+                previewWidget3D->setRenderMode(
+                    idx == 0 ? PreviewWidget::RenderMode::SegmentMode
+                             : PreviewWidget::RenderMode::OutputMode);
+            });
+
+    // Zoom and reset buttons
+    connect(preview3DZoomInBtn,  &QToolButton::clicked, previewWidget3D, &PreviewWidget::zoomIn);
+    connect(preview3DZoomOutBtn, &QToolButton::clicked, previewWidget3D, &PreviewWidget::zoomOut);
+    connect(preview3DResetBtn,   &QToolButton::clicked, previewWidget3D, &PreviewWidget::resetView);
+
+    // Z-range spinboxes — only fire a rebuild when both values form a valid range.
+    // Also refresh the XY-step combo so VRAM estimates update for the new depth.
+    connect(preview3DZMinSpin, QOverload<int>::of(&QSpinBox::valueChanged),
+            [this](int /*val*/) {
+                int lo = preview3DZMinSpin->value();
+                int hi = preview3DZMaxSpin->value();
+                if (lo <= hi) {
+                    updatePreview3DStepCombo();
+                    previewWidget3D->setZRange(lo, hi);
+                }
+            });
+    connect(preview3DZMaxSpin, QOverload<int>::of(&QSpinBox::valueChanged),
+            [this](int /*val*/) {
+                int lo = preview3DZMinSpin->value();
+                int hi = preview3DZMaxSpin->value();
+                if (lo <= hi) {
+                    updatePreview3DStepCombo();
+                    previewWidget3D->setZRange(lo, hi);
+                }
+            });
+
+    // XY resolution combo: index maps to stride 1, 2, 4, 8
+    connect(preview3DXYStepCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            [this](int idx) {
+                static const int steps[] = {1, 2, 4, 8};
+                previewWidget3D->setXYStep(steps[idx]);
+            });
+
+    // Window menu toggle — show/hide dock and persist flag.
+    // Follow the same pattern as other docks (MenuHistChecked, MenuInfoChecked, etc.):
+    // update Menu3DPreviewChecked ONLY when the user explicitly toggles the action,
+    // never from visibilityChanged (which fires during restoreState() and would
+    // corrupt the flag before SetUpGUIFromSettings() can apply the saved value).
+    connect(action3DPreview, &QAction::toggled, DockPreview3D, &QDockWidget::setVisible);
+    connect(action3DPreview, &QAction::toggled, [](bool checked) {
+        Menu3DPreviewChecked = checked;
+    });
+
     QObject::connect(action1_x_1, SIGNAL(triggered()), this, SLOT(Preset1()));
     QObject::connect(action2_x_2, SIGNAL(triggered()), this, SLOT(Preset2()));
     QObject::connect(action3_x_3, SIGNAL(triggered()), this, SLOT(Preset3()));
@@ -228,6 +285,18 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     connect(timer, SIGNAL(timeout()), this, SLOT(ScreenUpdate()));
     Active = false;
     timer->start(50); //whenever I get a chance!
+
+    // Resize the XY-step combo to fit its widest item (labels gain VRAM annotations).
+    preview3DXYStepCombo->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+
+    // Disable all 3D preview controls until a project is successfully loaded.
+    preview3DModeCombo->setEnabled(false);
+    preview3DZoomInBtn->setEnabled(false);
+    preview3DZoomOutBtn->setEnabled(false);
+    preview3DResetBtn->setEnabled(false);
+    preview3DZMinSpin->setEnabled(false);
+    preview3DZMaxSpin->setEnabled(false);
+    preview3DXYStepCombo->setEnabled(false);
 
     timer2 = new QTimer(this);
     connect(timer2, SIGNAL(timeout()), this, SLOT(UndoTimer()));
@@ -349,6 +418,81 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
 }
 
 
+
+// ============================================================================
+// 3D Preview — VRAM-aware XY-step combo updater
+// ============================================================================
+
+/**
+ * Refresh the XY-step combo box items:
+ *  • Appends the estimated texture size to each label so users can see at a
+ *    glance how much GPU memory each mode would consume for the current dataset
+ *    and Z-range selection.
+ *  • Disables (grays out) any mode whose texture exceeds the detected GPU VRAM.
+ *    The ⅛ mode (index 3) is never disabled — it is the minimum quality option.
+ *  • If the currently-selected mode has become disabled, automatically drops to ⅛.
+ *
+ * Call after project open and whenever the Z-range spinboxes change.
+ */
+void MainWindowImpl::updatePreview3DStepCombo()
+{
+    static const int   steps[]  = {1, 2, 4, 8};
+    static const char *labels[] = {"Full", "½", "¼", "⅛"};
+
+    const int   texD  = preview3DZMaxSpin->value() - preview3DZMinSpin->value() + 1;
+    const qint64 avail = previewWidget3D->availableVRAMBytes();
+
+    QStandardItemModel *model =
+        qobject_cast<QStandardItemModel *>(preview3DXYStepCombo->model());
+    if (!model) return;
+
+    // Ensure the model has exactly 4 items (it may not if called very early)
+    while (model->rowCount() < 4)
+        model->appendRow(new QStandardItem());
+
+    for (int i = 0; i < 4; i++)
+    {
+        QStandardItem *item = model->item(i);
+        if (!item) continue;
+
+        const qint64 bytes = previewWidget3D->estimatedVRAMBytes(steps[i], texD);
+
+        // Build label: "½ (128 MB)" or "Full (4.0 GB)"
+        QString label = labels[i];
+        if (bytes > 0)
+        {
+            const double mb = bytes / (1024.0 * 1024.0);
+            if (mb >= 1024.0)
+                label += QString(" (%1 GB)").arg(mb / 1024.0, 0, 'f', 1);
+            else
+                label += QString(" (%1 MB)").arg(mb, 0, 'f', 0);
+        }
+        item->setText(label);
+
+        // ⅛ (index 3) is always enabled — it is the fallback minimum
+        const bool fits = (i == 3) || (avail <= 0) || (bytes <= avail);
+        item->setEnabled(fits);
+
+        // Dim the text for disabled items so users immediately see why
+        if (!fits)
+            item->setForeground(QApplication::palette().color(QPalette::Disabled, QPalette::Text));
+        else
+            item->setForeground(QApplication::palette().color(QPalette::Normal, QPalette::Text));
+    }
+
+    // If the current selection is disabled, fall back to ⅛ silently
+    const int cur = preview3DXYStepCombo->currentIndex();
+    if (cur >= 0 && cur < 4)
+    {
+        QStandardItem *curItem = model->item(cur);
+        if (curItem && !curItem->isEnabled())
+        {
+            QSignalBlocker blk(preview3DXYStepCombo);
+            preview3DXYStepCombo->setCurrentIndex(3);
+            previewWidget3D->setXYStep(8);
+        }
+    }
+}
 
 void MainWindowImpl::autosave()
 {
@@ -539,8 +683,13 @@ void MainWindowImpl::ScreenUpdate()
     {
         if (MoveFlag) Brush.draw(LastMouseX, LastMouseY);
         if (ChangeFlag) ShowImage(graphicsView);
+        bool wasEdited = MoveFlag;
         MoveFlag = false;
         ChangeFlag = false; //reset flags
+
+        // Notify 3D preview that the current slice may have changed
+        if (wasEdited)
+            previewWidget3D->markSliceDirty(CurrentFile);
     }
     else
     {
@@ -1093,7 +1242,33 @@ void MainWindowImpl::Start()
     setWindowTitle(QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION) + " - " + SettingsFileName + " - " + Files[CurrentFile]);
     Active = true; //flag that we are GO
 
+    // Enable all 3D preview controls now that a project has been loaded.
+    preview3DModeCombo->setEnabled(true);
+    preview3DZoomInBtn->setEnabled(true);
+    preview3DZoomOutBtn->setEnabled(true);
+    preview3DResetBtn->setEnabled(true);
+    preview3DZMinSpin->setEnabled(true);
+    preview3DZMaxSpin->setEnabled(true);
+    preview3DXYStepCombo->setEnabled(true);
+
     ShowImage(graphicsView);
+
+    // Reset 3D preview ROI controls to full dataset on project open.
+    // Block signals while resetting spinboxes so they don't each trigger a
+    // partial rebuild; resetPreviewBounds() then fires a single clean rebuild.
+    {
+        const QSignalBlocker b1(preview3DZMinSpin);
+        const QSignalBlocker b2(preview3DZMaxSpin);
+        const QSignalBlocker b3(preview3DXYStepCombo);
+        preview3DZMinSpin->setMaximum(FileCount - 1);
+        preview3DZMaxSpin->setMaximum(FileCount - 1);
+        preview3DZMinSpin->setValue(0);
+        preview3DZMaxSpin->setValue(FileCount - 1);
+        preview3DXYStepCombo->setCurrentIndex(3);   // "⅛" — fast default
+    }
+    // Label combo items with VRAM estimates; disable modes that exceed GPU memory.
+    updatePreview3DStepCombo();
+    previewWidget3D->resetPreviewBounds();  // sets m_zMin/zMax/xyStep=8, then rebuilds
 
     //set initial undo point
     MasksUndoDirty = true;
@@ -1918,6 +2093,7 @@ void MainWindowImpl::on_actionActivate_selected_segments_triggered()
             }
     }
     ShowImage(graphicsView);
+    previewWidget3D->rebuildAll();
 }
 
 
@@ -1932,6 +2108,7 @@ void MainWindowImpl::on_actionDeactivate_selected_segments_triggered()
             }
     }
     ShowImage(graphicsView);
+    previewWidget3D->rebuildAll();
 }
 
 

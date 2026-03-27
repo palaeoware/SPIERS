@@ -211,13 +211,14 @@ int main(int argc, char *argv[])
     macClickedNoForUpdateDownload = false;
 
     // Set OpenGL surface format as global
-    surfaceFormat.setDepthBufferSize(24);
-    surfaceFormat.setMajorVersion(GL_MAJOR_MAC);
-    surfaceFormat.setMinorVersion(GL_MINOR_MAC);
-    surfaceFormat.setRenderableType(QSurfaceFormat::OpenGL);
-    surfaceFormat.setProfile(QSurfaceFormat::CoreProfile);
-    QSurfaceFormat::setDefaultFormat(surfaceFormat);
-
+    {
+        surfaceFormat.setDepthBufferSize(24);
+        surfaceFormat.setMajorVersion(GL_MAJOR_MAC);
+        surfaceFormat.setMinorVersion(GL_MINOR_MAC);
+        surfaceFormat.setRenderableType(QSurfaceFormat::OpenGL);
+        surfaceFormat.setProfile(QSurfaceFormat::CoreProfile);
+        QSurfaceFormat::setDefaultFormat(surfaceFormat);
+    }
     // Allow OpenGL context sharing between normal and full screen mode
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 

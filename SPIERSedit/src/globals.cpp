@@ -36,6 +36,7 @@ QString Notes;
 QList<bool> FilesDirty; //for re-rendering.
 
 MainWindowImpl *mainwin;
+QSurfaceFormat surfaceFormat;
 int CacheCompressionLevel = 1; //this is default
 int FileCompressionLevel = 9; //this is default
 bool MasksMoveBack, MasksMoveForward;
@@ -119,7 +120,7 @@ QTabWidget *tabwidget;
 
 QByteArray FeaturesByteArray;
 
-bool MenuHistChecked, MenuInfoChecked, MenuGenChecked, MenuMasksChecked, MenuSegsChecked, MenuCurvesChecked, MenuOutputChecked, MenuToolboxChecked, MenuSliceSelectorChecked;
+bool MenuHistChecked, MenuInfoChecked, MenuGenChecked, MenuMasksChecked, MenuSegsChecked, MenuCurvesChecked, MenuOutputChecked, MenuToolboxChecked, MenuSliceSelectorChecked, Menu3DPreviewChecked;
 
 Mask::Mask(QString name)
 //Constructor for a mask - set defaults

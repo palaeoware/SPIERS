@@ -9,7 +9,9 @@ TEMPLATE = app
 QT += core \
     gui \
     network \
-    widgets
+    widgets \
+    opengl \
+    openglwidgets
 
 CONFIG += qt \
     debug_and_release \
@@ -120,6 +122,7 @@ HEADERS += src/display.h \
     src/keysafespinbox.h \
     src/mainview.h \
     src/main.h \
+    src/previewwidget.h \
     ../SPIERScommon/src/darkstyletheme.h \
     ../SPIERScommon/src/netmodule.h \
     ../SPIERScommon/src/semanticversion.h \
@@ -189,6 +192,7 @@ SOURCES += src/display.cpp \
     src/copyingimpl2_ouput.cpp \
     src/keysafespinbox.cpp \
     src/mainview.cpp \
+    src/previewwidget.cpp \
     ../SPIERScommon/src/darkstyletheme.cpp \
     ../SPIERScommon/src/netmodule.cpp \
     ../SPIERScommon/src/semanticversion.cpp \

@@ -31,6 +31,7 @@
 #include <QMutex>
 #include <QGraphicsRectItem>
 #include <QGraphicsTextItem>
+#include <QSurfaceFormat>
 #include "mlinterface.h"
 #include "mainwindowimpl.h"
 
@@ -53,9 +54,16 @@
 #define GITREPOSITORY "palaeoware/SPIERS"
 #define GITISSUE "/issues"
 
+//OpenGL
+#define GL_MAJOR 4
+#define GL_MINOR 1
+#define GL_MAJOR_MAC 4
+#define GL_MINOR_MAC 1
+
 //Readthedocs
 #define READTHEDOCS "https://spiersedit.readthedocs.io/"
 
+extern QSurfaceFormat surfaceFormat;
 extern QList<bool> FilesDirty; //for re-rendering.
 extern QString openfile;
 extern QString currentOpenFileName; // stores the currently open file name/path
@@ -285,7 +293,7 @@ extern bool HorribleBodgeFlagDontStoreUndo;
 extern bool BackgroundCacheFilling;
 extern bool RenderCache;
 extern bool MenuHistSelectedOnly, MenuHistChecked, MenuInfoChecked, MenuGenChecked, MenuMasksChecked, MenuSegsChecked, MenuCurvesChecked, MenuOutputChecked, MenuToolboxChecked,
-       MenuSliceSelectorChecked;
+       MenuSliceSelectorChecked, Menu3DPreviewChecked;
 
 /**
  * @brief The RecentFiles struct
