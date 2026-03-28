@@ -832,6 +832,7 @@ void MainWindowImpl::SetUpGUIFromSettings()
 {
     //qDebug()<<QImageReader::supportedImageFormats ();
     //qDebug()<<QImageWriter::supportedImageFormats ();
+    m_restoringState = true; // suppress visibilityChanged dock sync during restore
     ClearCache(); //make sure cache is empty
     bool t = Active;
     Active = false; //turn off updates while I do this
@@ -1006,7 +1007,7 @@ void MainWindowImpl::SetUpGUIFromSettings()
     DockHist->setVisible(MenuHistChecked);
     actionHistorgram->setChecked(MenuHistChecked);
     DockInfo->setVisible(MenuInfoChecked);
-    actionHistorgram->setChecked(MenuInfoChecked);
+    actionInfo->setChecked(MenuInfoChecked);
     DockPreview3D->setVisible(Menu3DPreviewChecked);
     action3DPreview->setChecked(Menu3DPreviewChecked);
     actionHistogram_shows_selected->setChecked(MenuHistSelectedOnly);
@@ -1096,6 +1097,7 @@ void MainWindowImpl::SetUpGUIFromSettings()
 //  Roll->setValue(roll);
     SetUpBrushEnabling();
 
+    m_restoringState = false;
     //qDebug()<<"Done mgui";
 }
 
