@@ -50,14 +50,11 @@ void mainview::wheelEvent(QWheelEvent *event)
  */
 bool mainview::eventFilter(QObject *obj, QEvent *event)
 {
-    if (event->type() == QEvent::Wheel)
+    if (event->type() == QEvent::Wheel && underMouse())
     {
         AppMainWindow->MouseZoom((static_cast<QWheelEvent *>(event))->angleDelta().y());
         return true; //stop further wheel processing
     }
-    else
-    {
-        // standard event processing
-        return QObject::eventFilter(obj, event);
-    }
+    // standard event processing
+    return QObject::eventFilter(obj, event);
 }
