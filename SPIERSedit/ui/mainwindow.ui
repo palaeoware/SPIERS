@@ -4699,6 +4699,9 @@ Interpreted Images:</string>
    <property name="text">
     <string>3D Preview</string>
    </property>
+   <property name="shortcut">
+    <string>F10</string>
+   </property>
   </action>
   <action name="actionShow_position_slice_selector">
    <property name="checkable">
