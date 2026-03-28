@@ -163,6 +163,10 @@ QByteArray* GetGradientArray()
 QImage GenerateThresh()
 {
     //Using current settings generate the threshold file for output
+    // GA[] data is shared with the background PreviewBuilderWorker thread.
+    // Hold the global recursive mutex for the entire function so that
+    // LoadGreyData() cannot modify/replace GA images while we hold raw bits() pointers.
+    QMutexLocker<QRecursiveMutex> locker(&mutex);
 
 //        qDebug()<<"In GT";
 //        qDebug()<<GA[0]->size();
