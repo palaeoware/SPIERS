@@ -832,7 +832,6 @@ void MainWindowImpl::SetUpGUIFromSettings()
 {
     //qDebug()<<QImageReader::supportedImageFormats ();
     //qDebug()<<QImageWriter::supportedImageFormats ();
-    m_restoringState = true; // suppress visibilityChanged dock sync during restore
     ClearCache(); //make sure cache is empty
     bool t = Active;
     Active = false; //turn off updates while I do this
@@ -1097,7 +1096,6 @@ void MainWindowImpl::SetUpGUIFromSettings()
 //  Roll->setValue(roll);
     SetUpBrushEnabling();
 
-    m_restoringState = false;
     //qDebug()<<"Done mgui";
 }
 

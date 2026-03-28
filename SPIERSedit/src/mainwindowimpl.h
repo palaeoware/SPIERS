@@ -355,7 +355,6 @@ private:
     void wheelEvent(QWheelEvent *event);
 
     bool ExportingImages;
-    bool m_restoringState = false;
 
     QElapsedTimer DoubleClickTimer;
 

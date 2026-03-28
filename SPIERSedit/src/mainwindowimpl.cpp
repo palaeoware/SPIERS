@@ -269,38 +269,6 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
         Menu3DPreviewChecked = checked;
     });
 
-    // Keep menu action checked state in sync when a dock is closed via its title-bar X button.
-    // m_restoringState guards against feedback loops during SetUpGUIFromSettings().
-    connect(dockWidget_Main,      &QDockWidget::visibilityChanged, this, [this](bool v) {
-        if (!m_restoringState) { actionMain_Toolbox->setChecked(v);  MenuToolboxChecked = v; }
-    });
-    connect(SliceSelector,        &QDockWidget::visibilityChanged, this, [this](bool v) {
-        if (!m_restoringState) { actionSlice_Selector->setChecked(v); MenuSliceSelectorChecked = v; }
-    });
-    connect(dockWidget_Generate,  &QDockWidget::visibilityChanged, this, [this](bool v) {
-        if (!m_restoringState) { actionGeneration->setChecked(v);    MenuGenChecked = v; }
-    });
-    connect(DockMasksSettings,    &QDockWidget::visibilityChanged, this, [this](bool v) {
-        if (!m_restoringState) { actionMasks->setChecked(v);         MenuMasksChecked = v; }
-    });
-    connect(DockSegmentsSettings, &QDockWidget::visibilityChanged, this, [this](bool v) {
-        if (!m_restoringState) { actionSegments->setChecked(v);      MenuSegsChecked = v; }
-    });
-    connect(DockCurvesSettings,   &QDockWidget::visibilityChanged, this, [this](bool v) {
-        if (!m_restoringState) { actionCurves->setChecked(v);        MenuCurvesChecked = v; }
-    });
-    connect(DockOutputSettings,   &QDockWidget::visibilityChanged, this, [this](bool v) {
-        if (!m_restoringState) { actionOutput->setChecked(v);        MenuOutputChecked = v; }
-    });
-    connect(DockHist,             &QDockWidget::visibilityChanged, this, [this](bool v) {
-        if (!m_restoringState) { actionHistorgram->setChecked(v);    MenuHistChecked = v; }
-    });
-    connect(DockInfo,             &QDockWidget::visibilityChanged, this, [this](bool v) {
-        if (!m_restoringState) { actionInfo->setChecked(v);          MenuInfoChecked = v; }
-    });
-    connect(DockPreview3D,        &QDockWidget::visibilityChanged, this, [this](bool v) {
-        if (!m_restoringState) { action3DPreview->setChecked(v);     Menu3DPreviewChecked = v; }
-    });
 
     QObject::connect(action1_x_1, SIGNAL(triggered()), this, SLOT(Preset1()));
     QObject::connect(action2_x_2, SIGNAL(triggered()), this, SLOT(Preset2()));
