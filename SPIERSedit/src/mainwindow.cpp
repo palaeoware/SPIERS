@@ -259,6 +259,9 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags f)
                 previewWidget3D->setXYStep(steps[idx]);
             });
 
+    connect(preview3DPositionChk, &QCheckBox::toggled,
+            previewWidget3D, &PreviewWidget::setShowPositionIndicator);
+
     // Window menu toggle — show/hide dock and persist flag.
     // Follow the same pattern as other docks (MenuHistChecked, MenuInfoChecked, etc.):
     // update Menu3DPreviewChecked ONLY when the user explicitly toggles the action,

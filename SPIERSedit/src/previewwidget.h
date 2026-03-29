@@ -161,12 +161,16 @@ public:
     void setRenderMode(RenderMode mode);
 
     RenderMode renderMode() const { return m_renderMode; }
+    bool isShowingPositionIndicator() const { return m_showPositionIndicator; }
 
 public slots:
     /** Reset camera to default orientation and zoom. */
     void resetView();
     void zoomIn();
     void zoomOut();
+
+    /** Show/hide the current-slice plane and hover crosshair overlay. */
+    void setShowPositionIndicator(bool show);
 
     /**
      * Restrict the rebuilt volume to slices [zMin, zMax] (absolute indices).
@@ -230,6 +234,14 @@ private:
     QOpenGLBuffer            m_cubeVBO { QOpenGLBuffer::VertexBuffer };
     QOpenGLBuffer            m_cubeIBO { QOpenGLBuffer::IndexBuffer };
     QOpenGLVertexArrayObject m_vao;
+
+    // Position indicator overlay
+    bool                     m_showPositionIndicator = false;
+    QOpenGLShaderProgram     m_overlayShader;
+    QOpenGLBuffer            m_overlayVBO { QOpenGLBuffer::VertexBuffer };
+    QOpenGLVertexArrayObject m_overlayVAO;
+
+    void drawPositionIndicator();
 
     // Texture dimensions
     int m_texW = 0, m_texH = 0, m_texD = 0;

@@ -5007,6 +5007,16 @@ Interpreted Images:</string>
         </widget>
        </item>
        <item>
+        <widget class="QCheckBox" name="preview3DPositionChk">
+         <property name="toolTip">
+          <string>Show current slice plane and hover crosshair in 3D view</string>
+         </property>
+         <property name="text">
+          <string>Position</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="preview3DControlSpacer">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>

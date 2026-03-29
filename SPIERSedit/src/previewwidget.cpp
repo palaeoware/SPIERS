@@ -329,6 +329,25 @@ void main() {
 }
 )";
 
+// Overlay: simple pass-through with a per-draw uniform colour
+static const char *s_overlayVertSrc = R"(
+#version 330 core
+in  vec3 position;
+uniform mat4 mvp;
+void main() {
+    gl_Position = mvp * vec4(position, 1.0);
+}
+)";
+
+static const char *s_overlayFragSrc = R"(
+#version 330 core
+uniform vec4 overlayColor;
+out vec4 fragColor;
+void main() {
+    fragColor = overlayColor;
+}
+)";
+
 // ============================================================================
 // PreviewWidget — construction / destruction
 // ============================================================================
@@ -633,6 +652,10 @@ void PreviewWidget::paintGL()
         m_debugShader.release();
     }
 
+    // ---- Position indicator overlay ----
+    if (m_showPositionIndicator && m_hasData && m_overlayShader.isLinked())
+        drawPositionIndicator();
+
     // ---- Loading overlay (QPainter composited over GL output) ----
     if (m_loading)
     {
@@ -838,6 +861,97 @@ void PreviewWidget::cancelWorker()
 }
 
 // ============================================================================
+// Position indicator
+// ============================================================================
+
+void PreviewWidget::setShowPositionIndicator(bool show)
+{
+    m_showPositionIndicator = show;
+    update();
+}
+
+void PreviewWidget::drawPositionIndicator()
+{
+    // ---- Compute Z position of the current slice in object space [-0.5, 0.5] ----
+    float zObj = 0.0f;
+    if (m_texD > 1)
+        zObj = qBound(-0.5f,
+                      float(CurrentFile - m_zMin) / float(m_texD - 1) - 0.5f,
+                      0.5f);
+
+    // ---- Compute XY hover position (LastMouseX/Y are image-pixel coords) ----
+    const bool hasHover = (fwidth > 0 && fheight > 0 &&
+                           LastMouseX >= 0 && LastMouseX < fwidth &&
+                           LastMouseY >= 0 && LastMouseY < fheight);
+    const float xObj = hasHover ? float(LastMouseX) / float(fwidth)  - 0.5f : 0.0f;
+    const float yObj = hasHover ? 0.5f - float(LastMouseY) / float(fheight) : 0.0f;
+
+    // ---- Build vertex data ----
+    // Rectangle: 4 edges × 2 endpoints = 8 vertices (verts 0–7)
+    // Crosshair: 2 lines × 2 endpoints = 4 vertices  (verts 8–11, only if hover valid)
+    float verts[12 * 3];
+    const float z = zObj;
+
+    // Bottom edge
+    verts[ 0]=-0.5f; verts[ 1]=-0.5f; verts[ 2]=z;
+    verts[ 3]= 0.5f; verts[ 4]=-0.5f; verts[ 5]=z;
+    // Right edge
+    verts[ 6]= 0.5f; verts[ 7]=-0.5f; verts[ 8]=z;
+    verts[ 9]= 0.5f; verts[10]= 0.5f; verts[11]=z;
+    // Top edge
+    verts[12]= 0.5f; verts[13]= 0.5f; verts[14]=z;
+    verts[15]=-0.5f; verts[16]= 0.5f; verts[17]=z;
+    // Left edge
+    verts[18]=-0.5f; verts[19]= 0.5f; verts[20]=z;
+    verts[21]=-0.5f; verts[22]=-0.5f; verts[23]=z;
+
+    if (hasHover)
+    {
+        // Vertical crosshair line
+        verts[24]=xObj; verts[25]=-0.5f; verts[26]=z;
+        verts[27]=xObj; verts[28]= 0.5f; verts[29]=z;
+        // Horizontal crosshair line
+        verts[30]=-0.5f; verts[31]=yObj; verts[32]=z;
+        verts[33]= 0.5f; verts[34]=yObj; verts[35]=z;
+    }
+
+    // ---- Upload vertices ----
+    m_overlayVBO.bind();
+    m_overlayVBO.write(0, verts, (hasHover ? 12 : 8) * 3 * sizeof(float));
+    m_overlayVBO.release();
+
+    // ---- GL state for overlay ----
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glLineWidth(2.0f);
+
+    m_overlayShader.bind();
+    m_overlayShader.setUniformValue("mvp", mvpMatrix());
+
+    m_overlayVAO.bind();
+
+    // Draw slice-plane rectangle (yellow)
+    m_overlayShader.setUniformValue("overlayColor", QVector4D(1.0f, 0.85f, 0.0f, 0.9f));
+    glDrawArrays(GL_LINES, 0, 8);
+
+    // Draw crosshair (cyan), only when hover position is valid
+    if (hasHover)
+    {
+        m_overlayShader.setUniformValue("overlayColor", QVector4D(0.0f, 0.9f, 1.0f, 0.9f));
+        glDrawArrays(GL_LINES, 8, 4);
+    }
+
+    m_overlayVAO.release();
+    m_overlayShader.release();
+
+    // ---- Restore GL state ----
+    glLineWidth(1.0f);
+    glDisable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
+}
+
+// ============================================================================
 // GL resource helpers
 // ============================================================================
 
@@ -854,8 +968,9 @@ void PreviewWidget::initShaders()
             qWarning() << "PreviewWidget" << label << "link:"     << prog.log();
     };
 
-    compile(m_debugShader,  s_vertSrc, s_debugFragSrc,  "debug");
-    compile(m_volumeShader, s_vertSrc, s_volumeFragSrc, "volume");
+    compile(m_debugShader,   s_vertSrc,        s_debugFragSrc,   "debug");
+    compile(m_volumeShader,  s_vertSrc,        s_volumeFragSrc,  "volume");
+    compile(m_overlayShader, s_overlayVertSrc, s_overlayFragSrc, "overlay");
 }
 
 void PreviewWidget::initCubeGeometry()
@@ -883,6 +998,23 @@ void PreviewWidget::initCubeGeometry()
 
     m_cubeVBO.release();
     m_vao.release();
+
+    // Overlay VAO/VBO: 12 vertices × 3 floats, updated dynamically each frame
+    m_overlayVAO.create();
+    m_overlayVAO.bind();
+
+    m_overlayVBO.create();
+    m_overlayVBO.bind();
+    m_overlayVBO.allocate(12 * 3 * sizeof(float));  // pre-allocate; data written per frame
+
+    m_overlayShader.bind();
+    const int overlayLoc = m_overlayShader.attributeLocation("position");
+    m_overlayShader.enableAttributeArray(overlayLoc);
+    m_overlayShader.setAttributeBuffer(overlayLoc, GL_FLOAT, 0, 3, 3 * sizeof(float));
+    m_overlayShader.release();
+
+    m_overlayVBO.release();
+    m_overlayVAO.release();
 }
 
 void PreviewWidget::initTexture(int w, int h, int d)

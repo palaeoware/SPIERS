@@ -2879,6 +2879,8 @@ void MainWindow::Moveimage(int imageno)
         UndoEvents.prepend(new UndoEvent(CurrentFile, imageno - 1)); //add the move event to undo list - store move FROM not to!
     CurrentFile = imageno - 1;
     LoadAllData(-10000 + CurrentFile);
+    if (previewWidget3D->isShowingPositionIndicator())
+        previewWidget3D->update();
 
     //set my 'blank' starting point for undo
     if (HorribleBodgeFlagDontStoreUndo == false)

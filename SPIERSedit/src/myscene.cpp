@@ -17,6 +17,7 @@
 
 #include "myscene.h"
 #include "globals.h"
+#include "mainwindow.h"
 #include "brush.h"
 #include "display.h"
 #include "curves.h"
@@ -71,6 +72,9 @@ void myscene::DoMouse(int x, int y, int PressedButton)
 
         LastMouseX = x;
         LastMouseY = y;
+
+        if (AppMainWindow && AppMainWindow->previewWidget3D->isShowingPositionIndicator())
+            AppMainWindow->previewWidget3D->update();
 
         MoveFlag = true;
         if (button > 0)
