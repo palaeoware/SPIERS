@@ -259,6 +259,10 @@ private slots:
     void on_cmbShadowsSecondary_currentIndexChanged(int index);
 
 
+    void on_actionClear_Scale_Markers_triggered();
+
+
+
 
 };
 

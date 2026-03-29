@@ -53,7 +53,7 @@
 #include "spvwriter.h"
 #include "../SPIERScommon/src/netmodule.h"
 #include "movetogroup.h"
-
+#include "positionclickhandler.h"
 /**
  * @brief MainWindow::MainWindow
  * Constructor sets up VTK widget and one-shot timer to do load.
@@ -112,6 +112,10 @@ MainWindow::MainWindow(QWidget *parent)
         gridOverlay->setGeometry(gl3widget->geometry());
         gridOverlay->update();
     });
+
+    //and update event
+    connect(gl3widget, &GlWidget::glUpdate,
+            gridOverlay, [=]() { gridOverlay->update(); });
 
     gllayout = new QHBoxLayout;
     gllayout->addWidget(gl3widget);
@@ -224,6 +228,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     AnimOutputDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
     mainWindowReady = true;
+
+    auto clickHandler = new PositionClickHandler(gridOverlay, this);
 }
 
 /**
@@ -4326,4 +4332,10 @@ void MainWindow::on_cmbShadowsSecondary_currentIndexChanged(int index)
     }
     //qDebug()<<"Secondary shadow mode = "<<secondaryLightShadows;
     UpdateGL();
+}
+
+void MainWindow::on_actionClear_Scale_Markers_triggered()
+{
+    gridOverlay->clearMarkers();
+
 }

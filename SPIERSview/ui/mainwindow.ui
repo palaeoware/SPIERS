@@ -288,6 +288,8 @@
      <addaction name="actionMinor_Grid_Colour"/>
      <addaction name="actionReset_Scale_Grid_to_Defaults"/>
     </widget>
+    <addaction name="actionClear_Scale_Markers"/>
+    <addaction name="separator"/>
     <addaction name="actionShow_Scale_Grid"/>
     <addaction name="menuScale_Grid_Settings"/>
     <addaction name="separator"/>
@@ -2961,6 +2963,11 @@
    </property>
    <property name="shortcut">
     <string>F8</string>
+   </property>
+  </action>
+  <action name="actionClear_Scale_Markers">
+   <property name="text">
+    <string>Clear Scale Markers</string>
    </property>
   </action>
  </widget>

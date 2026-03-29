@@ -52,6 +52,7 @@ SOURCES += src/main.cpp \
     ../SPIERScommon/src/darkstyletheme.cpp \
     src/globals.cpp \
     src/meshfilters.cpp \
+    src/positionclickhandler.cpp \
     src/scalegridoverlay.cpp \
     src/spvreader.cpp \
     src/svobject.cpp \
@@ -90,6 +91,7 @@ HEADERS += src/mainwindow.h \
     ../SPIERScommon/src/darkstyletheme.h \
     src/globals.h \
     src/meshfilters.h \
+    src/positionclickhandler.h \
     src/scalegridoverlay.h \
     src/spvreader.h \
     src/svobject.h \

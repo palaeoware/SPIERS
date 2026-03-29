@@ -27,7 +27,8 @@ class GlWidget : public QOpenGLWidget, protected QOpenGLFunctions
 
 signals:
     void resized();  //for comms with the overlying painter
-
+    void worldPositionClicked(QVector3D pos, bool validHit, int objectIndex);
+    void glUpdate();
 public:
     GlWidget(QWidget *parent);
     ~GlWidget();
@@ -61,6 +62,9 @@ public:
     // OIT composite shader — single variant, no shadows
     QOpenGLShaderProgram oitCompositeShaderProgram;
 
+    // Colour pick shader — flat colour, no lighting
+    QOpenGLShaderProgram pickShaderProgram;
+
     QMatrix4x4 pMatrix;
 
     bool CanISee(int index);
@@ -88,7 +92,7 @@ protected:
     void resizeGL(int width, int height) override;
     void paintGL() override;
     void mouseMoveEvent(QMouseEvent *event) override;
-
+    void mousePressEvent(QMouseEvent *event) override;
 private:
     bool gestureEvent(QGestureEvent *event);
     void pinchTriggered(QPinchGesture *gesture);
@@ -125,6 +129,15 @@ private:
     GLuint oitRevealTexture;  // R16F    — reveal (transmittance) factor
     GLuint oitDepthRBO;       // shared depth renderbuffer (matches opaque pass)
     GLuint fullscreenQuadVBO; // [-1,1] quad for composite pass
+
+    // Colour pick infrastructure
+    void   initPickFBO();
+    void   resizePickFBO(int w, int h);
+    int    pickObject(int mouseX, int mouseY);
+
+    GLuint pickFBO;
+    GLuint pickColourTexture;  // RGBA8 — encoded object index
+    GLuint pickDepthRBO;       // depth for correct front-surface selection
 
     DrawGLScaleBall *scaleBall;
 };
