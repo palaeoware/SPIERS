@@ -5,7 +5,7 @@
  * All SPIERSversion code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSversion code is Copyright 2008-2019 by Alan R.T. Spencer, Russell J. Garwood,
+ * All SPIERSversion code is Copyright 2008-2025 by Alan R.T. Spencer, Russell J. Garwood,
  * and Mark D. Sutton.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -30,7 +30,6 @@
 
 /**
  * @brief MainWindow::MainWindow
- * Constructor sets up VTK widget and one-shot timer to do load. Nothing else.
  *
  * @param parent
  */

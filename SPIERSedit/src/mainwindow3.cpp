@@ -50,16 +50,18 @@
 
 void MainWindow::SetUpDocks()
 {
+
     addDockWidget (Qt::LeftDockWidgetArea, dockWidget_Main);
-    addDockWidget (Qt::RightDockWidgetArea, dockWidget_Generate);
     addDockWidget (Qt::LeftDockWidgetArea, SliceSelector);
+
+    addDockWidget (Qt::RightDockWidgetArea, DockPreview3D);
+    addDockWidget (Qt::RightDockWidgetArea, DockInfo);
+    addDockWidget (Qt::RightDockWidgetArea, dockWidget_Generate);
+    addDockWidget (Qt::RightDockWidgetArea, DockSegmentsSettings);
     addDockWidget (Qt::RightDockWidgetArea, DockMasksSettings);
     addDockWidget (Qt::RightDockWidgetArea, DockCurvesSettings);
-    addDockWidget (Qt::RightDockWidgetArea, DockSegmentsSettings);
     addDockWidget (Qt::RightDockWidgetArea, DockOutputSettings);
     addDockWidget (Qt::RightDockWidgetArea, DockHist);
-    addDockWidget (Qt::RightDockWidgetArea, DockInfo);
-    addDockWidget (Qt::RightDockWidgetArea, DockPreview3D);
 
     tabifyDockWidget(dockWidget_Main, SliceSelector);
 
