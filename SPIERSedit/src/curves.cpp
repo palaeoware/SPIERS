@@ -188,7 +188,7 @@ void AddNode()
     CurvesUndoDirty = true;
 }
 
-void KillNode(MainWindowImpl *th)
+void KillNode(MainWindow *th)
 {
     //find node
     int node = FindClosestNode(static_cast<double>(LastMouseX), static_cast<double>(LastMouseY));

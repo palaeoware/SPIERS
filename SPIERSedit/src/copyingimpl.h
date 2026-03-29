@@ -23,7 +23,7 @@
 #include <QListWidget>
 
 #include "ui_Copying.h"
-#include "mainwindowimpl.h"
+#include "mainwindow.h"
 #include "beamhardening.h"
 
 class OutputObject;
@@ -49,13 +49,13 @@ public:
     void ExportSPV(int);
     void ExportSPV_2(int flag);
     void MeasureVols();
-    void MaskCopy(int fromfile, MainWindowImpl *mw);
-    void MaskCopy2(int fromfile, MainWindowImpl *mw);
+    void MaskCopy(int fromfile, MainWindow *mw);
+    void MaskCopy2(int fromfile, MainWindow *mw);
     void ReverseStretches(QList <double> *stretches, int Sstart, int Sstop);
     void DoOutputRecursive(QList <int> *translationtable, int *nexttransentry, QList <int> *translationtable2, int *nexttransentry2, int parent, long long int asize, int filesused, int awidth,
                            int aheight, QDataStream *out, QList <double> *stretches);
     void GetOutputList(QList <OutputObject *> *outlist, QList <int> *translationtable, int *nexttransentry, QList <int> *translationtable2, int *nexttransentry2, int parent);
-    void CurvesToMasks(MainWindowImpl *mw);
+    void CurvesToMasks(MainWindow *mw);
     void CompressAllWorkingFiles(int level);
     void CompressAllSourceFiles(int level);
     void Apply3DBrush(int button);

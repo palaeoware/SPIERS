@@ -30,7 +30,7 @@
 extern void ShowImage(QGraphicsView *gv);
 extern void InitImage(QGraphicsView *gv);
 extern void DeleteDisplayObjects();
-extern QList<LabelledPoint> GenerateLabels(MainWindowImpl *mw, int percentage);
+extern QList<LabelledPoint> GenerateLabels(MainWindow *mw, int percentage);
 extern void ClearImages();
 extern void MakeLinearGreyScale(int seg, int fnum, bool flag);
 extern void ApplyLCE(int seg, int fnum, bool flag);

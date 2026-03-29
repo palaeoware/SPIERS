@@ -16,7 +16,7 @@
  */
 
 #include "dialogaboutimpl.h"
-#include "mainwindowimpl.h"
+#include "mainwindow.h"
 #include "globals.h"
 
 #include "../../SPIERScommon/src/netmodule.h"

@@ -8,7 +8,7 @@
 #include "display.h"
 #include <opencv2/imgproc.hpp>
 #include "labelledpoint.h"
-#include "mainwindowimpl.h"
+#include "mainwindow.h"
 #include "mlupdateblockingdialog.h"
 #include "mlfeatureintensity.h"
 #include "mlfeaturegaussian.h"
@@ -38,7 +38,7 @@ MLInterface::MLInterface()
 
 //This should be called after new dataset is loaded or created
 //Or after operations that break everything, e.g. change to resampling
-void MLInterface::Initialise(MainWindowImpl *mw, QLabel *statusLabel)
+void MLInterface::Initialise(MainWindow *mw, QLabel *statusLabel)
 {
     lblStatus = statusLabel;
     mainWin = mw;

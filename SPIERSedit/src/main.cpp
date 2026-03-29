@@ -29,7 +29,7 @@
 #include <QDebug>
 #include <QSurfaceFormat>
 
-#include "mainwindowimpl.h"
+#include "mainwindow.h"
 #include "display.h"
 #include "globals.h"
 #include "mlinterface.h"
@@ -131,7 +131,7 @@ int main(int argc, char **argv)
     }
     else openfile = "";
 
-    MainWindowImpl mainWindow;
+    MainWindow mainWindow;
     mainWindow.show();
     return app.exec();
 }
@@ -320,7 +320,7 @@ int main(int argc, char *argv[])
     NetModule n;
     n.checkForNew();
 
-    MainWindowImpl win;
+    MainWindow win;
     win.show();
 
     return app.exec();

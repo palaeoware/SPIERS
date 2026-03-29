@@ -19,7 +19,7 @@
 #include "importdialogimpl.h"
 #include "curves.h"
 #include "resampleimpl.h"
-#include "mainwindowimpl.h"
+#include "mainwindow.h"
 #include "copyingimpl.h"
 #include "globals.h"
 #include "display.h"
@@ -48,44 +48,8 @@
 #include <QHeaderView>
 
 
-void MainWindowImpl::SetUpDocks()
+void MainWindow::SetUpDocks()
 {
-    //DOCK STUFF
-
-    //current plan - delete ALL docks, first reparenting to save their contents widget
-    //Create new ones, put widgets in. See if they work
-    /*  qDebug()<<"parent of first dock"<<dockWidgetContents->parent()<<"dock is ";
-
-
-        removeDockWidget (dockWidget_Generate);
-        removeDockWidget (SliceSelector);
-        removeDockWidget (DockMasksSettings);
-        removeDockWidget (DockCurvesSettings);
-        removeDockWidget (DockSegmentsSettings);
-        removeDockWidget (DockOutputSettings);
-        removeDockWidget (DockHist);
-        removeDockWidget (DockInfo);
-
-        dockWidgetContents->setParent(0); //unparent
-        removeDockWidget(dockWidget_Main);
-        delete dockWidget_Main;
-        dockWidget_Main = new QDockWidget("Main Toolbox (F1)");
-        dockWidget_Main->setWidget(dockWidgetContents);
-        addDockWidget(Qt::LeftDockWidgetArea, dockWidget_Main);
-
-    */
-
-    //to get round designer bug with parenting of docks
-//  SliceSelector->setParent(this);
-//  DockMasksSettings->setParent(this);
-//  DockCurvesSettings->setParent(this);
-//  DockOutputSettings->setParent(this);
-//  DockSegmentsSettings->setParent(this);
-//  DockInfo->setParent(this);
-//  DockHist->setParent(this);
-
-//  removeDockWidget (dockWidget_Main);
-
     addDockWidget (Qt::LeftDockWidgetArea, dockWidget_Main);
     addDockWidget (Qt::RightDockWidgetArea, dockWidget_Generate);
     addDockWidget (Qt::LeftDockWidgetArea, SliceSelector);
@@ -95,6 +59,7 @@ void MainWindowImpl::SetUpDocks()
     addDockWidget (Qt::RightDockWidgetArea, DockOutputSettings);
     addDockWidget (Qt::RightDockWidgetArea, DockHist);
     addDockWidget (Qt::RightDockWidgetArea, DockInfo);
+    addDockWidget (Qt::RightDockWidgetArea, DockPreview3D);
 
     tabifyDockWidget(dockWidget_Main, SliceSelector);
 
@@ -115,6 +80,8 @@ void MainWindowImpl::SetUpDocks()
     DockSegmentsSettings->setFloating(false);
     DockInfo->setFloating(false);
     DockHist->setFloating(false);
+    DockPreview3D->setVisible(true);
+    DockPreview3D->setFloating(false);
     dockWidget_Generate->setFloating(false);
 
     GVHist = new histgv;
@@ -131,72 +98,18 @@ void MainWindowImpl::SetUpDocks()
     BrushSize->setMinimum(1);
     BrushSize->setMaximum(2000);
     BrushSize->setValue(1);
-    toolBar->addWidget(BrushSize);
-
-    /*  BrushSizeY = new QSpinBox;
-        BrushSizeY->setKeyboardTracking(false);
-        BrushSizeY->setMinimum(1);
-        BrushSizeY->setMaximum(2000);
-        BrushSizeY->setPrefix("Y: ");
-        BrushSizeY->setValue(1);
-        BrushSizeY->setEnabled(false);
-        toolBar->addWidget(BrushSizeY);
-
-        BrushSizeZ = new QSpinBox;
-        BrushSizeZ->setKeyboardTracking(false);
-        BrushSizeZ->setMinimum(1);
-        BrushSizeZ->setMaximum(2000);
-        BrushSizeZ->setPrefix("Z: ");
-        BrushSizeZ->setValue(1);
-        BrushSizeZ->setEnabled(false);
-        toolBar->addWidget(BrushSizeZ);
-
-
-        Yaw = new QDoubleSpinBox;
-        Yaw->setKeyboardTracking(false);
-        Yaw->setMinimum(-180);
-        Yaw->setMaximum(180);
-        Yaw->setPrefix("Yaw: ");
-        Yaw->setValue(0);
-        Yaw->setEnabled(false);
-        toolBar->addWidget(Yaw);
-
-        Pitch = new QDoubleSpinBox;
-        Pitch->setKeyboardTracking(false);
-        Pitch->setMinimum(-180);
-        Pitch->setMaximum(180);
-        Pitch->setPrefix("Pitch: ");
-        Pitch->setValue(0);
-        Pitch->setEnabled(false);
-        toolBar->addWidget(Pitch);
-
-        Roll = new QDoubleSpinBox;
-        Roll->setKeyboardTracking(false);
-        Roll->setMinimum(-180);
-        Roll->setMaximum(180);
-        Roll->setPrefix("Roll: ");
-        Roll->setValue(0);
-        Roll->setEnabled(false);
-        toolBar->addWidget(Roll);
-
-    */
-
-
+    toolBar->addWidget(BrushSize);   
 }
 
 
-void MainWindowImpl::on_actionRefresh_triggered()
+void MainWindow::on_actionRefresh_triggered()
 {
     ShowImage(graphicsView);
-    /*  QRect size =SliceSelector->geometry();
-        size.setWidth(size.width()-2);
-        SliceSelector->setGeometry(size);
-    */
 }
 
 
 
-void MainWindowImpl::on_action3D_Brush_toggled(bool mode)
+void MainWindow::on_action3D_Brush_toggled(bool mode)
 {
     ThreeDmode = mode;
     SetUpBrushEnabling();
@@ -214,7 +127,7 @@ void MainWindowImpl::on_action3D_Brush_toggled(bool mode)
     }
 }
 
-void MainWindowImpl::SetUpBrushEnabling()
+void MainWindow::SetUpBrushEnabling()
 {
     if (ThreeDmode)
     {
@@ -234,13 +147,13 @@ void MainWindowImpl::SetUpBrushEnabling()
     }
 }
 
-void MainWindowImpl::on_actionManual_triggered()
+void MainWindow::on_actionManual_triggered()
 {
     QDesktopServices::openUrl(QUrl(QString(READTHEDOCS)));
 }
 
 
-void MainWindowImpl::wheelEvent(QWheelEvent *event)
+void MainWindow::wheelEvent(QWheelEvent *event)
 {
     ZoomSlider->setValue(ZoomSlider->value() + event->angleDelta().y() / 12);
     event->ignore();
@@ -249,7 +162,7 @@ void MainWindowImpl::wheelEvent(QWheelEvent *event)
 
 
 
-void MainWindowImpl::on_actionExport_Curves_as_CSV_triggered()
+void MainWindow::on_actionExport_Curves_as_CSV_triggered()
 {
     QString filen = QFileDialog::getSaveFileName(
                         this,
@@ -286,7 +199,7 @@ void MainWindowImpl::on_actionExport_Curves_as_CSV_triggered()
     file.close();
 }
 
-void MainWindowImpl::on_actionImport_Curves_as_CSV_triggered()
+void MainWindow::on_actionImport_Curves_as_CSV_triggered()
 {
     Message("This is an experimental bodge. Only use if the curves dataset you are importing has the same number of curves and the same number of tomograms");
     QString filen = QFileDialog::getOpenFileName(
@@ -329,7 +242,7 @@ void MainWindowImpl::on_actionImport_Curves_as_CSV_triggered()
     file.close();
 }
 
-void MainWindowImpl::on_actionOutput_visible_image_set_triggered()
+void MainWindow::on_actionOutput_visible_image_set_triggered()
 {
     int SaveCurrentFile = CurrentFile = SliderPos->value();
     if (ExportingImages == true)
@@ -370,18 +283,18 @@ void MainWindowImpl::on_actionOutput_visible_image_set_triggered()
     statusBar()->showMessage("Done.");
 }
 
-void MainWindowImpl::on_actionBugIssueFeatureRequest_triggered()
+void MainWindow::on_actionBugIssueFeatureRequest_triggered()
 {
     QDesktopServices::openUrl(QUrl(QString(GITURL) + QString(GITREPOSITORY) + QString(GITISSUE)));
 }
 
-void MainWindowImpl::on_actionCode_on_GitHub_triggered()
+void MainWindow::on_actionCode_on_GitHub_triggered()
 {
     QDesktopServices::openUrl(QUrl(QString(GITURL) + QString(GITREPOSITORY)));
 }
 
 
-void MainWindowImpl::DoGradientsUpdate()
+void MainWindow::DoGradientsUpdate()
 {
     //Values changed in UI for Gradients - redo preview if preview is on
     ShowImage(graphicsView);

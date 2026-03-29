@@ -17,7 +17,7 @@
 
 #include "exportdxf.h"
 
-ExportDXF::ExportDXF( MainWindowImpl *mwp, QWidget *parent, Qt::WindowFlags f)
+ExportDXF::ExportDXF( MainWindow *mwp, QWidget *parent, Qt::WindowFlags f)
     : QDialog(parent, f)
 {
     setupUi(this);

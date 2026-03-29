@@ -5,7 +5,7 @@
 #include <opencv2/core.hpp>
 #include <opencv2/ml.hpp>
 #include "mlcachedaccess.h"
-#include "mainwindowimpl.h"
+#include "mainwindow.h"
 
 class MLFeatureUIManager;
 class MLAddFeature;
@@ -34,7 +34,7 @@ public:
     int GetTreeCount();
     int GetTreeDepth();
 
-    void Initialise(MainWindowImpl *mw,QLabel *statusLabel);
+    void Initialise(MainWindow *mw,QLabel *statusLabel);
     void RemoveAllCacheFiles(bool override);
     QByteArray DumpFeaturesToByteArray();
     void RetrieveFeaturesFromByteArray(QByteArray &byteArray);
@@ -58,7 +58,7 @@ private:
     void UpdateStatusLabel();
 
     QLabel *lblStatus;
-    MainWindowImpl *mainWin;
+    MainWindow *mainWin;
     QString DescribeSample();
     QVector<LabelledPoint> labels;
     bool Sample(bool incremental, bool noMessages);

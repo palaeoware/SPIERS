@@ -17,7 +17,7 @@
 
 #include "myrangescene.h"
 #include "globals.h"
-#include "mainwindowimpl.h"
+#include "mainwindow.h"
 #include "display.h"
 
 #include <QList>

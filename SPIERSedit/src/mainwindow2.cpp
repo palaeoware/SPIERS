@@ -1,6 +1,6 @@
 /**
  * @file
- * Source: MainWindowImpl2
+ * Source: MainWindow2
  *
  * All SPIERSversion code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
@@ -19,7 +19,7 @@
 #include "keysafespinbox.h"
 #include "distributedialogimpl.h"
 #include "exportdxf.h"
-#include "mainwindowimpl.h"
+#include "mainwindow.h"
 #include "copyingimpl.h"
 #include "selectsegmentimpl.h"
 #include "globals.h"
@@ -49,7 +49,7 @@ QTreeWidgetItem *LastItemClicked;
 QTime LastTimeClicked;
 int LastColumnClicked = -1;
 
-void MainWindowImpl::RefreshOneMaskItem(QTreeWidgetItem *item, int i) //i is index of item in my array
+void MainWindow::RefreshOneMaskItem(QTreeWidgetItem *item, int i) //i is index of item in my array
 {
     //if passed an item
     QLabel *test = new QLabel();
@@ -118,7 +118,7 @@ void MainWindowImpl::RefreshOneMaskItem(QTreeWidgetItem *item, int i) //i is ind
     MasksTreeWidget->setItemWidget (item, 5, lock);
 }
 
-void MainWindowImpl::RefreshMasks()
+void MainWindow::RefreshMasks()
 {
     bodgeflag = true;
     QElapsedTimer t;
@@ -192,7 +192,7 @@ void MainWindowImpl::RefreshMasks()
 
 }
 
-void MainWindowImpl::RefreshOneSegmentItem(QTreeWidgetItem *item, int i) //i is index of item in my array
+void MainWindow::RefreshOneSegmentItem(QTreeWidgetItem *item, int i) //i is index of item in my array
 {
     //Modified from mask equivalent. Redraws item in list
     if (i < 0) return;
@@ -247,7 +247,7 @@ void MainWindowImpl::RefreshOneSegmentItem(QTreeWidgetItem *item, int i) //i is 
 }
 
 
-void MainWindowImpl::RefreshSegments()
+void MainWindow::RefreshSegments()
 {
     QList <bool> selflags;
     bodgeflag = true;
@@ -329,14 +329,14 @@ void MainWindowImpl::RefreshSegments()
 }
 
 
-bool MainWindowImpl::AmIMerged(int i)
+bool MainWindow::AmIMerged(int i)
 {
     if (OutputObjects[i]->Merge) return true;
     if (OutputObjects[i]->Parent == -1) return false;
     else return AmIMerged(OutputObjects[i]->Parent);
 }
 
-void MainWindowImpl::RefreshOneOOItem(QTreeWidgetItem *item, int i) //i is index of item in my array
+void MainWindow::RefreshOneOOItem(QTreeWidgetItem *item, int i) //i is index of item in my array
 {
     //Modified from mask equivalent. Redraws item in list
     if (i < 0) return;
@@ -401,7 +401,7 @@ void MainWindowImpl::RefreshOneOOItem(QTreeWidgetItem *item, int i) //i is index
 }
 
 
-void MainWindowImpl::OODrawChildren( QList <bool> selflags, int parent)
+void MainWindow::OODrawChildren( QList <bool> selflags, int parent)
 {
     QTreeWidgetItem *item;
 
@@ -450,7 +450,7 @@ void MainWindowImpl::OODrawChildren( QList <bool> selflags, int parent)
     }
 }
 
-void MainWindowImpl::RefreshOO()
+void MainWindow::RefreshOO()
 {
 
     if (OutputObjectsCount == 0)
@@ -556,7 +556,7 @@ void MainWindowImpl::RefreshOO()
 }
 
 
-void MainWindowImpl::RefreshOneCurveItem(QTreeWidgetItem *item, int i) //i is index of item in my array
+void MainWindow::RefreshOneCurveItem(QTreeWidgetItem *item, int i) //i is index of item in my array
 {
     //Modified from mask equivalent. Redraws item in list
     if (i < 0) return;
@@ -637,7 +637,7 @@ void MainWindowImpl::RefreshOneCurveItem(QTreeWidgetItem *item, int i) //i is in
     }
 }
 
-void MainWindowImpl::RefreshCurves()
+void MainWindow::RefreshCurves()
 {
     bodgeflag = true;
     bodgeflag = true;
@@ -717,7 +717,7 @@ void MainWindowImpl::RefreshCurves()
 }
 
 
-void MainWindowImpl::RefreshSegmentsBoxes()
+void MainWindow::RefreshSegmentsBoxes()
 {
 
     clearing = true; //flag to control maskbox change event and stop it triggering
@@ -759,7 +759,7 @@ void MainWindowImpl::RefreshSegmentsBoxes()
 
 }
 
-void MainWindowImpl::RefreshMasksBoxes()
+void MainWindow::RefreshMasksBoxes()
 {
     clearing = true; //flag to control maskbox change event and stop it triggering
     MaskBoxLeft->clear();
@@ -797,7 +797,7 @@ void MainWindowImpl::RefreshMasksBoxes()
     clearing = false;
 }
 
-QString MainWindowImpl::TextForSliceSelectorBox(int i)
+QString MainWindow::TextForSliceSelectorBox(int i)
 {
     //qDebug()<<"in TTFSSB";
     int chars = 1;
@@ -828,7 +828,7 @@ QString MainWindowImpl::TextForSliceSelectorBox(int i)
     return s;
 }
 
-void MainWindowImpl::SetUpGUIFromSettings()
+void MainWindow::SetUpGUIFromSettings()
 {
     //qDebug()<<QImageReader::supportedImageFormats ();
     //qDebug()<<QImageWriter::supportedImageFormats ();
@@ -1099,7 +1099,7 @@ void MainWindowImpl::SetUpGUIFromSettings()
     //qDebug()<<"Done mgui";
 }
 
-void MainWindowImpl::on_SegmentAdd_pressed()
+void MainWindow::on_SegmentAdd_pressed()
 {
     //New Segment
     //Creates a new segment and adds it to the list
@@ -1146,7 +1146,7 @@ void MainWindowImpl::on_SegmentAdd_pressed()
     mlInterface->ResetRFAndSample();
 }
 
-void MainWindowImpl::on_SegmentDelete_pressed()
+void MainWindow::on_SegmentDelete_pressed()
 {
     WriteAllData(CurrentFile);
     QList <int> list;
@@ -1188,7 +1188,7 @@ void MainWindowImpl::on_SegmentDelete_pressed()
     ResetFilesDirty();
 }
 
-void MainWindowImpl::SetUpGenerationToolbox(int s)
+void MainWindow::SetUpGenerationToolbox(int s)
 //takes segment and puts all values in
 {
     LinearRedSpinBox->setValue(Segments[s]->LinPercent[0]);
@@ -1204,19 +1204,19 @@ void MainWindowImpl::SetUpGenerationToolbox(int s)
     //SpinBoxContrast->setValue(Segments[s]->PolyContrast);
 }
 
-void MainWindowImpl::on_GenInvert_toggled(bool checked)
+void MainWindow::on_GenInvert_toggled(bool checked)
 {
     Segments[CurrentSegment]->LinInvert = checked;
     if (GenerateAuto->checkState()) on_GenerateButton_clicked();
 }
 
-void MainWindowImpl::on_GenerateAuto_toggled(bool checked)
+void MainWindow::on_GenerateAuto_toggled(bool checked)
 {
     Q_UNUSED(checked);
     //don't actually need to do anything here!
 }
 
-void MainWindowImpl::on_GenerateButton_clicked()
+void MainWindow::on_GenerateButton_clicked()
 {
     if (FileCount==0) return;
 
@@ -1235,40 +1235,40 @@ void MainWindowImpl::on_GenerateButton_clicked()
     ShowImage(graphicsView);
 }
 
-void MainWindowImpl::on_LinearRedSpinBox_valueChanged(int value)
+void MainWindow::on_LinearRedSpinBox_valueChanged(int value)
 {
     Segments[CurrentSegment]->LinPercent[0] = value;
     if (GenerateAuto->checkState()) on_GenerateButton_clicked();
 }
 
-void MainWindowImpl::GenButton()
+void MainWindow::GenButton()
 {
     //public interface to private slot
     on_GenerateButton_clicked();
 }
-void MainWindowImpl::on_LinearGreenSpinBox_valueChanged(int value)
+void MainWindow::on_LinearGreenSpinBox_valueChanged(int value)
 {
     Segments[CurrentSegment]->LinPercent[1] = value;
     if (GenerateAuto->checkState()) on_GenerateButton_clicked();
 }
 
-void MainWindowImpl::on_LinearGreenSpinBox_editingFinished()
+void MainWindow::on_LinearGreenSpinBox_editingFinished()
 {
 }
 
-void MainWindowImpl::on_LinearBlueSpinBox_valueChanged(int value)
+void MainWindow::on_LinearBlueSpinBox_valueChanged(int value)
 {
     Segments[CurrentSegment]->LinPercent[2] = value;
     if (GenerateAuto->checkState()) on_GenerateButton_clicked();
 }
 
-void MainWindowImpl::on_LinearGlobalSpinBox_valueChanged(int value )
+void MainWindow::on_LinearGlobalSpinBox_valueChanged(int value )
 {
     Segments[CurrentSegment]->LinGlobal = value;
     if (GenerateAuto->checkState()) on_GenerateButton_clicked();
 }
 
-void MainWindowImpl::on_CurvesTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
+void MainWindow::on_CurvesTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
 {
     if (DoubleClickTimer.elapsed() < 100) return; //avoid double calls
     for (int i = 0; i < CurveCount; i++)
@@ -1335,7 +1335,7 @@ void MainWindowImpl::on_CurvesTreeWidget_itemDoubleClicked(QTreeWidgetItem *item
 }
 
 
-void MainWindowImpl::on_CurvesTreeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
+void MainWindow::on_CurvesTreeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 {
     Q_UNUSED(current);
     Q_UNUSED(previous);
@@ -1343,7 +1343,7 @@ void MainWindowImpl::on_CurvesTreeWidget_currentItemChanged(QTreeWidgetItem *cur
 }
 
 //Slice selector underlining
-void MainWindowImpl::on_SliceSelectorList_itemSelectionChanged()
+void MainWindow::on_SliceSelectorList_itemSelectionChanged()
 {
     //do the underlining trick
     if (SliceSelectorList->count() == FileCount) //if not it's just been cleared - avoids crash on reload!
@@ -1357,7 +1357,7 @@ void MainWindowImpl::on_SliceSelectorList_itemSelectionChanged()
         }
 }
 
-void MainWindowImpl::on_CurvesTreeWidget_itemSelectionChanged()
+void MainWindow::on_CurvesTreeWidget_itemSelectionChanged()
 {
     //qDebug()<<"ISC1";
     if (bodgeflag) return;
@@ -1390,14 +1390,14 @@ void MainWindowImpl::on_CurvesTreeWidget_itemSelectionChanged()
     //qDebug()<<"ISC6";
 }
 
-void MainWindowImpl::on_actionAdd_new_point_triggered()
+void MainWindow::on_actionAdd_new_point_triggered()
 {
     AddNode();
     ShowImage(graphicsView);
     RefreshCurves();
 }
 
-void MainWindowImpl::on_actionRemove_node_under_cursor_triggered()
+void MainWindow::on_actionRemove_node_under_cursor_triggered()
 {
     KillNode(this);
     ShowImage(graphicsView);
@@ -1405,7 +1405,7 @@ void MainWindowImpl::on_actionRemove_node_under_cursor_triggered()
 }
 
 
-void MainWindowImpl::on_Curve_Add_pressed()
+void MainWindow::on_Curve_Add_pressed()
 {
     //New Curve
     //Creates a new curve and adds it to the list
@@ -1441,7 +1441,7 @@ void MainWindowImpl::on_Curve_Add_pressed()
     //qDebug()<<"H7";
 }
 
-void MainWindowImpl::on_CurveDelete_pressed()
+void MainWindow::on_CurveDelete_pressed()
 {
     QList <int> list;
     for (int i = 0;  i < CurveCount; i++)
@@ -1533,7 +1533,7 @@ void MainWindowImpl::on_CurveDelete_pressed()
     }
 }
 
-void MainWindowImpl::on_CurveMoveUp_pressed()
+void MainWindow::on_CurveMoveUp_pressed()
 {
     //Move selected curve up
     CurvesTreeWidget->setUpdatesEnabled(false);
@@ -1579,7 +1579,7 @@ void MainWindowImpl::on_CurveMoveUp_pressed()
     RefreshCurves(); //added later to get graying to work - possibly some of the above now not needed?
 }
 
-void MainWindowImpl::on_CurveMoveDown_pressed()
+void MainWindow::on_CurveMoveDown_pressed()
 {
     CurvesTreeWidget->setUpdatesEnabled(false);
 
@@ -1625,7 +1625,7 @@ void MainWindowImpl::on_CurveMoveDown_pressed()
 }
 
 
-void MainWindowImpl::CurveCopy(int fromfile)
+void MainWindow::CurveCopy(int fromfile)
 {
     QList <QTreeWidgetItem *> selitems = CurvesTreeWidget->selectedItems();
     if (selitems.count() == 0) Message("No curves selected to copy");
@@ -1663,7 +1663,7 @@ void MainWindowImpl::CurveCopy(int fromfile)
     RefreshCurves();
 }
 
-void MainWindowImpl::on_actionCopyCurvesFromPrevious_triggered()
+void MainWindow::on_actionCopyCurvesFromPrevious_triggered()
 {
     if (CurrentFile == 0) Message("This is the first slice image in the dataset");
     else CurveCopy(CurrentFile - 1);
@@ -1671,7 +1671,7 @@ void MainWindowImpl::on_actionCopyCurvesFromPrevious_triggered()
     RefreshCurves();
 }
 
-void MainWindowImpl::on_actionCopyCurvesFromNext_triggered()
+void MainWindow::on_actionCopyCurvesFromNext_triggered()
 {
     if (CurrentFile == Files.count() - 1) Message("This is the last slice image in the dataset");
     else CurveCopy(CurrentFile + 1);
@@ -1679,7 +1679,7 @@ void MainWindowImpl::on_actionCopyCurvesFromNext_triggered()
     RefreshCurves();
 }
 
-void MainWindowImpl::on_actionCopyCurvesToCurrent_triggered()
+void MainWindow::on_actionCopyCurvesToCurrent_triggered()
 {
     QList <QTreeWidgetItem *> selitems = CurvesTreeWidget->selectedItems();
     QList <QListWidgetItem *> selslices = SliceSelectorList->selectedItems();
@@ -1718,14 +1718,14 @@ void MainWindowImpl::on_actionCopyCurvesToCurrent_triggered()
 }
 
 
-void MainWindowImpl::on_actionCopy_from_current_slice_to_selected_triggered()
+void MainWindow::on_actionCopy_from_current_slice_to_selected_triggered()
 {
     CurveCopy(CurrentFile);
     //ResetUndo();
     RefreshCurves();
 }
 
-void MainWindowImpl::on_actionRemove_selected_curves_from_selected_slices_triggered()
+void MainWindow::on_actionRemove_selected_curves_from_selected_slices_triggered()
 {
     QList <QTreeWidgetItem *> selitems = CurvesTreeWidget->selectedItems();
     QList <QListWidgetItem *> selslices = SliceSelectorList->selectedItems();
@@ -1753,7 +1753,7 @@ void MainWindowImpl::on_actionRemove_selected_curves_from_selected_slices_trigge
     RefreshCurves();
 }
 
-void MainWindowImpl::on_actionResize_keeping_curve_shape_triggered()
+void MainWindow::on_actionResize_keeping_curve_shape_triggered()
 {
     //this works on all selected slices
     QList <QTreeWidgetItem *> selitems = CurvesTreeWidget->selectedItems();
@@ -1804,7 +1804,7 @@ void MainWindowImpl::on_actionResize_keeping_curve_shape_triggered()
     }
 }
 
-void MainWindowImpl::ResetUndo()
+void MainWindow::ResetUndo()
 {
     //clear the undo buffer - done something that invalidates it!
 
@@ -1827,7 +1827,7 @@ void MainWindowImpl::ResetUndo()
 }
 
 
-void MainWindowImpl::on_OOTreeWidget_itemPressed(QTreeWidgetItem *item, int column)
+void MainWindow::on_OOTreeWidget_itemPressed(QTreeWidgetItem *item, int column)
 {
     QTime now = QTime::currentTime();
     if (LastColumnClicked == column && LastItemClicked == item)
@@ -1845,7 +1845,7 @@ void MainWindowImpl::on_OOTreeWidget_itemPressed(QTreeWidgetItem *item, int colu
 
 }
 
-void MainWindowImpl::on_CurvesTreeWidget_itemPressed(QTreeWidgetItem *item, int column)
+void MainWindow::on_CurvesTreeWidget_itemPressed(QTreeWidgetItem *item, int column)
 {
     QTime now = QTime::currentTime();
     if (LastColumnClicked == column && LastItemClicked == item)
@@ -1863,7 +1863,7 @@ void MainWindowImpl::on_CurvesTreeWidget_itemPressed(QTreeWidgetItem *item, int 
 
 }
 
-void MainWindowImpl::on_MasksTreeWidget_itemPressed(QTreeWidgetItem *item, int column)
+void MainWindow::on_MasksTreeWidget_itemPressed(QTreeWidgetItem *item, int column)
 {
     //Double click bodge - not always being picked up for some reason, so manually look for close clicks
     QTime now = QTime::currentTime();
@@ -1914,7 +1914,7 @@ void MainWindowImpl::on_MasksTreeWidget_itemPressed(QTreeWidgetItem *item, int c
     }
 }
 
-void MainWindowImpl::on_SegmentsTreeWidget_itemPressed(QTreeWidgetItem *item, int column)
+void MainWindow::on_SegmentsTreeWidget_itemPressed(QTreeWidgetItem *item, int column)
 {
 
     //Double click bodge - not always being picked up for some reason, so manually look for close clicks
@@ -1967,7 +1967,7 @@ void MainWindowImpl::on_SegmentsTreeWidget_itemPressed(QTreeWidgetItem *item, in
     }
 }
 
-void MainWindowImpl::on_SegmentsTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
+void MainWindow::on_SegmentsTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
 {
     if (DoubleClickTimer.elapsed() < 100) return; //avoid double calls
     //invert a yes/no etc - code largely from masks version
@@ -2014,7 +2014,7 @@ void MainWindowImpl::on_SegmentsTreeWidget_itemDoubleClicked(QTreeWidgetItem *it
 
 
 
-void MainWindowImpl::on_OOTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
+void MainWindow::on_OOTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
 {
     if (DoubleClickTimer.elapsed() < 100) return; //avoid double calls
     for (int i = 0; i < OutputObjectsCount; i++)
@@ -2119,13 +2119,13 @@ void MainWindowImpl::on_OOTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, in
     DoubleClickTimer.restart();
 }
 
-void MainWindowImpl::on_OOTreeWidget_expanded(QModelIndex index)
+void MainWindow::on_OOTreeWidget_expanded(QModelIndex index)
 {
     Q_UNUSED(index);
     OOTreeWidget->resizeColumnToContents(0);
 }
 
-void MainWindowImpl::on_OONew_clicked()
+void MainWindow::on_OONew_clicked()
 {
     //OK, add based on all the stuff selected
 
@@ -2260,7 +2260,7 @@ void MainWindowImpl::on_OONew_clicked()
 
 }
 
-void MainWindowImpl::on_OOGroup_clicked()
+void MainWindow::on_OOGroup_clicked()
 {
     QList <QTreeWidgetItem *> selected = OOTreeWidget->selectedItems();
     int oldparent = -2;
@@ -2299,7 +2299,7 @@ void MainWindowImpl::on_OOGroup_clicked()
 
 }
 
-void MainWindowImpl::on_OODelete_clicked()
+void MainWindow::on_OODelete_clicked()
 {
     QList <int> list;
 restart:
@@ -2349,7 +2349,7 @@ restart:
     RefreshOO();
 }
 
-void MainWindowImpl::on_OOUp_clicked()
+void MainWindow::on_OOUp_clicked()
 {
     QList <QTreeWidgetItem *> selected = OOTreeWidget->selectedItems();
     if (selected.count() != 1) Message("Select a single item to move up");
@@ -2385,7 +2385,7 @@ void MainWindowImpl::on_OOUp_clicked()
     RefreshOO();
 }
 
-void MainWindowImpl::on_OODown_clicked()
+void MainWindow::on_OODown_clicked()
 {
     QList <QTreeWidgetItem *> selected = OOTreeWidget->selectedItems();
     if (selected.count() != 1) Message("Select a single item to move down");
@@ -2421,7 +2421,7 @@ void MainWindowImpl::on_OODown_clicked()
     RefreshOO();
 }
 
-void MainWindowImpl::on_MasksTreeWidget_itemSelectionChanged()
+void MainWindow::on_MasksTreeWidget_itemSelectionChanged()
 {
     if (bodgeflag) return;
 
@@ -2454,7 +2454,7 @@ void MainWindowImpl::on_MasksTreeWidget_itemSelectionChanged()
 
 
 
-void MainWindowImpl::on_SegmentsTreeWidget_itemSelectionChanged()
+void MainWindow::on_SegmentsTreeWidget_itemSelectionChanged()
 {
     if (bodgeflag) return; //do the underlining trick
     for (int i = 0; i < SegmentsTreeWidget->topLevelItemCount(); i++)
@@ -2487,7 +2487,7 @@ void MainWindowImpl::on_SegmentsTreeWidget_itemSelectionChanged()
     }
 }
 
-void MainWindowImpl::OOunderlineChildren(QTreeWidgetItem *par)
+void MainWindow::OOunderlineChildren(QTreeWidgetItem *par)
 {
     //do the underlining trick
     for (int i = 0; i < par->childCount(); i++)
@@ -2501,7 +2501,7 @@ void MainWindowImpl::OOunderlineChildren(QTreeWidgetItem *par)
     }
 }
 
-void MainWindowImpl::on_OOTreeWidget_itemSelectionChanged()
+void MainWindow::on_OOTreeWidget_itemSelectionChanged()
 {
     if (bodgeflag) return;
     //are we in the odd select mode?
@@ -2584,7 +2584,7 @@ void MainWindowImpl::on_OOTreeWidget_itemSelectionChanged()
     }
 }
 
-void MainWindowImpl::on_actionUngroup_triggered()
+void MainWindow::on_actionUngroup_triggered()
 {
     //Ungroup command
     //For all selected objects:
@@ -2617,7 +2617,7 @@ void MainWindowImpl::on_actionUngroup_triggered()
 }
 
 
-void MainWindowImpl::on_actionMove_item_to_Group_triggered()
+void MainWindow::on_actionMove_item_to_Group_triggered()
 {
     int count = 0;
     for (int i = 0; i < OutputObjectsCount; i++)
@@ -2636,7 +2636,7 @@ void MainWindowImpl::on_actionMove_item_to_Group_triggered()
     }
 }
 
-void MainWindowImpl::CleanseOO()
+void MainWindow::CleanseOO()
 {
     //need to go through all the lists and remove anything that's -1
 
@@ -2701,7 +2701,7 @@ void MainWindowImpl::CleanseOO()
 }
 
 
-void MainWindowImpl::on_actionOutput_SPIERSview_triggered()
+void MainWindow::on_actionOutput_SPIERSview_triggered()
 {
     CopyingImpl cop;
     if (actionUse_Old_Exporting_Code->isChecked()) cop.ExportSPV(0);
@@ -2709,14 +2709,14 @@ void MainWindowImpl::on_actionOutput_SPIERSview_triggered()
 }
 
 
-void MainWindowImpl::on_actionExport_SPIERSview_and_Launch_triggered()
+void MainWindow::on_actionExport_SPIERSview_and_Launch_triggered()
 {
     CopyingImpl cop;
     if (actionUse_Old_Exporting_Code->isChecked()) cop.ExportSPV(1);
     else cop.ExportSPV_2(1);
 }
 
-void MainWindowImpl::on_actionView_in_SPIERSview_triggered()
+void MainWindow::on_actionView_in_SPIERSview_triggered()
 {
     CopyingImpl cop;
     if (actionUse_Old_Exporting_Code->isChecked()) cop.ExportSPV(2);
@@ -2725,7 +2725,7 @@ void MainWindowImpl::on_actionView_in_SPIERSview_triggered()
 
 /*Now mask copying stuff*/
 
-void MainWindowImpl::on_actionMaskCopy_selected_from_Previous_triggered()
+void MainWindow::on_actionMaskCopy_selected_from_Previous_triggered()
 {
     CopyingImpl cop;
     if (CurrentFile == 0) Message("This is the first slice image in the dataset");
@@ -2747,7 +2747,7 @@ void MainWindowImpl::on_actionMaskCopy_selected_from_Previous_triggered()
     }
 }
 
-void MainWindowImpl::on_actionMaskCopy_all_from_previous_triggered() //from current actually
+void MainWindow::on_actionMaskCopy_all_from_previous_triggered() //from current actually
 {
     CopyingImpl cop;
     cop.MaskCopy(CurrentFile, this);
@@ -2765,7 +2765,7 @@ void MainWindowImpl::on_actionMaskCopy_all_from_previous_triggered() //from curr
     }
 }
 
-void MainWindowImpl::on_actionMaskCopy_selected_from_next_triggered() //from next actually
+void MainWindow::on_actionMaskCopy_selected_from_next_triggered() //from next actually
 {
     CopyingImpl cop;
     if (CurrentFile == FileCount - 1) Message("This is the last slice image in the dataset");
@@ -2789,7 +2789,7 @@ void MainWindowImpl::on_actionMaskCopy_selected_from_next_triggered() //from nex
     }
 }
 
-void MainWindowImpl::on_actionMaskCopy_all_from_next_triggered() //actually copy from selected to current
+void MainWindow::on_actionMaskCopy_all_from_next_triggered() //actually copy from selected to current
 {
     CopyingImpl cop;
     if (SliceSelectorList->selectedItems().count() == 0 || SliceSelectorList->selectedItems().count() > 1 || (SliceSelectorList->selectedItems().count() == 1
@@ -2816,7 +2816,7 @@ void MainWindowImpl::on_actionMaskCopy_all_from_next_triggered() //actually copy
             }
 }
 
-void MainWindowImpl::on_actionMask_Advance_slice_after_copy_operation_toggled(bool )
+void MainWindow::on_actionMask_Advance_slice_after_copy_operation_toggled(bool )
 {
     if (actionMask_Advance_slice_after_copy_operation->isChecked() )
     {
@@ -2827,7 +2827,7 @@ void MainWindowImpl::on_actionMask_Advance_slice_after_copy_operation_toggled(bo
     else  MasksMoveForward = false;
 }
 
-void MainWindowImpl::on_actionMaskGo_back_one_slice_after_copy_toggled(bool )
+void MainWindow::on_actionMaskGo_back_one_slice_after_copy_toggled(bool )
 {
     if (actionMaskGo_back_one_slice_after_copy->isChecked() )
     {
@@ -2841,7 +2841,7 @@ void MainWindowImpl::on_actionMaskGo_back_one_slice_after_copy_toggled(bool )
 
 
 
-void MainWindowImpl::on_actionCreate_mask_from_curve_triggered()
+void MainWindow::on_actionCreate_mask_from_curve_triggered()
 {
     CopyingImpl cop;
     cop.CurvesToMasks(this);
@@ -2849,7 +2849,7 @@ void MainWindowImpl::on_actionCreate_mask_from_curve_triggered()
 
 
 
-void MainWindowImpl::on_actionExport_DXF_triggered()
+void MainWindow::on_actionExport_DXF_triggered()
 {
     ExportDXF dialog(this);
     dialog.exec();
@@ -2858,12 +2858,12 @@ void MainWindowImpl::on_actionExport_DXF_triggered()
 
 extern bool temptestflag;
 
-void MainWindowImpl::on_PosSpinBox_valueChanged(int val)
+void MainWindow::on_PosSpinBox_valueChanged(int val)
 {
     SliderPos->setValue(val);
 }
 
-void MainWindowImpl::Moveimage(int imageno)
+void MainWindow::Moveimage(int imageno)
 //scroll bar moved - change the current image
 {
 
@@ -2908,12 +2908,12 @@ void MainWindowImpl::Moveimage(int imageno)
     temptestflag = false;
 }
 
-void MainWindowImpl::on_actionGrey_out_curves_not_no_current_slice_triggered()
+void MainWindow::on_actionGrey_out_curves_not_no_current_slice_triggered()
 {
     RefreshCurves();
 }
 
-bool MainWindowImpl::event ( QEvent *event )
+bool MainWindow::event ( QEvent *event )
 {
     //new event handler
     bool b;
@@ -2925,7 +2925,7 @@ bool MainWindowImpl::event ( QEvent *event )
     return b;
 };
 
-void MainWindowImpl::on_actionShow_position_slice_selector_toggled(bool tog)
+void MainWindow::on_actionShow_position_slice_selector_toggled(bool tog)
 {
     Q_UNUSED(tog);
     ShowSlicePosition = actionShow_position_slice_selector->isChecked();
@@ -2934,7 +2934,7 @@ void MainWindowImpl::on_actionShow_position_slice_selector_toggled(bool tog)
 }
 
 
-void MainWindowImpl::FixUpStretches()
+void MainWindow::FixUpStretches()
 {
     //check there IS an increasing sequence!
     int affectedslice = -1;
@@ -2982,7 +2982,7 @@ void MainWindowImpl::FixUpStretches()
 }
 
 
-void MainWindowImpl::on_actionChange_slice_spacing_triggered()
+void MainWindow::on_actionChange_slice_spacing_triggered()
 {
     // This is relative slice spacing
     if (SliceSelectorList->selectedItems().count() == 0)
@@ -3007,7 +3007,7 @@ void MainWindowImpl::on_actionChange_slice_spacing_triggered()
     FixUpStretches();
 }
 
-void MainWindowImpl::on_actionSet_slice_position_triggered()
+void MainWindow::on_actionSet_slice_position_triggered()
 {
     double lowvalue, currentvalue;
     if (SliceSelectorList->selectedItems().count() == 0)
@@ -3046,7 +3046,7 @@ void MainWindowImpl::on_actionSet_slice_position_triggered()
 }
 
 
-void MainWindowImpl::on_SpinBoxRangeBase_valueChanged(int v )
+void MainWindow::on_SpinBoxRangeBase_valueChanged(int v )
 {
     if (Active)
     {
@@ -3060,7 +3060,7 @@ void MainWindowImpl::on_SpinBoxRangeBase_valueChanged(int v )
     }
 }
 
-void MainWindowImpl::on_SpinBoxRangeTop_valueChanged(int v)
+void MainWindow::on_SpinBoxRangeTop_valueChanged(int v)
 {
     if (Active)
     {
@@ -3076,7 +3076,7 @@ void MainWindowImpl::on_SpinBoxRangeTop_valueChanged(int v)
 }
 
 
-void MainWindowImpl::on_actionDistribute_over_range_triggered()
+void MainWindow::on_actionDistribute_over_range_triggered()
 {
     int count = 0;
     for (int i = 0; i < SegmentCount; i++)
@@ -3094,13 +3094,13 @@ void MainWindowImpl::on_actionDistribute_over_range_triggered()
 }
 
 
-void MainWindowImpl::on_actionMeasure_Volumes_triggered()
+void MainWindow::on_actionMeasure_Volumes_triggered()
 {
     CopyingImpl cop;
     cop.MeasureVols();
 }
 
-void MainWindowImpl::on_actionInterpolate_over_selected_slices_triggered()
+void MainWindow::on_actionInterpolate_over_selected_slices_triggered()
 {
 
     //Interpolate selected curve(s) from first to last selected slice
@@ -3184,14 +3184,14 @@ void MainWindowImpl::on_actionInterpolate_over_selected_slices_triggered()
 }
 
 
-void MainWindowImpl::on_SetCentre_clicked()
+void MainWindow::on_SetCentre_clicked()
 {
     if (FileCount==0) return;
     CentreX->setValue(ColArray.width()/2);
     CentreY->setValue(ColArray.height()/2);
 }
 
-void MainWindowImpl::on_Measure_clicked()
+void MainWindow::on_Measure_clicked()
 {
     if (FileCount==0) return;
     bh->SetParams(CentreX->value(), CentreY->value(), HardeningRadiusSpinBox->value(), AdjustRadialSpinBox->value()); //just in case
@@ -3199,7 +3199,7 @@ void MainWindowImpl::on_Measure_clicked()
 }
 
 
-void MainWindowImpl::on_ShowCenter_stateChanged(int arg1)
+void MainWindow::on_ShowCenter_stateChanged(int arg1)
 {
     if (arg1==0)
         centerIcon->ShowCenter(false);
@@ -3209,65 +3209,65 @@ void MainWindowImpl::on_ShowCenter_stateChanged(int arg1)
 }
 
 
-void MainWindowImpl::on_CentreX_valueChanged(int arg1)
+void MainWindow::on_CentreX_valueChanged(int arg1)
 {
     centerIcon->PlaceCenter(CentreX->value(), CentreY->value(), HardeningRadiusSpinBox->value());
     bh->SetParams(CentreX->value(), CentreY->value(), HardeningRadiusSpinBox->value(), AdjustRadialSpinBox->value());
 }
 
 
-void MainWindowImpl::on_CentreY_valueChanged(int arg1)
+void MainWindow::on_CentreY_valueChanged(int arg1)
 {
     centerIcon->PlaceCenter(CentreX->value(), CentreY->value(), HardeningRadiusSpinBox->value());
     bh->SetParams(CentreX->value(), CentreY->value(), HardeningRadiusSpinBox->value(), AdjustRadialSpinBox->value());
 }
 
-void MainWindowImpl::on_HardeningRadiusSpinBox_valueChanged(int arg1)
+void MainWindow::on_HardeningRadiusSpinBox_valueChanged(int arg1)
 {
     centerIcon->PlaceCenter(CentreX->value(), CentreY->value(), HardeningRadiusSpinBox->value());
     bh->SetParams(CentreX->value(), CentreY->value(), HardeningRadiusSpinBox->value(), AdjustRadialSpinBox->value());
 }
 
-void MainWindowImpl::on_AdjustRadialSpinBox_valueChanged(int arg1)
+void MainWindow::on_AdjustRadialSpinBox_valueChanged(int arg1)
 {
     centerIcon->PlaceCenter(CentreX->value(), CentreY->value(), HardeningRadiusSpinBox->value());
     bh->SetParams(CentreX->value(), CentreY->value(), HardeningRadiusSpinBox->value(), AdjustRadialSpinBox->value());
 }
 
-void MainWindowImpl::on_spinGradientsDistMinEffect_valueChanged(int arg1)
+void MainWindow::on_spinGradientsDistMinEffect_valueChanged(int arg1)
 {
     GradientMinDistValue=arg1;
     DoGradientsUpdate();
 }
 
 
-void MainWindowImpl::on_spinGradientsDistMaxEffect_valueChanged(int arg1)
+void MainWindow::on_spinGradientsDistMaxEffect_valueChanged(int arg1)
 {
     GradientMaxDistValue=arg1;
     DoGradientsUpdate();
 }
 
 
-void MainWindowImpl::on_spinGradientsDistMin_valueChanged(int arg1)
+void MainWindow::on_spinGradientsDistMin_valueChanged(int arg1)
 {
     GradientMinDist=arg1;
     DoGradientsUpdate();
 }
 
 
-void MainWindowImpl::on_spinGradientsDistMax_valueChanged(int arg1)
+void MainWindow::on_spinGradientsDistMax_valueChanged(int arg1)
 {
     GradientMaxDist=arg1;
     DoGradientsUpdate();
 }
 
-void MainWindowImpl::on_spinGradientsPointDensity_valueChanged(int arg1)
+void MainWindow::on_spinGradientsPointDensity_valueChanged(int arg1)
 {
     GradientDensity =arg1;
     DoGradientsUpdate();
 }
 
-void MainWindowImpl::on_chkGradientsPreview_toggled(bool checked)
+void MainWindow::on_chkGradientsPreview_toggled(bool checked)
 {
     previewGradient=checked;
     DoGradientsUpdate();
@@ -3276,67 +3276,67 @@ void MainWindowImpl::on_chkGradientsPreview_toggled(bool checked)
 
 
 
-void MainWindowImpl::SetRadialCentreX(int v)
+void MainWindow::SetRadialCentreX(int v)
 {
     CentreX->setValue(v);
 }
 
-void MainWindowImpl::SetRadialCentreY(int v)
+void MainWindow::SetRadialCentreY(int v)
 {
     CentreY->setValue(v);
 }
 
-void MainWindowImpl::SetRadialRadius(int v)
+void MainWindow::SetRadialRadius(int v)
 {
     HardeningRadiusSpinBox->setValue(v);
 }
 
-void MainWindowImpl::SetRadialAdjust(int v)
+void MainWindow::SetRadialAdjust(int v)
 {
     AdjustRadialSpinBox->setValue(v);
 }
 
-int MainWindowImpl::GetRadialCentreX()
+int MainWindow::GetRadialCentreX()
 {
     return CentreX->value();
 }
 
-int MainWindowImpl::GetRadialCentreY()
+int MainWindow::GetRadialCentreY()
 {
     return CentreY->value();
 }
 
-int MainWindowImpl::GetRadialRadius()
+int MainWindow::GetRadialRadius()
 {
     return HardeningRadiusSpinBox->value();
 }
 
-int MainWindowImpl::GetRadialAdjust()
+int MainWindow::GetRadialAdjust()
 {
     return AdjustRadialSpinBox->value();
 }
 
-void MainWindowImpl::SetGradientDensity(int v)
+void MainWindow::SetGradientDensity(int v)
 {
     spinGradientsPointDensity->setValue(v);
 }
 
-void MainWindowImpl::SetGradientMinDist(int v)
+void MainWindow::SetGradientMinDist(int v)
 {
     spinGradientsDistMin->setValue(v);
 }
 
-void MainWindowImpl::SetGradientMaxDist(int v)
+void MainWindow::SetGradientMaxDist(int v)
 {
     spinGradientsDistMax->setValue(v);
 }
 
-void MainWindowImpl::SetGradientMinDistValue(int v)
+void MainWindow::SetGradientMinDistValue(int v)
 {
     spinGradientsDistMinEffect->setValue(v);
 }
 
-void MainWindowImpl::SetGradientMaxDistValue(int v)
+void MainWindow::SetGradientMaxDistValue(int v)
 {
     spinGradientsDistMaxEffect->setValue(v);
 }

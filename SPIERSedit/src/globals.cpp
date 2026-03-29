@@ -35,7 +35,7 @@ QString Notes;
 
 QList<bool> FilesDirty; //for re-rendering.
 
-MainWindowImpl *mainwin;
+MainWindow *mainwin;
 QSurfaceFormat surfaceFormat;
 int CacheCompressionLevel = 1; //this is default
 int FileCompressionLevel = 9; //this is default

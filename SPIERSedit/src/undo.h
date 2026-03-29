@@ -22,7 +22,7 @@
 #include <QByteArray>
 #include <QList>
 
-#include "mainwindowimpl.h"
+#include "mainwindow.h"
 #include "globals.h"
 #include "curves.h"
 
@@ -54,8 +54,8 @@ class UndoEvent
 public:
     UndoEvent(int Dfrom, int Dto);
     ~UndoEvent();
-    void Undo(MainWindowImpl *m);
-    void Redo(MainWindowImpl *m);
+    void Undo(MainWindow *m);
+    void Redo(MainWindow *m);
     QString Type;
     int FileNumber; //if this ISN'T -1 then it's index of file moved to - a move event in fact
     int FileTo; //move To this (for redo)

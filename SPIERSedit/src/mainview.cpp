@@ -16,7 +16,7 @@
  */
 
 #include "mainview.h"
-#include "mainwindowimpl.h"
+#include "mainwindow.h"
 #include <QDebug>
 #include <QEvent>
 #include <QWheelEvent>

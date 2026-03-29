@@ -15,8 +15,8 @@
  * hope that it will be useful, but WITHOUT ANY WARRANTY.
  */
 
-#ifndef MAINWINDOWIMPL_H
-#define MAINWINDOWIMPL_H
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
 
 #include <QAction>
 #include <QEvent>
@@ -32,14 +32,14 @@
 #include "qelapsedtimer.h"
 
 /**
- * @brief The MainWindowImpl class
+ * @brief The MainWindow class
  */
-class MainWindowImpl : public QMainWindow, public Ui::MainWindow
+class MainWindow : public QMainWindow, public Ui::MainWindow
 {
     Q_OBJECT
 public:
-    MainWindowImpl( QWidget *parent = nullptr, Qt::WindowFlags f = {} );
-    ~MainWindowImpl();
+    MainWindow( QWidget *parent = nullptr, Qt::WindowFlags f = {} );
+    ~MainWindow();
     QTimer *timer2;
     void RefreshOneSegmentItem(QTreeWidgetItem *item, int i);
     void RefreshSegmentsBoxes();
@@ -363,6 +363,6 @@ private:
     void DoGradientsUpdate();
 };
 
-extern MainWindowImpl *AppMainWindow;
+extern MainWindow *AppMainWindow;
 
 #endif

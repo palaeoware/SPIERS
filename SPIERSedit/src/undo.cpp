@@ -128,7 +128,7 @@ UndoEvent::~UndoEvent()
 }
 
 //Copy undo information back whence it came - assumes currentfile is correct
-void UndoEvent::Undo(MainWindowImpl *m)
+void UndoEvent::Undo(MainWindow *m)
 {
     //qDebug()<<"Doing an undo pointer is "<<this<<" object count is "<<DataObjects.count()<<" type is "<<Type;
     TotalUndoSize += 100; // guess for overhead on one of these classes - those empty lists/images must take up something though!
@@ -179,7 +179,7 @@ void UndoEvent::Undo(MainWindowImpl *m)
 }
 
 //Similar to undo - but moves work in opposite direction
-void UndoEvent::Redo(MainWindowImpl *m)
+void UndoEvent::Redo(MainWindow *m)
 {
     if (FileNumber != -1) //move event
     {

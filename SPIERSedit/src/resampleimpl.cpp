@@ -19,7 +19,7 @@
 #include "globals.h"
 #include "fileio.h"
 #include "display.h"
-#include "mainwindowimpl.h"
+#include "mainwindow.h"
 #include "brush.h"
 
 #include <QMutexLocker>

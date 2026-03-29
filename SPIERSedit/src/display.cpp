@@ -18,7 +18,7 @@
 #include "display.h"
 #include "globals.h"
 #include "fileio.h"
-#include "mainwindowimpl.h"
+#include "mainwindow.h"
 #include "histogram.h"
 
 #include <QGraphicsPixmapItem>
@@ -30,7 +30,7 @@
 #include "curves.h"
 #include "myscene.h"
 #include "brush.h"
-#include "mainwindowimpl.h"
+#include "mainwindow.h"
 #include "mlupdateblockingdialog.h"
 
 QGraphicsPixmapItem *MainImage;
@@ -442,7 +442,7 @@ uint32_t SampleHash(int x, int y, int z)
 
 //Modified GenerateThresh to generate a byte array of segment numbers (=labels for ML)
 //A few other simplfications too
-QList<LabelledPoint> GenerateLabels(MainWindowImpl *mw, int percentage)
+QList<LabelledPoint> GenerateLabels(MainWindow *mw, int percentage)
 {
     SaveLocks(CurrentFile);
 
@@ -774,7 +774,7 @@ void ShowImage(QGraphicsView *gv)
 
     DrawCurveMarkers(gv->scene());
 
-    MainWindowImpl *mw = static_cast<MainWindowImpl *>(gv->parent()->parent());
+    MainWindow *mw = static_cast<MainWindow *>(gv->parent()->parent());
     if (GreyImage)
     {
         mw->LinearRedSpinBox->setVisible(false);

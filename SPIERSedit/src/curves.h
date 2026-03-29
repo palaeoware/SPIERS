@@ -21,13 +21,13 @@
 #include <QImage>
 #include <QGraphicsScene>
 
-#include "mainwindowimpl.h"
+#include "mainwindow.h"
 
 //maybe oneday make this modifyable?
 #define TRIANGLE_DENSITY 100
 
 extern void AddNode();
-extern void KillNode(MainWindowImpl *th);
+extern void KillNode(MainWindow *th);
 extern QList <QGraphicsItem *> MarkerList;
 extern int FindClosestNode(double X, double Y);
 extern void DrawCurve(int c, int mycol, int file, QImage *Thresh);

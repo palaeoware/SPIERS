@@ -33,7 +33,7 @@
 #include <QGraphicsTextItem>
 #include <QSurfaceFormat>
 #include "mlinterface.h"
-#include "mainwindowimpl.h"
+#include "mainwindow.h"
 
 // Internal versions for input/output file purposes
 #define SPEFILEVERSION 3
@@ -77,7 +77,7 @@ extern int zsparsity;
 extern int CacheCompressionLevel;
 extern int FileCompressionLevel;
 extern QVector<int> SegmentMap;
-extern MainWindowImpl *mainwin;
+extern MainWindow *mainwin;
 extern bool MasksMoveBack, MasksMoveForward;
 extern QRecursiveMutex mutex;
 extern QList<double> Stretches;

@@ -1,6 +1,6 @@
 /**
  * @file
- * Source: MainWindowImpl
+ * Source: MainWindow
  *
  * All SPIERSversion code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
@@ -21,7 +21,7 @@
 #include "curves.h"
 #include "qactiongroup.h"
 #include "resampleimpl.h"
-#include "mainwindowimpl.h"
+#include "mainwindow.h"
 #include "copyingimpl.h"
 #include "globals.h"
 #include "display.h"
@@ -59,10 +59,10 @@
 
 bool temptestflag = false;
 
-MainWindowImpl *AppMainWindow;
+MainWindow *AppMainWindow;
 //Contains all main window manipulation code - e.g. dock handling
 
-MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
+MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags f)
     : QMainWindow(parent, f)
 {
     bh = new BeamHardening();
@@ -435,7 +435,7 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
  *
  * Call after project open and whenever the Z-range spinboxes change.
  */
-void MainWindowImpl::updatePreview3DStepCombo()
+void MainWindow::updatePreview3DStepCombo()
 {
     static const int   steps[]  = {1, 2, 4, 8};
     static const char *labels[] = {"Full", "½", "¼", "⅛"};
@@ -495,7 +495,7 @@ void MainWindowImpl::updatePreview3DStepCombo()
     }
 }
 
-void MainWindowImpl::autosave()
+void MainWindow::autosave()
 {
     if (pausetimers) return;
     if (Active)
@@ -504,7 +504,7 @@ void MainWindowImpl::autosave()
     }
 }
 
-void MainWindowImpl::MakeUndo(QString type)
+void MainWindow::MakeUndo(QString type)
 //type is type of curve operation. If its empty, not a curve undo
 {
     bool allcurves = false;
@@ -543,14 +543,14 @@ void MainWindowImpl::MakeUndo(QString type)
     if (allcurves) CurvesUndoDirty = true;
 }
 
-void MainWindowImpl::UndoTimer()
+void MainWindow::UndoTimer()
 {
     //The Undo timer has fired.
     if (pausetimers) return;
     MakeUndo("");
 }
 
-void MainWindowImpl::Undo()
+void MainWindow::Undo()
 {
     bool OK = false;
     if (Active)
@@ -593,7 +593,7 @@ void MainWindowImpl::Undo()
     else actionRedo->setEnabled(false);
 }
 
-void MainWindowImpl::Redo()
+void MainWindow::Redo()
 {
     if (Active)
     {
@@ -618,14 +618,14 @@ void MainWindowImpl::Redo()
     }
 }
 
-void MainWindowImpl::SaveSettings()
+void MainWindow::SaveSettings()
 {
     WriteAllData(CurrentFile);
     WriteSettings();
     WriteSuperGlobals();
     Message("Settings saved");
 }
-void MainWindowImpl::LeftMaskChanged(int index)
+void MainWindow::LeftMaskChanged(int index)
 {
     if (clearing == false)
     {
@@ -638,7 +638,7 @@ void MainWindowImpl::LeftMaskChanged(int index)
     return;
 }
 
-void MainWindowImpl::RightMaskChanged(int index)
+void MainWindow::RightMaskChanged(int index)
 {
     if (clearing == false)
     {
@@ -651,7 +651,7 @@ void MainWindowImpl::RightMaskChanged(int index)
 }
 
 
-void MainWindowImpl::LeftSegChanged(int index)
+void MainWindow::LeftSegChanged(int index)
 {
     if (clearing == false)
     {
@@ -664,7 +664,7 @@ void MainWindowImpl::LeftSegChanged(int index)
         rangescene->Refresh();
     }
 }
-void MainWindowImpl::RightSegChanged(int index)
+void MainWindow::RightSegChanged(int index)
 {
 
     if (clearing == false)
@@ -677,7 +677,7 @@ void MainWindowImpl::RightSegChanged(int index)
     }
 }
 
-void MainWindowImpl::ScreenUpdate()
+void MainWindow::ScreenUpdate()
 {
     if (pausetimers) return;
     if (Active)
@@ -721,27 +721,27 @@ void MainWindowImpl::ScreenUpdate()
     }
 }
 
-void MainWindowImpl::q_pressed()
+void MainWindow::q_pressed()
 {
     ZoomSlider->setValue(ZoomSlider->value() + 20);
 }
 
-void MainWindowImpl::a_pressed()
+void MainWindow::a_pressed()
 {
     ZoomSlider->setValue(ZoomSlider->value() - 20);
 }
 
-void MainWindowImpl::right_pressed()
+void MainWindow::right_pressed()
 {
     SliderPos->setValue(CurrentFile + 2);
 }
 
-void MainWindowImpl::left_pressed()
+void MainWindow::left_pressed()
 {
     SliderPos->setValue(CurrentFile);
 }
 
-void MainWindowImpl:: MouseZoom(int delta)
+void MainWindow:: MouseZoom(int delta)
 {
     if ( QGuiApplication::keyboardModifiers() == Qt::CTRL)
     {
@@ -762,54 +762,54 @@ void MainWindowImpl:: MouseZoom(int delta)
 
 
 
-void MainWindowImpl::SetMasksFlag()
+void MainWindow::SetMasksFlag()
 {
     if (actionShowMasks->isChecked()) MasksFlag = true;
     else MasksFlag = false;
     ShowImage(graphicsView);
 }
 
-void MainWindowImpl::SetSegsFlag()
+void MainWindow::SetSegsFlag()
 {
     if (actionShowSegs->isChecked()) SegsFlag = true;
     else SegsFlag = false;
     ShowImage(graphicsView);
 }
 
-void MainWindowImpl::BrightUpChanged(int trans)
+void MainWindow::BrightUpChanged(int trans)
 //Transparency setting changed - set global, redraw
 {
     BrightUp = trans;
 }
 
-void MainWindowImpl::BrightDownChanged(int trans)
+void MainWindow::BrightDownChanged(int trans)
 //Transparency setting changed - set global, redraw
 {
     BrightDown = trans;
 }
-void MainWindowImpl::SoftChanged(int trans)
+void MainWindow::SoftChanged(int trans)
 //Transparency setting changed - set global, redraw
 {
     BrightSoft = trans;
 }
 
-void MainWindowImpl::BoostSpinBoxChanged(int v)
+void MainWindow::BoostSpinBoxChanged(int v)
 {
     LCE_Boost = v;
 }
 
-void MainWindowImpl::BoostRadiusSpinBoxChanged(int v)
+void MainWindow::BoostRadiusSpinBoxChanged(int v)
 {
     LCE_Radius = v;
 }
 
-void MainWindowImpl::BoostAdjustSpinBoxChanged(int v)
+void MainWindow::BoostAdjustSpinBoxChanged(int v)
 {
     LCE_Adjust = v;
 }
 
 
-void MainWindowImpl::BrushChanged(int trans)
+void MainWindow::BrushChanged(int trans)
 //Transparency setting changed - set global, redraw
 {
     Brush_Size = trans;
@@ -827,7 +827,7 @@ void MainWindowImpl::BrushChanged(int trans)
     }
 }
 
-void MainWindowImpl::Mode_Changed(QAction *temp2)
+void MainWindow::Mode_Changed(QAction *temp2)
 {
     Q_UNUSED(temp2);
     if (actionBright->isChecked()) CurrentMode = 0;
@@ -840,7 +840,7 @@ void MainWindowImpl::Mode_Changed(QAction *temp2)
     ShowImage(graphicsView);
 }
 
-MainWindowImpl::~MainWindowImpl()
+MainWindow::~MainWindow()
 {
 //  qDebug()<<"In destructor";
     QMutexLocker locker(&mutex);
@@ -872,60 +872,60 @@ MainWindowImpl::~MainWindowImpl()
 }
 
 
-void MainWindowImpl::Preset1()
+void MainWindow::Preset1()
 {
     BrushSize->setValue(1);
 }
-void MainWindowImpl::Preset2()
+void MainWindow::Preset2()
 {
     BrushSize->setValue(2);
 }
-void MainWindowImpl::Preset3()
+void MainWindow::Preset3()
 {
     BrushSize->setValue(3);
 }
-void MainWindowImpl::Preset4()
+void MainWindow::Preset4()
 {
     BrushSize->setValue(4);
 }
-void MainWindowImpl::Preset5()
+void MainWindow::Preset5()
 {
     BrushSize->setValue(5);
 }
-void MainWindowImpl::Preset6()
+void MainWindow::Preset6()
 {
     BrushSize->setValue(8);
 }
-void MainWindowImpl::Preset7()
+void MainWindow::Preset7()
 {
     BrushSize->setValue(15);
 }
-void MainWindowImpl::Preset8()
+void MainWindow::Preset8()
 {
     BrushSize->setValue(30);
 }
-void MainWindowImpl::Preset9()
+void MainWindow::Preset9()
 {
     BrushSize->setValue(50);
 }
-void MainWindowImpl::Preset0()
+void MainWindow::Preset0()
 {
     BrushSize->setValue(200);
 }
-void MainWindowImpl::cmac()
+void MainWindow::cmac()
 {
     if (actionCurve_markers_as_crosses->isChecked()) CurveMarkersAsCrosses = true;
     else CurveMarkersAsCrosses = false;
     ShowImage(graphicsView);
 }
-void MainWindowImpl::LockShape()
+void MainWindow::LockShape()
 {
     if (actionLock_curve_shape->isChecked()) CurveShapeLocked = true;
     else CurveShapeLocked = false;
 }
 
 
-void MainWindowImpl::Zoom_Slider_Changed(int zoom)
+void MainWindow::Zoom_Slider_Changed(int zoom)
 //Zoom slider changed - convert to real zoom, set zoom box
 {
     if (DontRedoZoom) return;
@@ -937,7 +937,7 @@ void MainWindowImpl::Zoom_Slider_Changed(int zoom)
 }
 
 
-void MainWindowImpl::on_ZoomSpinBox_valueChanged(int zoom)
+void MainWindow::on_ZoomSpinBox_valueChanged(int zoom)
 {
     if (DontRedoZoom) return;
     //handle converting the slider to the value typed
@@ -951,14 +951,14 @@ void MainWindowImpl::on_ZoomSpinBox_valueChanged(int zoom)
     ShowImage(graphicsView);
 }
 
-void MainWindowImpl::Trans_Changed(int trans)
+void MainWindow::Trans_Changed(int trans)
 //Transparency setting changed - set global, redraw
 {
     Trans = trans;
     ShowImage(graphicsView);
 }
 
-void MainWindowImpl::Min_Changed(int val)
+void MainWindow::Min_Changed(int val)
 //Min/max slider handlers
 {
     CMin = val;
@@ -970,7 +970,7 @@ void MainWindowImpl::Min_Changed(int val)
     ShowImage(graphicsView);
 }
 
-void MainWindowImpl::Max_Changed(int val)
+void MainWindow::Max_Changed(int val)
 //Min/max slider handlers
 {
     CMax = val;
@@ -983,7 +983,7 @@ void MainWindowImpl::Max_Changed(int val)
 }
 
 
-void MainWindowImpl::InitStates()
+void MainWindow::InitStates()
 //set up window/menu states in accord with default show/hide status.
 {
     actionMain_Toolbox->setChecked(true);
@@ -992,7 +992,7 @@ void MainWindowImpl::InitStates()
     //Do other inits
 }
 
-void MainWindowImpl::SquareToggled()
+void MainWindow::SquareToggled()
 {
     if (actionSquare->isChecked())
         SquareBrush = true;
@@ -1014,7 +1014,7 @@ void MainWindowImpl::SquareToggled()
 }
 
 
-void MainWindowImpl::TransToggled()
+void MainWindow::TransToggled()
 {
     // if it's not full - make it full, save last value. OTHERWISE - revert to last value
     if (Trans < 15)
@@ -1026,14 +1026,14 @@ void MainWindowImpl::TransToggled()
     TransSlider->setValue(Trans);
 }
 
-void MainWindowImpl::ThresholdFlag()
+void MainWindow::ThresholdFlag()
 {
     if (actionThreshold->isChecked()) ThreshFlag = true;
     else ThreshFlag = false;
     ShowImage(graphicsView);
 }
 
-void MainWindowImpl::Menu_Window_MainToolbox()
+void MainWindow::Menu_Window_MainToolbox()
 {
     if (actionMain_Toolbox->isChecked()) // show the toolbox
         dockWidget_Main->setVisible(true);
@@ -1043,7 +1043,7 @@ void MainWindowImpl::Menu_Window_MainToolbox()
     MenuToolboxChecked = actionMain_Toolbox->isChecked();
 }
 
-void MainWindowImpl::Menu_Window_Masks()
+void MainWindow::Menu_Window_Masks()
 {
     if (actionMasks->isChecked()) // show the toolbox
         DockMasksSettings->setVisible(true);
@@ -1054,7 +1054,7 @@ void MainWindowImpl::Menu_Window_Masks()
 
 }
 
-void MainWindowImpl::Menu_Window_SliceSelector()
+void MainWindow::Menu_Window_SliceSelector()
 {
     if (actionSlice_Selector->isChecked()) // show the toolbox
         SliceSelector->setVisible(true);
@@ -1064,7 +1064,7 @@ void MainWindowImpl::Menu_Window_SliceSelector()
     MenuSliceSelectorChecked = actionSlice_Selector->isChecked();
 }
 
-void MainWindowImpl::Menu_Window_Segments()
+void MainWindow::Menu_Window_Segments()
 {
     if (actionSegments->isChecked()) // show the toolbox
         DockSegmentsSettings->setVisible(true);
@@ -1074,7 +1074,7 @@ void MainWindowImpl::Menu_Window_Segments()
     MenuSegsChecked = actionSegments->isChecked();
 }
 
-void MainWindowImpl::Menu_Window_Output()
+void MainWindow::Menu_Window_Output()
 {
     if (actionOutput->isChecked()) // show the toolbox
         DockOutputSettings->setVisible(true);
@@ -1083,7 +1083,7 @@ void MainWindowImpl::Menu_Window_Output()
     MenuOutputChecked = actionOutput->isChecked();
 }
 
-void MainWindowImpl::Menu_Window_Curves()
+void MainWindow::Menu_Window_Curves()
 {
     if (actionCurves->isChecked()) // show the toolbox
         DockCurvesSettings->setVisible(true);
@@ -1094,7 +1094,7 @@ void MainWindowImpl::Menu_Window_Curves()
 }
 
 
-void MainWindowImpl::Menu_Window_Generate()
+void MainWindow::Menu_Window_Generate()
 {
     if (actionGeneration->isChecked()) // show the toolbox
         dockWidget_Generate->setVisible(true);
@@ -1104,7 +1104,7 @@ void MainWindowImpl::Menu_Window_Generate()
 }
 
 
-void MainWindowImpl::FileOpen()
+void MainWindow::FileOpen()
 {
 
     QMutexLocker locker(&mutex);
@@ -1138,7 +1138,7 @@ void MainWindowImpl::FileOpen()
 
 }
 
-void MainWindowImpl::openRecentFile()
+void MainWindow::openRecentFile()
 {
     QMutexLocker locker(&mutex);
     QAction *action = qobject_cast<QAction *>(sender());
@@ -1180,7 +1180,7 @@ void MainWindowImpl::openRecentFile()
     }
 }
 
-void MainWindowImpl::openMore()
+void MainWindow::openMore()
 {
     QMutexLocker locker(&mutex);
     moreimpl mdialog;
@@ -1206,7 +1206,7 @@ void MainWindowImpl::openMore()
     Start();
 }
 
-void MainWindowImpl::Start()
+void MainWindow::Start()
 //runs after new dataset loaded
 {
     //Make sure undo and redo are cleared
@@ -1295,7 +1295,7 @@ void MainWindowImpl::Start()
     dockWidget_Generate->setEnabled(true);
 }
 
-void MainWindowImpl::BuildRecentFiles()
+void MainWindow::BuildRecentFiles()
 {
 //  QAction *recentFileAction;
     int lastsep;
@@ -1347,7 +1347,7 @@ void MainWindowImpl::BuildRecentFiles()
 }
 
 
-void MainWindowImpl::SaveAs()
+void MainWindow::SaveAs()
 //Makes a copy
 {
 
@@ -1422,7 +1422,7 @@ void MainWindowImpl::SaveAs()
     setWindowTitle(QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION) + " - " + SettingsFileName + " - " + Files[CurrentFile]);
 }
 
-void MainWindowImpl::Menu_File_Import()
+void MainWindow::Menu_File_Import()
 {
     QMutexLocker locker(&mutex);
 
@@ -1545,7 +1545,7 @@ void MainWindowImpl::Menu_File_Import()
     Message("SPIERS 1.1 dataset successfully converted to new format!");
 }
 
-void MainWindowImpl::Menu_File_New()  //create from scratch
+void MainWindow::Menu_File_New()  //create from scratch
 
 {
     if (Active)
@@ -1685,7 +1685,7 @@ void MainWindowImpl::Menu_File_New()  //create from scratch
     mutex.unlock();
 }
 
-void MainWindowImpl::on_Slices_Per_MM_valueChanged(double value)
+void MainWindow::on_Slices_Per_MM_valueChanged(double value)
 {
     SlicePerMM = value;
     if (Active)
@@ -1693,58 +1693,58 @@ void MainWindowImpl::on_Slices_Per_MM_valueChanged(double value)
             SliceSelectorList->item(i)->setText(TextForSliceSelectorBox(i));
 }
 
-void MainWindowImpl::on_Pixels_Per_MM_valueChanged(double value)
+void MainWindow::on_Pixels_Per_MM_valueChanged(double value)
 {
     PixPerMM = value;
 }
 
-void MainWindowImpl::on_Edge_Down_MM_valueChanged(double value)
+void MainWindow::on_Edge_Down_MM_valueChanged(double value)
 {
     SkewDown = value;
 }
 
-void MainWindowImpl::on_Edge_Left_MM_valueChanged(double value )
+void MainWindow::on_Edge_Left_MM_valueChanged(double value )
 {
     SkewLeft = value;
 }
 
-void MainWindowImpl::on_CheckMirror_toggled(bool checked)
+void MainWindow::on_CheckMirror_toggled(bool checked)
 {
     ResetFilesDirty();
     OutputMirroring = checked;
 }
 
-void MainWindowImpl::on_FirstFile_valueChanged(int value)
+void MainWindow::on_FirstFile_valueChanged(int value)
 {
     FirstOutputFile = value - 1;
     if (FirstOutputFile > LastOutputFile) LastFile->setValue(FirstOutputFile + 1);
 }
 
-void MainWindowImpl::on_LastFile_valueChanged(int value)
+void MainWindow::on_LastFile_valueChanged(int value)
 {
     LastOutputFile = value - 1;
     if (LastOutputFile < FirstOutputFile) FirstFile->setValue(LastOutputFile + 1);
 }
 
-void MainWindowImpl::on_DownsampleXY_valueChanged(int value)
+void MainWindow::on_DownsampleXY_valueChanged(int value)
 {
     ResetFilesDirty();
     XYDownsample = value;
 }
 
-void MainWindowImpl::on_DownsampleZ_valueChanged(int value)
+void MainWindow::on_DownsampleZ_valueChanged(int value)
 {
     ResetFilesDirty();
     ZDownsample = value;
 }
 
-void MainWindowImpl::on_PixelSensitivity_valueChanged(int value)
+void MainWindow::on_PixelSensitivity_valueChanged(int value)
 {
     ResetFilesDirty();
     PixSens = value;
 }
 
-void MainWindowImpl::on_MasksTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
+void MainWindow::on_MasksTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
 {
     if (DoubleClickTimer.elapsed() < 100) return; //avoid double calls
     //invert a yes/no
@@ -1795,7 +1795,7 @@ void MainWindowImpl::on_MasksTreeWidget_itemDoubleClicked(QTreeWidgetItem *item,
     DoubleClickTimer.restart();
 }
 
-void MainWindowImpl::on_MasksTreeWidget_itemChanged(QTreeWidgetItem *item, int column)
+void MainWindow::on_MasksTreeWidget_itemChanged(QTreeWidgetItem *item, int column)
 {
     Q_UNUSED(item);
     Q_UNUSED(column);
@@ -1803,7 +1803,7 @@ void MainWindowImpl::on_MasksTreeWidget_itemChanged(QTreeWidgetItem *item, int c
 }
 
 
-void MainWindowImpl::on_actionLock_Selected_Masks_triggered()
+void MainWindow::on_actionLock_Selected_Masks_triggered()
 {
     for (int i = 0;  i <= MaxUsedMask; i++)
     {
@@ -1816,7 +1816,7 @@ void MainWindowImpl::on_actionLock_Selected_Masks_triggered()
     }
 }
 
-void MainWindowImpl::on_actionUnlock_Selected_Masks_triggered()
+void MainWindow::on_actionUnlock_Selected_Masks_triggered()
 {
     for (int i = 0;  i <= MaxUsedMask; i++)
     {
@@ -1829,7 +1829,7 @@ void MainWindowImpl::on_actionUnlock_Selected_Masks_triggered()
     }
 }
 
-void MainWindowImpl::on_actionShow_Selected_Masks_triggered()
+void MainWindow::on_actionShow_Selected_Masks_triggered()
 {
     for (int i = 0;  i <= MaxUsedMask; i++)
     {
@@ -1843,7 +1843,7 @@ void MainWindowImpl::on_actionShow_Selected_Masks_triggered()
     ShowImage(graphicsView);
 }
 
-void MainWindowImpl::on_actionUnShow_Selected_Masks_triggered()
+void MainWindow::on_actionUnShow_Selected_Masks_triggered()
 {
     for (int i = 0;  i <= MaxUsedMask; i++)
     {
@@ -1857,7 +1857,7 @@ void MainWindowImpl::on_actionUnShow_Selected_Masks_triggered()
     ShowImage(graphicsView);
 }
 
-void MainWindowImpl::on_actionWrite_Selected_Masks_triggered()
+void MainWindow::on_actionWrite_Selected_Masks_triggered()
 {
     for (int i = 0;  i <= MaxUsedMask; i++)
     {
@@ -1870,7 +1870,7 @@ void MainWindowImpl::on_actionWrite_Selected_Masks_triggered()
     }
 }
 
-void MainWindowImpl::on_actionUnWrite_Selected_Masks_triggered()
+void MainWindow::on_actionUnWrite_Selected_Masks_triggered()
 {
     for (int i = 0;  i <= MaxUsedMask; i++)
     {
@@ -1883,7 +1883,7 @@ void MainWindowImpl::on_actionUnWrite_Selected_Masks_triggered()
     }
 }
 
-void MainWindowImpl::on_MaskMoveUp_pressed()
+void MainWindow::on_MaskMoveUp_pressed()
 {
     //Move selected mask up
     MasksTreeWidget->setUpdatesEnabled(false);
@@ -1934,7 +1934,7 @@ void MainWindowImpl::on_MaskMoveUp_pressed()
     MasksTreeWidget->setUpdatesEnabled(true);
 }
 
-void MainWindowImpl::on_MaskMoveDown_pressed()
+void MainWindow::on_MaskMoveDown_pressed()
 {
     //Move selected mask down
 //  QTime t;
@@ -1987,7 +1987,7 @@ void MainWindowImpl::on_MaskMoveDown_pressed()
     MasksTreeWidget->setUpdatesEnabled(true);
 }
 
-void MainWindowImpl::on_MaskAdd_pressed()
+void MainWindow::on_MaskAdd_pressed()
 {
     QString s;
     QTextStream(&s) << "Mask " << MaxUsedMask + 1;
@@ -2016,7 +2016,7 @@ void MainWindowImpl::on_MaskAdd_pressed()
 
 }
 
-void MainWindowImpl::on_MaskDelete_pressed()
+void MainWindow::on_MaskDelete_pressed()
 {
     if (MaxUsedMask == 0)
     {
@@ -2045,20 +2045,20 @@ void MainWindowImpl::on_MaskDelete_pressed()
     }
 }
 
-void MainWindowImpl::on_SegmentsTreeWidget_pressed(QModelIndex index)
+void MainWindow::on_SegmentsTreeWidget_pressed(QModelIndex index)
 {
     Q_UNUSED(index);
     return; //not used
 }
 
-void MainWindowImpl::on_SegmentsTreeWidget_doubleClicked(QModelIndex index)
+void MainWindow::on_SegmentsTreeWidget_doubleClicked(QModelIndex index)
 {
     Q_UNUSED(index);
     return; //not used
 }
 
 
-void MainWindowImpl::on_actionLock_selected_segments_triggered()
+void MainWindow::on_actionLock_selected_segments_triggered()
 {
     for (int i = 0;  i < SegmentCount; i++)
     {
@@ -2071,7 +2071,7 @@ void MainWindowImpl::on_actionLock_selected_segments_triggered()
     }
 }
 
-void MainWindowImpl::on_actionUnlock_selected_segments_triggered()
+void MainWindow::on_actionUnlock_selected_segments_triggered()
 {
     for (int i = 0;  i < SegmentCount; i++)
     {
@@ -2083,7 +2083,7 @@ void MainWindowImpl::on_actionUnlock_selected_segments_triggered()
     }
 }
 
-void MainWindowImpl::on_actionActivate_selected_segments_triggered()
+void MainWindow::on_actionActivate_selected_segments_triggered()
 {
     for (int i = 0;  i < SegmentCount; i++)
     {
@@ -2098,7 +2098,7 @@ void MainWindowImpl::on_actionActivate_selected_segments_triggered()
 }
 
 
-void MainWindowImpl::on_actionDeactivate_selected_segments_triggered()
+void MainWindow::on_actionDeactivate_selected_segments_triggered()
 {
     for (int i = 0;  i < SegmentCount; i++)
     {
@@ -2114,7 +2114,7 @@ void MainWindowImpl::on_actionDeactivate_selected_segments_triggered()
 
 
 
-void MainWindowImpl::on_SegmentMoveUp_pressed()
+void MainWindow::on_SegmentMoveUp_pressed()
 {
     //Move selected segment up list - code from masks equivalent
     SegmentsTreeWidget->setUpdatesEnabled(false);
@@ -2161,7 +2161,7 @@ void MainWindowImpl::on_SegmentMoveUp_pressed()
     SegmentsTreeWidget->setUpdatesEnabled(false);
 }
 
-void MainWindowImpl::on_SegmentMoveDown_pressed()
+void MainWindow::on_SegmentMoveDown_pressed()
 {
     //Move selected segment down list - code from masks equivalent
     SegmentsTreeWidget->setUpdatesEnabled(false);
@@ -2210,31 +2210,31 @@ void MainWindowImpl::on_SegmentMoveDown_pressed()
 
 
 //These are menu equivs to my buttons in mask/seg toolboxes - passthrough slots
-void MainWindowImpl::on_actionNew_mask_triggered()
+void MainWindow::on_actionNew_mask_triggered()
 {
     on_MaskAdd_pressed();
 }
-void MainWindowImpl::on_actionDelete_selected_mask_s_triggered()
+void MainWindow::on_actionDelete_selected_mask_s_triggered()
 {
     on_MaskDelete_pressed();
 }
-void MainWindowImpl::on_actionCreate_new_segment_triggered()
+void MainWindow::on_actionCreate_new_segment_triggered()
 {
     on_SegmentAdd_pressed();
 }
-void MainWindowImpl::on_actionDelete_selected_segments_triggered()
+void MainWindow::on_actionDelete_selected_segments_triggered()
 {
     on_SegmentDelete_pressed();
 }
 
-void MainWindowImpl::on_actionSettings_triggered()
+void MainWindow::on_actionSettings_triggered()
 {
     SettingsImpl Dialog;
     Dialog.exec();
     BuildRecentFiles();
 }
 
-void MainWindowImpl::on_actionHistorgram_triggered(bool checked)
+void MainWindow::on_actionHistorgram_triggered(bool checked)
 {
     if (checked) // show the toolbox
         DockHist->setVisible(true);
@@ -2244,14 +2244,14 @@ void MainWindowImpl::on_actionHistorgram_triggered(bool checked)
     MenuHistChecked = checked;
 }
 
-void MainWindowImpl::on_actionHistogram_shows_selected_triggered(bool checked)
+void MainWindow::on_actionHistogram_shows_selected_triggered(bool checked)
 {
     MenuHistSelectedOnly = checked;
     ShowImage(graphicsView);
 }
 
 
-void MainWindowImpl::on_actionCurve_markers_as_crosses_triggered()
+void MainWindow::on_actionCurve_markers_as_crosses_triggered()
 {
     cmac();
 }
@@ -2259,7 +2259,7 @@ void MainWindowImpl::on_actionCurve_markers_as_crosses_triggered()
 
 
 
-void MainWindowImpl::on_actionLock_curve_shape_triggered(bool checked)
+void MainWindow::on_actionLock_curve_shape_triggered(bool checked)
 {
     CurveShapeLocked = checked;
 }
@@ -2267,24 +2267,24 @@ void MainWindowImpl::on_actionLock_curve_shape_triggered(bool checked)
 
 
 
-void MainWindowImpl::on_actionNew_Output_Object_triggered()
+void MainWindow::on_actionNew_Output_Object_triggered()
 {
     on_OONew_clicked();
 }
 
-void MainWindowImpl::on_actionNew_Output_Object_Group_triggered()
+void MainWindow::on_actionNew_Output_Object_Group_triggered()
 {
     on_OOGroup_clicked();
 }
 
-void MainWindowImpl::on_actionDelete_Output_Object_triggered()
+void MainWindow::on_actionDelete_Output_Object_triggered()
 {
     on_OODelete_clicked();
 }
 
 
 
-void MainWindowImpl::on_actionInfo_triggered(bool checked)
+void MainWindow::on_actionInfo_triggered(bool checked)
 {
     if (checked) // show the toolbox
         DockInfo->setVisible(true);
@@ -2295,14 +2295,14 @@ void MainWindowImpl::on_actionInfo_triggered(bool checked)
 }
 
 
-void MainWindowImpl::on_actionHidden_masks_locked_for_generation_triggered()
+void MainWindow::on_actionHidden_masks_locked_for_generation_triggered()
 {
     if (actionHidden_masks_locked_for_generation->isChecked())
         HiddenMasksLockedForGeneration = true;
     else HiddenMasksLockedForGeneration = false;
 }
 
-void MainWindowImpl::on_actionSegment_brush_applies_masks_triggered()
+void MainWindow::on_actionSegment_brush_applies_masks_triggered()
 {
     if (actionSegment_brush_applies_masks->isChecked()) SegmentBrushAppliesMasks = true;
     else SegmentBrushAppliesMasks = false;
@@ -2310,19 +2310,19 @@ void MainWindowImpl::on_actionSegment_brush_applies_masks_triggered()
 
 
 
-void MainWindowImpl::on_CheckBoxRangeSelectedOnly_toggled(bool checked)
+void MainWindow::on_CheckBoxRangeSelectedOnly_toggled(bool checked)
 {
     RangeSelectedOnly = checked;
 }
 
-void MainWindowImpl::on_CheckBoxRangeHardFill_toggled(bool checked)
+void MainWindow::on_CheckBoxRangeHardFill_toggled(bool checked)
 {
     RangeHardFill = checked;
 }
 
 
 
-void MainWindowImpl::on_tabWidget_currentChanged(int index)
+void MainWindow::on_tabWidget_currentChanged(int index)
 {
     GenInvert->setVisible(true);
     GenerateAuto->setVisible(true);
@@ -2343,14 +2343,14 @@ void MainWindowImpl::on_tabWidget_currentChanged(int index)
     }
 }
 
-void MainWindowImpl::on_actionChange_downsampling_triggered()
+void MainWindow::on_actionChange_downsampling_triggered()
 {
     if (!Active) return;
     resampleImpl dialog;
     dialog.exec();
 }
 
-void MainWindowImpl::on_actionAb_out_triggered()
+void MainWindow::on_actionAb_out_triggered()
 {
     DialogAboutImpl d;
     d.exec();
@@ -2358,7 +2358,7 @@ void MainWindowImpl::on_actionAb_out_triggered()
 
 
 
-void MainWindowImpl::on_actionTEST_triggered()
+void MainWindow::on_actionTEST_triggered()
 {
 
     foreach (OutputObject *o, OutputObjects)
@@ -2376,7 +2376,7 @@ void MainWindowImpl::on_actionTEST_triggered()
 
 
 
-void MainWindowImpl::on_actionThreshold_triggered()
+void MainWindow::on_actionThreshold_triggered()
 {
 
 }
@@ -2388,7 +2388,7 @@ void MainWindowImpl::on_actionThreshold_triggered()
 
 
 
-void MainWindowImpl::on_actionCycle_Bright_Segment_Mask_triggered()
+void MainWindow::on_actionCycle_Bright_Segment_Mask_triggered()
 {
     if (actionBright->isChecked())
     {
@@ -2416,80 +2416,80 @@ void MainWindowImpl::on_actionCycle_Bright_Segment_Mask_triggered()
 }
 
 
-void MainWindowImpl::on_action1_x_1_triggered()
+void MainWindow::on_action1_x_1_triggered()
 {
 
 }
 
 
-void MainWindowImpl::on_actionIncrease_Size_triggered()
+void MainWindow::on_actionIncrease_Size_triggered()
 {
     BrushSize->setValue(BrushSize->value()+1);
 }
 
 
-void MainWindowImpl::on_actionDecrease_Size_triggered()
+void MainWindow::on_actionDecrease_Size_triggered()
 {
     BrushSize->setValue(BrushSize->value()-1);
 }
 
 
-void MainWindowImpl::on_trainML_clicked()
+void MainWindow::on_trainML_clicked()
 {
     mlInterface->SampleAndTrain();
 }
 
 
-void MainWindowImpl::on_actionSegment_brush_applies_locks_triggered()
+void MainWindow::on_actionSegment_brush_applies_locks_triggered()
 {
     if (actionSegment_brush_applies_locks->isChecked()) SegmentBrushAppliesLocks = true;
     else SegmentBrushAppliesLocks = false;
 }
 
 
-void MainWindowImpl::on_btnMLActivateFeature_clicked()
+void MainWindow::on_btnMLActivateFeature_clicked()
 {
     mlInterface->UIActivateSelectedFeatures(true);
 }
 
 
-void MainWindowImpl::on_btnMLDeactivateFeature_clicked()
+void MainWindow::on_btnMLDeactivateFeature_clicked()
 {
     mlInterface->UIActivateSelectedFeatures(false);
 }
 
 
-void MainWindowImpl::on_btnMLAddFeature_clicked()
+void MainWindow::on_btnMLAddFeature_clicked()
 {
     mlInterface->UIAddFeature();
 }
 
 
-void MainWindowImpl::on_btnMLRemoveFeature_clicked()
+void MainWindow::on_btnMLRemoveFeature_clicked()
 {
     mlInterface->UIDeleteSelectedFeatures();
 }
 
 
-void MainWindowImpl::on_spinBoxMinSampleCount_valueChanged(int arg1)
+void MainWindow::on_spinBoxMinSampleCount_valueChanged(int arg1)
 {
     mlInterface->SetMinSampleCount(arg1);
 }
 
 
-void MainWindowImpl::on_spinBoxMLTrees_valueChanged(int arg1)
+void MainWindow::on_spinBoxMLTrees_valueChanged(int arg1)
 {
     mlInterface->SetTreeCount(arg1);
 }
 
 
-void MainWindowImpl::on_spinBoxMLDepth_valueChanged(int arg1)
+void MainWindow::on_spinBoxMLDepth_valueChanged(int arg1)
 {
     mlInterface->SetTreeDepth(arg1);
 }
 
 
-void MainWindowImpl::on_spinBoxMLSampling_valueChanged(int arg1)
+void MainWindow::on_spinBoxMLSampling_valueChanged(int arg1)
 {
     mlInterface->SetSamplePercent(arg1);
 }
@@ -2497,62 +2497,62 @@ void MainWindowImpl::on_spinBoxMLSampling_valueChanged(int arg1)
 
 
 
-void MainWindowImpl::on_actionCalculate_Features_triggered()
+void MainWindow::on_actionCalculate_Features_triggered()
 {
     mlInterface->CalculateFeatureData();
 }
 
 
-void MainWindowImpl::on_actionSave_feature_set_triggered()
+void MainWindow::on_actionSave_feature_set_triggered()
 {
     mlInterface->SaveFeaturesToFile();
 }
 
 
-void MainWindowImpl::on_actionLoad_feature_set_triggered()
+void MainWindow::on_actionLoad_feature_set_triggered()
 {
     mlInterface->LoadFeaturesFromFile();
 }
 
 
-void MainWindowImpl::on_actionRemove_feature_files_triggered()
+void MainWindow::on_actionRemove_feature_files_triggered()
 {
     mlInterface->RemoveAllCacheFiles(false);
 }
 
 
-void MainWindowImpl::on_actionClear_sample_triggered()
+void MainWindow::on_actionClear_sample_triggered()
 {
     mlInterface->ResetRFAndSample();
 }
 
 
 
-void MainWindowImpl::on_actionCT_simpl_triggered()
+void MainWindow::on_actionCT_simpl_triggered()
 {
     mlInterface->DoPreset((int)MLFeaturePresets::Preset::CT_Simple);
 }
 
 
-void MainWindowImpl::on_actionCT_complex_triggered()
+void MainWindow::on_actionCT_complex_triggered()
 {
     mlInterface->DoPreset((int)MLFeaturePresets::Preset::CT_Complex);
 }
 
 
-void MainWindowImpl::on_actionColour_simple_triggered()
+void MainWindow::on_actionColour_simple_triggered()
 {
     mlInterface->DoPreset((int)MLFeaturePresets::Preset::Colour_Simple);
 }
 
 
-void MainWindowImpl::on_actionColour_complex_triggered()
+void MainWindow::on_actionColour_complex_triggered()
 {
     mlInterface->DoPreset((int)MLFeaturePresets::Preset::Colour_Complex);
 }
 
 
-void MainWindowImpl::on_actionMLAuto_Update_triggered()
+void MainWindow::on_actionMLAuto_Update_triggered()
 {
     mlInterface->SampleAndTrain(true);
 }

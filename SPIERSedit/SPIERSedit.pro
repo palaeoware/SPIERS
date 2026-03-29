@@ -72,7 +72,7 @@ HEADERS += src/display.h \
     src/globals.h \
     src/importdialogimpl.h \
     src/labelledpoint.h \
-    src/mainwindowimpl.h \
+    src/mainwindow.h \
     src/mlcachedaccess.h \
     src/mlcachedslice.h \
     src/mlfeature.h \
@@ -140,7 +140,7 @@ SOURCES += src/display.cpp \
     src/importdialogimpl.cpp \
     src/labelledpoint.cpp \
     src/main.cpp \
-    src/mainwindowimpl.cpp \
+    src/mainwindow.cpp \
     src/mlcachedaccess.cpp \
     src/mlcachedslice.cpp \
     src/mlfeature.cpp \
@@ -173,7 +173,7 @@ SOURCES += src/display.cpp \
     src/moreimpl.cpp \
     src/undo.cpp \
     src/contrastimpl.cpp \
-    src/mainwindowimpl2.cpp \
+    src/mainwindow2.cpp \
     src/deletemaskdialogimpl.cpp \
     src/settingsimpl.cpp \
     src/histogram.cpp \

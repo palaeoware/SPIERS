@@ -631,7 +631,7 @@ bool CopyingImpl::DoIHaveChildren(int parent)
  * @param fromfile
  * @param mw
  */
-void CopyingImpl::MaskCopy(int fromfile, MainWindowImpl *mw)
+void CopyingImpl::MaskCopy(int fromfile, MainWindow *mw)
 {
     bool IsShow = false;
     int count = 0;
@@ -696,7 +696,7 @@ void CopyingImpl::MaskCopy(int fromfile, MainWindowImpl *mw)
  * @param fromfile
  * @param mw
  */
-void CopyingImpl::MaskCopy2(int fromfile, MainWindowImpl *mw) //this is copy from selected TO currentfile
+void CopyingImpl::MaskCopy2(int fromfile, MainWindow *mw) //this is copy from selected TO currentfile
 {
     QList <QTreeWidgetItem *> selitems = mw->MasksTreeWidget->selectedItems();
     if (selitems.count() == 0) Message("No masks selected to copy");
@@ -727,7 +727,7 @@ void CopyingImpl::MaskCopy2(int fromfile, MainWindowImpl *mw) //this is copy fro
  * @brief CopyingImpl::CurvesToMasks
  * @param mw
  */
-void CopyingImpl::CurvesToMasks(MainWindowImpl *mw) //create a mask from a curve
+void CopyingImpl::CurvesToMasks(MainWindow *mw) //create a mask from a curve
 {
     QList <QTreeWidgetItem *> selitems = mw->CurvesTreeWidget->selectedItems();
     if (selitems.count() == 0)

@@ -21,7 +21,7 @@
 #include <QDialog>
 
 #include "ui_Copying.h"
-#include "mainwindowimpl.h"
+#include "mainwindow.h"
 
 /**
  * @brief The ExportDXF class
@@ -30,8 +30,8 @@ class ExportDXF : public QDialog, public Ui::Copying
 {
     Q_OBJECT
 public:
-    ExportDXF( MainWindowImpl *mwp, QWidget *parent = nullptr, Qt::WindowFlags f = {} );
-    MainWindowImpl *mw;
+    ExportDXF( MainWindow *mwp, QWidget *parent = nullptr, Qt::WindowFlags f = {} );
+    MainWindow *mw;
 };
 
 #endif
