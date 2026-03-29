@@ -1316,3 +1316,50 @@ int GlWidget::pickObject(int mouseX, int mouseY)
     if (encoded == 0) return -1;  // background
     return encoded - 1;           // convert back to 0-based SVObjects index
 }
+
+void GlWidget::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    if (event->button() != Qt::LeftButton) return;
+    if (mainWindow->ui->actionSplit_Stereo->isChecked())    return;
+    if (mainWindow->ui->actionAnaglyph_Stereo->isChecked()) return;
+
+    makeCurrent();
+    int objectIndex = pickObject(event->x(), event->y());
+    doneCurrent();
+
+    bool shift = event->modifiers() & Qt::ShiftModifier;
+    bool ctrl  = event->modifiers() & Qt::ControlModifier;
+
+    if (!shift && !ctrl)
+    {
+        // Plain double-click — clear selection, select hit object only
+        mainWindow->ui->treeWidget->clearSelection();
+        if (objectIndex >= 0 && objectIndex < SVObjects.count())
+        {
+            SVObjects[objectIndex]->widgetitem->setSelected(true);
+            mainWindow->ui->treeWidget->scrollToItem(
+                SVObjects[objectIndex]->widgetitem);
+        }
+    }
+    else if (shift)
+    {
+        // Shift — add hit object to existing selection
+        if (objectIndex >= 0 && objectIndex < SVObjects.count())
+        {
+            SVObjects[objectIndex]->widgetitem->setSelected(true);
+            mainWindow->ui->treeWidget->scrollToItem(
+                SVObjects[objectIndex]->widgetitem);
+        }
+    }
+    else if (ctrl)
+    {
+        // Ctrl — toggle selection of hit object, leave others unchanged
+        if (objectIndex >= 0 && objectIndex < SVObjects.count())
+        {
+            QTreeWidgetItem *item = SVObjects[objectIndex]->widgetitem;
+            item->setSelected(!item->isSelected());
+            if (item->isSelected())
+                mainWindow->ui->treeWidget->scrollToItem(item);
+        }
+    }
+}
