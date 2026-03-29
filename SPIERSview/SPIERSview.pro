@@ -75,7 +75,6 @@ SOURCES += src/main.cpp \
     src/fullscreenwindow.cpp \
     src/spvwriter.cpp \
     src/staticfunctions.cpp \
-    src/drawglscaleball.cpp \
     src/adler32.c \
     src/compress.c \
     src/crc32.c \
@@ -114,8 +113,7 @@ HEADERS += src/mainwindow.h \
     src/scalarfieldlayer.h \
     src/fullscreenwindow.h \
     src/spvwriter.h \
-    src/staticfunctions.h \
-    src/drawglscaleball.h
+    src/staticfunctions.h
 
 FORMS += ui/mainwindow.ui \
     ui/movetogroup.ui \

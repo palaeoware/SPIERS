@@ -36,6 +36,9 @@
 #include <QMutableListIterator>
 #include <QStandardPaths>
 #include <QDesktopServices>
+#include <QImageWriter>
+
+
 #include "scalegridoverlay.h"
 
 

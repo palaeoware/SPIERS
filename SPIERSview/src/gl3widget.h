@@ -17,7 +17,6 @@
 #include <QOpenGLExtraFunctions>
 
 #include "globals.h"
-#include "drawglscaleball.h"
 
 #define SHADOW_MAP_SIZE 2048
 
@@ -138,8 +137,6 @@ private:
     GLuint pickFBO;
     GLuint pickColourTexture;  // RGBA8 — encoded object index
     GLuint pickDepthRBO;       // depth for correct front-surface selection
-
-    DrawGLScaleBall *scaleBall;
 };
 
 #endif // GL3WIDGET_H

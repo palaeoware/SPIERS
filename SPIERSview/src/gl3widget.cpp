@@ -27,7 +27,7 @@ GlWidget::GlWidget(QWidget *parent)
     QList<Qt::GestureType> gestures;
     gestures << Qt::PinchGesture;
     grabGestures(gestures);
-    scaleBall = new DrawGLScaleBall(this);
+
     for (int i = 0; i < 3; i++) { shadowFBO[i] = 0; shadowDepthTexture[i] = 0; }
     dummyShadowTexture = 0;
     oitFBO = 0; oitAccumTexture = 0; oitRevealTexture = 0;
@@ -184,7 +184,6 @@ void GlWidget::initializeGL()
     if (!pickShaderProgram.isLinked())
         qDebug() << "Pick shader link failed:" << pickShaderProgram.log();
 
-    scaleBall->initializeGL();
 }
 
 // ---------------------------------------------------------------------------
@@ -854,7 +853,6 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
 
     glDepthMask(true);
     updateFOV();
-    scaleBall->draw(vMatrix, vMatrix * camera);
 
 }
 

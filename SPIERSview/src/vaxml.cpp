@@ -1240,7 +1240,7 @@ bool VAXML::readVAXML(QString fname)
         svo->Transparency = convTrans(objects[i]->transparency);
         for (int j = 0; j < 16; j++) svo->matrix[j] = objects[i]->matrix[j];
         svo->spv = spv;
-        qDebug()<<"Here"<<localPolyData[i].triangleCount()<<isVaxmlMode;
+
         svo->setMesh(localPolyData[i]);
     }
 
