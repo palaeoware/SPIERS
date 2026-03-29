@@ -11,6 +11,7 @@
 #include <QTimer>
 #include <QScreen>
 #include <QFileOpenEvent>
+#include <QDir>
 
 #include "main.h"
 #include "mainwindow.h"

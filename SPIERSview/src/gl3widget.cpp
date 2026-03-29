@@ -27,11 +27,12 @@ GlWidget::GlWidget(QWidget *parent)
     QList<Qt::GestureType> gestures;
     gestures << Qt::PinchGesture;
     grabGestures(gestures);
-    scaleBall = new DrawGLScaleBall(this);
+
     for (int i = 0; i < 3; i++) { shadowFBO[i] = 0; shadowDepthTexture[i] = 0; }
     dummyShadowTexture = 0;
     oitFBO = 0; oitAccumTexture = 0; oitRevealTexture = 0;
     oitDepthRBO = 0; fullscreenQuadVBO = 0;
+    pickFBO = 0; pickColourTexture = 0; pickDepthRBO = 0;
 
     realOrthoHeightMm = 0;
     realOrthoWidthMm = 0;
@@ -67,6 +68,9 @@ GlWidget::~GlWidget()
     if (oitRevealTexture)   glDeleteTextures(1, &oitRevealTexture);
     if (oitDepthRBO)        glextrafunctions->glDeleteRenderbuffers(1, &oitDepthRBO);
     if (fullscreenQuadVBO)  glDeleteBuffers(1, &fullscreenQuadVBO);
+    if (pickFBO)            glextrafunctions->glDeleteFramebuffers(1, &pickFBO);
+    if (pickColourTexture)  glDeleteTextures(1, &pickColourTexture);
+    if (pickDepthRBO)       glextrafunctions->glDeleteRenderbuffers(1, &pickDepthRBO);
 
     vao.release(); vao.deleteLater();
 
@@ -171,8 +175,15 @@ void GlWidget::initializeGL()
 
         initShadowFBOs();
     initOIT();
+    initPickFBO();
 
-    scaleBall->initializeGL();
+    // Pick shader — flat colour, no lighting
+    pickShaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex,   ":/pickVertexShader.vsh");
+    pickShaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/pickFragmentShader.fsh");
+    pickShaderProgram.link();
+    if (!pickShaderProgram.isLinked())
+        qDebug() << "Pick shader link failed:" << pickShaderProgram.log();
+
 }
 
 // ---------------------------------------------------------------------------
@@ -434,7 +445,9 @@ void GlWidget::resizeGL(int width, int height)
     DoPMatrix(xdim, ydim);
     glViewport(0, 0, xdim, ydim);
     // OIT textures must match viewport size
-    if (oitFBO) resizeOIT(xdim, ydim);
+    if (oitFBO)  resizeOIT(xdim, ydim);
+    // Pick FBO must match viewport size
+    if (pickFBO) resizePickFBO(xdim, ydim);
     update();
     emit resized(); //for the painter overlay
 }
@@ -516,6 +529,8 @@ void GlWidget::paintGL()
 
     DoPMatrix(xdim, ydim);
     DrawObjects(false, false);
+    //qDebug()<<"Emmitting";
+    emit glUpdate();
 }
 
 // ---------------------------------------------------------------------------
@@ -838,7 +853,6 @@ void GlWidget::DrawObjects(bool rightview, bool halfsize)
 
     glDepthMask(true);
     updateFOV();
-    scaleBall->draw(vMatrix, vMatrix * camera);
 
 }
 
@@ -1091,5 +1105,261 @@ void GlWidget::glDebug(QString string)
         case GL_TABLE_TOO_LARGE:               errMess="Table too large"; break;
         }
         qDebug() << QString("[GL Error] %1 - %2").arg(errMess).arg(string);
+    }
+}
+
+
+
+void GlWidget::mousePressEvent(QMouseEvent *event)
+{
+    // Only handle ctrl+left click
+    if (!(event->button() == Qt::MiddleButton))
+        return;
+
+    // Bail in stereo modes — depth buffer is split/ambiguous
+    if (mainWindow->ui->actionSplit_Stereo->isChecked())   return;
+    if (mainWindow->ui->actionAnaglyph_Stereo->isChecked()) return;
+
+    makeCurrent();
+
+    // Qt mouse coords are top-left origin; OpenGL depth buffer is bottom-left
+    int mouseX = event->x();
+    int mouseY = event->y();
+
+    // Scale to actual framebuffer pixels (handles HiDPI)
+    int fbX = static_cast<int>(mouseX * applicationScaleX);
+    int fbY = static_cast<int>(mouseY * applicationScaleY);
+
+    // Flip Y for OpenGL
+    int glX = fbX;
+    int glY = ydim - fbY - 1;
+
+    // Read depth at click pixel
+    GLfloat depth = 1.0f;
+    glReadPixels(glX, glY, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
+
+    // depth == 1.0 means no geometry was hit (empty space)
+    if (depth >= 1.0f)
+    {
+        emit worldPositionClicked(QVector3D(), false, -1);
+        return;
+    }
+
+    // Convert to NDC [-1, 1]
+    float ndcX =  2.0f * static_cast<float>(glX) / static_cast<float>(xdim) - 1.0f;
+    float ndcY =  2.0f * static_cast<float>(glY) / static_cast<float>(ydim) - 1.0f;
+    float ndcZ =  2.0f * depth - 1.0f;
+
+    // Build the same view matrix that was used to render this frame
+    QMatrix4x4 vMatrix;
+    vMatrix.setToIdentity();
+    QVector3D camera(cameraX, cameraY, cameraZ);
+    QVector3D center(centerX, centerY, centerZ);
+    QVector3D up(0, 1, 0);
+    vMatrix.lookAt(camera, center, up);
+
+    // Unproject: invert the full projection * view transform
+    QMatrix4x4 mvp = pMatrix * vMatrix;
+    bool invertible = false;
+    QMatrix4x4 mvpInv = mvp.inverted(&invertible);
+
+    if (!invertible)
+    {
+        emit worldPositionClicked(QVector3D(), false, -1);
+        return;
+    }
+    QVector4D clipPos(ndcX, ndcY, ndcZ, 1.0f);
+    QVector4D worldPos4 = mvpInv * clipPos;
+
+    // Perspective divide
+    if (qAbs(worldPos4.w()) < 1e-6f)
+    {
+        emit worldPositionClicked(QVector3D(), false, -1);
+        return;
+    }
+    worldPos4 /= worldPos4.w();
+
+    QVector3D worldPos(worldPos4.x(), worldPos4.y(), worldPos4.z());
+
+    // Pick which object was hit
+    int objectIndex = pickObject(mouseX, mouseY);
+    /*
+    if (objectIndex >= 0 && objectIndex < SVObjects.count())
+        qDebug() << "Hit object:" << objectIndex << SVObjects[objectIndex]->Name;
+    else
+        qDebug() << "No object hit (background)";
+    */
+
+    emit worldPositionClicked(worldPos, true, objectIndex);
+
+    doneCurrent();
+}
+
+
+
+// ---------------------------------------------------------------------------
+// initPickFBO — creates the colour pick FBO (called once at init)
+// ---------------------------------------------------------------------------
+void GlWidget::initPickFBO()
+{
+    glGenTextures(1, &pickColourTexture);
+    glextrafunctions->glGenRenderbuffers(1, &pickDepthRBO);
+    glextrafunctions->glGenFramebuffers(1, &pickFBO);
+    resizePickFBO(qMax(1, xdim), qMax(1, ydim));
+}
+
+// ---------------------------------------------------------------------------
+// resizePickFBO — recreates pick textures at new viewport size
+// ---------------------------------------------------------------------------
+void GlWidget::resizePickFBO(int w, int h)
+{
+    // RGBA8 colour texture — encodes object index as RGB
+    glBindTexture(GL_TEXTURE_2D, pickColourTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    // Depth renderbuffer for correct front-surface selection
+    glextrafunctions->glBindRenderbuffer(GL_RENDERBUFFER, pickDepthRBO);
+    glextrafunctions->glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, w, h);
+    glextrafunctions->glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+    // Attach to FBO
+    glextrafunctions->glBindFramebuffer(GL_FRAMEBUFFER, pickFBO);
+    glextrafunctions->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                                              GL_TEXTURE_2D, pickColourTexture, 0);
+    glextrafunctions->glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+                                                 GL_RENDERBUFFER, pickDepthRBO);
+    glextrafunctions->glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+// ---------------------------------------------------------------------------
+// pickObject — renders all visible objects with unique flat colours,
+// reads back the pixel at (mouseX, mouseY), decodes and returns object index.
+// Returns -1 if no object was hit (background).
+// Object indices are encoded as 1-based RGB: index 0 = background (black).
+// ---------------------------------------------------------------------------
+int GlWidget::pickObject(int mouseX, int mouseY)
+{
+    if (!pickFBO) return -1;
+
+    // Build view matrix — same as main render
+    QMatrix4x4 vMatrix;
+    vMatrix.setToIdentity();
+    vMatrix.lookAt(QVector3D(cameraX, cameraY, cameraZ),
+                   QVector3D(centerX, centerY, centerZ),
+                   QVector3D(0, 1, 0));
+
+    glextrafunctions->glBindFramebuffer(GL_FRAMEBUFFER, pickFBO);
+    glViewport(0, 0, xdim, ydim);
+
+    // Clear to black (index 0 = background)
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(true);
+    glDisable(GL_BLEND);
+
+    pickShaderProgram.bind();
+
+    for (int i = 0; i < SVObjects.count(); i++)
+    {
+        if (SVObjects[i]->IsGroup || SVObjects[i]->isSurfacing) continue;
+        if (!CanISee(i)) continue;
+
+        // Encode (i+1) as RGB — 1-based so background stays black (0)
+        int encoded = i + 1;
+        float r = static_cast<float>( encoded        & 0xFF) / 255.0f;
+        float g = static_cast<float>((encoded >>  8) & 0xFF) / 255.0f;
+        float b = static_cast<float>((encoded >> 16) & 0xFF) / 255.0f;
+        pickShaderProgram.setUniformValue("pickColour", QVector4D(r, g, b, 1.0f));
+
+        QMatrix4x4 mMatrix(SVObjects[i]->matrix);
+        QMatrix4x4 mvMatrix = vMatrix;
+        mvMatrix.translate(0, 0, -1);
+        mvMatrix *= mMatrix;
+        mvMatrix *= globalMatrix;
+        pickShaderProgram.setUniformValue("mvpMatrix", pMatrix * mvMatrix);
+
+        for (int j = 0; j < SVObjects[i]->VertexBuffers.count(); j++)
+        {
+            SVObjects[i]->VertexBuffers[j]->bind();
+            pickShaderProgram.setAttributeBuffer("vertex", GL_FLOAT, 0, 3, 0);
+            pickShaderProgram.enableAttributeArray("vertex");
+            SVObjects[i]->VertexBuffers[j]->release();
+            glfunctions->glDrawArrays(GL_TRIANGLES, 0, SVObjects[i]->VBOVertexCounts[j]);
+        }
+    }
+
+    pickShaderProgram.release();
+
+    // Read back the pixel at the click position
+    // HiDPI scaling and Y flip — same as world position unproject
+    int fbX = static_cast<int>(mouseX * applicationScaleX);
+    int fbY = ydim - static_cast<int>(mouseY * applicationScaleY) - 1;
+
+    // Clamp to framebuffer bounds
+    fbX = qBound(0, fbX, xdim - 1);
+    fbY = qBound(0, fbY, ydim - 1);
+
+    GLubyte pixel[4] = {0, 0, 0, 0};
+    glReadPixels(fbX, fbY, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
+
+    glextrafunctions->glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // Decode RGB back to index
+    int encoded = static_cast<int>(pixel[0])
+                | (static_cast<int>(pixel[1]) << 8)
+                | (static_cast<int>(pixel[2]) << 16);
+
+    if (encoded == 0) return -1;  // background
+    return encoded - 1;           // convert back to 0-based SVObjects index
+}
+
+void GlWidget::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    if (event->button() != Qt::LeftButton) return;
+    if (mainWindow->ui->actionSplit_Stereo->isChecked())    return;
+    if (mainWindow->ui->actionAnaglyph_Stereo->isChecked()) return;
+
+    makeCurrent();
+    int objectIndex = pickObject(event->x(), event->y());
+    doneCurrent();
+
+    bool shift = event->modifiers() & Qt::ShiftModifier;
+    bool ctrl  = event->modifiers() & Qt::ControlModifier;
+
+    if (!shift && !ctrl)
+    {
+        // Plain double-click — clear selection, select hit object only
+        mainWindow->ui->treeWidget->clearSelection();
+        if (objectIndex >= 0 && objectIndex < SVObjects.count())
+        {
+            SVObjects[objectIndex]->widgetitem->setSelected(true);
+            mainWindow->ui->treeWidget->scrollToItem(
+                SVObjects[objectIndex]->widgetitem);
+        }
+    }
+    else if (shift)
+    {
+        // Shift — add hit object to existing selection
+        if (objectIndex >= 0 && objectIndex < SVObjects.count())
+        {
+            SVObjects[objectIndex]->widgetitem->setSelected(true);
+            mainWindow->ui->treeWidget->scrollToItem(
+                SVObjects[objectIndex]->widgetitem);
+        }
+    }
+    else if (ctrl)
+    {
+        // Ctrl — toggle selection of hit object, leave others unchanged
+        if (objectIndex >= 0 && objectIndex < SVObjects.count())
+        {
+            QTreeWidgetItem *item = SVObjects[objectIndex]->widgetitem;
+            item->setSelected(!item->isSelected());
+            if (item->isSelected())
+                mainWindow->ui->treeWidget->scrollToItem(item);
+        }
     }
 }

@@ -52,6 +52,7 @@ SOURCES += src/main.cpp \
     ../SPIERScommon/src/darkstyletheme.cpp \
     src/globals.cpp \
     src/meshfilters.cpp \
+    src/positionclickhandler.cpp \
     src/scalegridoverlay.cpp \
     src/spvreader.cpp \
     src/svobject.cpp \
@@ -74,7 +75,6 @@ SOURCES += src/main.cpp \
     src/fullscreenwindow.cpp \
     src/spvwriter.cpp \
     src/staticfunctions.cpp \
-    src/drawglscaleball.cpp \
     src/adler32.c \
     src/compress.c \
     src/crc32.c \
@@ -90,6 +90,7 @@ HEADERS += src/mainwindow.h \
     ../SPIERScommon/src/darkstyletheme.h \
     src/globals.h \
     src/meshfilters.h \
+    src/positionclickhandler.h \
     src/scalegridoverlay.h \
     src/spvreader.h \
     src/svobject.h \
@@ -112,8 +113,7 @@ HEADERS += src/mainwindow.h \
     src/scalarfieldlayer.h \
     src/fullscreenwindow.h \
     src/spvwriter.h \
-    src/staticfunctions.h \
-    src/drawglscaleball.h
+    src/staticfunctions.h
 
 FORMS += ui/mainwindow.ui \
     ui/movetogroup.ui \
