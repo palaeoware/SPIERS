@@ -200,15 +200,41 @@ SOURCES += src/display.cpp \
     ui/mladdfeature.cpp
 
 win32 {
-    OPENCV_DIR = C:/opencv/opencv
+    # Auto-detect OpenCV installation directory if not already set externally
+    isEmpty(OPENCV_DIR) {
+        USER_PROFILE = $$(USERPROFILE)
+        OPENCV_CANDIDATE_DIRS = \
+            C:/opencv/opencv \
+            C:/opencv \
+            C:/tools/opencv \
+            C:/local/opencv \
+            $$USER_PROFILE/Downloads/opencv/opencv \
+            $$USER_PROFILE/Downloads/opencv \
+            $$USER_PROFILE/Documents/opencv/opencv \
+            $$USER_PROFILE/Documents/opencv
+        for(dir, OPENCV_CANDIDATE_DIRS) {
+            exists($$dir/build/include) {
+                isEmpty(OPENCV_DIR): OPENCV_DIR = $$dir
+            }
+        }
+    }
+    isEmpty(OPENCV_DIR): error("OpenCV not found. Install it or set OPENCV_DIR (e.g. qmake OPENCV_DIR=C:/my/opencv).")
 
     INCLUDEPATH += $$OPENCV_DIR/build/include
     LIBS += -L$$OPENCV_DIR/build/x64/vc16/lib
+
+    # Auto-detect OpenCV version by globbing for the release lib (4-digit version, no trailing 'd')
+    OPENCV_RELEASE_LIBS = $$files($$OPENCV_DIR/build/x64/vc16/lib/opencv_world????.lib)
+    isEmpty(OPENCV_RELEASE_LIBS): error("No opencv_world lib found in $$OPENCV_DIR/build/x64/vc16/lib/")
+    OPENCV_LIB_FILE = $$first(OPENCV_RELEASE_LIBS)
+    OPENCV_LIB_NAME = $$basename(OPENCV_LIB_FILE)
+    OPENCV_LIB_NAME = $$replace(OPENCV_LIB_NAME, \.lib, )
+
     CONFIG(debug, debug|release) {
-            LIBS += -lopencv_world4130d
-        } else {
-            LIBS += -lopencv_world4130
-        }
+        LIBS += -l$${OPENCV_LIB_NAME}d
+    } else {
+        LIBS += -l$$OPENCV_LIB_NAME
+    }
 }
 # MacOS common build here
 macx {
