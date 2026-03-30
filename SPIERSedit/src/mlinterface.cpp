@@ -15,7 +15,7 @@
 #include "mlfeaturecontrast.h"
 #include "mlfeaturedifferenceofgaussians.h"
 #include "mlfeatureuimanager.h"
-#include "ui/mlAddFeature.h"
+#include "ui/mladdfeature.h"
 #include <QMessageBox>
 #include "mlfileio.h"
 #include <QFileDialog>
@@ -43,15 +43,15 @@ void MLInterface::Initialise(MainWindow *mw, QLabel *statusLabel)
     lblStatus = statusLabel;
     mainWin = mw;
 
-    if (data!=nullptr)
+    if (data != nullptr)
         delete data;
 
-    if (uiManager!=nullptr)
+    if (uiManager != nullptr)
         delete uiManager;
 
     //remake things - nullptr triggers this
-    data=nullptr;
-    uiManager=nullptr;
+    data = nullptr;
+    uiManager = nullptr;
     CreateSingletonsIfNeeded();
     ResetRFAndSample();
     UpdateStatusLabel();
@@ -63,7 +63,7 @@ void MLInterface::RemoveAllCacheFiles(bool override)
 {
     QDir dir(MLFileIO::GetWorkingPath());
 
-    qDebug()<<MLFileIO::GetWorkingPath();
+    qDebug() << MLFileIO::GetWorkingPath();
     QStringList files = dir.entryList({"ml_*"}, QDir::Files);
 
     if (override)
@@ -80,12 +80,12 @@ void MLInterface::RemoveAllCacheFiles(bool override)
         if (QMessageBox::question(mainWin,
                                   "Confirm",
                                   QString("This will remove %1 feature cache files - proceed?")
-                                .arg(files.count()),
-                            QMessageBox::Yes | QMessageBox::No,
-                                                  QMessageBox::No)
-            == QMessageBox::Yes)
+                                  .arg(files.count()),
+                                  QMessageBox::Yes | QMessageBox::No,
+                                  QMessageBox::No)
+                == QMessageBox::Yes)
         {
-            MLUpdateBlockingDialog::showDialog(mainwin, "", "","Deleting files");
+            MLUpdateBlockingDialog::showDialog(mainwin, "", "", "Deleting files");
 
             for (const QString &file : files)
             {
@@ -102,7 +102,7 @@ QByteArray MLInterface::DumpFeaturesToByteArray()
     QDataStream out(&outArray, QIODevice::WriteOnly);
 
     out << data->GetFeatureCount();
-    for (int i=0; i<data->GetFeatureCount(); i++)
+    for (int i = 0; i < data->GetFeatureCount(); i++)
     {
         MLFeature *feature = data->GetFeature(i);
         out << (uchar)feature->GetType();
@@ -122,7 +122,7 @@ void MLInterface::RetrieveFeaturesFromByteArray(QByteArray &byteArray)
     QList<MLFeature *> newFeatures;
     int itemCount;
     in >> itemCount;
-    for (int i=0; i<itemCount; i++)
+    for (int i = 0; i < itemCount; i++)
     {
         uchar dummy;
 
@@ -141,9 +141,9 @@ void MLInterface::RetrieveFeaturesFromByteArray(QByteArray &byteArray)
         in >> isSelected;
 
         MLFeature *feature = MLFeature::CreateFromData
-            (type, channel, is3D, arg1, arg2);
+                             (type, channel, is3D, arg1, arg2);
 
-        if (feature!=nullptr)
+        if (feature != nullptr)
         {
             feature->SetSelected(isSelected);
             newFeatures.append(feature);
@@ -158,10 +158,10 @@ void MLInterface::RetrieveFeaturesFromByteArray(QByteArray &byteArray)
 void MLInterface::SaveFeaturesToFile()
 {
     QString filename = QFileDialog::getSaveFileName(
-        mainWin,
-        "Save feature-set",
-        MLFileIO::GetWorkingPath(),
-        "FEAT files (*.feat)");
+                           mainWin,
+                           "Save feature-set",
+                           MLFileIO::GetWorkingPath(),
+                           "FEAT files (*.feat)");
 
     if (filename.isEmpty())
         return;
@@ -177,10 +177,10 @@ void MLInterface::SaveFeaturesToFile()
 void MLInterface::LoadFeaturesFromFile()
 {
     QString filename = QFileDialog::getOpenFileName(
-        mainWin,
-        "Load feature-set",
-        MLFileIO::GetWorkingPath(),
-        "FEAT files (*.feat)");
+                           mainWin,
+                           "Load feature-set",
+                           MLFileIO::GetWorkingPath(),
+                           "FEAT files (*.feat)");
 
     if (filename.isEmpty())
         return;
@@ -246,7 +246,7 @@ void MLInterface::Generate(QListWidget *SliceSelectorList)
 
     WriteAllData(CurrentFile);
 
-    MLUpdateBlockingDialog::showDialog(mainwin, "", "","Creating segments using ML data");
+    MLUpdateBlockingDialog::showDialog(mainwin, "", "", "Creating segments using ML data");
 
     for (int i = 0; i < Files.count(); i++)
     {
@@ -257,7 +257,7 @@ void MLInterface::Generate(QListWidget *SliceSelectorList)
             MLUpdateBlockingDialog::updateDetailText(QString("Fetching slice data"));
             LoadLocks(i);
             LoadMasks(i);
-            for (int s=0; s<SegmentCount; s++)
+            for (int s = 0; s < SegmentCount; s++)
             {
                 LoadGreyData(i, s);
             }
@@ -265,7 +265,7 @@ void MLInterface::Generate(QListWidget *SliceSelectorList)
             ComputeSliceProbabilitiesFromVotes(i);
 
             MLUpdateBlockingDialog::updateDetailText(QString("Storing slice data"));
-            for (int s=0; s<SegmentCount; s++)
+            for (int s = 0; s < SegmentCount; s++)
                 SaveGreyData(i, s);
         }
 
@@ -282,28 +282,28 @@ void MLInterface::UIActivateSelectedFeatures(bool activate)
 {
     CreateSingletonsIfNeeded();
     uiManager->ActivateSelectedFeatures(activate);
-        ResetRFAndSample();
+    ResetRFAndSample();
 }
 
 void MLInterface::UIDeleteSelectedFeatures()
 {
     CreateSingletonsIfNeeded();
-    if (uiManager->DeleteSelectedFeatures()>0)
+    if (uiManager->DeleteSelectedFeatures() > 0)
         ResetRFAndSample();
 }
 
 void MLInterface::UIAddFeature()
 {
     CreateSingletonsIfNeeded();
-    if (addFeatureDialog==nullptr)
+    if (addFeatureDialog == nullptr)
         addFeatureDialog = new MLAddFeature(mainwin);
 
     addFeatureDialog->Show();
     MLFeature *feature = addFeatureDialog->GetResult();
 
-    if (feature!=nullptr)
+    if (feature != nullptr)
     {
-        data->SetFeatureInUse(data->AddFeature(feature),true);
+        data->SetFeatureInUse(data->AddFeature(feature), true);
         ResetRFAndSample();
         uiManager->Rebuild();
     }
@@ -365,7 +365,7 @@ void MLInterface::ComputeSliceProbabilitiesFromVotes(int sliceID)
 
     for (int y = 0; y < fheight; ++y)
     {
-        QVector<uchar*> outRows(SegmentCount);
+        QVector<uchar *> outRows(SegmentCount);
         for (int c = 0; c < SegmentCount; ++c)
             outRows[c] = GA[c]->scanLine(y);
 
@@ -385,14 +385,14 @@ void MLInterface::ComputeSliceProbabilitiesFromVotes(int sliceID)
                     if (v < 0) v = 0;
                     if (v > 255) v = 255;
 
-                    if (v>high)
+                    if (v > high)
                     {
                         high = v;
                         highSeg = c;
                     }
                     outRows[c][x] = static_cast<uchar>(v);
                 }
-                if (high<128) //ensure no black!
+                if (high < 128) //ensure no black!
                 {
                     outRows[highSeg][x] = static_cast<uchar>(128);
                 }
@@ -403,21 +403,21 @@ void MLInterface::ComputeSliceProbabilitiesFromVotes(int sliceID)
 
 QString MLInterface::DescribeSample()
 {
-    if (labels.count()==0)
+    if (labels.count() == 0)
     {
         return "[Not Defined]";
     }
     else
     {
-        int minSlice=9999999;
-        int maxSlice=-1;
+        int minSlice = 9999999;
+        int maxSlice = -1;
         QVector<int> counts(SegmentCount, 0);
 
-        for (int i=0; i<labels.count(); i++)
+        for (int i = 0; i < labels.count(); i++)
         {
-            if (labels[i].z<minSlice)
+            if (labels[i].z < minSlice)
                 minSlice = labels[i].z;
-            if (labels[i].z>maxSlice)
+            if (labels[i].z > maxSlice)
                 maxSlice = labels[i].z;
             counts[labels[i].segment]++;
         }
@@ -430,15 +430,15 @@ QString MLInterface::DescribeSample()
 
         if (minSlice < maxSlice)
             return QString("%1 samples (%2) slices %3-%4")
-                .arg(labels.count())
-                .arg(details)
-                .arg(minSlice+1)
-                .arg(maxSlice+1);
+                   .arg(labels.count())
+                   .arg(details)
+                   .arg(minSlice + 1)
+                   .arg(maxSlice + 1);
         else
             return QString("%1 samples (%2) slice %3")
-                .arg(labels.count())
-                .arg(details)
-                .arg(minSlice+1);
+                   .arg(labels.count())
+                   .arg(details)
+                   .arg(minSlice + 1);
 
     }
 }
@@ -446,7 +446,7 @@ QString MLInterface::DescribeSample()
 void MLInterface::UpdateStatusLabel()
 {
     if (rf->IsValid())
-        lblStatus->setText(QString("Trained on ")+DescribeSample());
+        lblStatus->setText(QString("Trained on ") + DescribeSample());
     else
         lblStatus->setText("Not trained, no sample");
 }
@@ -454,18 +454,18 @@ void MLInterface::UpdateStatusLabel()
 
 void MLInterface::CreateSingletonsIfNeeded()
 {
-    if (data==nullptr)
+    if (data == nullptr)
     {
         data = new MLCachedAccess(FileCount, !ColArray.isGrayscale(), fwidth, fheight, ColMonoScale, ZDownsample);
 
-        if (uiManager!=nullptr)
+        if (uiManager != nullptr)
         {
             delete uiManager;
-            uiManager=nullptr;
+            uiManager = nullptr;
         }
     }
 
-    if (uiManager==nullptr)
+    if (uiManager == nullptr)
     {
         uiManager = new MLFeatureUIManager(data, mainWin->tblMLFeatureList);
         uiManager->Rebuild();
@@ -483,11 +483,11 @@ void MLInterface::CalculateFeatureData()
     {
         if (mainWin->SliceSelectorList->item(k)->isSelected())
         {
-            for (int i=0; i<featureCount; i++)
+            for (int i = 0; i < featureCount; i++)
             {
                 MLUpdateBlockingDialog::updateHighLevelText(QString("Slice %1 Feature: %2").arg(k).arg(data->GetFeature(i)->GetPrettyFullName()));
 
-                float dummy = data->GetFeatureValueAt(0,0,k,i);
+                float dummy = data->GetFeatureValueAt(0, 0, k, i);
                 Q_UNUSED(dummy);
             }
         }
@@ -499,7 +499,7 @@ void MLInterface::CalculateFeatureData()
 
 void MLInterface::AutoSampleTrainAndGenerate()
 {
-    if (mainWin->SliceSelectorList->selectedItems().count()!=1)
+    if (mainWin->SliceSelectorList->selectedItems().count() != 1)
         return;
 
     if (!mainWin->SliceSelectorList->item(CurrentFile)->isSelected())
@@ -514,7 +514,7 @@ void MLInterface::AutoSampleTrainAndGenerate()
 
     ComputeSliceProbabilitiesFromVotes(CurrentFile);
 
-    for (int i=0; i<SegmentCount; i++)
+    for (int i = 0; i < SegmentCount; i++)
     {
         SaveGreyData(CurrentFile, i);
     }
@@ -526,7 +526,7 @@ void MLInterface::AutoSampleTrainAndGenerate()
 
 void MLInterface::ResizeCache()
 {
-    if (data!=nullptr)
+    if (data != nullptr)
         data->ResizeCache();
 }
 
@@ -534,14 +534,14 @@ void MLInterface::ResizeCache()
 
 bool MLInterface::Sample(bool incremental, bool noMessages)
 {
-    if (SegmentCount<2)
+    if (SegmentCount < 2)
     {
         if (!noMessages) Message(QString("You need at least two segments to perform training"));
         return false;
     }
 
-    qDebug()<<"Feature count "<<data->GetFeaturesInUse().count();
-    if (data->GetFeaturesInUse().count()==0)
+    qDebug() << "Feature count " << data->GetFeaturesInUse().count();
+    if (data->GetFeaturesInUse().count() == 0)
     {
         if (!noMessages) Message("At least one active feature is required to perform training");
         return false;
@@ -556,7 +556,8 @@ bool MLInterface::Sample(bool incremental, bool noMessages)
         {
             if (mainWin->SliceSelectorList->item(k)->isSelected())
             {
-                labels.removeIf([k](const LabelledPoint &item) {
+                labels.removeIf([k](const LabelledPoint & item)
+                {
                     return item.z == k;
                 });
 
@@ -683,7 +684,7 @@ void MLInterface::SampleAndTrain(bool autoGen)
     {
         CreateSingletonsIfNeeded();
 
-        if (!Sample(mainWin->actionIncremental_sampling->isChecked(),false))
+        if (!Sample(mainWin->actionIncremental_sampling->isChecked(), false))
             return;
 
         if (!Train(false))
@@ -701,12 +702,12 @@ void MLInterface::DoPreset(int presetCode)
 {
     MLFeaturePresets::Preset preset = (MLFeaturePresets::Preset)presetCode;
 
-    if (data==nullptr) return;
+    if (data == nullptr) return;
 
-    if (data->GetFeatureCount()!=0)
+    if (data->GetFeatureCount() != 0)
     {
         if (QMessageBox::question
-            (mainWin, "Confirm", "This will remove all features and replace them with a predefined set. Are you sure?", QMessageBox::Yes | QMessageBox::No) != QMessageBox::Yes)
+                (mainWin, "Confirm", "This will remove all features and replace them with a predefined set. Are you sure?", QMessageBox::Yes | QMessageBox::No) != QMessageBox::Yes)
             return;
     }
 
@@ -715,19 +716,19 @@ void MLInterface::DoPreset(int presetCode)
     //Use a loop and add features to include them all along with their prereqs
     QList<MLFeature *> newList = MLFeaturePresets::GetPresetFeatureList(preset);
 
-    for (int i=0; i<newList.count(); i++)
+    for (int i = 0; i < newList.count(); i++)
     {
         data->AddFeature(newList[i]);
     }
 
 
-    for (int i=0; i<newList.count(); i++)
+    for (int i = 0; i < newList.count(); i++)
     {
-        if (data->GetIndexForFeature(newList[i])==-1)
+        if (data->GetIndexForFeature(newList[i]) == -1)
         {
-            qDebug()<<"-1: "<<i<<data->GetIndexForFeature(newList[i]);
+            qDebug() << "-1: " << i << data->GetIndexForFeature(newList[i]);
         }
-        data->SetFeatureInUse(data->GetIndexForFeature(newList[i]),true);
+        data->SetFeatureInUse(data->GetIndexForFeature(newList[i]), true);
     }
     uiManager->Rebuild();
 
@@ -839,14 +840,14 @@ void MLInterface::GetProbabilitiesAllSegments(int x, int y, int z, int *segBuffe
         if (v < 0) v = 0;
         if (v > 255) v = 255;
 
-        if (v>high)
+        if (v > high)
         {
             high = v;
             highseg = i;
         }
         segBuffer[i] = v;
     }
-    if (high<128)
+    if (high < 128)
     {
         segBuffer[highseg] = 128; //ensure no black
     }
