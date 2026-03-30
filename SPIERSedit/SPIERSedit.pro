@@ -260,3 +260,19 @@ macx {
     ICON = resources/SPIERSeditIcon.icns
     QMAKE_INFO_PLIST = Info.plist
 }
+
+# Unix/Linux common build here
+# Open CV installed using: sudo apt install libopencv-dev
+# Location shown by:  dpkg -L libopencv-dev
+unix:!macx {
+    OPENCV_DIR = /usr/lib/x86_64-linux-gnu/
+    INCLUDEPATH += /usr/include/opencv4/
+
+    LIBS += -L$$OPENCV_DIR/lib \
+    -lopencv_core \
+    -lopencv_imgproc \
+    -lopencv_imgcodecs \
+    -lopencv_highgui \
+    -lopencv_ml
+}
+
