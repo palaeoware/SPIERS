@@ -65,6 +65,18 @@ void histgv::Refresh()
     for (int i = 0; i < 256; i++)
         bins[i] = 0;
 
+    // GA[CurrentSegment] is shared with the PreviewBuilderWorker thread, which
+    // calls LoadGreyData() (replacing the pointer or rewriting the image data)
+    // under the global mutex.  Hold the mutex here for the entire read so we
+    // never touch a pointer that the worker is in the process of replacing.
+    mutex.lock();
+
+    if (CurrentSegment >= GA.count() || !GA[CurrentSegment] || GA[CurrentSegment]->isNull())
+    {
+        mutex.unlock();
+        return;
+    }
+
     uchar *data;
     data = GA[CurrentSegment]->bits();
     int max = fwidth * fheight;
@@ -80,6 +92,8 @@ void histgv::Refresh()
             {
                 bins[data[fwidth4 * iy + ix]]++;
             }
+
+    mutex.unlock();
 
 
     int bmax = 0;
