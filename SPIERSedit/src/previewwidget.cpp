@@ -41,6 +41,7 @@ PreviewBuilderWorker::PreviewBuilderWorker(int buildId,
                                            int zMin,
                                            int zMax,
                                            int xyStep,
+                                           int zStep,
                                            QObject *parent)
     : QObject(parent)
     , m_buildId(buildId)
@@ -54,6 +55,7 @@ PreviewBuilderWorker::PreviewBuilderWorker(int buildId,
     , m_zMin(zMin)
     , m_zMax(zMax)
     , m_xyStep(xyStep)
+    , m_zStep(qMax(1, zStep))
 {
 }
 
@@ -63,7 +65,12 @@ void PreviewBuilderWorker::process()
     // are not loaded at all — direct proportional reduction in build time.
     // The signal carries the texture *layer index* (z − m_zMin), not the absolute
     // slice number, so onSliceReady() can forward it straight to uploadSlice().
-    for (int z = m_zMin; z <= m_zMax; z++)
+    // Step through slices by m_zStep.  Layer index is (z - m_zMin) / m_zStep so
+    // that texel 0 = first included slice, texel 1 = first + m_zStep, etc.
+    // The rendered cube is scaled to the physical depth (m_physicalDepth passed via
+    // dataScale in PreviewWidget), so each thicker texel still maps to the correct
+    // world-space Z extent.
+    for (int z = m_zMin; z <= m_zMax; z += m_zStep)
     {
         if (cancelFlag.load(std::memory_order_relaxed)) break;
 
@@ -72,7 +79,7 @@ void PreviewBuilderWorker::process()
         if (cancelFlag.load(std::memory_order_relaxed)) break;
 
         if (!rgba.isEmpty())
-            emit sliceReady(m_buildId, z - m_zMin, rgba);
+            emit sliceReady(m_buildId, (z - m_zMin) / m_zStep, rgba);
     }
     emit finished(m_buildId);
 }
@@ -134,7 +141,7 @@ QByteArray PreviewBuilderWorker::buildSliceLocal(int z)
     QByteArray out(outW * outH * 4, static_cast<char>(0));
     uchar *dst = reinterpret_cast<uchar *>(out.data());
 
-    if (m_renderMode == 0)  // SegmentMode
+    if (m_renderMode == static_cast<int>(PreviewWidget::RenderMode::SegmentMode))
     {
         for (int y = 0; y < m_height; y += m_xyStep)
         {
@@ -384,6 +391,16 @@ PreviewWidget::~PreviewWidget()
 
 void PreviewWidget::rebuildAll()
 {
+    if (m_renderMode == RenderMode::NoneMode)
+    {
+        cancelWorker();
+        m_hasData = false;
+        update();
+        return;
+    }
+
+    if (!m_autoRender) return;
+
     if (!m_glReady)
     {
         m_pendingRebuild = true;
@@ -406,10 +423,14 @@ void PreviewWidget::rebuildAll()
     if (m_zMin < 0)                          m_zMin = 0;
     if (m_zMin > m_zMax)                     m_zMin = m_zMax;
 
-    // Ceiling division — matches the loop iteration count in buildSliceLocal().
+    // Physical depth = actual slices in range; used for correct aspect ratio in
+    // the rendered cube regardless of z-step.  texD = number of texture layers.
+    m_physicalDepth = m_zMax - m_zMin + 1;
+
+    // Ceiling division — matches the loop iteration counts in buildSliceLocal().
     const int texW = qMax(1, (fwidth  + m_xyStep - 1) / m_xyStep);
     const int texH = qMax(1, (fheight + m_xyStep - 1) / m_xyStep);
-    const int texD = m_zMax - m_zMin + 1;
+    const int texD = qMax(1, (m_physicalDepth + m_zStep - 1) / m_zStep);
 
     makeCurrent();
     if (m_texW != texW || m_texH != texH || m_texD != texD)
@@ -436,7 +457,8 @@ void PreviewWidget::rebuildAll()
                                         CurrentFile,
                                         m_masksAtRebuild,
                                         m_zMin, m_zMax,
-                                        m_xyStep);
+                                        m_xyStep,
+                                        m_zStep);
     m_workerThread = new QThread(this);
     m_worker->moveToThread(m_workerThread);
 
@@ -475,8 +497,9 @@ void PreviewWidget::invalidate()
     m_hasData = false;
     m_dirtySlices.clear();
     m_debounceTimer.stop();
-    m_rotation = defaultRotation();
-    m_zoom     = 1.0f;
+    m_rotation    = defaultRotation();
+    m_zoom        = 1.0f;
+    m_translation = QVector2D(0.0f, 0.0f);
     update();
 }
 
@@ -489,7 +512,38 @@ void PreviewWidget::setRenderMode(RenderMode mode)
 {
     if (m_renderMode == mode) return;
     m_renderMode = mode;
+    if (mode == RenderMode::NoneMode)
+    {
+        cancelWorker();
+        m_hasData = false;
+        update();
+    }
+    else
+    {
+        rebuildAll();
+    }
+}
+
+void PreviewWidget::setZStep(int step)
+{
+    if (step != 1 && step != 2 && step != 4 && step != 8) step = 1;
+    if (step == m_zStep) return;
+    m_zStep = step;
     rebuildAll();
+}
+
+void PreviewWidget::setAutoRender(bool enabled)
+{
+    m_autoRender = enabled;
+}
+
+void PreviewWidget::forceRebuild()
+{
+    if (m_renderMode == RenderMode::NoneMode) return;
+    const bool saved = m_autoRender;
+    m_autoRender = true;
+    rebuildAll();
+    m_autoRender = saved;
 }
 
 void PreviewWidget::setZRange(int zMin, int zMax)
@@ -517,16 +571,19 @@ void PreviewWidget::resetPreviewBounds()
     m_zMin   = 0;
     m_zMax   = qMax(0, FileCount - 1);
     m_xyStep = 8;   // ⅛ default — fast initial load; user raises quality as needed
+    m_zStep  = 8;   // ⅛ default — matches XY default
     rebuildAll();
 }
 
-qint64 PreviewWidget::estimatedVRAMBytes(int xyStep, int texD) const
+qint64 PreviewWidget::estimatedVRAMBytes(int xyStep, int physicalDepth, int zStep) const
 {
-    if (!IsDatasetLoaded() || fwidth <= 0 || fheight <= 0 || texD <= 0 || xyStep <= 0)
+    if (!IsDatasetLoaded() || fwidth <= 0 || fheight <= 0
+            || physicalDepth <= 0 || xyStep <= 0 || zStep <= 0)
         return 0;
-    const qint64 tw = (static_cast<qint64>(fwidth)  + xyStep - 1) / xyStep;
-    const qint64 th = (static_cast<qint64>(fheight) + xyStep - 1) / xyStep;
-    return tw * th * static_cast<qint64>(texD) * 4;  // RGBA = 4 bytes/texel
+    const qint64 tw = (static_cast<qint64>(fwidth)        + xyStep - 1) / xyStep;
+    const qint64 th = (static_cast<qint64>(fheight)       + xyStep - 1) / xyStep;
+    const qint64 td = (static_cast<qint64>(physicalDepth) + zStep  - 1) / zStep;
+    return tw * th * td * 4;  // RGBA = 4 bytes/texel
 }
 
 // ============================================================================
@@ -535,8 +592,9 @@ qint64 PreviewWidget::estimatedVRAMBytes(int xyStep, int texD) const
 
 void PreviewWidget::resetView()
 {
-    m_rotation = m_hasData ? QQuaternion() : defaultRotation();
-    m_zoom     = 1.0f;
+    m_rotation    = m_hasData ? QQuaternion() : defaultRotation();
+    m_zoom        = 1.0f;
+    m_translation = QVector2D(0.0f, 0.0f);
     update();
 }
 
@@ -616,6 +674,8 @@ void PreviewWidget::paintGL()
     glClearColor(0.12f, 0.12f, 0.12f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    if (m_renderMode == RenderMode::NoneMode) return;
+
     if (m_hasData && m_volumeTexture != 0)
     {
         if (!m_volumeShader.isLinked()) return;
@@ -694,14 +754,25 @@ void PreviewWidget::mousePressEvent(QMouseEvent *e)
 
 void PreviewWidget::mouseMoveEvent(QMouseEvent *e)
 {
-    if (!(e->buttons() & Qt::LeftButton)) return;
     const QPoint delta = e->pos() - m_lastMouse;
     m_lastMouse = e->pos();
 
-    m_rotation = (QQuaternion::fromAxisAndAngle(0, 1, 0, delta.x() * 0.5f)
-                * QQuaternion::fromAxisAndAngle(1, 0, 0, delta.y() * 0.5f)
-                * m_rotation).normalized();
-    update();
+    if (e->buttons() & Qt::RightButton)
+    {
+        // Right drag → rotate
+        m_rotation = (QQuaternion::fromAxisAndAngle(0, 1, 0, delta.x() * 0.5f)
+                    * QQuaternion::fromAxisAndAngle(1, 0, 0, delta.y() * 0.5f)
+                    * m_rotation).normalized();
+        update();
+    }
+    else if (e->buttons() & Qt::LeftButton)
+    {
+        // Left drag → pan.  Scale so a full-height drag moves ~one volume width
+        // at the current zoom level (frustum half-height at focus ≈ 0.83/zoom).
+        const float scale = 1.66f / (m_zoom * qMax(1, height()));
+        m_translation += QVector2D(-delta.x() * scale, delta.y() * scale);
+        update();
+    }
 }
 
 void PreviewWidget::mouseDoubleClickEvent(QMouseEvent *)
@@ -726,13 +797,19 @@ void PreviewWidget::onDebounceTimeout()
     // rebuildAll() will cover all slices when it finishes.
     if (m_loading) return;
 
+    // Don't update texture when auto-render is off.
+    if (!m_autoRender) return;
+
+    if (m_renderMode == RenderMode::NoneMode) return;
+
     if (!m_glReady || m_dirtySlices.isEmpty() || !IsDatasetLoaded()) return;
 
     makeCurrent();
 
+    const int physD = m_zMax - m_zMin + 1;
     const int expW = qMax(1, (fwidth  + m_xyStep - 1) / m_xyStep);  // ceiling
     const int expH = qMax(1, (fheight + m_xyStep - 1) / m_xyStep);  // ceiling
-    const int expD = m_zMax - m_zMin + 1;
+    const int expD = qMax(1, (physD   + m_zStep  - 1) / m_zStep);
 
     if (m_texW != expW || m_texH != expH || m_texD != expD)
     {
@@ -873,10 +950,12 @@ void PreviewWidget::setShowPositionIndicator(bool show)
 void PreviewWidget::drawPositionIndicator()
 {
     // ---- Compute Z position of the current slice in object space [-0.5, 0.5] ----
+    // Use physical depth so the indicator tracks correctly at all z-step values.
     float zObj = 0.0f;
-    if (m_texD > 1)
+    const int physD = (m_physicalDepth > 0) ? m_physicalDepth : m_texD;
+    if (physD > 1)
         zObj = qBound(-0.5f,
-                      float(CurrentFile - m_zMin) / float(m_texD - 1) - 0.5f,
+                      float(CurrentFile - m_zMin) / float(physD - 1) - 0.5f,
                       0.5f);
 
     // ---- Compute XY hover position (LastMouseX/Y are image-pixel coords) ----
@@ -1212,13 +1291,18 @@ QMatrix4x4 PreviewWidget::mvpMatrix() const
         : 1.0f;
 
     // Physical data proportions: scale cube axes so XY pixels and Z slices
-    // are rendered at their true relative extents (independent of m_xyStep).
-    const QVector3D ds = dataScale(m_hasData, fwidth, fheight, m_texD);
+    // are rendered at their true relative extents (independent of m_xyStep and
+    // m_zStep).  Always use m_physicalDepth (actual slice count in range), not
+    // m_texD (texel count), so z-step downsampling does not squash the volume.
+    const int scaleD = (m_physicalDepth > 0) ? m_physicalDepth : m_texD;
+    const QVector3D ds = dataScale(m_hasData, fwidth, fheight, scaleD);
 
     QMatrix4x4 proj, view, model;
     proj.perspective(45.0f, aspect, 0.01f, 100.0f);
-    view.lookAt(QVector3D(0, 0, 2.0f / m_zoom),
-                QVector3D(0, 0, 0),
+    // m_translation shifts the camera and its target together so the model
+    // appears to slide across the viewport (pan) without changing perspective.
+    view.lookAt(QVector3D(m_translation.x(), m_translation.y(), 2.0f / m_zoom),
+                QVector3D(m_translation.x(), m_translation.y(), 0.0f),
                 QVector3D(0, 1, 0));
     // Apply rotation first, then scale in local (data) space:
     // model = R * S  =>  transforms vertex p as R*(S*p).
@@ -1229,14 +1313,15 @@ QMatrix4x4 PreviewWidget::mvpMatrix() const
 
 QVector3D PreviewWidget::cameraPosObj() const
 {
-    // Camera sits at (0, 0, 2/zoom) in world space (view.lookAt above).
+    // Camera sits at (tx, ty, 2/zoom) in world space after pan (view.lookAt above).
     // To get texture-space position we must undo the full model transform
     // M = R * S:  c_tex = S^-1 * R^-1 * c_world + (0.5, 0.5, 0.5).
-    const QVector3D ds = dataScale(m_hasData, fwidth, fheight, m_texD);
+    const int scaleD2 = (m_physicalDepth > 0) ? m_physicalDepth : m_texD;
+    const QVector3D ds = dataScale(m_hasData, fwidth, fheight, scaleD2);
 
     QMatrix4x4 invR;
     invR.rotate(m_rotation.inverted());
-    QVector3D camObj = invR.map(QVector3D(0, 0, 2.0f / m_zoom));
+    QVector3D camObj = invR.map(QVector3D(m_translation.x(), m_translation.y(), 2.0f / m_zoom));
 
     // Apply S^-1: divide each component by the corresponding scale factor.
     camObj = QVector3D(camObj.x() / ds.x(),
