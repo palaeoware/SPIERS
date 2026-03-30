@@ -23,6 +23,7 @@
 #include <QOpenGLVertexArrayObject>
 #include <QMatrix4x4>
 #include <QQuaternion>
+#include <QVector2D>
 #include <QByteArray>
 #include <QThread>
 #include <QTimer>
@@ -61,6 +62,7 @@ public:
                                   int zMin,
                                   int zMax,
                                   int xyStep,
+                                  int zStep,
                                   QObject *parent = nullptr);
 
     /** Thread-safe cancel flag.  Set by PreviewWidget on the main thread. */
@@ -101,6 +103,7 @@ private:
     int        m_zMin;              // first slice to process (absolute index)
     int        m_zMax;              // last  slice to process (inclusive)
     int        m_xyStep;            // pixel loop stride: 1=full, 2=half, 4=quarter, 8=eighth
+    int        m_zStep;             // Z slice stride: 1=every slice, 2=every 2nd, etc.
 };
 
 // ---------------------------------------------------------------------------
@@ -127,7 +130,7 @@ class PreviewWidget : public QOpenGLWidget, protected QOpenGLFunctions
 
 public:
     /** Selects what the volume texture encodes. */
-    enum class RenderMode { SegmentMode, OutputMode };
+    enum class RenderMode { NoneMode, SegmentMode, OutputMode };
 
     explicit PreviewWidget(QWidget *parent = nullptr);
     ~PreviewWidget();
@@ -136,11 +139,11 @@ public:
     void rebuildAll();
 
     /**
-     * Estimated GPU texture memory for the given XY stride and Z-slice count.
-     * Returns 0 when no dataset is loaded.  Used by the UI to disable modes
-     * that would exceed available VRAM.
+     * Estimated GPU texture memory for the given XY and Z strides and physical
+     * slice depth.  Returns 0 when no dataset is loaded.  Used by the UI to
+     * disable step combinations that would exceed available VRAM.
      */
-    qint64 estimatedVRAMBytes(int xyStep, int texD) const;
+    qint64 estimatedVRAMBytes(int xyStep, int physicalDepth, int zStep) const;
 
     /**
      * Available GPU memory in bytes, queried once in initializeGL().
@@ -183,6 +186,27 @@ public slots:
      * @p step must be 1, 2, 4, or 8.  Triggers a full async rebuild.
      */
     void setXYStep(int step);
+
+    /**
+     * Set the Z slice stride — only every @p step-th slice is sampled into
+     * the texture.  Each texel covers @p step slices' worth of Z depth so
+     * the rendered volume height stays correct.
+     * @p step must be 1, 2, 4, or 8.  Triggers a full async rebuild.
+     */
+    void setZStep(int step);
+
+    /**
+     * Enable or disable automatic re-rendering when data changes.
+     * When off, the current texture stays frozen; rotate/zoom still work.
+     * Use forceRebuild() to manually trigger a refresh while auto is off.
+     */
+    void setAutoRender(bool enabled);
+
+    /**
+     * Unconditionally trigger a full rebuild, even if auto-render is off.
+     * Has no effect when the render mode is NoneMode.
+     */
+    void forceRebuild();
 
     /**
      * Reset Z-range and XY step to defaults (full dataset, full resolution).
@@ -248,7 +272,8 @@ private:
 
     // Camera state
     QQuaternion m_rotation;
-    float       m_zoom      = 1.0f;
+    float       m_zoom        = 1.0f;
+    QVector2D   m_translation = {0.0f, 0.0f};  // world-space XY pan offset
     QPoint      m_lastMouse;
 
     // Debounce
@@ -265,10 +290,14 @@ private:
     QByteArray            m_masksAtRebuild;  // Masks snapshot passed to worker
 
     // ROI / resolution controls
-    int m_zMin   = 0;   // first slice included in texture (absolute index)
-    int m_zMax   = 0;   // last  slice included (inclusive); set to FileCount-1 on open
-    int m_xyStep = 8;   // pixel-loop stride: 1=full res, 2=half, 4=quarter, 8=eighth
-                        // Default is ⅛ for fast initial load; user can raise quality.
+    int m_zMin          = 0;   // first slice included in texture (absolute index)
+    int m_zMax          = 0;   // last  slice included (inclusive); set to FileCount-1 on open
+    int m_xyStep        = 8;   // XY pixel-loop stride: 1=full, 2=half, 4=quarter, 8=eighth
+    int m_zStep         = 8;   // Z slice stride: 1=every slice, 2=every 2nd, etc. Default ⅛
+    int m_physicalDepth = 0;   // m_zMax - m_zMin + 1 (physical slices in range, not texels)
+
+    // Auto-render flag — when false, rebuildAll() is a no-op; forceRebuild() bypasses it.
+    bool m_autoRender = true;
 
     // VRAM
     qint64 m_availableVRAMBytes = 2LL * 1024 * 1024 * 1024;  // set in initializeGL()

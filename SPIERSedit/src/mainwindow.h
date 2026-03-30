@@ -64,9 +64,10 @@ public:
 
 private slots:
     void Moveimage(int);
-    /** Refresh 3D-preview XY-step combo: label items with size estimates and
-     *  disable any mode whose texture would exceed available GPU VRAM. */
-    void updatePreview3DStepCombo();
+    /** Refresh both 3D-preview step combos (XY and Z): disable step combinations
+     *  whose texture would exceed available GPU VRAM given the other combo's
+     *  current selection.  ⅛/⅛ is always kept enabled as the minimum fallback. */
+    void updatePreview3DStepCombos();
     void on_action3D_Brush_toggled(bool );
     void on_actionInterpolate_over_selected_slices_triggered();
     void on_actionRefresh_triggered();
