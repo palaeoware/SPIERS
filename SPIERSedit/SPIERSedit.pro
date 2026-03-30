@@ -232,9 +232,16 @@ win32 {
 
     CONFIG(debug, debug|release) {
         LIBS += -l$${OPENCV_LIB_NAME}d
+        OPENCV_DLL_NAME = $${OPENCV_LIB_NAME}d.dll
     } else {
         LIBS += -l$$OPENCV_LIB_NAME
+        OPENCV_DLL_NAME = $${OPENCV_LIB_NAME}.dll
     }
+
+    # Copy OpenCV DLL to the build output directory so the app runs from Qt Creator
+    OPENCV_DLL_SRC = $$shell_quote($$shell_path($$OPENCV_DIR/build/x64/vc16/bin/$$OPENCV_DLL_NAME))
+    OPENCV_DLL_DST = $$shell_quote($$shell_path($$OUT_PWD/bin/))
+    QMAKE_POST_LINK += xcopy /y /i /q $$OPENCV_DLL_SRC $$OPENCV_DLL_DST
 }
 # MacOS common build here
 macx {
