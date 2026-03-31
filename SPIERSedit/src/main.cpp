@@ -28,6 +28,7 @@
 #include <QGuiApplication>
 #include <QDebug>
 #include <QSurfaceFormat>
+#include <QImageReader>
 
 #include "mainwindow.h"
 #include "display.h"
@@ -90,6 +91,7 @@ void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const Q
 #ifndef __APPLE__
 int main(int argc, char **argv)
 {
+    QImageReader::setAllocationLimit(2048);
     // Set OpenGL surface format as global
     surfaceFormat.setMajorVersion(GL_MAJOR);
     surfaceFormat.setMinorVersion(GL_MINOR);

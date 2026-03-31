@@ -21,6 +21,7 @@
 #include <QSplashScreen>
 #include <QString>
 #include <QStyle>
+#include <QImageReader>
 
 #include "mainwindowimpl.h"
 #include "globals.h"
@@ -35,6 +36,8 @@
  */
 int main(int argc, char **argv)
 {
+    QImageReader::setAllocationLimit(2048);
+
     //This has the app draw at HiDPI scaling on HiDPI displays, usually two pixels for every one logical pixel
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
