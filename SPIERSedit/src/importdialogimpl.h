@@ -32,14 +32,23 @@ public:
     QString notes;
     bool Cancelled;
     void HideCopy();
+    QStringList getFiles() const;
+    double pixPerMM() const;
+    double slicePerMM() const;
+
+private:
+    bool isNewProject;
+    static double unitToMM(int unitIndex);
+
 private slots:
     void OK_Click();
     void Cancel_Click();
+    void on_ButtonAddFiles_clicked();
+    void on_ButtonAddDir_clicked();
+    void on_ButtonRemove_clicked();
+    void on_ButtonClear_clicked();
+    void on_RadioIsotropic_toggled(bool checked);
+    void updateOkButton();
 };
 
 #endif
-
-
-
-
-

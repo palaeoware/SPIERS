@@ -1591,32 +1591,30 @@ void MainWindow::Menu_File_New()  //create from scratch
     if (Active)
         WriteSettings();
 
-    //Select files
-    QStringList files = QFileDialog::getOpenFileNames(
-                            nullptr,
-                            "Select source images for dataset",
-                            QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),
-                            "Images (*.png *.jpg *.jpeg *.bmp *.tif *.tiff)");
-
-    // If nothing there, cancel
-    if (files.isEmpty() || files.count() == 0)
-        return;
-
-    if (files[0].endsWith(".tif") || files[0].endsWith(".tiff"))
-        Message("Tiff support is a relatively recent addition to SPIERSedit, and has not been extensively tested. Please can you submit an issue on the Palaeoware SPIERS GitHub repository should you encounter any issues.");
-
-    // Now we do a whole load of initialisation!
-    std::sort(files.begin(), files.end());
-
-    //OK, no more caching
-    //Show the 2nd stage dialog
+    // Show the dialog - file selection is now done within it
     ImportDialogImpl impdialog;
     impdialog.HideCopy();
     impdialog.exec();
 
-    //do some error checking and ways out!
+    // Do some error checking and ways out!
     if (impdialog.Cancelled == true)
         return;
+
+    QStringList files = impdialog.getFiles();
+
+    // Should not happen (dialog validates), but guard anyway
+    if (files.isEmpty())
+        return;
+
+    // Warn about tiff files
+    for (const QString &f : files)
+    {
+        if (f.endsWith(".tif", Qt::CaseInsensitive) || f.endsWith(".tiff", Qt::CaseInsensitive))
+        {
+            Message("Tiff support is a relatively recent addition to SPIERSedit, and has not been extensively tested. Please can you submit an issue on the Palaeoware SPIERS GitHub repository should you encounter any issues.");
+            break;
+        }
+    }
 
     QString Fname = files.at(0);
     int lastsep = qMax(Fname.lastIndexOf("\\"), Fname.lastIndexOf("/")); //this is last separator in path
@@ -1681,6 +1679,10 @@ void MainWindow::Menu_File_New()  //create from scratch
 
 
     ApplyDefaultSettings(); //applies defaults, tries to load
+
+    // Apply user-specified pixel spacing
+    PixPerMM = impdialog.pixPerMM();
+    SlicePerMM = impdialog.slicePerMM();
 
     ColMonoScale = impdialog.spinBox->value();
     zsparsity = impdialog.spinBoxZ->value();
