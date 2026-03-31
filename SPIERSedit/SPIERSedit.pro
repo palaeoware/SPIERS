@@ -27,11 +27,6 @@ UI_DIR += ui
 # Load the SPIERS version number
 include(../version.pri)
 
-#Needed to make binaries launchable from file in Ubuntu - GCC default link flag -pie on newer Ubuntu versions this so otherwise recognised as shared library
-unix:!macx {
-    QMAKE_LFLAGS += -no-pie
-}
-
 DESTDIR \
     += \
     bin
@@ -243,6 +238,7 @@ win32 {
     OPENCV_DLL_DST = $$shell_quote($$shell_path($$OUT_PWD/bin/))
     QMAKE_POST_LINK += xcopy /y /i /q $$OPENCV_DLL_SRC $$OPENCV_DLL_DST
 }
+
 # MacOS common build here
 macx {
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 26.0
@@ -262,9 +258,12 @@ macx {
 }
 
 # Unix/Linux common build here
-# Open CV installed using: sudo apt install libopencv-dev
-# Location shown by:  dpkg -L libopencv-dev
 unix:!macx {
+    #Needed to make binaries launchable from file in Ubuntu - GCC default link flag -pie on newer Ubuntu versions this so otherwise recognised as shared library
+    QMAKE_LFLAGS += -no-pie
+
+    # Open CV installed using: sudo apt install libopencv-dev
+    # Location shown by:  dpkg -L libopencv-dev
     OPENCV_DIR = /usr/lib/x86_64-linux-gnu/
     INCLUDEPATH += /usr/include/opencv4/
 
