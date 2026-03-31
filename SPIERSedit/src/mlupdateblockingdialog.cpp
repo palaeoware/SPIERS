@@ -2,7 +2,7 @@
 
 //A ChatGPT special!
 
-#include "MLUpdateBlockingDialog.h"
+#include "mlupdateblockingdialog.h"
 
 #include <QCoreApplication>
 #include <QEventLoop>
@@ -21,8 +21,8 @@ QString MLUpdateBlockingDialog::s_detailText;
 
 MLUpdateBlockingDialog::MLUpdateBlockingDialog(QWidget *parent)
     : QDialog(parent),
-    m_highLevelLabel(new QLabel(this)),
-    m_detailLabel(new QLabel(this))
+      m_highLevelLabel(new QLabel(this)),
+      m_detailLabel(new QLabel(this))
 {
     setWindowTitle("Working");
 
@@ -30,8 +30,8 @@ MLUpdateBlockingDialog::MLUpdateBlockingDialog(QWidget *parent)
 
     // Remove close/help buttons, and keep the dialog above its parent.
     setWindowFlags(windowFlags()
-                       & ~Qt::WindowCloseButtonHint
-                       & ~Qt::WindowContextHelpButtonHint
+                   & ~Qt::WindowCloseButtonHint
+                   & ~Qt::WindowContextHelpButtonHint
                    | Qt::WindowStaysOnTopHint);
 
     m_highLevelLabel->setWordWrap(true);
@@ -84,10 +84,18 @@ QString MLUpdateBlockingDialog::animatedText(const QString &baseText)
 
     switch (s_animationState)
     {
-    case 0: dots = ".";   break;
-    case 1: dots = "..";  break;
-    case 2: dots = "..."; break;
-    default: dots = "";   break;
+    case 0:
+        dots = ".";
+        break;
+    case 1:
+        dots = "..";
+        break;
+    case 2:
+        dots = "...";
+        break;
+    default:
+        dots = "";
+        break;
     }
 
     s_animationState = (s_animationState + 1) % 4;
@@ -96,7 +104,7 @@ QString MLUpdateBlockingDialog::animatedText(const QString &baseText)
 
 void MLUpdateBlockingDialog::Cancelled()
 {
-    qDebug()<<"cancelled";
+    qDebug() << "cancelled";
     cancelled = true;
 }
 

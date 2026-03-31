@@ -17,7 +17,7 @@
 
 #include <math.h>
 #include "dialogaboutimpl.h"
-#include "importdialogimpl.h"
+#include "newprojectdialog.h"
 #include "curves.h"
 #include "qactiongroup.h"
 #include "resampleimpl.h"
@@ -216,14 +216,15 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags f)
     addAction(shortcutspace);
 
     // --- 3D Preview dock controls ---
-    // Mode dropdown: index 0 = Segments, index 1 = Outputs
+    // Mode dropdown: index 0 = None, index 1 = Segments, index 2 = Outputs
     connect(preview3DModeCombo,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             [this](int idx)
             {
-                previewWidget3D->setRenderMode(
-                    idx == 0 ? PreviewWidget::RenderMode::SegmentMode
-                             : PreviewWidget::RenderMode::OutputMode);
+                PreviewWidget::RenderMode mode = PreviewWidget::RenderMode::NoneMode;
+                if      (idx == 1) mode = PreviewWidget::RenderMode::SegmentMode;
+                else if (idx == 2) mode = PreviewWidget::RenderMode::OutputMode;
+                previewWidget3D->setRenderMode(mode);
             });
 
     // Zoom and reset buttons
@@ -238,7 +239,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags f)
                 int lo = preview3DZMinSpin->value();
                 int hi = preview3DZMaxSpin->value();
                 if (lo <= hi) {
-                    updatePreview3DStepCombo();
+                    updatePreview3DStepCombos();
                     previewWidget3D->setZRange(lo, hi);
                 }
             });
@@ -247,17 +248,34 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags f)
                 int lo = preview3DZMinSpin->value();
                 int hi = preview3DZMaxSpin->value();
                 if (lo <= hi) {
-                    updatePreview3DStepCombo();
+                    updatePreview3DStepCombos();
                     previewWidget3D->setZRange(lo, hi);
                 }
             });
 
-    // XY resolution combo: index maps to stride 1, 2, 4, 8
+    // XY resolution combo: index maps to stride 1, 2, 4, 8.
+    // Also refresh Z combo so its enabled/disabled state reflects the new XY constraint.
     connect(preview3DXYStepCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
             [this](int idx) {
                 static const int steps[] = {1, 2, 4, 8};
                 previewWidget3D->setXYStep(steps[idx]);
+                updatePreview3DStepCombos();
             });
+
+    // Z slice stride combo: index maps to stride 1, 2, 4, 8.
+    // Also refresh XY combo so its enabled/disabled state reflects the new Z constraint.
+    connect(preview3DZStepCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            [this](int idx) {
+                static const int steps[] = {1, 2, 4, 8};
+                previewWidget3D->setZStep(steps[idx]);
+                updatePreview3DStepCombos();
+            });
+
+    // Auto-render toggle and manual refresh
+    connect(preview3DAutoRenderChk, &QCheckBox::toggled,
+            previewWidget3D, &PreviewWidget::setAutoRender);
+    connect(preview3DRefreshBtn, &QToolButton::clicked,
+            previewWidget3D, &PreviewWidget::forceRebuild);
 
     connect(preview3DPositionChk, &QCheckBox::toggled,
             previewWidget3D, &PreviewWidget::setShowPositionIndicator);
@@ -301,6 +319,11 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags f)
     preview3DZMinSpin->setEnabled(false);
     preview3DZMaxSpin->setEnabled(false);
     preview3DXYStepCombo->setEnabled(false);
+    preview3DZStepCombo->setEnabled(false);
+    preview3DAutoRenderChk->setEnabled(false);
+    preview3DRefreshBtn->setEnabled(false);
+
+    preview3DZStepCombo->setSizeAdjustPolicy(QComboBox::AdjustToContents);
 
     timer2 = new QTimer(this);
     connect(timer2, SIGNAL(timeout()), this, SLOT(UndoTimer()));
@@ -424,78 +447,84 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags f)
 
 
 // ============================================================================
-// 3D Preview — VRAM-aware XY-step combo updater
+// 3D Preview — VRAM-aware XY and Z step combo updater
 // ============================================================================
 
 /**
- * Refresh the XY-step combo box items:
- *  • Appends the estimated texture size to each label so users can see at a
- *    glance how much GPU memory each mode would consume for the current dataset
- *    and Z-range selection.
- *  • Disables (grays out) any mode whose texture exceeds the detected GPU VRAM.
- *    The ⅛ mode (index 3) is never disabled — it is the minimum quality option.
- *  • If the currently-selected mode has become disabled, automatically drops to ⅛.
+ * Refresh both step combo boxes (XY and Z) with mutual VRAM constraints:
+ *
+ *  • XY combo: disable items whose texture exceeds VRAM given the *current* Z step.
+ *  • Z  combo: disable items whose texture exceeds VRAM given the *current* XY step.
+ *  • The ⅛/⅛ combination is always kept enabled as the minimum fallback.
+ *  • If either currently-selected mode becomes disabled, it falls back to ⅛.
+ *  • Plain labels only — no MB annotations.
  *
  * Call after project open and whenever the Z-range spinboxes change.
  */
-void MainWindow::updatePreview3DStepCombo()
+void MainWindow::updatePreview3DStepCombos()
 {
     static const int   steps[]  = {1, 2, 4, 8};
     static const char *labels[] = {"Full", "½", "¼", "⅛"};
 
-    const int   texD  = preview3DZMaxSpin->value() - preview3DZMinSpin->value() + 1;
+    const int    physD = preview3DZMaxSpin->value() - preview3DZMinSpin->value() + 1;
     const qint64 avail = previewWidget3D->availableVRAMBytes();
 
-    QStandardItemModel *model =
-        qobject_cast<QStandardItemModel *>(preview3DXYStepCombo->model());
-    if (!model) return;
-
-    // Ensure the model has exactly 4 items (it may not if called very early)
-    while (model->rowCount() < 4)
-        model->appendRow(new QStandardItem());
-
-    for (int i = 0; i < 4; i++)
+    // Helper: update one combo, disabling items that exceed VRAM when combined
+    // with the *fixed* step value from the other combo.
+    auto refreshCombo = [&](QComboBox *combo, bool isXY, int fixedOtherStep)
     {
-        QStandardItem *item = model->item(i);
-        if (!item) continue;
+        QStandardItemModel *model =
+            qobject_cast<QStandardItemModel *>(combo->model());
+        if (!model) return;
 
-        const qint64 bytes = previewWidget3D->estimatedVRAMBytes(steps[i], texD);
+        while (model->rowCount() < 4)
+            model->appendRow(new QStandardItem());
 
-        // Build label: "½ (128 MB)" or "Full (4.0 GB)"
-        QString label = labels[i];
-        if (bytes > 0)
+        for (int i = 0; i < 4; i++)
         {
-            const double mb = bytes / (1024.0 * 1024.0);
-            if (mb >= 1024.0)
-                label += QString(" (%1 GB)").arg(mb / 1024.0, 0, 'f', 1);
-            else
-                label += QString(" (%1 MB)").arg(mb, 0, 'f', 0);
+            QStandardItem *item = model->item(i);
+            if (!item) continue;
+
+            const int xyS = isXY ? steps[i] : fixedOtherStep;
+            const int zS  = isXY ? fixedOtherStep : steps[i];
+            const qint64 bytes = previewWidget3D->estimatedVRAMBytes(xyS, physD, zS);
+
+            // ⅛ (index 3) is always enabled — guaranteed minimum fallback
+            const bool fits = (i == 3) || (avail <= 0) || (bytes <= avail);
+            item->setText(labels[i]);
+            item->setEnabled(fits);
+            item->setForeground(
+                fits ? QApplication::palette().color(QPalette::Normal,   QPalette::Text)
+                     : QApplication::palette().color(QPalette::Disabled, QPalette::Text));
         }
-        item->setText(label);
 
-        // ⅛ (index 3) is always enabled — it is the fallback minimum
-        const bool fits = (i == 3) || (avail <= 0) || (bytes <= avail);
-        item->setEnabled(fits);
-
-        // Dim the text for disabled items so users immediately see why
-        if (!fits)
-            item->setForeground(QApplication::palette().color(QPalette::Disabled, QPalette::Text));
-        else
-            item->setForeground(QApplication::palette().color(QPalette::Normal, QPalette::Text));
-    }
-
-    // If the current selection is disabled, fall back to ⅛ silently
-    const int cur = preview3DXYStepCombo->currentIndex();
-    if (cur >= 0 && cur < 4)
-    {
-        QStandardItem *curItem = model->item(cur);
-        if (curItem && !curItem->isEnabled())
+        // Fall back to ⅛ if current selection is now disabled
+        const int cur = combo->currentIndex();
+        if (cur >= 0 && cur < 4)
         {
-            QSignalBlocker blk(preview3DXYStepCombo);
-            preview3DXYStepCombo->setCurrentIndex(3);
-            previewWidget3D->setXYStep(8);
+            if (QStandardItem *curItem = model->item(cur); curItem && !curItem->isEnabled())
+            {
+                QSignalBlocker blk(combo);
+                combo->setCurrentIndex(3);
+                if (isXY) previewWidget3D->setXYStep(8);
+                else      previewWidget3D->setZStep(8);
+            }
         }
-    }
+    };
+
+    // Read current selections *before* either combo is modified
+    const int curXYIdx = preview3DXYStepCombo->currentIndex();
+    const int curZIdx  = preview3DZStepCombo->currentIndex();
+    const int curXYStep = (curXYIdx >= 0 && curXYIdx < 4) ? steps[curXYIdx] : 8;
+    const int curZStep  = (curZIdx  >= 0 && curZIdx  < 4) ? steps[curZIdx]  : 8;
+
+    // Update XY combo constrained by current Z step, then Z combo constrained
+    // by the (possibly just-fallen-back) XY step.
+    refreshCombo(preview3DXYStepCombo, true,  curZStep);
+
+    const int effectiveXYIdx  = preview3DXYStepCombo->currentIndex();
+    const int effectiveXYStep = (effectiveXYIdx >= 0 && effectiveXYIdx < 4) ? steps[effectiveXYIdx] : 8;
+    refreshCombo(preview3DZStepCombo,  false, effectiveXYStep);
 }
 
 void MainWindow::autosave()
@@ -1254,6 +1283,9 @@ void MainWindow::Start()
     preview3DZMinSpin->setEnabled(true);
     preview3DZMaxSpin->setEnabled(true);
     preview3DXYStepCombo->setEnabled(true);
+    preview3DZStepCombo->setEnabled(true);
+    preview3DAutoRenderChk->setEnabled(true);
+    preview3DRefreshBtn->setEnabled(true);
 
     ShowImage(graphicsView);
 
@@ -1264,14 +1296,19 @@ void MainWindow::Start()
         const QSignalBlocker b1(preview3DZMinSpin);
         const QSignalBlocker b2(preview3DZMaxSpin);
         const QSignalBlocker b3(preview3DXYStepCombo);
+        const QSignalBlocker b4(preview3DZStepCombo);
+        const QSignalBlocker b5(preview3DModeCombo);
         preview3DZMinSpin->setMaximum(FileCount - 1);
         preview3DZMaxSpin->setMaximum(FileCount - 1);
         preview3DZMinSpin->setValue(0);
         preview3DZMaxSpin->setValue(FileCount - 1);
         preview3DXYStepCombo->setCurrentIndex(3);   // "⅛" — fast default
+        preview3DZStepCombo->setCurrentIndex(3);    // "⅛" Z default — fast initial load
+        preview3DModeCombo->setCurrentIndex(1);     // "Segments" — default render mode
+        preview3DAutoRenderChk->setChecked(true);   // auto-render on by default
     }
     // Label combo items with VRAM estimates; disable modes that exceed GPU memory.
-    updatePreview3DStepCombo();
+    updatePreview3DStepCombos();
     previewWidget3D->resetPreviewBounds();  // sets m_zMin/zMax/xyStep=8, then rebuilds
 
     //set initial undo point
@@ -1447,7 +1484,7 @@ void MainWindow::Menu_File_Import()
     std::sort(files.begin(), files.end());
 
     // Show the 2nd stage dialog
-    ImportDialogImpl impdialog;
+    NewProjectDialogImpl impdialog;
     impdialog.exec();
 
     // Do some error checking and ways out!
@@ -1554,32 +1591,30 @@ void MainWindow::Menu_File_New()  //create from scratch
     if (Active)
         WriteSettings();
 
-    //Select files
-    QStringList files = QFileDialog::getOpenFileNames(
-                            nullptr,
-                            "Select source images for dataset",
-                            QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),
-                            "Images (*.png *.jpg *.jpeg *.bmp *.tif *.tiff)");
-
-    // If nothing there, cancel
-    if (files.isEmpty() || files.count() == 0)
-        return;
-
-    if (files[0].endsWith(".tif") || files[0].endsWith(".tiff"))
-        Message("Tiff support is a relatively recent addition to SPIERSedit, and has not been extensively tested. Please can you submit an issue on the Palaeoware SPIERS GitHub repository should you encounter any issues.");
-
-    // Now we do a whole load of initialisation!
-    std::sort(files.begin(), files.end());
-
-    //OK, no more caching
-    //Show the 2nd stage dialog
-    ImportDialogImpl impdialog;
+    // Show the dialog - file selection is now done within it
+    NewProjectDialogImpl impdialog;
     impdialog.HideCopy();
     impdialog.exec();
 
-    //do some error checking and ways out!
+    // Do some error checking and ways out!
     if (impdialog.Cancelled == true)
         return;
+
+    QStringList files = impdialog.getFiles();
+
+    // Should not happen (dialog validates), but guard anyway
+    if (files.isEmpty())
+        return;
+
+    // Warn about tiff files
+    for (const QString &f : files)
+    {
+        if (f.endsWith(".tif", Qt::CaseInsensitive) || f.endsWith(".tiff", Qt::CaseInsensitive))
+        {
+            Message("Tiff support is a relatively recent addition to SPIERSedit, and has not been extensively tested. Please can you submit an issue on the Palaeoware SPIERS GitHub repository should you encounter any issues.");
+            break;
+        }
+    }
 
     QString Fname = files.at(0);
     int lastsep = qMax(Fname.lastIndexOf("\\"), Fname.lastIndexOf("/")); //this is last separator in path
@@ -1644,6 +1679,10 @@ void MainWindow::Menu_File_New()  //create from scratch
 
 
     ApplyDefaultSettings(); //applies defaults, tries to load
+
+    // Apply user-specified pixel spacing
+    PixPerMM = impdialog.pixPerMM();
+    SlicePerMM = impdialog.slicePerMM();
 
     ColMonoScale = impdialog.spinBox->value();
     zsparsity = impdialog.spinBoxZ->value();

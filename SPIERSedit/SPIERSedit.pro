@@ -46,7 +46,7 @@ MOC_DIR += build
 
 OBJECTS_DIR += build
 
-FORMS += ui/import.ui \
+FORMS += ui/newprojectdialog.ui \
     ui/mainwindow.ui \
     ui/Copying.ui \
     ui/mladdfeature.ui \
@@ -70,7 +70,7 @@ HEADERS += src/display.h \
     src/curves.h \
     src/fileio.h \
     src/globals.h \
-    src/importdialogimpl.h \
+    src/newprojectdialog.h \
     src/labelledpoint.h \
     src/mainwindow.h \
     src/mlcachedaccess.h \
@@ -137,7 +137,7 @@ SOURCES += src/display.cpp \
     src/curves.cpp \
     src/fileio.cpp \
     src/globals.cpp \
-    src/importdialogimpl.cpp \
+    src/newprojectdialog.cpp \
     src/labelledpoint.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
@@ -200,15 +200,48 @@ SOURCES += src/display.cpp \
     ui/mladdfeature.cpp
 
 win32 {
-    OPENCV_DIR = C:/opencv/opencv
+    # Auto-detect OpenCV installation directory if not already set externally
+    isEmpty(OPENCV_DIR) {
+        USER_PROFILE = $$(USERPROFILE)
+        OPENCV_CANDIDATE_DIRS = \
+            C:/opencv/opencv \
+            C:/opencv \
+            C:/tools/opencv \
+            C:/local/opencv \
+            $$USER_PROFILE/Downloads/opencv/opencv \
+            $$USER_PROFILE/Downloads/opencv \
+            $$USER_PROFILE/Documents/opencv/opencv \
+            $$USER_PROFILE/Documents/opencv
+        for(dir, OPENCV_CANDIDATE_DIRS) {
+            exists($$dir/build/include) {
+                isEmpty(OPENCV_DIR): OPENCV_DIR = $$dir
+            }
+        }
+    }
+    isEmpty(OPENCV_DIR): error("OpenCV not found. Install it or set OPENCV_DIR (e.g. qmake OPENCV_DIR=C:/my/opencv).")
 
     INCLUDEPATH += $$OPENCV_DIR/build/include
     LIBS += -L$$OPENCV_DIR/build/x64/vc16/lib
+
+    # Auto-detect OpenCV version by globbing for the release lib (4-digit version, no trailing 'd')
+    OPENCV_RELEASE_LIBS = $$files($$OPENCV_DIR/build/x64/vc16/lib/opencv_world????.lib)
+    isEmpty(OPENCV_RELEASE_LIBS): error("No opencv_world lib found in $$OPENCV_DIR/build/x64/vc16/lib/")
+    OPENCV_LIB_FILE = $$first(OPENCV_RELEASE_LIBS)
+    OPENCV_LIB_NAME = $$basename(OPENCV_LIB_FILE)
+    OPENCV_LIB_NAME = $$replace(OPENCV_LIB_NAME, \.lib, )
+
     CONFIG(debug, debug|release) {
-            LIBS += -lopencv_world4130d
-        } else {
-            LIBS += -lopencv_world4130
-        }
+        LIBS += -l$${OPENCV_LIB_NAME}d
+        OPENCV_DLL_NAME = $${OPENCV_LIB_NAME}d.dll
+    } else {
+        LIBS += -l$$OPENCV_LIB_NAME
+        OPENCV_DLL_NAME = $${OPENCV_LIB_NAME}.dll
+    }
+
+    # Copy OpenCV DLL to the build output directory so the app runs from Qt Creator
+    OPENCV_DLL_SRC = $$shell_quote($$shell_path($$OPENCV_DIR/build/x64/vc16/bin/$$OPENCV_DLL_NAME))
+    OPENCV_DLL_DST = $$shell_quote($$shell_path($$OUT_PWD/bin/))
+    QMAKE_POST_LINK += xcopy /y /i /q $$OPENCV_DLL_SRC $$OPENCV_DLL_DST
 }
 # MacOS common build here
 macx {
@@ -227,3 +260,19 @@ macx {
     ICON = resources/SPIERSeditIcon.icns
     QMAKE_INFO_PLIST = Info.plist
 }
+
+# Unix/Linux common build here
+# Open CV installed using: sudo apt install libopencv-dev
+# Location shown by:  dpkg -L libopencv-dev
+unix:!macx {
+    OPENCV_DIR = /usr/lib/x86_64-linux-gnu/
+    INCLUDEPATH += /usr/include/opencv4/
+
+    LIBS += -L$$OPENCV_DIR/lib \
+    -lopencv_core \
+    -lopencv_imgproc \
+    -lopencv_imgcodecs \
+    -lopencv_highgui \
+    -lopencv_ml
+}
+

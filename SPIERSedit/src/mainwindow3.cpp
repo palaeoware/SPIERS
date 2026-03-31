@@ -16,7 +16,7 @@
  */
 
 #include "dialogaboutimpl.h"
-#include "importdialogimpl.h"
+#include "newprojectdialog.h"
 #include "curves.h"
 #include "resampleimpl.h"
 #include "mainwindow.h"

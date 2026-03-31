@@ -25,5 +25,6 @@
         <file alias="TODO.bmp">resources/icons/TODO.bmp</file>
         <file>resources/icons/undo.bmp</file>
         <file>resources/SPIERSeditIcon.svg</file>
+        <file>resources/icons/refresh.svg</file>
     </qresource>
 </RCC>
