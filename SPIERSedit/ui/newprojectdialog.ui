@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ImportDialog</class>
- <widget class="QDialog" name="ImportDialog">
+ <class>NewProjectDialog</class>
+ <widget class="QDialog" name="NewProjectDialog">
   <property name="windowModality">
    <enum>Qt::WindowModal</enum>
   </property>

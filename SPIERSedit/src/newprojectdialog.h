@@ -15,19 +15,19 @@
  * hope that it will be useful, but WITHOUT ANY WARRANTY.
  */
 
-#ifndef IMPORTDIALOGIMPL_H
-#define IMPORTDIALOGIMPL_H
+#ifndef NEWPROJECTDIALOG_H
+#define NEWPROJECTDIALOG_H
 
-#include "ui_import.h"
+#include "ui_newprojectdialog.h"
 
 /**
- * @brief The ImportDialogImpl class
+ * @brief The NewProjectDialogImpl class
  */
-class ImportDialogImpl : public QDialog, public Ui::ImportDialog
+class NewProjectDialogImpl : public QDialog, public Ui::NewProjectDialog
 {
     Q_OBJECT
 public:
-    ImportDialogImpl(QWidget *parent = nullptr, Qt::WindowFlags f = {} );
+    NewProjectDialogImpl(QWidget *parent = nullptr, Qt::WindowFlags f = {} );
     QString fname;
     QString notes;
     bool Cancelled;

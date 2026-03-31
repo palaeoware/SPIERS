@@ -46,7 +46,7 @@ MOC_DIR += build
 
 OBJECTS_DIR += build
 
-FORMS += ui/import.ui \
+FORMS += ui/newprojectdialog.ui \
     ui/mainwindow.ui \
     ui/Copying.ui \
     ui/mladdfeature.ui \
@@ -70,7 +70,7 @@ HEADERS += src/display.h \
     src/curves.h \
     src/fileio.h \
     src/globals.h \
-    src/importdialogimpl.h \
+    src/newprojectdialog.h \
     src/labelledpoint.h \
     src/mainwindow.h \
     src/mlcachedaccess.h \
@@ -137,7 +137,7 @@ SOURCES += src/display.cpp \
     src/curves.cpp \
     src/fileio.cpp \
     src/globals.cpp \
-    src/importdialogimpl.cpp \
+    src/newprojectdialog.cpp \
     src/labelledpoint.cpp \
     src/main.cpp \
     src/mainwindow.cpp \

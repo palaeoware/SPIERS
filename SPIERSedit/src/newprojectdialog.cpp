@@ -1,6 +1,6 @@
 /**
  * @file
- * Source: ImportDialog
+ * Source: NewProjectDialog
  *
  * All SPIERSversion code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
@@ -20,9 +20,9 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QStandardPaths>
-#include "importdialogimpl.h"
+#include "newprojectdialog.h"
 
-ImportDialogImpl::ImportDialogImpl( QWidget *parent, Qt::WindowFlags f)
+NewProjectDialogImpl::NewProjectDialogImpl(QWidget *parent, Qt::WindowFlags f)
     : QDialog(parent, f), isNewProject(false)
 {
     setupUi(this);
@@ -48,7 +48,7 @@ ImportDialogImpl::ImportDialogImpl( QWidget *parent, Qt::WindowFlags f)
     Cancelled = true;
 }
 
-void ImportDialogImpl::HideCopy()
+void NewProjectDialogImpl::HideCopy()
 {
     isNewProject = true;
     setWindowTitle("New Project");
@@ -70,13 +70,13 @@ void ImportDialogImpl::HideCopy()
     adjustSize();
 }
 
-void ImportDialogImpl::updateOkButton()
+void NewProjectDialogImpl::updateOkButton()
 {
     bool ok = !lineEdit->text().trimmed().isEmpty() && listFiles->count() >= 2;
     buttonBox->button(QDialogButtonBox::Ok)->setEnabled(ok);
 }
 
-void ImportDialogImpl::OK_Click()
+void NewProjectDialogImpl::OK_Click()
 {
     fname = lineEdit->text();
     notes = textEdit->toPlainText();
@@ -84,13 +84,13 @@ void ImportDialogImpl::OK_Click()
     close();
 }
 
-void ImportDialogImpl::Cancel_Click()
+void NewProjectDialogImpl::Cancel_Click()
 {
     Cancelled = true;
     close();
 }
 
-void ImportDialogImpl::on_ButtonAddFiles_clicked()
+void NewProjectDialogImpl::on_ButtonAddFiles_clicked()
 {
     QStringList newFiles = QFileDialog::getOpenFileNames(
         this,
@@ -108,7 +108,7 @@ void ImportDialogImpl::on_ButtonAddFiles_clicked()
     listFiles->sortItems();
 }
 
-void ImportDialogImpl::on_ButtonAddDir_clicked()
+void NewProjectDialogImpl::on_ButtonAddDir_clicked()
 {
     QString dir = QFileDialog::getExistingDirectory(
         this,
@@ -133,22 +133,22 @@ void ImportDialogImpl::on_ButtonAddDir_clicked()
     listFiles->sortItems();
 }
 
-void ImportDialogImpl::on_ButtonRemove_clicked()
+void NewProjectDialogImpl::on_ButtonRemove_clicked()
 {
     qDeleteAll(listFiles->selectedItems());
 }
 
-void ImportDialogImpl::on_ButtonClear_clicked()
+void NewProjectDialogImpl::on_ButtonClear_clicked()
 {
     listFiles->clear();
 }
 
-void ImportDialogImpl::on_RadioIsotropic_toggled(bool checked)
+void NewProjectDialogImpl::on_RadioIsotropic_toggled(bool checked)
 {
     StackedSpacing->setCurrentIndex(checked ? 0 : 1);
 }
 
-QStringList ImportDialogImpl::getFiles() const
+QStringList NewProjectDialogImpl::getFiles() const
 {
     QStringList result;
     for (int i = 0; i < listFiles->count(); ++i)
@@ -158,14 +158,14 @@ QStringList ImportDialogImpl::getFiles() const
 
 // Returns the conversion factor from the given unit index to millimetres.
 // Indices: 0=m, 1=cm, 2=mm, 3=um, 4=nm
-double ImportDialogImpl::unitToMM(int unitIndex)
+double NewProjectDialogImpl::unitToMM(int unitIndex)
 {
     static const double factors[] = {1000.0, 10.0, 1.0, 0.001, 0.000001};
     if (unitIndex < 0 || unitIndex > 4) return 1.0;
     return factors[unitIndex];
 }
 
-double ImportDialogImpl::pixPerMM() const
+double NewProjectDialogImpl::pixPerMM() const
 {
     if (RadioIsotropic->isChecked())
     {
@@ -179,7 +179,7 @@ double ImportDialogImpl::pixPerMM() const
     }
 }
 
-double ImportDialogImpl::slicePerMM() const
+double NewProjectDialogImpl::slicePerMM() const
 {
     if (RadioIsotropic->isChecked())
     {

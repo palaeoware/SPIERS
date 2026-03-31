@@ -17,7 +17,7 @@
 
 #include <math.h>
 #include "dialogaboutimpl.h"
-#include "importdialogimpl.h"
+#include "newprojectdialog.h"
 #include "curves.h"
 #include "qactiongroup.h"
 #include "resampleimpl.h"
@@ -1484,7 +1484,7 @@ void MainWindow::Menu_File_Import()
     std::sort(files.begin(), files.end());
 
     // Show the 2nd stage dialog
-    ImportDialogImpl impdialog;
+    NewProjectDialogImpl impdialog;
     impdialog.exec();
 
     // Do some error checking and ways out!
@@ -1592,7 +1592,7 @@ void MainWindow::Menu_File_New()  //create from scratch
         WriteSettings();
 
     // Show the dialog - file selection is now done within it
-    ImportDialogImpl impdialog;
+    NewProjectDialogImpl impdialog;
     impdialog.HideCopy();
     impdialog.exec();
 
