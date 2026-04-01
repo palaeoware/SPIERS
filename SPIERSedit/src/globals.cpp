@@ -246,7 +246,7 @@ PointList::PointList()
 
 OutputObject::OutputObject(QString name)
 {
-    Name = name; //not implemented in VB - use for SView compatibility one day
+    Name = name;
     Resample = 100;
     Colour[0] = 255;
     Colour[1] = 255;
@@ -284,10 +284,6 @@ void OutputObject::SetUpForRender()
             GridArrays.append(new QByteArray);
         }
     }
-    //qDeleteAll(CompressedSPVarrays.begin(), CompressedSPVarrays.end());
-    //qDeleteAll(GridArrays.begin(), GridArrays.end());
-    //CompressedSPVarrays.clear();
-    //GridArrays.clear();
 
     UseMasks.clear();
     for (int i = 0; i <= MaxUsedMask; i++) if ((ComponentMasks.indexOf(i)) >= 0) UseMasks.append(true);

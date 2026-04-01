@@ -11,7 +11,8 @@ QT += core \
     network \
     widgets \
     opengl \
-    openglwidgets
+    openglwidgets \
+    concurrent
 
 CONFIG += qt \
     debug_and_release \
@@ -43,7 +44,7 @@ OBJECTS_DIR += build
 
 FORMS += ui/newprojectdialog.ui \
     ui/mainwindow.ui \
-    ui/Copying.ui \
+    ui/copying.ui \
     ui/mladdfeature.ui \
     ui/more.ui \
     ui/outputsettings.ui \
@@ -97,6 +98,7 @@ HEADERS += src/display.h \
     src/mlupdateblockingdialog.h \
     src/myscene.h \
     src/copyingimpl.h \
+    src/exportspv.h \
     src/moreimpl.h \
     src/undo.h \
     src/contrastimpl.h \
@@ -165,6 +167,7 @@ SOURCES += src/display.cpp \
     src/mlupdateblockingdialog.cpp \
     src/myscene.cpp \
     src/copyingimpl.cpp \
+    src/exportspv.cpp \
     src/moreimpl.cpp \
     src/undo.cpp \
     src/contrastimpl.cpp \
@@ -184,7 +187,6 @@ SOURCES += src/display.cpp \
     src/resampleimpl.cpp \
     src/dialogaboutimpl.cpp \
     src/mainwindow3.cpp \
-    src/copyingimpl2_ouput.cpp \
     src/keysafespinbox.cpp \
     src/mainview.cpp \
     src/previewwidget.cpp \

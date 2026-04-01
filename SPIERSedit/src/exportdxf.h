@@ -20,7 +20,7 @@
 
 #include <QDialog>
 
-#include "ui_Copying.h"
+#include "ui_copying.h"
 #include "mainwindow.h"
 
 /**

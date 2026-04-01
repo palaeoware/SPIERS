@@ -46,7 +46,6 @@ CopyingImpl::CopyingImpl(QWidget *parent, Qt::WindowFlags f)
 {
     setupUi(this);
     setWindowIcon(QIcon(":/icons/ProgramIcon.bmp"));
-    CountMessage = "";
     copying = false;
 
     new QShortcut(QKeySequence(Qt::Key_Escape), this, SLOT(escape()));
@@ -64,6 +63,11 @@ void CopyingImpl::closeEvent(QCloseEvent *event)
         escapeFlag = true;
     else
         event->accept();
+}
+
+void CopyingImpl::escape()
+{
+    escapeFlag = true;
 }
 
 /**
@@ -582,48 +586,6 @@ void CopyingImpl::GenerateAllBlank()
     LoadAllData(CurrentFile);
     copying = false;
     close();
-}
-
-/**
- * @brief CopyingImpl::ReverseStretches
- * @param stretches
- * @param Sstart
- * @param Sstop
- */
-void CopyingImpl::ReverseStretches(QList <double> *stretches, int Sstart, int Sstop)
-{
-    int n;
-
-    QVector <double> thicks;
-    thicks.resize(Sstop + 1);
-    //work out thicknesses
-    for (n = Sstart + 2; n <= Sstop; n++)
-    {
-        thicks[n] = (*stretches)[n] - (*stretches)[n - 1];
-    }
-
-    //now redo stretches
-    for (n = Sstart + 2; n <= Sstop; n++)
-    {
-        (*stretches)[n] = (*stretches)[n - 1] + thicks[Sstop - (n - 2)];
-    }
-}
-
-/**
- * @brief CopyingImpl::DoIHaveChildren
- * @param parent
- * @return
- */
-bool CopyingImpl::DoIHaveChildren(int parent)
-//Yes, I do - MDS
-{
-    for (int i = 0; i < OutputObjectsCount; i++)
-        if (OutputObjects[i]->IsGroup == false && OutputObjects[i]->Parent == parent && OutputObjects[i]->Show) return true;
-        else
-        {
-            if (OutputObjects[i]->IsGroup && OutputObjects[i]->Parent == parent && OutputObjects[i]->Show) if (DoIHaveChildren(i)) return true;
-        }
-    return false;
 }
 
 /**

@@ -22,11 +22,9 @@
 #include <QList>
 #include <QListWidget>
 
-#include "ui_Copying.h"
+#include "ui_copying.h"
 #include "mainwindow.h"
 #include "beamhardening.h"
-
-class OutputObject;
 
 /**
  * @brief The CopyingImpl class
@@ -46,15 +44,8 @@ public:
     void GenerateRange(QListWidget *SliceSelectorList);
     void GenerateAllLinear();
     void GenerateAllBlank();
-    void ExportSPV(int);
-    void ExportSPV_2(int flag);
-    void MeasureVols();
     void MaskCopy(int fromfile, MainWindow *mw);
     void MaskCopy2(int fromfile, MainWindow *mw);
-    void ReverseStretches(QList <double> *stretches, int Sstart, int Sstop);
-    void DoOutputRecursive(QList <int> *translationtable, int *nexttransentry, QList <int> *translationtable2, int *nexttransentry2, int parent, long long int asize, int filesused, int awidth,
-                           int aheight, QDataStream *out, QList <double> *stretches);
-    void GetOutputList(QList <OutputObject *> *outlist, QList <int> *translationtable, int *nexttransentry, QList <int> *translationtable2, int *nexttransentry2, int parent);
     void CurvesToMasks(MainWindow *mw);
     void CompressAllWorkingFiles(int level);
     void CompressAllSourceFiles(int level);
@@ -66,17 +57,7 @@ protected:
     void closeEvent(QCloseEvent *event);
 
 private:
-    bool AmIMerged(int n);
-    void StupidBodgyFunction(QList <int> *tt, int parent);
-    bool DoIHaveChildren(int parent);
-    void MakeMergeObject(int *, QByteArray *, QVector <double> *TrigArray, int *TrigCount, int parent, long long int asize, int filesused, int awidth, int aheight, QDataStream *out,
-                         QList <double> *stretches);
-    void MakeMergeObject_2(int, OutputObject *);
-    void WriteSPVData(int, QByteArray, QVector<double> *TrigArray, int TrigCount, QDataStream *out);
-    QByteArray ExpandGrid(QByteArray *grid, int awidth, int aheight);
-    QString CountMessage;
     QVector <uchar> LCE_sample;
-    int Count;
 private slots:
     void escape();
 

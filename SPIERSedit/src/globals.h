@@ -197,7 +197,7 @@ class OutputObject
 public:
     OutputObject(QString name);
     ~OutputObject();
-    QString Name; //not implemented in VB - use for SView compatibility one day
+    QString Name;
     int Resample;
     int Colour[3]; //r,g,b
     QList <int> ComponentMasks;
@@ -215,7 +215,7 @@ public:
 
     //some stuff only used in output
     QByteArray temparray, Outputarray;
-    QList <QByteArray *> CompressedSPVarrays;        //Equiv to old 'fullarrays
+    QList <QByteArray *> CompressedSPVarrays;
     QList <QByteArray *> GridArrays;
     int bigposfirst, bigpos, tpos;
     QList <bool> UseMasks;

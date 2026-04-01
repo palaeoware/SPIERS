@@ -21,6 +21,7 @@
 #include "exportdxf.h"
 #include "mainwindow.h"
 #include "copyingimpl.h"
+#include "exportspv.h"
 #include "selectsegmentimpl.h"
 #include "globals.h"
 #include "display.h"
@@ -2703,24 +2704,24 @@ void MainWindow::CleanseOO()
 
 void MainWindow::on_actionOutput_SPIERSview_triggered()
 {
-    CopyingImpl cop;
-    if (actionUse_Old_Exporting_Code->isChecked()) cop.ExportSPV(0);
-    else cop.ExportSPV_2(0);
+    ExportSPV exp;
+    if (actionUse_Old_Exporting_Code->isChecked()) exp.RunLegacy(0);
+    else exp.Run(0);
 }
 
 
 void MainWindow::on_actionExport_SPIERSview_and_Launch_triggered()
 {
-    CopyingImpl cop;
-    if (actionUse_Old_Exporting_Code->isChecked()) cop.ExportSPV(1);
-    else cop.ExportSPV_2(1);
+    ExportSPV exp;
+    if (actionUse_Old_Exporting_Code->isChecked()) exp.RunLegacy(1);
+    else exp.Run(1);
 }
 
 void MainWindow::on_actionView_in_SPIERSview_triggered()
 {
-    CopyingImpl cop;
-    if (actionUse_Old_Exporting_Code->isChecked()) cop.ExportSPV(2);
-    else cop.ExportSPV_2(2);
+    ExportSPV exp;
+    if (actionUse_Old_Exporting_Code->isChecked()) exp.RunLegacy(2);
+    else exp.Run(2);
 }
 
 /*Now mask copying stuff*/
@@ -3098,8 +3099,8 @@ void MainWindow::on_actionDistribute_over_range_triggered()
 
 void MainWindow::on_actionMeasure_Volumes_triggered()
 {
-    CopyingImpl cop;
-    cop.MeasureVols();
+    ExportSPV exp;
+    exp.MeasureVols();
 }
 
 void MainWindow::on_actionInterpolate_over_selected_slices_triggered()
