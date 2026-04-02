@@ -19,6 +19,7 @@
 #include "semanticversion.h"
 
 #include <QDebug>
+#include <stdexcept>
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QProcess>
@@ -61,14 +62,14 @@ void NetModule::checkHash(QByteArray stlhash, QStringList *commlist)
 
     QString url;
     QTextStream t(&url);
-    t << "https://www.spiers-software.org/" << stlhash.toHex() << ".txt";
+    t << "https://spiers-software.org/" << stlhash.toHex() << ".txt";
     request.setUrl(QUrl(url));
 
     request.setRawHeader("User-Agent", "SPIERS");
     reply = manager->get(request);
 
     connect(reply, SIGNAL(readyRead()), this, SLOT(slotReadyRead()));
-    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(slotError(QNetworkReply::NetworkError)));
+    connect(reply, SIGNAL(errorOccurred(QNetworkReply::NetworkError)), this, SLOT(slotError(QNetworkReply::NetworkError)));
 }
 
 /**
@@ -81,13 +82,13 @@ void NetModule::checkForNew()
     doingCheck = true;
     manager = new QNetworkAccessManager(this);
 
-    request.setUrl(QUrl("https://www.spiers-software.org/SPIERSUpdateStatus.txt"));
+    request.setUrl(QUrl("https://spiers-software.org/SPIERSUpdateStatus.txt"));
 
     request.setRawHeader("User-Agent", "SPIERS");
     reply = manager->get(request);
 
     connect(reply, SIGNAL(readyRead()), this, SLOT(slotReadyRead()));
-    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(slotError(QNetworkReply::NetworkError)));
+    connect(reply, SIGNAL(errorOccurred(QNetworkReply::NetworkError)), this, SLOT(slotError(QNetworkReply::NetworkError)));
 }
 
 /**
@@ -128,7 +129,7 @@ void NetModule::getUpdate(QString url, QString saveFile)
     reply = manager->get(request);
 
     connect(reply, SIGNAL(readyRead()), this, SLOT(slotReadyRead()));
-    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(slotError(QNetworkReply::NetworkError)));
+    connect(reply, SIGNAL(errorOccurred(QNetworkReply::NetworkError)), this, SLOT(slotError(QNetworkReply::NetworkError)));
     connect(reply, SIGNAL(downloadProgress (qint64, qint64 )), this, SLOT(progress(qint64, qint64 )));
 }
 
@@ -164,7 +165,7 @@ void NetModule::doDownload(QString url, QString fileName, QProgressBar *pb)
     reply = manager->get(request);
 
     connect(reply, SIGNAL(readyRead()), this, SLOT(slotReadyRead()));
-    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(slotError(QNetworkReply::NetworkError)));
+    connect(reply, SIGNAL(errorOccurred(QNetworkReply::NetworkError)), this, SLOT(slotError(QNetworkReply::NetworkError)));
     connect(reply, SIGNAL(downloadProgress (qint64, qint64 )), this, SLOT(progress(qint64, qint64 )));
 }
 
@@ -193,26 +194,33 @@ void NetModule::slotReadyRead()
     {
         checkFinished = true;
 
-        //QByteArray b=reply->readAll();
-        SemanticVersion versionOnline = SemanticVersion::fromString(reply->readLine());
-        SemanticVersion versionCurrent = SemanticVersion::fromString(SOFTWARE_VERSION);
-        qDebug() << "Version Online: " << versionOnline.str() << "Version Current: " << versionCurrent.str();
-
-        if (versionOnline > versionCurrent)
+        try
         {
-            downloadURL = reply->readLine();
+            //QByteArray b=reply->readAll();
+            SemanticVersion versionOnline = SemanticVersion::fromString(QString(reply->readLine()).trimmed());
+            SemanticVersion versionCurrent = SemanticVersion::fromString(SOFTWARE_VERSION);
+            qDebug() << "Version Online: " << versionOnline.str() << "Version Current: " << versionCurrent.str();
 
-            QMessageBox *popupMessage = new QMessageBox;
-            popupMessage->setParent(nullptr);
-            popupMessage->setWindowTitle("SPIERS Update Available");
-            popupMessage->setTextFormat(Qt::RichText);
-            popupMessage->setText("<p>A new version of SPIERS (v" + versionOnline.str() +
-                                  ") is available for download.</p><p>Please visit <a href=\"https://github.com/palaeoware/SPIERS/releases\"><span style=\"color: white\">https://github.com/palaeoware/SPIERS/releases</span></a>.</p>");
-            popupMessage->setStandardButtons(QMessageBox::Close);
-            popupMessage->setDefaultButton(QMessageBox::Close);
-            popupMessage->setWindowFlags(Qt::WindowStaysOnTopHint);
-            popupMessage->raise();
-            popupMessage->exec();
+            if (versionOnline > versionCurrent)
+            {
+                downloadURL = reply->readLine();
+
+                QMessageBox *popupMessage = new QMessageBox;
+                popupMessage->setParent(nullptr);
+                popupMessage->setWindowTitle("SPIERS Update Available");
+                popupMessage->setTextFormat(Qt::RichText);
+                popupMessage->setText("<p>A new version of SPIERS (v" + versionOnline.str() +
+                                      ") is available for download.</p><p>Please visit <a href=\"https://github.com/palaeoware/SPIERS/releases\"><span style=\"color: white\">https://github.com/palaeoware/SPIERS/releases</span></a>.</p>");
+                popupMessage->setStandardButtons(QMessageBox::Close);
+                popupMessage->setDefaultButton(QMessageBox::Close);
+                popupMessage->setWindowFlags(popupMessage->windowFlags() | Qt::WindowStaysOnTopHint);
+                popupMessage->raise();
+                popupMessage->exec();
+            }
+        }
+        catch (const std::exception &e)
+        {
+            qDebug() << "Version check failed (malformed response):" << e.what();
         }
     }
     else if (doingHash)

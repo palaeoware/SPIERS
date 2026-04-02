@@ -347,6 +347,7 @@ static void taubinPass(QVector<float> &vertices, QVector<float> &delta,
                        const MeshAdjacency &adj, double stepSize, int nVerts,
                        const QVector<Range> &ranges)
 {
+    Q_UNUSED(nVerts)
     // Pass 1: compute deltas (parallel, read-only access to vertices[])
     // No need to zero delta first — boundary vertices are skipped in pass 2,
     // so stale values for those entries are never read.

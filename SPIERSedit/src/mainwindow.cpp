@@ -513,9 +513,7 @@ void MainWindow::updatePreview3DStepCombos()
     };
 
     // Read current selections *before* either combo is modified
-    const int curXYIdx = preview3DXYStepCombo->currentIndex();
     const int curZIdx  = preview3DZStepCombo->currentIndex();
-    const int curXYStep = (curXYIdx >= 0 && curXYIdx < 4) ? steps[curXYIdx] : 8;
     const int curZStep  = (curZIdx  >= 0 && curZIdx  < 4) ? steps[curZIdx]  : 8;
 
     // Update XY combo constrained by current Z step, then Z combo constrained

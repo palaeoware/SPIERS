@@ -31,7 +31,6 @@
 #include <QImageReader>
 
 #include "mainwindow.h"
-#include "display.h"
 #include "globals.h"
 #include "mlinterface.h"
 #include "../../SPIERScommon/src/darkstyletheme.h"
@@ -72,7 +71,7 @@ void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const Q
         // Save to debug.log
         QString path = QString("%1/SPIERSEdit_debug.log").arg(QDir::homePath());
         QFile outFile(path);
-        outFile.open(QIODevice::WriteOnly | QIODevice::Append);
+        if (!outFile.open(QIODevice::WriteOnly | QIODevice::Append)) return;
         QTextStream log(&outFile);
         log << txt << Qt::endl;
 

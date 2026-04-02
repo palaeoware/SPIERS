@@ -232,7 +232,7 @@ MainWindow::MainWindow(QWidget *parent)
     AnimOutputDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
     mainWindowReady = true;
 
-    auto clickHandler = new PositionClickHandler(gridOverlay, this);
+    new PositionClickHandler(gridOverlay, this);
 }
 
 /**
@@ -3185,6 +3185,7 @@ void MainWindow::UnsetAllAA()
  */
 void MainWindow::setSamples(int i)
 {
+    Q_UNUSED(i)
     //qDebug()<<"InSS";
     //have to delete widget and recreate
 

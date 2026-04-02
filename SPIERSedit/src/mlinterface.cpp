@@ -167,7 +167,7 @@ void MLInterface::SaveFeaturesToFile()
         return;
 
     QFile file(filename);
-    file.open(QIODevice::WriteOnly);
+    if (!file.open(QIODevice::WriteOnly)) return;
 
     QDataStream out(&file);
     out << DumpFeaturesToByteArray();
@@ -186,7 +186,7 @@ void MLInterface::LoadFeaturesFromFile()
         return;
 
     QFile file(filename);
-    file.open(QIODevice::ReadOnly);
+    if (!file.open(QIODevice::ReadOnly)) return;
 
     QDataStream in(&file);
     QByteArray dummy;

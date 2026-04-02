@@ -429,4 +429,5 @@ int MLFeatureHessian::GetMinMaxForArgs(int arg, bool max)
     if (arg==1 && max) return 6;
     if (arg==2 && !max) return 0;
     if (arg==2 && max) return 6;
+    return 0;
 }

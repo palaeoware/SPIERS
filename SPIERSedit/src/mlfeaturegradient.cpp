@@ -153,7 +153,7 @@ QString MLFeatureGradient::GetArg1SetupString(int v)
         .arg(pow(2.0f, v));
 }
 
-QString MLFeatureGradient::GetArg2SetupString(int v)
+QString MLFeatureGradient::GetArg2SetupString(int)
 {
     return "";
 }

@@ -57,7 +57,7 @@ void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const Q
     {
         QString path = QString("%1/SPIERSView_debug.log").arg(QDir::homePath());
         QFile outFile(path);
-        outFile.open(QIODevice::WriteOnly | QIODevice::Append);
+        if (!outFile.open(QIODevice::WriteOnly | QIODevice::Append)) return;
         QTextStream log(&outFile);
         log << txt << Qt::endl;
 

@@ -129,7 +129,7 @@ QString MLFeatureLoG::GetArg1SetupString(int v)
         .arg(std::pow(2.0f, v));
 }
 
-QString MLFeatureLoG::GetArg2SetupString(int v)
+QString MLFeatureLoG::GetArg2SetupString(int)
 {
     return "";
 }

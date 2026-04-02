@@ -270,4 +270,5 @@ cv::Mat MLFileIO::LoadMatFromImageFile(int sliceIndex, bool expectColour)
     }
 
     Error(QString("Oh dear, error reading source image"));
+    return cv::Mat();
 }

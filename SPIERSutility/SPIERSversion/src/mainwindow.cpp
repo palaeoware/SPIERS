@@ -149,8 +149,8 @@ void MainWindow::getFileVersions()
             double parameter1;
 
             QFile fileHandler(fileInfo.absoluteFilePath());
-            fileHandler.open(QIODevice::ReadOnly);
-            FILE *file = fdopen(fileHandler.handle(), "rb");
+            if (!fileHandler.open(QIODevice::ReadOnly)) continue;
+            FILE *file = _fdopen(fileHandler.handle(), "rb");
 
             // Read the first parameters in
             fread(&parameter1, 8, 1, file);

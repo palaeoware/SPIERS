@@ -77,7 +77,7 @@ QString MLFeatureContrast::GetArg1SetupString(int v)
         .arg(pow(2.0f,v));
 }
 
-QString MLFeatureContrast::GetArg2SetupString(int v)
+QString MLFeatureContrast::GetArg2SetupString(int)
 {
     return "";
 }

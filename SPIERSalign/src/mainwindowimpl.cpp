@@ -1556,7 +1556,7 @@ void MainWindowImpl::executeAutoAlignTriggered()
                         QString("Horizontal line - y=%1x + %2, vertical line - y=%3x + %4. Control image horizontal line - y=%5x + %6, vertical - y=%7x + %8. Intersection x=%9, y=%10 (Control x=%11, y=%12) Lateral shift=%13. Vertical shift=%14. Rotation=%15.").arg(
                             NIb1, 0, 'g', 4).arg(NIa1, 0, 'g', 4).arg(NIb2, 0, 'g', 4).arg(NIa2, 0, 'g', 4).arg(CIb1, 0, 'g', 4).arg(CIa1, 0, 'g', 4).arg(CIb2, 0, 'g', 4).arg(CIa2, 0, 'g', 4).arg(NIcornerX, 0, 'g',
                                     4).arg(NIcornerY, 0, 'g', 4).arg(CIcornerX, 0, 'g', 4).arg(CIcornerY, 0, 'g', 4).arg(CIcornerX - NIcornerX, 0, 'g', 4).arg(CIcornerY - NIcornerY, 0, 'g', 4).arg(avangle, 0, 'g', 4);
-                    QMessageBox::question(this, "Line found", lineInfo, QMessageBox::Ok);
+                    QMessageBox::information(this, "Line found", lineInfo);
                 }
 
                 //Apply rotation
@@ -1994,7 +1994,7 @@ void MainWindowImpl::on_actionOpen_triggered()
 
 
         QFile settings(filename);
-        settings.open(QFile::ReadOnly);
+        if (!settings.open(QFile::ReadOnly)) return;
         QTextStream read(&settings);
         i = -1;
 
@@ -2210,7 +2210,7 @@ void MainWindowImpl::LogText(QString text)
     QString filename = filesDirectory.absolutePath() + "/log.txt";
     QFile log(filename);
 
-    log.open(QFile::Append);
+    if (!log.open(QFile::Append)) return;
 
     QTextStream write(&log);
     write << text;
@@ -4043,7 +4043,7 @@ void MainWindowImpl::savetriggered(QString filename)
     //Write to settings file
     if (filename.length() == 0) filename = filesDirectory.absolutePath() + "/settings.txt";
     QFile settings(filename);
-    settings.open(QFile::WriteOnly);
+    if (!settings.open(QFile::WriteOnly)) return;
     QTextStream write(&settings);
     for (i = 0; i < imageList.count(); i++)
     {
@@ -4320,7 +4320,7 @@ void MainWindowImpl::on_actionLoad_Settings_File_triggered()
 
     QFile settings(settingsFile);
 
-    settings.open(QFile::ReadOnly);
+    if (!settings.open(QFile::ReadOnly)) return;
 
     int numberMarkers = 0;
 

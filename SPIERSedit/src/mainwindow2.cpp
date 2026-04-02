@@ -3212,26 +3212,26 @@ void MainWindow::on_ShowCenter_stateChanged(int arg1)
 }
 
 
-void MainWindow::on_CentreX_valueChanged(int arg1)
+void MainWindow::on_CentreX_valueChanged(int)
 {
     centerIcon->PlaceCenter(CentreX->value(), CentreY->value(), HardeningRadiusSpinBox->value());
     bh->SetParams(CentreX->value(), CentreY->value(), HardeningRadiusSpinBox->value(), AdjustRadialSpinBox->value());
 }
 
 
-void MainWindow::on_CentreY_valueChanged(int arg1)
+void MainWindow::on_CentreY_valueChanged(int)
 {
     centerIcon->PlaceCenter(CentreX->value(), CentreY->value(), HardeningRadiusSpinBox->value());
     bh->SetParams(CentreX->value(), CentreY->value(), HardeningRadiusSpinBox->value(), AdjustRadialSpinBox->value());
 }
 
-void MainWindow::on_HardeningRadiusSpinBox_valueChanged(int arg1)
+void MainWindow::on_HardeningRadiusSpinBox_valueChanged(int)
 {
     centerIcon->PlaceCenter(CentreX->value(), CentreY->value(), HardeningRadiusSpinBox->value());
     bh->SetParams(CentreX->value(), CentreY->value(), HardeningRadiusSpinBox->value(), AdjustRadialSpinBox->value());
 }
 
-void MainWindow::on_AdjustRadialSpinBox_valueChanged(int arg1)
+void MainWindow::on_AdjustRadialSpinBox_valueChanged(int)
 {
     centerIcon->PlaceCenter(CentreX->value(), CentreY->value(), HardeningRadiusSpinBox->value());
     bh->SetParams(CentreX->value(), CentreY->value(), HardeningRadiusSpinBox->value(), AdjustRadialSpinBox->value());

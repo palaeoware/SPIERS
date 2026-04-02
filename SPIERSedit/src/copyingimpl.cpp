@@ -107,7 +107,7 @@ void CopyingImpl::Copy(QDir source, QDir dest)
             if (f.size() == 408518)
             {
 
-                f.open(QIODevice::ReadOnly);
+                if (!f.open(QIODevice::ReadOnly)) continue;
                 QDataStream in(&f);    // Set up the datastream object
                 in.setByteOrder(QDataStream::LittleEndian);  //Windows is LE, so will keep ALL our datafiles LE
                 double dummy;

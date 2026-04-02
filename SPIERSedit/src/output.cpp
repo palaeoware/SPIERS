@@ -217,7 +217,7 @@ void PopulateOutputArray (int *FullOutArrayCount, QByteArray *FullOutArray, int 
 
                                 if (seg != -1)
                                     if (UseSegs[seg]) //seg in list... is mask?
-                                        temparray[tpos] = 255;
+                                        temparray[tpos] = static_cast<char>(255);
 
                                 //no need to enter a 0 - array is initialised to 0
                             }
@@ -246,7 +246,7 @@ void PopulateOutputArray (int *FullOutArrayCount, QByteArray *FullOutArray, int 
         if (XYDownsample * ZDownsample > 1)
         {
             for (n = 0; n < awidth; n++) for (m = 0; m < aheight; m++)
-                    if (ResampleForLoRes(n * XYDownsample, m * XYDownsample, &temparray)) OutputArray[m * awidth + n] = 255;
+                    if (ResampleForLoRes(n * XYDownsample, m * XYDownsample, &temparray)) OutputArray[m * awidth + n] = static_cast<char>(255);
         }
 
         if (*Count == -1)
@@ -291,7 +291,7 @@ void PopulateOutputArray (int *FullOutArrayCount, QByteArray *FullOutArray, int 
                         for (int nn = gxsize * GRID_SCALE; nn < xmax; nn++) //row each column
                             if (OutputArray[bigpos++])
                             {
-                                GridArray[Gpos] = 255;    //if I hit an on pixel turn grid cell on and stop
+                                GridArray[Gpos] = static_cast<char>(255);    //if I hit an on pixel turn grid cell on and stop
                                 goto break2;
                             }
                     }

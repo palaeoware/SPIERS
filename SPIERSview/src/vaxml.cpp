@@ -1151,7 +1151,7 @@ bool VAXML::readVAXML(QString fname)
             //now add some bytes from the STL to the hash - pick 50 bytes scattered through file.
             QFile stlfile((fpath + "/" + o->file).toLatin1());
             QFileInfo stlfi((fpath + "/" + o->file).toLatin1());
-            stlfile.open(QIODevice::ReadOnly);
+            if (!stlfile.open(QIODevice::ReadOnly)) continue;
             int inc = static_cast<int>(stlfi.size()) / 50;
             for (int i = 1; i < 50; i++)
             {

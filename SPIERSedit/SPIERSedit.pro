@@ -118,13 +118,14 @@ HEADERS += src/display.h \
     src/dialogaboutimpl.h \
     src/keysafespinbox.h \
     src/mainview.h \
-    src/main.h \
     src/previewwidget.h \
     ../SPIERScommon/src/darkstyletheme.h \
     ../SPIERScommon/src/netmodule.h \
     ../SPIERScommon/src/semanticversion.h \
     ../SPIERScommon/src/prereleasecomponent.h \
     ui/mladdfeature.h
+
+macx: HEADERS += src/main.h
 
 SOURCES += src/display.cpp \
     src/beamhardening.cpp \

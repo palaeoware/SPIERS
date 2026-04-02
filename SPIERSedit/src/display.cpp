@@ -811,7 +811,7 @@ QByteArray DoMaskLocking()
         {
             int hpos = (fheight - y - 1) * fwidth + x;
             if (Locks[hpos * 2]) newlocks[fwidth * y + x] = static_cast<uchar>(255);
-            if (HiddenMasksLockedForGeneration) if (!MasksSettings[static_cast<quint8>(Masks[hpos])]->Show) newlocks[fwidth * y + x] = 255;
+            if (HiddenMasksLockedForGeneration) if (!MasksSettings[static_cast<quint8>(Masks[hpos])]->Show) newlocks[fwidth * y + x] = static_cast<char>(255);
         }
     return newlocks;
 }
@@ -1205,6 +1205,7 @@ uchar GenPixel(int x, int y, int s, QVector<uchar> *sample, QByteArray *locks)
 
 uchar RadialPixel(int w, int h, uchar *original_data, QByteArray *new_locks, BeamHardening *bh)
 {
+    Q_UNUSED(new_locks)
 
     int val = (int)original_data[w + fwidth4*h];
 

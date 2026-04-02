@@ -90,7 +90,7 @@ QString MLFeatureSquareIntensity::GetArg2SetupString(int)
 }
 
 
-int MLFeatureSquareIntensity::GetMinMaxForArgs(int arg, bool max)
+int MLFeatureSquareIntensity::GetMinMaxForArgs(int, bool)
 {
     return 0;
 }

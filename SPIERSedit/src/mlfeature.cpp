@@ -194,6 +194,7 @@ int MLFeature::GetMinMaxForArgs(int arg, bool max)
     if (arg==1 && !max) return 0;
     if (arg==1 && max) return 6;
     if (arg==2) return 0;
+    return 0;
 }
 
 QString MLFeature::GetChannelCodeForFile()

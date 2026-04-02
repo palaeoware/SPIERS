@@ -40,7 +40,7 @@ void ScaleGridOverlay::setMarker(int index, QVector3D worldPos, int objectIndex)
         objMatrix *= globalMatrix;
         bool invertible = false;
         QMatrix4x4 inv = objMatrix.inverted(&invertible);
-        markers[index].localPos = invertible ? (inv * worldPos) : worldPos;
+        markers[index].localPos = invertible ? inv.map(worldPos) : worldPos;
     }
     else
     {
@@ -372,7 +372,6 @@ void ScaleGridOverlay::paintEvent(QPaintEvent *event)
         if (drawLabel)
         {
             QString label = (i == 0) ? QString("0") : formatLabel(yMm, majorSpacing);
-            int textW = isMajor ? fmBold.horizontalAdvance(label) : fm.horizontalAdvance(label);
             float lx = marginLeft;
             float ly = yPx + textH / 2.0f;
             ly = qBound(static_cast<float>(textH + 2), ly, static_cast<float>(height() - 2));

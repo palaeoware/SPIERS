@@ -240,7 +240,7 @@ QString MLFeatureGaussian::GetArg1SetupString(int v)
         .arg(pow(2.0f,v));
 }
 
-QString MLFeatureGaussian::GetArg2SetupString(int v)
+QString MLFeatureGaussian::GetArg2SetupString(int)
 {
     return "";
 }

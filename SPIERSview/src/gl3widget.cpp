@@ -541,6 +541,7 @@ void GlWidget::paintGL()
 // ---------------------------------------------------------------------------
 void GlWidget::renderOITAccumPass(bool rightview, QMatrix4x4 &vMatrix)
 {
+    Q_UNUSED(rightview)
     // Copy opaque depth buffer into OIT depth renderbuffer so transparent
     // fragments are correctly discarded behind opaque geometry
     glextrafunctions->glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
@@ -905,7 +906,7 @@ void GlWidget::mouseMoveEvent(QMouseEvent *event)
     if ((rotmode && event->modifiers() == Qt::SHIFT) || (event->modifiers() == Qt::ALT && event->buttons() & Qt::LeftButton))
     {
         double before  = atan2(static_cast<double>(LastMouseXpos - xdim/2), static_cast<double>(LastMouseYpos - ydim/2));
-        double after   = atan2(static_cast<double>(event->x() - xdim/2), static_cast<double>(event->y() - ydim/2));
+        double after   = atan2(static_cast<double>(qRound(event->position().x()) - xdim/2), static_cast<double>(qRound(event->position().y()) - ydim/2));
         double amount1 = after - before, amount2 = after + 2*3.14159 - before;
         double amount  = (qAbs(amount2) < qAbs(amount1)) ? amount2 : amount1;
         if (amount > .1) amount = .1;
@@ -914,8 +915,8 @@ void GlWidget::mouseMoveEvent(QMouseEvent *event)
     }
     else if (rotmode)
     {
-        float yangle = (static_cast<float>(event->x() - LastMouseXpos)) / SENSITIVITY;
-        float xangle = (static_cast<float>(event->y() - LastMouseYpos)) / SENSITIVITY;
+        float yangle = (static_cast<float>(qRound(event->position().x()) - LastMouseXpos)) / SENSITIVITY;
+        float xangle = (static_cast<float>(qRound(event->position().y()) - LastMouseYpos)) / SENSITIVITY;
         for (int i = 0; i < SVObjects.count(); i++)
         {
             bool f = false;
@@ -934,8 +935,8 @@ void GlWidget::mouseMoveEvent(QMouseEvent *event)
 
     if (!rotmode && event->buttons() & Qt::LeftButton && !donesomething)
     {
-        float ObjXpos =   static_cast<float>(event->x() - LastMouseXpos) / (SENSITIVITY*100);
-        float ObjYpos = -(static_cast<float>(event->y() - LastMouseYpos) / (SENSITIVITY*100));
+        float ObjXpos =   static_cast<float>(qRound(event->position().x()) - LastMouseXpos) / (SENSITIVITY*100);
+        float ObjYpos = -(static_cast<float>(qRound(event->position().y()) - LastMouseYpos) / (SENSITIVITY*100));
         for (int i = 0; i < SVObjects.count(); i++)
         {
             bool f = false;
@@ -950,7 +951,7 @@ void GlWidget::mouseMoveEvent(QMouseEvent *event)
             }
         }
     }
-    LastMouseXpos = event->x(); LastMouseYpos = event->y();
+    LastMouseXpos = qRound(event->position().x()); LastMouseYpos = qRound(event->position().y());
     if (donesomething) update();
 }
 
@@ -1123,8 +1124,8 @@ void GlWidget::mousePressEvent(QMouseEvent *event)
     makeCurrent();
 
     // Qt mouse coords are top-left origin; OpenGL depth buffer is bottom-left
-    int mouseX = event->x();
-    int mouseY = event->y();
+    int mouseX = qRound(event->position().x());
+    int mouseY = qRound(event->position().y());
 
     // Scale to actual framebuffer pixels (handles HiDPI)
     int fbX = static_cast<int>(mouseX * applicationScaleX);
@@ -1324,7 +1325,7 @@ void GlWidget::mouseDoubleClickEvent(QMouseEvent *event)
     if (mainWindow->ui->actionAnaglyph_Stereo->isChecked()) return;
 
     makeCurrent();
-    int objectIndex = pickObject(event->x(), event->y());
+    int objectIndex = pickObject(qRound(event->position().x()), qRound(event->position().y()));
     doneCurrent();
 
     bool shift = event->modifiers() & Qt::ShiftModifier;

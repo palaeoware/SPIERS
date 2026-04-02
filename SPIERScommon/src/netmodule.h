@@ -33,8 +33,6 @@
 #include <QByteArray>
 #include <QStringList>
 
-#include <stdio.h>
-
 extern bool macClickedNoForUpdateDownload;
 
 class NetModule : public QObject

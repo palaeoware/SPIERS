@@ -712,7 +712,7 @@ int SVObject::WriteSTLfaces(QDir stldir, QString fname)
     Q_UNUSED(stldir)
 
     QFile stlfile(fname);
-    stlfile.open(QIODevice::WriteOnly);
+    if (!stlfile.open(QIODevice::WriteOnly)) return -1;
     QDataStream stl(&stlfile);
     stl.setByteOrder(QDataStream::LittleEndian);
     stl.setVersion(QDataStream::Qt_4_5);

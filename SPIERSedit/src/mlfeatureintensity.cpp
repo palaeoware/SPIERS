@@ -172,18 +172,18 @@ int MLFeatureIntensity::GetDependencyDepth()
 }
 
 
-QString MLFeatureIntensity::GetArg1SetupString(int v)
+QString MLFeatureIntensity::GetArg1SetupString(int)
 {
     return "";
 }
 
-QString MLFeatureIntensity::GetArg2SetupString(int v)
+QString MLFeatureIntensity::GetArg2SetupString(int)
 {
     return "";
 }
 
 
-int MLFeatureIntensity::GetMinMaxForArgs(int arg, bool max)
+int MLFeatureIntensity::GetMinMaxForArgs(int, bool)
 {
     return 0;
 }
