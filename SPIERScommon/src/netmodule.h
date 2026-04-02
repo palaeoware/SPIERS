@@ -23,6 +23,7 @@
 #include <QFileInfo>
 #include <QList>
 #include <QNetworkAccessManager>
+#include <QNetworkInformation>
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QStringList>
@@ -32,6 +33,8 @@
 #include <QtWidgets/QProgressDialog>
 #include <QByteArray>
 #include <QStringList>
+#include <QTextStream>
+#include "updatedialog.h"
 
 extern bool macClickedNoForUpdateDownload;
 
@@ -52,8 +55,42 @@ public:
     QString errorText;
     QString downloadURL;
 
-    NetModule();
+    explicit NetModule(QObject *parent = nullptr);
     void checkForNew();
+    void checkForNewManual();
+
+    /**
+     * @brief Returns true when the system has (or may have) internet access.
+     *
+     * Uses QNetworkInformation when a backend is loaded.  Falls back to true
+     * (assume online) if no backend is available, so the actual network request
+     * is the gatekeeper.
+     */
+    static bool isOnline();
+
+    /**
+     * @brief Loads the QNetworkInformation backend and starts watching for
+     *        connectivity changes.  Call once after constructing this object.
+     *        Emits connectivityChanged(bool) whenever reachability changes.
+     */
+    void startConnectivityWatch();
+
+    /**
+     * @brief Override the current version used for update comparisons.
+     *
+     * Set this to a lower version string (e.g. "1.0.0") before calling
+     * checkForNew() or checkForNewManual() to exercise the update dialog
+     * without changing SOFTWARE_VERSION.  Leave empty (the default) for
+     * normal behaviour.
+     *
+     * Example:
+     * @code
+     *   NetModule n;
+     *   n.setTestVersion("1.0.0");
+     *   n.checkForNewManual();
+     * @endcode
+     */
+    void setTestVersion(const QString &version) { testVersion = version; }
     void checkHash(QByteArray vaxmlhash, QStringList *commlist);
     void doDownload(QString url, QString fileName, QProgressBar *pb);
     void getUpdate(QString url, QString saveFile);
@@ -61,6 +98,33 @@ public:
 private:
     QNetworkAccessManager *manager;
     QNetworkReply *reply;
+    bool    doingGitHubCheck;
+    bool    manualCheck;
+    QString testVersion; ///< When non-empty, used instead of SOFTWARE_VERSION for comparisons
+
+    void showUpdateAvailableDialog(const QString &versionString,
+                                   const QList<GitHubAsset> &assets = {});
+    void showNoUpdateDialog(const QString &currentVersion, const QString &latestVersion);
+    void fallbackToTxtCheck();
+
+signals:
+    /**
+     * @brief Emitted once the automatic update check has fully completed —
+     *        either an update dialog was shown and closed, no update was found,
+     *        the version was skipped, or a network error occurred.
+     *        Not emitted when we are about to fall back to the .txt check;
+     *        the .txt path emits it instead when it finishes.
+     */
+    void updateCheckFinished();
+
+    /**
+     * @brief Emitted when the system's internet reachability changes.
+     * @param online  true if the system can reach the internet, false if disconnected.
+     *
+     * Only fired after startConnectivityWatch() has been called and a
+     * QNetworkInformation backend is available.
+     */
+    void connectivityChanged(bool online);
 
 private slots:
     void cancel();
@@ -68,6 +132,7 @@ private slots:
     void progress(qint64 bytesReceived, qint64 bytesTotal);
     void slotReadyRead();
     void slotError(QNetworkReply::NetworkError error);
+    void slotGitHubCheckFinished(QNetworkReply *ghReply);
 };
 
 #endif // NETMODULE_H

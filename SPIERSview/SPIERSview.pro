@@ -56,6 +56,7 @@ SOURCES += src/main.cpp \
     src/aboutdialog.cpp \
     src/gl3widget.cpp \
     ../SPIERScommon/src/netmodule.cpp \
+    ../SPIERScommon/src/updatedialog.cpp \
     ../SPIERScommon/src/semanticversion.cpp \
     ../SPIERScommon/src/prereleasecomponent.cpp \
     src/vaxmlgroup.cpp \
@@ -95,6 +96,7 @@ HEADERS += src/mainwindow.h \
     src/gl3widget.h \
     src/main.h \
     ../SPIERScommon/src/netmodule.h \
+    ../SPIERScommon/src/updatedialog.h \
     ../SPIERScommon/src/semanticversion.h \
     ../SPIERScommon/src/prereleasecomponent.h \
     src/vaxmlgroup.h \

@@ -48,6 +48,9 @@ public:
     int width;
     int height;
 
+public slots:
+    void onConnectivityChanged(bool online);
+
 private slots:
     void on_actionLoad_Settings_File_triggered();
     void on_actionCompress_Dataset_triggered();
@@ -85,6 +88,7 @@ private slots:
     void on_actionShift_Down_Less_triggered();
     void on_actionCreate_Crop_Area_triggered(bool checked);
     void on_actionAbout_triggered();
+    void on_actionCheck_for_Updates_triggered();
     void on_actionEnlarge_More_triggered();
     void on_actionShrink_More_triggered();
     void on_actionEnlarge_Less_triggered();

@@ -236,6 +236,7 @@
     <addaction name="actionBugIssueFeatureRequest"/>
     <addaction name="actionQuick_Guide"/>
     <addaction name="separator"/>
+    <addaction name="actionCheck_for_Updates"/>
     <addaction name="actionAbout"/>
    </widget>
    <widget class="QMenu" name="menuView">
@@ -1815,6 +1816,11 @@
   <action name="actionAbout">
    <property name="text">
     <string>About...</string>
+   </property>
+  </action>
+  <action name="actionCheck_for_Updates">
+   <property name="text">
+    <string>Check for Updates...</string>
    </property>
   </action>
   <action name="actionShow_All">

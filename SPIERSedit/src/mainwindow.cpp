@@ -35,8 +35,6 @@
 #include "contrastimpl.h"
 #include "deletemaskdialogimpl.h"
 #include "settingsimpl.h"
-#include "backthread.h"
-#include "histogram.h"
 #include "../../SPIERScommon/src/netmodule.h"
 #include "mlinterface.h"
 
@@ -2394,6 +2392,24 @@ void MainWindow::on_actionAb_out_triggered()
 {
     DialogAboutImpl d;
     d.exec();
+}
+
+/**
+ * @brief MainWindow::on_actionCheck_for_Updates_triggered
+ */
+void MainWindow::on_actionCheck_for_Updates_triggered()
+{
+    NetModule *netModule = new NetModule(this);
+    netModule->checkForNewManual();
+}
+
+/**
+ * @brief MainWindow::onConnectivityChanged
+ * Enables or disables network-dependent menu items as internet access changes.
+ */
+void MainWindow::onConnectivityChanged(bool online)
+{
+    actionCheck_for_Updates->setEnabled(online);
 }
 
 

@@ -131,9 +131,8 @@ MainWindow::MainWindow(QWidget *parent)
     //qDebug() << "[Where I'm I?] In MainWindow - Starting Timers";
     StartTimer = new QTimer(this);
     StartTimer->setSingleShot(true);
-    StartTimer->setInterval(2000);// 2 sec after lauch to give NetModule and Splash time to do their thing
+    StartTimer->setInterval(0); // fires as soon as the event loop is idle after releaseStartup() starts it
     QObject::connect(StartTimer, SIGNAL(timeout()), this, SLOT(StartTimer_fired()));
-    StartTimer->start();
 
     SpinTimer = new QTimer(this);
     SpinTimer->setSingleShot(true);
@@ -266,6 +265,30 @@ void MainWindow::UpdateGL()
 }
 
 // Timer handlers
+
+/**
+ * @brief MainWindow::releaseStartup
+ * Called once the update check has finished (or timed out) so it is safe
+ * to start the file-open sequence.  Starting the timer here guarantees that
+ * the update dialog has already closed before StartTimer_fired() runs.
+ * Qt::QueuedConnection (used from main.cpp) means this slot is always called
+ * from the event loop, so no re-entrancy issues.
+ */
+void MainWindow::releaseStartup()
+{
+    if (!StartTimer->isActive())
+        StartTimer->start();
+}
+
+/**
+ * @brief MainWindow::onConnectivityChanged
+ * Enables or disables network-dependent menu items as internet access changes.
+ */
+void MainWindow::onConnectivityChanged(bool online)
+{
+    ui->actionCheck_for_Updates->setEnabled(online);
+}
+
 /**
  * @brief MainWindow::StartTimer_fired
  * start up timer should fire this only once - starts SPV load process
@@ -2114,7 +2137,15 @@ void MainWindow::on_actionAbout_triggered()
     FilterKeys = false;
     d.exec();
     FilterKeys = true;
+}
 
+/**
+ * @brief MainWindow::on_actionCheck_for_Updates_triggered
+ */
+void MainWindow::on_actionCheck_for_Updates_triggered()
+{
+    NetModule *netModule = new NetModule(this);
+    netModule->checkForNewManual();
 }
 
 /**

@@ -52,10 +52,19 @@ int main(int argc, char **argv)
     app.processEvents();
     QTimer::singleShot(3000, splash, &QSplashScreen::close);
 
-    NetModule netModule;
-    netModule.checkForNew();
-
     MainWindowImpl mainWindow;
     mainWindow.show();
+
+    // Kick off the update check.
+    NetModule *netModule = new NetModule(&app);
+    //netModule->setTestVersion("1.0.0");
+    // Test for and watch for an internet connection
+    netModule->startConnectivityWatch();
+    // Set initial enabled state for network-dependent menu items.
+    mainWindow.onConnectivityChanged(NetModule::isOnline());
+    QObject::connect(netModule, &NetModule::connectivityChanged,
+                     &mainWindow, &MainWindowImpl::onConnectivityChanged);
+    netModule->checkForNew();
+
     return app.exec();
 }

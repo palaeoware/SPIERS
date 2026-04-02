@@ -3873,6 +3873,24 @@ void MainWindowImpl::on_actionAbout_triggered()
 }
 
 /**
+ * @brief MainWindowImpl::on_actionCheck_for_Updates_triggered
+ */
+void MainWindowImpl::on_actionCheck_for_Updates_triggered()
+{
+    NetModule *netModule = new NetModule(this);
+    netModule->checkForNewManual();
+}
+
+/**
+ * @brief MainWindowImpl::onConnectivityChanged
+ * Enables or disables network-dependent menu items as internet access changes.
+ */
+void MainWindowImpl::onConnectivityChanged(bool online)
+{
+    actionCheck_for_Updates->setEnabled(online);
+}
+
+/**
  * @brief MainWindowImpl::on_actionLock_File_triggered
  * Lock file to changes - all done in the apply changes function
  * @param checked

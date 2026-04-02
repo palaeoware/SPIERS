@@ -121,9 +121,6 @@ int main(int argc, char **argv)
         mlInterface = new MLInterface();
     }
 
-    NetModule n;
-    n.checkForNew();
-
     QStringList args = app.arguments();
 
     if (args.count() > 1)
@@ -134,6 +131,18 @@ int main(int argc, char **argv)
 
     MainWindow mainWindow;
     mainWindow.show();
+
+    // Kick off the update check.
+    NetModule *netModule = new NetModule(&app);
+    //netModule->setTestVersion("1.0.0");
+    // Test for and watch for an internet connection
+    netModule->startConnectivityWatch();
+    // Set initial enabled state for network-dependent menu items.
+    mainWindow.onConnectivityChanged(NetModule::isOnline());
+    QObject::connect(netModule, &NetModule::connectivityChanged,
+                     &mainWindow, &MainWindow::onConnectivityChanged);
+    netModule->checkForNew();
+
     return app.exec();
 }
 #endif
@@ -318,11 +327,15 @@ int main(int argc, char *argv[])
         mlInterface = new MLInterface();
     }
 
-    NetModule n;
-    n.checkForNew();
-
     MainWindow win;
     win.show();
+
+    NetModule *netModule = new NetModule(&app);
+    netModule->startConnectivityWatch();
+    win.onConnectivityChanged(NetModule::isOnline());
+    QObject::connect(netModule, &NetModule::connectivityChanged,
+                     &win, &MainWindow::onConnectivityChanged);
+    netModule->checkForNew();
 
     return app.exec();
 }

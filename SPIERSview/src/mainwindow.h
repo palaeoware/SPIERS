@@ -68,6 +68,8 @@ public:
     void updateLightColourButtons();
 public slots:
     void showSpecificProgress();
+    void releaseStartup();
+    void onConnectivityChanged(bool online);
 
 protected:
     bool eventFilter(QObject *object, QEvent *event);
@@ -163,6 +165,7 @@ private slots:
     void on_actionObject_Panel_triggered();
     void on_actionProgress_Bars_triggered();
     void on_actionAbout_triggered();
+    void on_actionCheck_for_Updates_triggered();
     void on_actionQuick_Guide_triggered();
     void on_actionSave_Changes_triggered();
     void on_actionSave_As_triggered();

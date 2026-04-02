@@ -62,6 +62,9 @@ public:
     void SetGradientMinDistValue(int v);
     void SetGradientMaxDistValue(int v);
 
+public slots:
+    void onConnectivityChanged(bool online);
+
 private slots:
     void Moveimage(int);
     /** Refresh both 3D-preview step combos (XY and Z): disable step combinations
@@ -74,6 +77,7 @@ private slots:
     void on_actionExport_SPIERSview_and_Launch_triggered();
     void on_actionMeasure_Volumes_triggered();
     void on_actionAb_out_triggered();
+    void on_actionCheck_for_Updates_triggered();
     void on_actionChange_downsampling_triggered();
     void on_tabWidget_currentChanged(int index);
     void on_CheckBoxRangeSelectedOnly_toggled(bool checked);

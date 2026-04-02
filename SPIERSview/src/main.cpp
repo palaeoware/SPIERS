@@ -124,12 +124,26 @@ int main(int argc, char *argv[])
         fname = args[1];
     }
 
-    NetModule netModule;
-    netModule.checkForNew();
-
     MainWindow mainWindow;
     app.installEventFilter(&mainWindow);
     mainWindow.show();
+
+    // Kick off the update check.  releaseStartup() is called once the check
+    // completes (dialog closed, version skipped, or network error).  A 15-second
+    // safety timer ensures startup is released even if the network never responds.
+    NetModule *netModule = new NetModule(&app);
+    //netModule->setTestVersion("1.0.0");
+    // Test for and watch for an internet connection
+    netModule->startConnectivityWatch();
+    // Set initial enabled state for network-dependent menu items.
+    mainWindow.onConnectivityChanged(NetModule::isOnline());
+    QObject::connect(netModule, &NetModule::connectivityChanged,
+                     &mainWindow, &MainWindow::onConnectivityChanged);
+    QObject::connect(netModule, &NetModule::updateCheckFinished,
+                     &mainWindow, &MainWindow::releaseStartup,
+                     Qt::QueuedConnection);
+    QTimer::singleShot(15000, &mainWindow, &MainWindow::releaseStartup);
+    netModule->checkForNew();
 
     return app.exec();
 }
@@ -268,12 +282,20 @@ int main(int argc, char *argv[])
 
     qDebug() << "Moving to start application mainwindow...";
 
-    NetModule netModule;
-    netModule.checkForNew();
-
     MainWindow mainWindow;
     app.installEventFilter(&mainWindow);
     mainWindow.show();
+
+    NetModule *netModule = new NetModule(&app);
+    netModule->startConnectivityWatch();
+    mainWindow.onConnectivityChanged(NetModule::isOnline());
+    QObject::connect(netModule, &NetModule::connectivityChanged,
+                     &mainWindow, &MainWindow::onConnectivityChanged);
+    QObject::connect(netModule, &NetModule::updateCheckFinished,
+                     &mainWindow, &MainWindow::releaseStartup,
+                     Qt::QueuedConnection);
+    QTimer::singleShot(15000, &mainWindow, &MainWindow::releaseStartup);
+    netModule->checkForNew();
 
     return app.exec();
 }

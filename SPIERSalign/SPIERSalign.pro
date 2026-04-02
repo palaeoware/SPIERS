@@ -49,6 +49,7 @@ HEADERS += src/mainwindowimpl.h \
     ../SPIERScommon/src/darkstyletheme.h \
     src/about.h \
     ../SPIERScommon/src/netmodule.h \
+    ../SPIERScommon/src/updatedialog.h \
     ../SPIERScommon/src/semanticversion.h \
     ../SPIERScommon/src/prereleasecomponent.h
 
@@ -59,6 +60,7 @@ SOURCES += src/mainwindowimpl.cpp \
     ../SPIERScommon/src/darkstyletheme.cpp \
     src/about.cpp \
     ../SPIERScommon/src/netmodule.cpp \
+    ../SPIERScommon/src/updatedialog.cpp \
     ../SPIERScommon/src/semanticversion.cpp \
     ../SPIERScommon/src/prereleasecomponent.cpp
 

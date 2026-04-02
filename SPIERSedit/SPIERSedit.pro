@@ -121,6 +121,7 @@ HEADERS += src/display.h \
     src/previewwidget.h \
     ../SPIERScommon/src/darkstyletheme.h \
     ../SPIERScommon/src/netmodule.h \
+    ../SPIERScommon/src/updatedialog.h \
     ../SPIERScommon/src/semanticversion.h \
     ../SPIERScommon/src/prereleasecomponent.h \
     ui/mladdfeature.h
@@ -193,6 +194,7 @@ SOURCES += src/display.cpp \
     src/previewwidget.cpp \
     ../SPIERScommon/src/darkstyletheme.cpp \
     ../SPIERScommon/src/netmodule.cpp \
+    ../SPIERScommon/src/updatedialog.cpp \
     ../SPIERScommon/src/semanticversion.cpp \
     ../SPIERScommon/src/prereleasecomponent.cpp \
     ui/mladdfeature.cpp
