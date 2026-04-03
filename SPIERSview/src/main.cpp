@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
 
     qInstallMessageHandler(logMessageOutput);
 
-    QApplication::setStyle(new DarkStyleTheme);
+    QApplication::setStyle(new DarkStyleTheme(DarkStyleTheme::readThemeSetting()));
 
     QPixmap splashPixmap(":/logo/palaeoware_square.png");
     QSplashScreen *splash = new QSplashScreen(splashPixmap, Qt::WindowStaysOnTopHint);
@@ -247,7 +247,7 @@ int main(int argc, char *argv[])
 
     class main app(argc, argv);
 
-    QApplication::setStyle(new DarkStyleTheme);
+    QApplication::setStyle(new DarkStyleTheme(DarkStyleTheme::readThemeSetting()));
 
     app.setQuitOnLastWindowClosed(true);
 

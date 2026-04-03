@@ -41,11 +41,13 @@ OBJECTS_DIR += build
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
     ../../SPIERScommon/src/darkstyletheme.cpp \
+    ../../SPIERScommon/src/advancedpreferencesdialog.cpp \
     src/globals.cpp \
     src/aboutdialog.cpp \
 
 HEADERS += src/mainwindow.h \
     ../../SPIERScommon/src/darkstyletheme.h \
+    ../../SPIERScommon/src/advancedpreferencesdialog.h \
     src/globals.h \
     src/main.h \
     src/aboutdialog.h \

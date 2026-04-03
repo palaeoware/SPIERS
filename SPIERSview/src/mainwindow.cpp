@@ -16,6 +16,8 @@
  */
 
 #include <QtWidgets/QApplication>
+#include "../../SPIERScommon/src/darkstyletheme.h"
+#include "../../SPIERScommon/src/advancedpreferencesdialog.h"
 #include <QActionGroup>
 #include <QFileDialog>
 #include <QMenuBar>
@@ -954,18 +956,22 @@ void MainWindow::RefreshOneItem(QTreeWidgetItem *item, int i)
         item->setText(0, SVObjects[i]->Name);
     }
 
+    auto themedPixmap = [](const QString &path) -> QPixmap {
+        QPixmap p(path);
+        if (DarkStyleTheme::currentApplicationMode() == ThemeMode::Light) {
+            QImage img = p.toImage();
+            img.invertPixels(QImage::InvertRgb);
+            return QPixmap::fromImage(img);
+        }
+        return p;
+    };
+
     QLabel *show = new QLabel();
     show->setAlignment(Qt::AlignCenter);
     if (SVObjects[i]->Visible)
-    {
-        QPixmap p = QPixmap(":/darkstyle/icon_eye_open");
-        show->setPixmap(p.scaled(18, 18, Qt::KeepAspectRatio));
-    }
+        show->setPixmap(themedPixmap(":/darkstyle/icon_eye_open.png").scaled(18, 18, Qt::KeepAspectRatio));
     else
-    {
-        QPixmap p = QPixmap(":/darkstyle/icon_eye_closed.png");
-        show->setPixmap(p.scaled(18, 18, Qt::KeepAspectRatio));
-    }
+        show->setPixmap(themedPixmap(":/darkstyle/icon_eye_closed.png").scaled(18, 18, Qt::KeepAspectRatio));
     ui->treeWidget->setItemWidget(item, 1, show);
 
     item->setText(2, KeySt);
@@ -3985,6 +3991,15 @@ void MainWindow::on_actionBugIssueFeatureRequest_triggered()
 void MainWindow::on_actionCode_on_GitHub_triggered()
 {
     QDesktopServices::openUrl(QUrl(QString(GITURL) + QString(GITREPOSITORY)));
+}
+
+/**
+ * @brief MainWindow::on_actionAdvancedPrefs_triggered
+ */
+void MainWindow::on_actionAdvancedPrefs_triggered()
+{
+    AdvancedPreferencesDialog dlg(this);
+    dlg.exec();
 }
 
 /**

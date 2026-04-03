@@ -25,23 +25,64 @@
 #include <QStyleFactory>
 
 /**
+ * @brief The ThemeMode enum
+ * Dark  — Blender-inspired dark theme (default)
+ * Light — Clean accessible light theme
+ * System — Auto-detect OS preference at construction time (Qt 6.5+); falls back to Dark
+ */
+enum class ThemeMode {
+    Dark,
+    Light,
+    System
+};
+
+/**
  * @brief The DarkStyleTheme class
+ * Applies a Fusion-based theme with a Blender-inspired colour palette.
+ * Supports dark and light modes with WCAG AA contrast compliance.
  */
 class DarkStyleTheme : public QProxyStyle
 {
     Q_OBJECT
 
 public:
+    // Backward-compatible: no-arg => Dark mode
     DarkStyleTheme();
 
+    // Explicit mode selection (use ThemeMode::System for OS-aware behaviour)
+    explicit DarkStyleTheme(ThemeMode mode);
+
+    // Internal: used by constructor delegation chain
     explicit DarkStyleTheme(QStyle *style);
 
     void polish(QPalette &palette) override;
     void polish(QApplication *app) override;
     QStyle *baseStyle() const;
 
+    // Returns the mode that was resolved at construction time
+    ThemeMode activeMode() const;
+
+    // Returns the mode applied to the running application (set during polish)
+    static ThemeMode currentApplicationMode();
+
+    // Detects the OS colour scheme preference (Qt 6.5+), falls back to Dark
+    static ThemeMode detectSystemTheme();
+
+    // Persist and retrieve the user's theme preference.
+    // Uses QSettings("Palaeoware", "SPIERS") so the choice is shared across all apps.
+    static void writeThemeSetting(ThemeMode mode);
+    static ThemeMode readThemeSetting();
+
+    // Apply a new theme to the running application immediately (live switch).
+    // Saves the setting and updates style, palette, and stylesheet in one call.
+    static void applyToApplication(ThemeMode mode);
+
 private:
-    QStyle *styleBase(QStyle *style = Q_NULLPTR) const;
+    ThemeMode m_mode;
+    static ThemeMode s_currentMode;
+
+    void applyDarkPalette(QPalette &palette);
+    void applyLightPalette(QPalette &palette);
 };
 
 #endif // DARKSTYLETHEME_H

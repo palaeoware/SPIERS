@@ -134,6 +134,8 @@
     <addaction name="separator"/>
     <addaction name="actionScreen_Capture"/>
     <addaction name="separator"/>
+    <addaction name="actionAdvancedPrefs"/>
+    <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuMode">
@@ -1706,6 +1708,11 @@
    </property>
    <property name="shortcutContext">
     <enum>Qt::ShortcutContext::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionAdvancedPrefs">
+   <property name="text">
+    <string>Advanced prefs...</string>
    </property>
   </action>
   <action name="actionSTL">

@@ -117,6 +117,7 @@ private slots:
     void on_horizontalSlider_valueChanged(int value);
     void on_actionCode_on_GitHub_triggered();
     void on_actionBugIssueFeatureRequest_triggered();
+    void on_actionAdvancedPrefs_triggered();
 
     void selectMarker();
     void changeRed(int value);

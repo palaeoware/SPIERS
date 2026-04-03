@@ -111,6 +111,8 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionAdvancedPrefs"/>
+    <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -138,6 +140,11 @@
   <action name="actionAbout">
    <property name="text">
     <string>About...</string>
+   </property>
+  </action>
+  <action name="actionAdvancedPrefs">
+   <property name="text">
+    <string>Advanced prefs...</string>
    </property>
   </action>
   <action name="actionExit">

@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>SPIERSEdit - Version 2.21 - No files loaded</string>
+   <string>SPIERSEdit - Version 4.0.0 - No files loaded</string>
   </property>
   <property name="windowIcon">
    <iconset resource="../SPIERSedit.qrc">
@@ -33,7 +33,10 @@
    <bool>true</bool>
   </property>
   <property name="dockOptions">
-   <set>QMainWindow::DockOption::AllowNestedDocks|QMainWindow::DockOption::AllowTabbedDocks|QMainWindow::DockOption::AnimatedDocks</set>
+   <set>QMainWindow::DockOption::AllowNestedDocks|QMainWindow::DockOption::AllowTabbedDocks</set>
+  </property>
+  <property name="unifiedTitleAndToolBarOnMac">
+   <bool>false</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="sizePolicy">

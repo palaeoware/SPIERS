@@ -98,6 +98,8 @@
     <addaction name="actionLoad_Settings_File"/>
     <addaction name="actionCompress_Dataset"/>
     <addaction name="actionConstant_autosave"/>
+    <addaction name="separator"/>
+    <addaction name="actionAdvancedPrefs"/>
    </widget>
    <widget class="QMenu" name="menuTransform">
     <property name="enabled">
@@ -213,6 +215,11 @@
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionAdvancedPrefs">
+   <property name="text">
+    <string>Advanced prefs...</string>
+   </property>
+  </action>
   <action name="actionOpen">
    <property name="checkable">
     <bool>false</bool>

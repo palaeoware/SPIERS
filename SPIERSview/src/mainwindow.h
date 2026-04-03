@@ -263,6 +263,7 @@ private slots:
 
 
     void on_actionClear_Scale_Markers_triggered();
+    void on_actionAdvancedPrefs_triggered();
 
 
 

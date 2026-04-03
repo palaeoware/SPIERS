@@ -120,6 +120,7 @@ HEADERS += src/display.h \
     src/mainview.h \
     src/previewwidget.h \
     ../SPIERScommon/src/darkstyletheme.h \
+    ../SPIERScommon/src/advancedpreferencesdialog.h \
     ../SPIERScommon/src/netmodule.h \
     ../SPIERScommon/src/updatedialog.h \
     ../SPIERScommon/src/semanticversion.h \
@@ -193,6 +194,7 @@ SOURCES += src/display.cpp \
     src/mainview.cpp \
     src/previewwidget.cpp \
     ../SPIERScommon/src/darkstyletheme.cpp \
+    ../SPIERScommon/src/advancedpreferencesdialog.cpp \
     ../SPIERScommon/src/netmodule.cpp \
     ../SPIERScommon/src/updatedialog.cpp \
     ../SPIERScommon/src/semanticversion.cpp \

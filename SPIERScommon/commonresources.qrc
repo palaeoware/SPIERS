@@ -9,6 +9,7 @@
     </qresource>
     <qresource prefix="/darkstyle">
         <file alias="stylesheet_dark.qss">resources/darkstyle/stylesheet_dark.qss</file>
+        <file alias="stylesheet_light.qss">resources/darkstyle/stylesheet_light.qss</file>
         <file alias="icon_branch_closed.png">resources/darkstyle/icon_branch_closed.png</file>
         <file alias="icon_branch_end.png">resources/darkstyle/icon_branch_end.png</file>
         <file alias="icon_branch_more.png">resources/darkstyle/icon_branch_more.png</file>

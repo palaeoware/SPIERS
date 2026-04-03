@@ -19,6 +19,7 @@
 #include "fileio.h"
 #include "globals.h"
 #include "copyingimpl.h"
+#include "../../SPIERScommon/src/darkstyletheme.h"
 
 SettingsImpl::SettingsImpl(QWidget *parent, Qt::WindowFlags f)
     : QDialog(parent, f)
@@ -37,6 +38,22 @@ SettingsImpl::SettingsImpl(QWidget *parent, Qt::WindowFlags f)
     SliderFileCompression->setValue(FileCompressionLevel);
 
     BoxBackCache->setVisible(false);
+
+    // Populate theme combo and select the currently saved preference
+    comboBoxTheme->clear();
+    comboBoxTheme->addItem(tr("Follow system"), static_cast<int>(ThemeMode::System));
+    comboBoxTheme->addItem(tr("Dark"),          static_cast<int>(ThemeMode::Dark));
+    comboBoxTheme->addItem(tr("Light"),         static_cast<int>(ThemeMode::Light));
+
+    const ThemeMode saved = DarkStyleTheme::readThemeSetting();
+    for (int i = 0; i < comboBoxTheme->count(); ++i)
+    {
+        if (comboBoxTheme->itemData(i).toInt() == static_cast<int>(saved))
+        {
+            comboBoxTheme->setCurrentIndex(i);
+            break;
+        }
+    }
 }
 
 void SettingsImpl::on_pushButton_clicked()
@@ -71,6 +88,12 @@ void SettingsImpl::on_buttonBox_accepted()
     if (SliderCacheCompression->value() == 1) CacheCompressionLevel = 1;
     if (SliderCacheCompression->value() == 2) CacheCompressionLevel = 9;
     if (ccl != CacheCompressionLevel) ClearCache();
+
+    // Apply theme immediately and save preference
+    const ThemeMode chosenTheme = static_cast<ThemeMode>(
+        comboBoxTheme->currentData().toInt());
+    DarkStyleTheme::applyToApplication(chosenTheme);
+
     close();
 }
 

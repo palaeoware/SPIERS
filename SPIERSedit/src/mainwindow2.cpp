@@ -16,6 +16,7 @@
  */
 
 #include <math.h>
+#include "../../SPIERScommon/src/darkstyletheme.h"
 #include "keysafespinbox.h"
 #include "distributedialogimpl.h"
 #include "exportdxf.h"
@@ -92,30 +93,28 @@ void MainWindow::RefreshOneMaskItem(QTreeWidgetItem *item, int i) //i is index o
     item->setText(1, MasksSettings[i]->Name);
 
     //now my write, show, lock widgets
+    auto themedPixmap = [](const QString &path) -> QPixmap {
+        QPixmap p(path);
+        if (DarkStyleTheme::currentApplicationMode() == ThemeMode::Light) {
+            QImage img = p.toImage();
+            img.invertPixels(QImage::InvertRgb);
+            return QPixmap::fromImage(img);
+        }
+        return p;
+    };
+
     QLabel *show = new QLabel();
     if (MasksSettings[i]->Show)
-    {
-        QPixmap p = QPixmap(":/darkstyle/icon_eye_open.png");
-        show->setPixmap(p.scaled(18, 18, Qt::KeepAspectRatio));
-    }
+        show->setPixmap(themedPixmap(":/darkstyle/icon_eye_open.png").scaled(18, 18, Qt::KeepAspectRatio));
     else
-    {
-        QPixmap p = QPixmap(":/darkstyle/icon_eye_closed.png");
-        show->setPixmap(p.scaled(18, 18, Qt::KeepAspectRatio));
-    }
+        show->setPixmap(themedPixmap(":/darkstyle/icon_eye_closed.png").scaled(18, 18, Qt::KeepAspectRatio));
     MasksTreeWidget->setItemWidget (item, 4, show);
 
     QLabel *lock = new QLabel();
     if (MasksSettings[i]->Lock)
-    {
-        QPixmap p = QPixmap(":/darkstyle/icon_padlock_closed.png");
-        lock->setPixmap(p.scaled(14, 14, Qt::KeepAspectRatio));
-    }
+        lock->setPixmap(themedPixmap(":/darkstyle/icon_padlock_closed.png").scaled(14, 14, Qt::KeepAspectRatio));
     else
-    {
-        QPixmap p = QPixmap(":/darkstyle/icon_padlock_open.png");
-        lock->setPixmap(p.scaled(14, 14, Qt::KeepAspectRatio));
-    }
+        lock->setPixmap(themedPixmap(":/darkstyle/icon_padlock_open.png").scaled(14, 14, Qt::KeepAspectRatio));
     MasksTreeWidget->setItemWidget (item, 5, lock);
 }
 
@@ -220,30 +219,28 @@ void MainWindow::RefreshOneSegmentItem(QTreeWidgetItem *item, int i) //i is inde
     item->setText(1, Segments[i]->Name);
 
     //now my write, show, lock widgets
+    auto themedPixmap = [](const QString &path) -> QPixmap {
+        QPixmap p(path);
+        if (DarkStyleTheme::currentApplicationMode() == ThemeMode::Light) {
+            QImage img = p.toImage();
+            img.invertPixels(QImage::InvertRgb);
+            return QPixmap::fromImage(img);
+        }
+        return p;
+    };
+
     QLabel *write = new QLabel();
     if (Segments[i]->Activated)
-    {
-        QPixmap p = QPixmap(":/darkstyle/icon_eye_open.png");
-        write->setPixmap(p.scaled(18, 18, Qt::KeepAspectRatio));
-    }
+        write->setPixmap(themedPixmap(":/darkstyle/icon_eye_open.png").scaled(18, 18, Qt::KeepAspectRatio));
     else
-    {
-        QPixmap p = QPixmap(":/darkstyle/icon_eye_closed.png");
-        write->setPixmap(p.scaled(18, 18, Qt::KeepAspectRatio));
-    }
+        write->setPixmap(themedPixmap(":/darkstyle/icon_eye_closed.png").scaled(18, 18, Qt::KeepAspectRatio));
     SegmentsTreeWidget->setItemWidget (item, 3, write);
 
     QLabel *lock = new QLabel();
     if (Segments[i]->Locked)
-    {
-        QPixmap p = QPixmap(":/darkstyle/icon_padlock_closed.png");
-        lock->setPixmap(p.scaled(14, 14, Qt::KeepAspectRatio));
-    }
+        lock->setPixmap(themedPixmap(":/darkstyle/icon_padlock_closed.png").scaled(14, 14, Qt::KeepAspectRatio));
     else
-    {
-        QPixmap p = QPixmap(":/darkstyle/icon_padlock_open.png");
-        lock->setPixmap(p.scaled(14, 14, Qt::KeepAspectRatio));
-    }
+        lock->setPixmap(themedPixmap(":/darkstyle/icon_padlock_open.png").scaled(14, 14, Qt::KeepAspectRatio));
     SegmentsTreeWidget->setItemWidget (item, 4, lock);
 }
 
@@ -368,17 +365,21 @@ void MainWindow::RefreshOneOOItem(QTreeWidgetItem *item, int i) //i is index of 
     item->setText(2, KeySt);
     item->setText(3, ResampleSt);
 
+    auto themedPixmap = [](const QString &path) -> QPixmap {
+        QPixmap p(path);
+        if (DarkStyleTheme::currentApplicationMode() == ThemeMode::Light) {
+            QImage img = p.toImage();
+            img.invertPixels(QImage::InvertRgb);
+            return QPixmap::fromImage(img);
+        }
+        return p;
+    };
+
     QLabel *show = new QLabel();
     if (OutputObjects[i]->Show)
-    {
-        QPixmap p = QPixmap(":/darkstyle/icon_eye_open");
-        show->setPixmap(p.scaled(18, 18, Qt::KeepAspectRatio));
-    }
+        show->setPixmap(themedPixmap(":/darkstyle/icon_eye_open.png").scaled(18, 18, Qt::KeepAspectRatio));
     else
-    {
-        QPixmap p = QPixmap(":/darkstyle/icon_eye_closed.png");
-        show->setPixmap(p.scaled(18, 18, Qt::KeepAspectRatio));
-    }
+        show->setPixmap(themedPixmap(":/darkstyle/icon_eye_closed.png").scaled(18, 18, Qt::KeepAspectRatio));
     OOTreeWidget->setItemWidget (item, 4, show);
 
     show = new QLabel();

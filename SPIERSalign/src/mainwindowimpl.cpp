@@ -55,6 +55,7 @@
 #include "globals.h"
 
 #include "../SPIERScommon/src/netmodule.h"
+#include "../SPIERScommon/src/advancedpreferencesdialog.h"
 
 #define PI 3.14159265
 #define TOLERANCE 20
@@ -4581,6 +4582,15 @@ void MainWindowImpl::on_actionManual_triggered()
 void MainWindowImpl::on_actionBugIssueFeatureRequest_triggered()
 {
     QDesktopServices::openUrl(QUrl(QString(GITURL) + QString(GITREPOSITORY) + QString(GITISSUE)));
+}
+
+/**
+ * @brief MainWindowImpl::on_actionAdvancedPrefs_triggered
+ */
+void MainWindowImpl::on_actionAdvancedPrefs_triggered()
+{
+    AdvancedPreferencesDialog dlg(this);
+    dlg.exec();
 }
 
 /**

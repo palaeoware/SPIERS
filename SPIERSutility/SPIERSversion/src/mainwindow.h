@@ -49,6 +49,7 @@ private slots:
     void on_actionCode_on_GitHub_triggered();
     void on_actionAbout_triggered();
     void on_actionExit_triggered();
+    void on_actionAdvancedPrefs_triggered();
     void startTimerFired();
     void on_selectDirectoryButton_clicked();
 

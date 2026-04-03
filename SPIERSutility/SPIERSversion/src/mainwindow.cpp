@@ -27,6 +27,7 @@
 #include "ui_mainwindow.h"
 #include "globals.h"
 #include "aboutdialog.h"
+#include "../../SPIERScommon/src/advancedpreferencesdialog.h"
 
 /**
  * @brief MainWindow::MainWindow
@@ -243,6 +244,15 @@ void MainWindow::on_actionAbout_triggered()
 void MainWindow::on_actionExit_triggered()
 {
     QApplication::quit();
+}
+
+/**
+ * @brief MainWindow::on_actionAdvancedPrefs_triggered
+ */
+void MainWindow::on_actionAdvancedPrefs_triggered()
+{
+    AdvancedPreferencesDialog dlg(this);
+    dlg.exec();
 }
 
 
