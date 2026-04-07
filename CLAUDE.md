@@ -121,29 +121,74 @@ enum class ThemeMode { Dark, Light, System };
 
 ## Coding Conventions
 
-### File & class naming
-- Source files: `lowercase_with_underscores.h` / `.cpp`
-- Classes: `PascalCase`
-- Qt slots: `on_<widgetName>_<signalName>()` pattern
-- Member variables: `m_camelCase` for new code; existing code uses bare `camelCase`
+Full specification: https://github.com/palaeoware/repoconventions
+Detailed rules for Claude sessions: `.claude/rules/cpp-qt-conventions.md`
 
-### Every source file must start with:
+### Naming
+
+| Thing | Convention |
+|-------|-----------|
+| Classes | PascalCase (uppercase first letter) |
+| Functions / methods | camelCase (lowercase first letter) |
+| Variables | camelCase (lowercase first letter) |
+| Constructors / destructors | Match class name (exception to camelCase rule) |
+| Member variables | camelCase; `m_camelCase` in new code |
+| Constants | `UPPER_SNAKE` |
+| Source files | `lowercase.h` / `.cpp` (no underscores) |
+| Qt auto-slots | `on_<widget>_<signal>()` |
+
+- One variable per line. No short or meaningless names.
+- Single-character names only for loop counters and obvious temporaries.
+
+### Pointers and References
+
 ```cpp
-/**
- * @file
- * Header: <Brief description>
- *
- * All SPIERS code is released under the GNU General Public License.
- * See LICENSE.md files in the programme directory.
- *
- * All SPIERS code is Copyright 2008-2019 by Russell J. Garwood, Mark D. Sutton,
- * and Alan R.T. Spencer.
- *
- * This program is free software; ...
- */
+int *pointer;      // space before *, not after
+QString &ref;      // space before &, not after
 ```
 
-### Header guards
+### Braces — Non-Attached Style
+
+Opening brace on a **new line** for all constructs:
+```cpp
+void MyClass::myFunction()
+{
+    if (condition)
+    {
+        doSomething();
+    }
+}
+```
+
+### Defines / Includes / Declarations Order
+
+Within every translation unit:
+1. `#define` macros (below file header, blank line after)
+2. Project `.h` includes, then Qt includes — one per line, each group alphabetical, blank line between groups
+3. Variable declarations — `static`/`extern`/`constexpr` before plain, alphabetical by type
+
+### Line Length
+
+Soft maximum **200 characters**. Break long signatures onto multiple lines when it aids readability; skip the break if it makes the code harder to follow.
+
+### Comments (Doxygen)
+
+```cpp
+/**
+ *
+ * Block comment for functions, classes, and notable code sections.
+ *
+ **/
+
+int segmentCount; /// Inline variable comment
+```
+
+### File Header
+
+Every `.h` and `.cpp` opens with the GPL boilerplate (see `.claude/rules/cpp-qt-conventions.md` for the exact text).
+
+### Header Guards
+
 ```cpp
 #ifndef MYFILENAME_H
 #define MYFILENAME_H
@@ -153,14 +198,23 @@ enum class ThemeMode { Dark, Light, System };
 
 ### Qt idioms
 - Prefer `QString`, `QList`, `QVector`, `QMap` over STL equivalents.
-- Use `Q_OBJECT` in every class that uses signals/slots.
-- Connect with new-style syntax: `connect(src, &Src::sig, dst, &Dst::slot)`.
-- Use `QStringLiteral("...")` for compile-time string literals.
-- Const-correctness: mark methods `const` where possible.
+- `Q_OBJECT` in every class using signals/slots.
+- New-style connect: `connect(src, &Src::sig, dst, &Dst::slot)`.
+- `QStringLiteral("...")` for compile-time string literals.
+- Const-correct: mark methods `const` where they don't mutate state.
 
-### Code formatting
-- Each app has an `.astylerc` — run AStyle before committing.
-- Indentation: 4 spaces (no tabs).
+### Formatting
+- 4-space indentation, no tabs.
+- Run AStyle with the app's `.astylerc` before committing.
+
+---
+
+## Versioning
+
+Releases follow **Semantic Versioning** (semver.org) and **PEP 440**:
+- Version defined once in `version.pri`: `DEFINES += SOFTWARE_VERSION='\\"4.0.0\\"'`
+- Release branches named `origin/vN.N.N` (e.g. `origin/v4.0.0`) — Read the Docs parses these automatically.
+- Do not hard-code the version string anywhere other than `version.pri`.
 
 ---
 
