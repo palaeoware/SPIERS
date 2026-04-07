@@ -345,8 +345,79 @@ QComboBox QAbstractItemView {
     selection-color: palette(highlighted-text);
 }
 
+/* ── Checkboxes ───────────────────────────────────────────────────────── */
+
+QCheckBox::indicator,
+QGroupBox::indicator {
+    width: 16px;
+    height: 16px;
+}
+
+QCheckBox::indicator:checked,
+QTreeView::indicator:checked,
+QTableView::indicator:checked,
+QGroupBox::indicator:checked {
+    image: url(:/customstyle/light/icon_checkbox_checked.svg);
+}
+
+QCheckBox::indicator:checked:pressed,
+QTreeView::indicator:checked:pressed,
+QTableView::indicator:checked:pressed,
+QGroupBox::indicator:checked:pressed {
+    image: url(:/customstyle/light/icon_checkbox_checked_pressed.svg);
+}
+
+QCheckBox::indicator:checked:disabled,
+QTreeView::indicator:checked:disabled,
+QTableView::indicator:checked:disabled,
+QGroupBox::indicator:checked:disabled {
+    image: url(:/customstyle/light/icon_checkbox_checked_disabled.svg);
+}
+
+QCheckBox::indicator:unchecked,
+QTreeView::indicator:unchecked,
+QTableView::indicator:unchecked,
+QGroupBox::indicator:unchecked {
+    image: url(:/customstyle/light/icon_checkbox_unchecked.svg);
+}
+
+QCheckBox::indicator:unchecked:pressed,
+QTreeView::indicator:unchecked:pressed,
+QTableView::indicator:unchecked:pressed,
+QGroupBox::indicator:unchecked:pressed {
+    image: url(:/customstyle/light/icon_checkbox_unchecked_pressed.svg);
+}
+
+QCheckBox::indicator:unchecked:disabled,
+QTreeView::indicator:unchecked:disabled,
+QTableView::indicator:unchecked:disabled,
+QGroupBox::indicator:unchecked:disabled {
+    image: url(:/customstyle/light/icon_checkbox_unchecked_disabled.svg);
+}
+
+QCheckBox::indicator:indeterminate,
+QTreeView::indicator:indeterminate,
+QTableView::indicator:indeterminate,
+QGroupBox::indicator:indeterminate {
+    image: url(:/customstyle/light/icon_checkbox_indeterminate.svg);
+}
+
+QCheckBox::indicator:indeterminate:pressed,
+QTreeView::indicator:indeterminate:pressed,
+QTableView::indicator:indeterminate:pressed,
+QGroupBox::indicator:indeterminate:pressed {
+    image: url(:/customstyle/light/icon_checkbox_indeterminate_pressed.svg);
+}
+
+QCheckBox::indicator:indeterminate:disabled,
+QTreeView::indicator:indeterminate:disabled,
+QTableView::indicator:indeterminate:disabled,
+QGroupBox::indicator:indeterminate:disabled {
+    image: url(:/customstyle/light/icon_checkbox_indeterminate_disabled.svg);
+}
+
 /* ── Tree & table views ───────────────────────────────────────────────── */
-/* Checkboxes, radio buttons, and tree-branch indicators are intentionally
+/* radio buttons, and tree-branch indicators are intentionally
    omitted — Fusion's built-in drawing is correct for a light background. */
 
 QTreeView,
