@@ -346,6 +346,7 @@ private:
     bool AmIMerged(int i);
     void CleanseOO();
     bool event(QEvent *event);
+    void changeEvent(QEvent *event) override;
     void FixUpStretches();
     QString TextForSliceSelectorBox(int i);
     QAction *shortcutright, *shortcutleft, *shortcutright2, *shortcutleft2, *shortcutspace;

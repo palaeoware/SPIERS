@@ -48,6 +48,8 @@ HEADERS += src/mainwindowimpl.h \
     src/scene.h \
     ../SPIERScommon/src/customstyletheme.h \
     ../SPIERScommon/src/advancedpreferencesdialog.h \
+    ../SPIERScommon/src/colourswatchlabel.h \
+    ../SPIERScommon/src/themeselectorwidget.h \
     src/about.h \
     ../SPIERScommon/src/netmodule.h \
     ../SPIERScommon/src/updatedialog.h \
@@ -60,6 +62,8 @@ SOURCES += src/mainwindowimpl.cpp \
     src/scene.cpp \
     ../SPIERScommon/src/customstyletheme.cpp \
     ../SPIERScommon/src/advancedpreferencesdialog.cpp \
+    ../SPIERScommon/src/colourswatchlabel.cpp \
+    ../SPIERScommon/src/themeselectorwidget.cpp \
     src/about.cpp \
     ../SPIERScommon/src/netmodule.cpp \
     ../SPIERScommon/src/updatedialog.cpp \

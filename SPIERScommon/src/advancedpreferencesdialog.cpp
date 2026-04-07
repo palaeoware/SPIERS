@@ -16,7 +16,10 @@
  */
 
 #include "advancedpreferencesdialog.h"
-#include <QMessageBox>
+#include "themeselectorwidget.h"
+
+#include <QDialogButtonBox>
+#include <QVBoxLayout>
 
 /**
  * @brief AdvancedPreferencesDialog::AdvancedPreferencesDialog
@@ -25,67 +28,29 @@ AdvancedPreferencesDialog::AdvancedPreferencesDialog(QWidget *parent)
     : QDialog(parent)
 {
     setWindowTitle(tr("Advanced Preferences"));
-    setWindowIcon(QIcon(":/logo/palaeoware_square.png"));
+    setWindowIcon(QIcon(QStringLiteral(":/logo/palaeoware_square.png")));
     setMinimumWidth(320);
 
-    // --- Theme group ---
-    QGroupBox *themeGroup = new QGroupBox(tr("Appearance"), this);
+    m_themeWidget = new ThemeSelectorWidget(this);
 
-    QLabel *themeLabel = new QLabel(tr("Theme:"), themeGroup);
-
-    m_themeCombo = new QComboBox(themeGroup);
-    m_themeCombo->addItem(tr("Follow system"),  static_cast<int>(ThemeMode::System));
-    m_themeCombo->addItem(tr("Dark"),           static_cast<int>(ThemeMode::Dark));
-    m_themeCombo->addItem(tr("Light"),          static_cast<int>(ThemeMode::Light));
-    m_themeCombo->setToolTip(tr("Choose the application colour theme. "
-                                "The change is applied immediately."));
-
-    // Select current saved preference
-    const ThemeMode saved = CustomStyleTheme::readThemeSetting();
-    for (int i = 0; i < m_themeCombo->count(); ++i)
-    {
-        if (m_themeCombo->itemData(i).toInt() == static_cast<int>(saved))
-        {
-            m_themeCombo->setCurrentIndex(i);
-            break;
-        }
-    }
-
-    QHBoxLayout *themeRow = new QHBoxLayout;
-    themeRow->addWidget(themeLabel);
-    themeRow->addWidget(m_themeCombo, 1);
-    themeGroup->setLayout(themeRow);
-
-    // --- Note label ---
-    QLabel *noteLabel = new QLabel(
-        tr("<small>The theme is applied immediately. "
-           "Icons in open file trees will update on next file open.</small>"),
-        this);
-    noteLabel->setWordWrap(true);
-
-    // --- Button box ---
     QDialogButtonBox *buttons = new QDialogButtonBox(
         QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
     connect(buttons, &QDialogButtonBox::accepted, this, &AdvancedPreferencesDialog::onAccepted);
     connect(buttons, &QDialogButtonBox::rejected, this, &QDialog::reject);
 
-    // --- Layout ---
-    QVBoxLayout *main = new QVBoxLayout(this);
-    main->addWidget(themeGroup);
-    main->addWidget(noteLabel);
-    main->addStretch();
-    main->addWidget(buttons);
-    setLayout(main);
+    QVBoxLayout *mainLayout = new QVBoxLayout(this);
+    mainLayout->addWidget(m_themeWidget);
+    mainLayout->addStretch();
+    mainLayout->addWidget(buttons);
+    setLayout(mainLayout);
 }
 
 /**
  * @brief AdvancedPreferencesDialog::onAccepted
- * Saves the chosen theme and applies it live to the running application.
+ * Applies the chosen theme live and closes the dialog.
  */
 void AdvancedPreferencesDialog::onAccepted()
 {
-    const ThemeMode chosen = static_cast<ThemeMode>(
-        m_themeCombo->currentData().toInt());
-    CustomStyleTheme::applyToApplication(chosen);
+    m_themeWidget->applyTheme();
     accept();
 }

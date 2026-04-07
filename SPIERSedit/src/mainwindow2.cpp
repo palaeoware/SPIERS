@@ -16,6 +16,7 @@
  */
 
 #include <math.h>
+#include "../../SPIERScommon/src/colourswatchlabel.h"
 #include "../../SPIERScommon/src/customstyletheme.h"
 #include "keysafespinbox.h"
 #include "distributedialogimpl.h"
@@ -53,33 +54,10 @@ int LastColumnClicked = -1;
 void MainWindow::RefreshOneMaskItem(QTreeWidgetItem *item, int i) //i is index of item in my array
 {
     //if passed an item
-    QLabel *test = new QLabel();
-
-    QPicture picture;
-    QPainter painter;
-    painter.begin(&picture);           // paint in picture
-    painter.setPen(QPen(Qt::NoPen));
-    painter.setBrush(QBrush(QColor(MasksSettings[i]->BackColour[0], MasksSettings[i]->BackColour[1], MasksSettings[i]->BackColour[2])));
-    painter.drawRect(0, 0, 28, 20);    // draw a rect
-
-    painter.end();                     // painting done
-    test->setPicture(picture);
-    test->setAutoFillBackground(true);
+    QLabel *test = new ColourSwatchLabel(QColor(MasksSettings[i]->BackColour[0], MasksSettings[i]->BackColour[1], MasksSettings[i]->BackColour[2]));
 
     //now fg
-    QLabel *test2 = new QLabel();
-
-    QPicture picture2;
-    QPainter painter2;
-    painter2.begin(&picture2);           // paint in picture
-    painter2.setPen(QPen(Qt::NoPen));
-
-
-    painter2.setBrush(QBrush(QColor(MasksSettings[i]->ForeColour[0], MasksSettings[i]->ForeColour[1], MasksSettings[i]->ForeColour[2])));
-    painter2.drawRect(0, 0, 28, 20);   // draw a rect
-    painter2.end();                     // painting done
-    test2->setPicture(picture2);
-    test2->setAutoFillBackground(true);
+    QLabel *test2 = new ColourSwatchLabel(QColor(MasksSettings[i]->ForeColour[0], MasksSettings[i]->ForeColour[1], MasksSettings[i]->ForeColour[2]));
 
     item->setText(0, " ");
     if (SelectedMask == i && SelectedRMask != i) item->setText(0, "L");
@@ -137,8 +115,6 @@ void MainWindow::RefreshMasks()
     QTreeWidgetItem *item;
 
     //first find lowest listorder...
-
-
     QList <bool> usedflags;
     for (int i = 0; i <= MaxUsedMask; i++) usedflags.append(false);
     for (int kloop = 0; kloop <= MaxUsedMask; kloop++)
@@ -189,18 +165,7 @@ void MainWindow::RefreshOneSegmentItem(QTreeWidgetItem *item, int i) //i is inde
 {
     //Modified from mask equivalent. Redraws item in list
     if (i < 0) return;
-    QLabel *test = new QLabel();
-
-    QPicture picture;
-    QPainter painter;
-    painter.begin(&picture);           // paint in picture
-    painter.setPen(QPen(Qt::NoPen));
-    painter.setBrush(QBrush(QColor(Segments[i]->Colour[0], Segments[i]->Colour[1], Segments[i]->Colour[2])));
-
-    painter.drawRect(0, 0, 28, 20);     // draw a rect
-    painter.end();                     // painting done
-    test->setPicture(picture);
-    test->setAutoFillBackground(true);
+    QLabel *test = new ColourSwatchLabel(QColor(Segments[i]->Colour[0], Segments[i]->Colour[1], Segments[i]->Colour[2]));
 
     item->setText(0, " ");
     if (CurrentSegment == i && CurrentRSegment != i) item->setText(0, "L");
@@ -325,18 +290,7 @@ void MainWindow::RefreshOneOOItem(QTreeWidgetItem *item, int i) //i is index of 
 {
     //Modified from mask equivalent. Redraws item in list
     if (i < 0) return;
-    QLabel *test = new QLabel();
-
-    QPicture picture;
-    QPainter painter;
-    painter.begin(&picture);           // paint in picture
-    painter.setPen(QPen(Qt::NoPen));
-    painter.setBrush(QBrush(QColor(OutputObjects[i]->Colour[0], OutputObjects[i]->Colour[1], OutputObjects[i]->Colour[2])));
-
-    painter.drawRect(0, 0, 28, 20);     // draw a rect
-    painter.end();                     // painting done
-    test->setPicture(picture);
-    test->setAutoFillBackground(true);
+    QLabel *test = new ColourSwatchLabel(QColor(OutputObjects[i]->Colour[0], OutputObjects[i]->Colour[1], OutputObjects[i]->Colour[2]));
 
     OOTreeWidget->setItemWidget (item, 1, test);
 
@@ -543,18 +497,7 @@ void MainWindow::RefreshOneCurveItem(QTreeWidgetItem *item, int i) //i is index 
 {
     //Modified from mask equivalent. Redraws item in list
     if (i < 0) return;
-    QLabel *test = new QLabel();
-
-    QPicture picture;
-    QPainter painter;
-    painter.begin(&picture);           // paint in picture
-    painter.setPen(QPen(Qt::NoPen));
-    painter.setBrush(QBrush(QColor(Curves[i]->Colour[0], Curves[i]->Colour[1], Curves[i]->Colour[2])));
-
-    painter.drawRect(0, 0, 28, 20);     // draw a rect
-    painter.end();                     // painting done
-    test->setPicture(picture);
-    test->setAutoFillBackground(true);
+    QLabel *test = new ColourSwatchLabel(QColor(Curves[i]->Colour[0], Curves[i]->Colour[1], Curves[i]->Colour[2]));
 
     CurvesTreeWidget->setItemWidget (item, 1, test);
 
@@ -2909,6 +2852,25 @@ bool MainWindow::event ( QEvent *event )
     b = QWidget::event(event);
     return b;
 };
+
+/**
+ * @brief MainWindow::changeEvent
+ * Catches QEvent::StyleChange (fired by QApplication::setStyle() during a live
+ * theme switch) and rebuilds all tree widget rows so their inline icon pixmaps
+ * reflect the newly active theme. The refresh is skipped when no dataset is
+ * open, both to avoid operating on uninitialised state and because there is
+ * nothing to update.
+ */
+void MainWindow::changeEvent(QEvent *event)
+{
+    if (event->type() == QEvent::StyleChange && Active)
+    {
+        RefreshMasks();
+        RefreshSegments();
+        RefreshOO();
+    }
+    QMainWindow::changeEvent(event);
+}
 
 void MainWindow::on_actionShow_position_slice_selector_toggled(bool tog)
 {

@@ -22,6 +22,8 @@
 
 #include "ui_settings.h"
 
+class ThemeSelectorWidget;
+
 /**
  * @brief The SettingsImpl class
  */
@@ -38,6 +40,9 @@ private slots:
     void on_buttonBox_accepted();
     void on_buttonBox_rejected();
     void on_pushButton_clicked();
+
+private:
+    ThemeSelectorWidget *m_themeSelector; /// Embedded shared theme selector
 };
 
 #endif

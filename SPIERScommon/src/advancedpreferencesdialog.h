@@ -19,14 +19,8 @@
 #define ADVANCEDPREFERENCESDIALOG_H
 
 #include <QDialog>
-#include <QComboBox>
-#include <QDialogButtonBox>
-#include <QLabel>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QGroupBox>
 
-#include "customstyletheme.h"
+class ThemeSelectorWidget;
 
 /**
  * @brief The AdvancedPreferencesDialog class
@@ -45,7 +39,7 @@ private slots:
     void onAccepted();
 
 private:
-    QComboBox *m_themeCombo;
+    ThemeSelectorWidget *m_themeWidget; /// Shared theme selector widget
 };
 
 #endif // ADVANCEDPREFERENCESDIALOG_H

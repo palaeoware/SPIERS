@@ -121,6 +121,8 @@ HEADERS += src/display.h \
     src/previewwidget.h \
     ../SPIERScommon/src/customstyletheme.h \
     ../SPIERScommon/src/advancedpreferencesdialog.h \
+    ../SPIERScommon/src/colourswatchlabel.h \
+    ../SPIERScommon/src/themeselectorwidget.h \
     ../SPIERScommon/src/netmodule.h \
     ../SPIERScommon/src/updatedialog.h \
     ../SPIERScommon/src/semanticversion.h \
@@ -195,6 +197,8 @@ SOURCES += src/display.cpp \
     src/previewwidget.cpp \
     ../SPIERScommon/src/customstyletheme.cpp \
     ../SPIERScommon/src/advancedpreferencesdialog.cpp \
+    ../SPIERScommon/src/colourswatchlabel.cpp \
+    ../SPIERScommon/src/themeselectorwidget.cpp \
     ../SPIERScommon/src/netmodule.cpp \
     ../SPIERScommon/src/updatedialog.cpp \
     ../SPIERScommon/src/semanticversion.cpp \

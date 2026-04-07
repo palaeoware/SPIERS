@@ -19,7 +19,9 @@
 #include "fileio.h"
 #include "globals.h"
 #include "copyingimpl.h"
-#include "../../SPIERScommon/src/customstyletheme.h"
+#include "../../SPIERScommon/src/themeselectorwidget.h"
+
+#include <QVBoxLayout>
 
 SettingsImpl::SettingsImpl(QWidget *parent, Qt::WindowFlags f)
     : QDialog(parent, f)
@@ -39,21 +41,11 @@ SettingsImpl::SettingsImpl(QWidget *parent, Qt::WindowFlags f)
 
     BoxBackCache->setVisible(false);
 
-    // Populate theme combo and select the currently saved preference
-    comboBoxTheme->clear();
-    comboBoxTheme->addItem(tr("Follow system"), static_cast<int>(ThemeMode::System));
-    comboBoxTheme->addItem(tr("Dark"),          static_cast<int>(ThemeMode::Dark));
-    comboBoxTheme->addItem(tr("Light"),         static_cast<int>(ThemeMode::Light));
-
-    const ThemeMode saved = CustomStyleTheme::readThemeSetting();
-    for (int i = 0; i < comboBoxTheme->count(); ++i)
-    {
-        if (comboBoxTheme->itemData(i).toInt() == static_cast<int>(saved))
-        {
-            comboBoxTheme->setCurrentIndex(i);
-            break;
-        }
-    }
+    // Embed the shared theme selector into the placeholder widget from the .ui
+    m_themeSelector = new ThemeSelectorWidget(this);
+    QVBoxLayout *placeholderLayout = new QVBoxLayout(appearancePlaceholder);
+    placeholderLayout->setContentsMargins(0, 0, 0, 0);
+    placeholderLayout->addWidget(m_themeSelector);
 }
 
 void SettingsImpl::on_pushButton_clicked()
@@ -90,9 +82,7 @@ void SettingsImpl::on_buttonBox_accepted()
     if (ccl != CacheCompressionLevel) ClearCache();
 
     // Apply theme immediately and save preference
-    const ThemeMode chosenTheme = static_cast<ThemeMode>(
-        comboBoxTheme->currentData().toInt());
-    CustomStyleTheme::applyToApplication(chosenTheme);
+    m_themeSelector->applyTheme();
 
     close();
 }

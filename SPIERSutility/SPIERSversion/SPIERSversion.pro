@@ -42,12 +42,16 @@ SOURCES += src/main.cpp \
     src/mainwindow.cpp \
     ../../SPIERScommon/src/customstyletheme.cpp \
     ../../SPIERScommon/src/advancedpreferencesdialog.cpp \
+    ../../SPIERScommon/src/colourswatchlabel.cpp \
+    ../../SPIERScommon/src/themeselectorwidget.cpp \
     src/globals.cpp \
     src/aboutdialog.cpp \
 
 HEADERS += src/mainwindow.h \
     ../../SPIERScommon/src/customstyletheme.h \
     ../../SPIERScommon/src/advancedpreferencesdialog.h \
+    ../../SPIERScommon/src/colourswatchlabel.h \
+    ../../SPIERScommon/src/themeselectorwidget.h \
     src/globals.h \
     src/main.h \
     src/aboutdialog.h \

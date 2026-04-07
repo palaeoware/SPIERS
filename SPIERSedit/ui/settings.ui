@@ -435,52 +435,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBoxAppearance">
-     <property name="title">
-      <string>Appearance</string>
-     </property>
-     <layout class="QHBoxLayout">
-      <item>
-       <widget class="QLabel" name="labelTheme">
-        <property name="text">
-         <string>Theme:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QComboBox" name="comboBoxTheme">
-        <property name="toolTip">
-         <string>Choose the application colour theme. The change is applied immediately.</string>
-        </property>
-        <item>
-         <property name="text">
-          <string>Follow system</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Dark</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Light</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLabel" name="labelThemeNote">
-     <property name="text">
-      <string>&lt;small&gt;Theme is applied immediately. Icons in open file trees update on next file open.&lt;/small&gt;</string>
-     </property>
-     <property name="wordWrap">
-      <bool>true</bool>
-     </property>
-    </widget>
+    <widget class="QWidget" name="appearancePlaceholder" native="true"/>
    </item>
    <item>
     <spacer>

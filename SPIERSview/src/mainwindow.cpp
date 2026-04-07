@@ -16,6 +16,7 @@
  */
 
 #include <QtWidgets/QApplication>
+#include "../../SPIERScommon/src/colourswatchlabel.h"
 #include "../../SPIERScommon/src/customstyletheme.h"
 #include "../../SPIERScommon/src/advancedpreferencesdialog.h"
 #include <QActionGroup>
@@ -915,18 +916,7 @@ void MainWindow::RefreshOneItem(QTreeWidgetItem *item, int i)
     //8 - Shininess
 
     //Sort out colour box (2)
-    QLabel *test = new QLabel();
-
-    QPicture picture;
-    QPainter painter;
-    painter.begin(&picture);           // paint in picture
-    painter.setPen(QPen(Qt::NoPen));
-    painter.setBrush(QBrush(QColor(SVObjects[i]->Colour[0], SVObjects[i]->Colour[1], SVObjects[i]->Colour[2])));
-
-    painter.drawRect(0, 0, 28, 20);     // draw a rect
-    painter.end();                     // painting done
-    test->setPicture(picture);
-    test->setAutoFillBackground(true);
+    QLabel *test = new ColourSwatchLabel(QColor(SVObjects[i]->Colour[0], SVObjects[i]->Colour[1], SVObjects[i]->Colour[2]));
 
     if (SVObjects[i]->IsGroup)
     {
@@ -4035,6 +4025,13 @@ void MainWindow::changeEvent(QEvent *event)
             updateScreenRatio();
         }
     }
+    else if (event->type() == QEvent::StyleChange)
+    {
+        /// RefreshObjects() guards on SVObjects.count() == 0 and returns early
+        /// when no dataset is loaded, so this is safe to call unconditionally.
+        RefreshObjects();
+    }
+    QMainWindow::changeEvent(event);
 }
 
 /**
