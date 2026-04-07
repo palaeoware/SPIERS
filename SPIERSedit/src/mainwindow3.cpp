@@ -29,10 +29,6 @@
 #include "fileio.h"
 #include "moreimpl.h"
 #include "undo.h"
-#include "contrastimpl.h"
-#include "deletemaskdialogimpl.h"
-#include "settingsimpl.h"
-#include "backthread.h"
 #include "histogram.h"
 #include "globals.h"
 
@@ -53,7 +49,6 @@ void MainWindow::SetUpDocks()
 
     addDockWidget (Qt::LeftDockWidgetArea, dockWidget_Main);
     addDockWidget (Qt::LeftDockWidgetArea, SliceSelector);
-
     addDockWidget (Qt::RightDockWidgetArea, DockPreview3D);
     addDockWidget (Qt::RightDockWidgetArea, DockInfo);
     addDockWidget (Qt::RightDockWidgetArea, dockWidget_Generate);

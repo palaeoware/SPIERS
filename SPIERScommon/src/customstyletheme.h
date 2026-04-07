@@ -1,6 +1,6 @@
 /**
  * @file
- * Header: Dark Style Theme
+ * Header: Custom Style Theme
  *
  * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
@@ -15,8 +15,8 @@
  * hope that it will be useful, but WITHOUT ANY WARRANTY.
  */
 
-#ifndef DARKSTYLETHEME_H
-#define DARKSTYLETHEME_H
+#ifndef CUSTOMSTYLETHEME_H
+#define CUSTOMSTYLETHEME_H
 
 #include <QApplication>
 #include <QFont>
@@ -37,23 +37,23 @@ enum class ThemeMode {
 };
 
 /**
- * @brief The DarkStyleTheme class
+ * @brief The CustomStyleTheme class
  * Applies a Fusion-based theme with a Blender-inspired colour palette.
  * Supports dark and light modes with WCAG AA contrast compliance.
  */
-class DarkStyleTheme : public QProxyStyle
+class CustomStyleTheme : public QProxyStyle
 {
     Q_OBJECT
 
 public:
     // Backward-compatible: no-arg => Dark mode
-    DarkStyleTheme();
+    CustomStyleTheme();
 
     // Explicit mode selection (use ThemeMode::System for OS-aware behaviour)
-    explicit DarkStyleTheme(ThemeMode mode);
+    explicit CustomStyleTheme(ThemeMode mode);
 
     // Internal: used by constructor delegation chain
-    explicit DarkStyleTheme(QStyle *style);
+    explicit CustomStyleTheme(QStyle *style);
 
     void polish(QPalette &palette) override;
     void polish(QApplication *app) override;
@@ -85,4 +85,4 @@ private:
     void applyLightPalette(QPalette &palette);
 };
 
-#endif // DARKSTYLETHEME_H
+#endif // CUSTOMSTYLETHEME_H

@@ -17,7 +17,7 @@
 #include "mainwindow.h"
 #include "globals.h"
 #include "../SPIERScommon/src/netmodule.h"
-#include "../SPIERScommon/src/darkstyletheme.h"
+#include "../SPIERScommon/src/customstyletheme.h"
 
 #ifdef _WIN64
 #include <windows.h>
@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
 
     qInstallMessageHandler(logMessageOutput);
 
-    QApplication::setStyle(new DarkStyleTheme(DarkStyleTheme::readThemeSetting()));
+    QApplication::setStyle(new CustomStyleTheme(CustomStyleTheme::readThemeSetting()));
 
     QPixmap splashPixmap(":/logo/palaeoware_square.png");
     QSplashScreen *splash = new QSplashScreen(splashPixmap, Qt::WindowStaysOnTopHint);
@@ -247,7 +247,7 @@ int main(int argc, char *argv[])
 
     class main app(argc, argv);
 
-    QApplication::setStyle(new DarkStyleTheme(DarkStyleTheme::readThemeSetting()));
+    QApplication::setStyle(new CustomStyleTheme(CustomStyleTheme::readThemeSetting()));
 
     app.setQuitOnLastWindowClosed(true);
 

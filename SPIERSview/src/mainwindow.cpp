@@ -16,7 +16,7 @@
  */
 
 #include <QtWidgets/QApplication>
-#include "../../SPIERScommon/src/darkstyletheme.h"
+#include "../../SPIERScommon/src/customstyletheme.h"
 #include "../../SPIERScommon/src/advancedpreferencesdialog.h"
 #include <QActionGroup>
 #include <QFileDialog>
@@ -958,7 +958,7 @@ void MainWindow::RefreshOneItem(QTreeWidgetItem *item, int i)
 
     auto themedPixmap = [](const QString &path) -> QPixmap {
         QPixmap p(path);
-        if (DarkStyleTheme::currentApplicationMode() == ThemeMode::Light) {
+        if (CustomStyleTheme::currentApplicationMode() == ThemeMode::Light) {
             QImage img = p.toImage();
             img.invertPixels(QImage::InvertRgb);
             return QPixmap::fromImage(img);

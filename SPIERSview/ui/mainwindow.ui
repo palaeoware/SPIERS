@@ -7,15 +7,18 @@
     <x>0</x>
     <y>0</y>
     <width>1071</width>
-    <height>1121</height>
+    <height>1201</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>SPIERSview</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../view.qrc">
+   <iconset>
     <normaloff>:/resources/SPIERSviewIcon.svg</normaloff>:/resources/SPIERSviewIcon.svg</iconset>
+  </property>
+  <property name="dockOptions">
+   <set>QMainWindow::DockOption::AllowTabbedDocks|QMainWindow::DockOption::AnimatedDocks</set>
   </property>
   <widget class="QWidget" name="centralWidget">
    <property name="sizePolicy">
@@ -110,7 +113,7 @@
      <x>0</x>
      <y>0</y>
      <width>1071</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuSPIERSview">
@@ -2985,8 +2988,6 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources>
-  <include location="../view.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

@@ -16,7 +16,7 @@
  */
 
 #include <math.h>
-#include "../../SPIERScommon/src/darkstyletheme.h"
+#include "../../SPIERScommon/src/customstyletheme.h"
 #include "keysafespinbox.h"
 #include "distributedialogimpl.h"
 #include "exportdxf.h"
@@ -32,7 +32,6 @@
 #include "curves.h"
 #include "undo.h"
 #include "myrangescene.h"
-#include "brush.h"
 #include "beamhardening.h"
 #include "previewwidget.h"
 
@@ -95,7 +94,7 @@ void MainWindow::RefreshOneMaskItem(QTreeWidgetItem *item, int i) //i is index o
     //now my write, show, lock widgets
     auto themedPixmap = [](const QString &path) -> QPixmap {
         QPixmap p(path);
-        if (DarkStyleTheme::currentApplicationMode() == ThemeMode::Light) {
+        if (CustomStyleTheme::currentApplicationMode() == ThemeMode::Light) {
             QImage img = p.toImage();
             img.invertPixels(QImage::InvertRgb);
             return QPixmap::fromImage(img);
@@ -221,7 +220,7 @@ void MainWindow::RefreshOneSegmentItem(QTreeWidgetItem *item, int i) //i is inde
     //now my write, show, lock widgets
     auto themedPixmap = [](const QString &path) -> QPixmap {
         QPixmap p(path);
-        if (DarkStyleTheme::currentApplicationMode() == ThemeMode::Light) {
+        if (CustomStyleTheme::currentApplicationMode() == ThemeMode::Light) {
             QImage img = p.toImage();
             img.invertPixels(QImage::InvertRgb);
             return QPixmap::fromImage(img);
@@ -367,7 +366,7 @@ void MainWindow::RefreshOneOOItem(QTreeWidgetItem *item, int i) //i is index of 
 
     auto themedPixmap = [](const QString &path) -> QPixmap {
         QPixmap p(path);
-        if (DarkStyleTheme::currentApplicationMode() == ThemeMode::Light) {
+        if (CustomStyleTheme::currentApplicationMode() == ThemeMode::Light) {
             QImage img = p.toImage();
             img.invertPixels(QImage::InvertRgb);
             return QPixmap::fromImage(img);

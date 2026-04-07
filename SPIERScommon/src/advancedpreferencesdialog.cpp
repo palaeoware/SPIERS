@@ -41,7 +41,7 @@ AdvancedPreferencesDialog::AdvancedPreferencesDialog(QWidget *parent)
                                 "The change is applied immediately."));
 
     // Select current saved preference
-    const ThemeMode saved = DarkStyleTheme::readThemeSetting();
+    const ThemeMode saved = CustomStyleTheme::readThemeSetting();
     for (int i = 0; i < m_themeCombo->count(); ++i)
     {
         if (m_themeCombo->itemData(i).toInt() == static_cast<int>(saved))
@@ -86,6 +86,6 @@ void AdvancedPreferencesDialog::onAccepted()
 {
     const ThemeMode chosen = static_cast<ThemeMode>(
         m_themeCombo->currentData().toInt());
-    DarkStyleTheme::applyToApplication(chosen);
+    CustomStyleTheme::applyToApplication(chosen);
     accept();
 }

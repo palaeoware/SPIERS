@@ -39,7 +39,7 @@ OBJECTS_DIR += build
 
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
-    ../SPIERScommon/src/darkstyletheme.cpp \
+    ../SPIERScommon/src/customstyletheme.cpp \
     ../SPIERScommon/src/advancedpreferencesdialog.cpp \
     src/globals.cpp \
     src/meshfilters.cpp \
@@ -79,7 +79,7 @@ SOURCES += src/main.cpp \
     src/uncompr.c \
     src/zutil.c
 HEADERS += src/mainwindow.h \
-    ../SPIERScommon/src/darkstyletheme.h \
+    ../SPIERScommon/src/customstyletheme.h \
     ../SPIERScommon/src/advancedpreferencesdialog.h \
     src/globals.h \
     src/meshfilters.h \

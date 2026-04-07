@@ -19,7 +19,7 @@
 #include "fileio.h"
 #include "globals.h"
 #include "copyingimpl.h"
-#include "../../SPIERScommon/src/darkstyletheme.h"
+#include "../../SPIERScommon/src/customstyletheme.h"
 
 SettingsImpl::SettingsImpl(QWidget *parent, Qt::WindowFlags f)
     : QDialog(parent, f)
@@ -45,7 +45,7 @@ SettingsImpl::SettingsImpl(QWidget *parent, Qt::WindowFlags f)
     comboBoxTheme->addItem(tr("Dark"),          static_cast<int>(ThemeMode::Dark));
     comboBoxTheme->addItem(tr("Light"),         static_cast<int>(ThemeMode::Light));
 
-    const ThemeMode saved = DarkStyleTheme::readThemeSetting();
+    const ThemeMode saved = CustomStyleTheme::readThemeSetting();
     for (int i = 0; i < comboBoxTheme->count(); ++i)
     {
         if (comboBoxTheme->itemData(i).toInt() == static_cast<int>(saved))
@@ -92,7 +92,7 @@ void SettingsImpl::on_buttonBox_accepted()
     // Apply theme immediately and save preference
     const ThemeMode chosenTheme = static_cast<ThemeMode>(
         comboBoxTheme->currentData().toInt());
-    DarkStyleTheme::applyToApplication(chosenTheme);
+    CustomStyleTheme::applyToApplication(chosenTheme);
 
     close();
 }

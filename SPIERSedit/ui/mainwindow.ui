@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>962</width>
-    <height>2365</height>
+    <width>1071</width>
+    <height>1397</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -30,17 +30,17 @@
     <normaloff>:/icons/resources/SPIERSeditIcon.svg</normaloff>:/icons/resources/SPIERSeditIcon.svg</iconset>
   </property>
   <property name="dockNestingEnabled">
-   <bool>true</bool>
+   <bool>false</bool>
   </property>
   <property name="dockOptions">
-   <set>QMainWindow::DockOption::AllowNestedDocks|QMainWindow::DockOption::AllowTabbedDocks</set>
+   <set>QMainWindow::DockOption::AllowTabbedDocks|QMainWindow::DockOption::AnimatedDocks</set>
   </property>
   <property name="unifiedTitleAndToolBarOnMac">
    <bool>false</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="sizePolicy">
-    <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -259,7 +259,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>962</width>
+     <width>1071</width>
      <height>22</height>
     </rect>
    </property>

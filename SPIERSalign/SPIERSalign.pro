@@ -46,7 +46,7 @@ FORMS += ui/mainwindow.ui \
 HEADERS += src/mainwindowimpl.h \
     src/globals.h \
     src/scene.h \
-    ../SPIERScommon/src/darkstyletheme.h \
+    ../SPIERScommon/src/customstyletheme.h \
     ../SPIERScommon/src/advancedpreferencesdialog.h \
     src/about.h \
     ../SPIERScommon/src/netmodule.h \
@@ -58,7 +58,7 @@ SOURCES += src/mainwindowimpl.cpp \
     src/main.cpp \
     src/globals.cpp \
     src/scene.cpp \
-    ../SPIERScommon/src/darkstyletheme.cpp \
+    ../SPIERScommon/src/customstyletheme.cpp \
     ../SPIERScommon/src/advancedpreferencesdialog.cpp \
     src/about.cpp \
     ../SPIERScommon/src/netmodule.cpp \

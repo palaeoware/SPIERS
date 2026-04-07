@@ -1,6 +1,6 @@
 /**
  * @file
- * Dark Style Theme
+ * Custom Style Theme
  *
  * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
@@ -15,7 +15,7 @@
  * hope that it will be useful, but WITHOUT ANY WARRANTY.
  */
 
-#include "darkstyletheme.h"
+#include "customstyletheme.h"
 #include <QScreen>
 #include <QRect>
 #include <QGuiApplication>
@@ -23,69 +23,69 @@
 #include <QSettings>
 
 // Initialise static — resolved to Dark or Light during polish()
-ThemeMode DarkStyleTheme::s_currentMode = ThemeMode::Dark;
+ThemeMode CustomStyleTheme::s_currentMode = ThemeMode::Dark;
 
 /**
- * @brief DarkStyleTheme::DarkStyleTheme
+ * @brief CustomStyleTheme::CustomStyleTheme
  * Default constructor — uses Dark mode for backward compatibility.
  */
-DarkStyleTheme::DarkStyleTheme()
-    : DarkStyleTheme(ThemeMode::Dark)
+CustomStyleTheme::CustomStyleTheme()
+    : CustomStyleTheme(ThemeMode::Dark)
 {
 }
 
 /**
- * @brief DarkStyleTheme::DarkStyleTheme
+ * @brief CustomStyleTheme::CustomStyleTheme
  * @param mode  Dark, Light, or System (resolved at construction time)
  */
-DarkStyleTheme::DarkStyleTheme(ThemeMode mode)
+CustomStyleTheme::CustomStyleTheme(ThemeMode mode)
     : QProxyStyle(QStyleFactory::create(QStringLiteral("Fusion")))
     , m_mode(mode == ThemeMode::System ? detectSystemTheme() : mode)
 {
 }
 
 /**
- * @brief DarkStyleTheme::DarkStyleTheme
+ * @brief CustomStyleTheme::CustomStyleTheme
  * @param style  Explicit base style — kept for internal/external delegation use.
  */
-DarkStyleTheme::DarkStyleTheme(QStyle *style)
+CustomStyleTheme::CustomStyleTheme(QStyle *style)
     : QProxyStyle(style)
     , m_mode(ThemeMode::Dark)
 {
 }
 
 /**
- * @brief DarkStyleTheme::baseStyle
+ * @brief CustomStyleTheme::baseStyle
  */
-QStyle *DarkStyleTheme::baseStyle() const
+QStyle *CustomStyleTheme::baseStyle() const
 {
     return QProxyStyle::baseStyle();
 }
 
 /**
- * @brief DarkStyleTheme::activeMode
+ * @brief CustomStyleTheme::activeMode
  * @return The resolved mode (never returns System).
  */
-ThemeMode DarkStyleTheme::activeMode() const
+ThemeMode CustomStyleTheme::activeMode() const
 {
     return m_mode;
 }
 
 /**
- * @brief DarkStyleTheme::currentApplicationMode
+ * @brief CustomStyleTheme::currentApplicationMode
  * @return The mode that was applied to the running QApplication during polish().
  */
-ThemeMode DarkStyleTheme::currentApplicationMode()
+ThemeMode CustomStyleTheme::currentApplicationMode()
 {
     return s_currentMode;
 }
 
 /**
- * @brief DarkStyleTheme::detectSystemTheme
+ * @brief CustomStyleTheme::detectSystemTheme
  * Uses Qt 6.5+ QStyleHints::colorScheme() to read the OS preference.
  * Falls back to Dark on earlier Qt versions or when the preference is unknown.
  */
-ThemeMode DarkStyleTheme::detectSystemTheme()
+ThemeMode CustomStyleTheme::detectSystemTheme()
 {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
     const auto scheme = QGuiApplication::styleHints()->colorScheme();
@@ -96,10 +96,10 @@ ThemeMode DarkStyleTheme::detectSystemTheme()
 }
 
 /**
- * @brief DarkStyleTheme::polish (palette)
+ * @brief CustomStyleTheme::polish (palette)
  * Applies a Blender-inspired palette that meets WCAG AA contrast requirements.
  */
-void DarkStyleTheme::polish(QPalette &palette)
+void CustomStyleTheme::polish(QPalette &palette)
 {
     if (m_mode == ThemeMode::Light)
         applyLightPalette(palette);
@@ -108,7 +108,7 @@ void DarkStyleTheme::polish(QPalette &palette)
 }
 
 /**
- * @brief DarkStyleTheme::applyDarkPalette
+ * @brief CustomStyleTheme::applyDarkPalette
  * Blender 4.x-inspired dark palette.
  *
  * Key WCAG AA checks (contrast ratio >= 4.5:1 for normal text):
@@ -118,7 +118,7 @@ void DarkStyleTheme::polish(QPalette &palette)
  *   Link #5B8DD9 on Window #282828        => ~4.6:1   PASS
  *   Disabled text is exempt from the 4.5:1 requirement per WCAG 1.4.3.
  */
-void DarkStyleTheme::applyDarkPalette(QPalette &palette)
+void CustomStyleTheme::applyDarkPalette(QPalette &palette)
 {
     palette.setColor(QPalette::Window,          QColor(0x28, 0x28, 0x28));
     palette.setColor(QPalette::WindowText,      QColor(0xE8, 0xE8, 0xE8));
@@ -147,7 +147,7 @@ void DarkStyleTheme::applyDarkPalette(QPalette &palette)
 }
 
 /**
- * @brief DarkStyleTheme::applyLightPalette
+ * @brief CustomStyleTheme::applyLightPalette
  * Clean accessible light palette.
  *
  * Key WCAG AA checks:
@@ -156,7 +156,7 @@ void DarkStyleTheme::applyDarkPalette(QPalette &palette)
  *   HighlightedText #FFF on Highlight #1F5799 => ~10.2:1  PASS
  *   Link #0057AE on Window #F0F0F0        => ~8.8:1   PASS
  */
-void DarkStyleTheme::applyLightPalette(QPalette &palette)
+void CustomStyleTheme::applyLightPalette(QPalette &palette)
 {
     palette.setColor(QPalette::Window,          QColor(0xF0, 0xF0, 0xF0));
     palette.setColor(QPalette::WindowText,      QColor(0x1A, 0x1A, 0x1A));
@@ -185,21 +185,21 @@ void DarkStyleTheme::applyLightPalette(QPalette &palette)
 }
 
 /**
- * @brief DarkStyleTheme::writeThemeSetting
+ * @brief CustomStyleTheme::writeThemeSetting
  * Saves the user's theme preference to the shared Palaeoware/SPIERS settings store.
  * @param mode  Dark, Light, or System
  */
-void DarkStyleTheme::writeThemeSetting(ThemeMode mode)
+void CustomStyleTheme::writeThemeSetting(ThemeMode mode)
 {
     QSettings settings(QStringLiteral("Palaeoware"), QStringLiteral("SPIERS"));
     settings.setValue(QStringLiteral("Theme"), static_cast<int>(mode));
 }
 
 /**
- * @brief DarkStyleTheme::readThemeSetting
- * Reads the user's saved theme preference. Defaults to System if not set.
+ * @brief CustomStyleTheme::readThemeSetting
+ * Reads the user's saved theme preference. Defaults to Dark if not set.
  */
-ThemeMode DarkStyleTheme::readThemeSetting()
+ThemeMode CustomStyleTheme::readThemeSetting()
 {
     QSettings settings(QStringLiteral("Palaeoware"), QStringLiteral("SPIERS"));
     int v = settings.value(QStringLiteral("Theme"), static_cast<int>(ThemeMode::Dark)).toInt();
@@ -209,14 +209,14 @@ ThemeMode DarkStyleTheme::readThemeSetting()
 }
 
 /**
- * @brief DarkStyleTheme::applyToApplication
+ * @brief CustomStyleTheme::applyToApplication
  * Applies a theme to the running application immediately (live switch).
  * Updates the style, palette, and stylesheet without requiring a restart.
  * Note: pixmaps already embedded in existing tree widget items won't update
  * until those items are next rebuilt (e.g. on next file open).
  * @param mode  Dark, Light, or System (resolved at call time)
  */
-void DarkStyleTheme::applyToApplication(ThemeMode mode)
+void CustomStyleTheme::applyToApplication(ThemeMode mode)
 {
     const ThemeMode resolved = (mode == ThemeMode::System) ? detectSystemTheme() : mode;
     s_currentMode = resolved;
@@ -226,23 +226,23 @@ void DarkStyleTheme::applyToApplication(ThemeMode mode)
     QPalette pal;
     if (resolved == ThemeMode::Light)
     {
-        DarkStyleTheme tmp(ThemeMode::Light);
+        CustomStyleTheme tmp(ThemeMode::Light);
         tmp.applyLightPalette(pal);
     }
     else
     {
-        DarkStyleTheme tmp(ThemeMode::Dark);
+        CustomStyleTheme tmp(ThemeMode::Dark);
         tmp.applyDarkPalette(pal);
     }
     QApplication::setPalette(pal);
 
     // Update style (also triggers widget repolish)
-    QApplication::setStyle(new DarkStyleTheme(resolved));
+    QApplication::setStyle(new CustomStyleTheme(resolved));
 
     // Update stylesheet
     const QString qssPath = (resolved == ThemeMode::Light)
-        ? QStringLiteral(":/darkstyle/stylesheet_light.qss")
-        : QStringLiteral(":/darkstyle/stylesheet_dark.qss");
+        ? QStringLiteral(":/customstyle/stylesheet_light.qss")
+        : QStringLiteral(":/customstyle/stylesheet_dark.qss");
     QFile qssFile(qssPath);
     if (qssFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
@@ -252,10 +252,10 @@ void DarkStyleTheme::applyToApplication(ThemeMode mode)
 }
 
 /**
- * @brief DarkStyleTheme::polish (application)
+ * @brief CustomStyleTheme::polish (application)
  * Scales font on high-DPI screens and loads the appropriate QSS stylesheet.
  */
-void DarkStyleTheme::polish(QApplication *app)
+void CustomStyleTheme::polish(QApplication *app)
 {
     if (!app) return;
 
@@ -271,8 +271,8 @@ void DarkStyleTheme::polish(QApplication *app)
     }
 
     const QString qssPath = (m_mode == ThemeMode::Light)
-        ? QStringLiteral(":/darkstyle/stylesheet_light.qss")
-        : QStringLiteral(":/darkstyle/stylesheet_dark.qss");
+        ? QStringLiteral(":/customstyle/stylesheet_light.qss")
+        : QStringLiteral(":/customstyle/stylesheet_dark.qss");
 
     QFile qssFile(qssPath);
     if (qssFile.open(QIODevice::ReadOnly | QIODevice::Text))

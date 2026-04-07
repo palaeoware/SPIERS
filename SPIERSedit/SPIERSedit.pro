@@ -119,7 +119,7 @@ HEADERS += src/display.h \
     src/keysafespinbox.h \
     src/mainview.h \
     src/previewwidget.h \
-    ../SPIERScommon/src/darkstyletheme.h \
+    ../SPIERScommon/src/customstyletheme.h \
     ../SPIERScommon/src/advancedpreferencesdialog.h \
     ../SPIERScommon/src/netmodule.h \
     ../SPIERScommon/src/updatedialog.h \
@@ -193,7 +193,7 @@ SOURCES += src/display.cpp \
     src/keysafespinbox.cpp \
     src/mainview.cpp \
     src/previewwidget.cpp \
-    ../SPIERScommon/src/darkstyletheme.cpp \
+    ../SPIERScommon/src/customstyletheme.cpp \
     ../SPIERScommon/src/advancedpreferencesdialog.cpp \
     ../SPIERScommon/src/netmodule.cpp \
     ../SPIERScommon/src/updatedialog.cpp \

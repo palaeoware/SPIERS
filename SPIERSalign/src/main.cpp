@@ -25,7 +25,7 @@
 
 #include "mainwindowimpl.h"
 #include "globals.h"
-#include "../../SPIERScommon/src/darkstyletheme.h"
+#include "../../SPIERScommon/src/customstyletheme.h"
 #include "../../SPIERScommon/src/netmodule.h"
 
 /**
@@ -43,7 +43,7 @@ int main(int argc, char **argv)
     QApplication app(argc, argv);
 
     //Style program with our dark style
-    QApplication::setStyle(new DarkStyleTheme(DarkStyleTheme::readThemeSetting()));
+    QApplication::setStyle(new CustomStyleTheme(CustomStyleTheme::readThemeSetting()));
 
     QPixmap splashPixmap(":/logo/palaeoware_square.png");
     QSplashScreen *splash = new QSplashScreen(splashPixmap, Qt::WindowStaysOnTopHint);

@@ -26,7 +26,7 @@
 #include <QHBoxLayout>
 #include <QGroupBox>
 
-#include "darkstyletheme.h"
+#include "customstyletheme.h"
 
 /**
  * @brief The AdvancedPreferencesDialog class
