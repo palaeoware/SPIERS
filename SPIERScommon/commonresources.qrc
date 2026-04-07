@@ -17,9 +17,9 @@
         <file alias="icon_branch_end.svg">resources/customstyle/dark/icon_branch_end.png</file>
         <file alias="icon_branch_more.svg">resources/customstyle/dark/icon_branch_more.png</file>
         <file alias="icon_branch_open.svg">resources/customstyle/dark/icon_branch_open.png</file>
-        <file alias="icon_checkbox_checked.svg">resources/customstyle/dark/icon_checkbox_checked.png</file>
-        <file alias="icon_checkbox_checked_disabled.svg">resources/customstyle/dark/icon_checkbox_checked_disabled.png</file>
-        <file alias="icon_checkbox_checked_pressed.svg">resources/customstyle/dark/icon_checkbox_checked_pressed.png</file>
+        <file alias="icon_checkbox_checked.svg">resources/customstyle/dark/icon_checkbox_checked.svg</file>
+        <file alias="icon_checkbox_checked_disabled.svg">resources/customstyle/dark/icon_checkbox_checked_disabled.svg</file>
+        <file alias="icon_checkbox_checked_pressed.svg">resources/customstyle/dark/icon_checkbox_checked_pressed.svg</file>
         <file alias="icon_checkbox_indeterminate.svg">resources/customstyle/dark/icon_checkbox_indeterminate.png</file>
         <file alias="icon_checkbox_indeterminate_disabled.svg">resources/customstyle/dark/icon_checkbox_indeterminate_disabled.png</file>
         <file alias="icon_checkbox_indeterminate_pressed.svg">resources/customstyle/dark/icon_checkbox_indeterminate_pressed.png</file>
@@ -52,9 +52,9 @@
         <file alias="icon_branch_end.svg">resources/customstyle/light/icon_branch_end.png</file>
         <file alias="icon_branch_more.svg">resources/customstyle/light/icon_branch_more.png</file>
         <file alias="icon_branch_open.svg">resources/customstyle/light/icon_branch_open.png</file>
-        <file alias="icon_checkbox_checked.svg">resources/customstyle/light/icon_checkbox_checked.png</file>
-        <file alias="icon_checkbox_checked_disabled.svg">resources/customstyle/light/icon_checkbox_checked_disabled.png</file>
-        <file alias="icon_checkbox_checked_pressed.svg">resources/customstyle/light/icon_checkbox_checked_pressed.png</file>
+        <file alias="icon_checkbox_checked.svg">resources/customstyle/light/icon_checkbox_checked.svg</file>
+        <file alias="icon_checkbox_checked_disabled.svg">resources/customstyle/light/icon_checkbox_checked_disabled.svg</file>
+        <file alias="icon_checkbox_checked_pressed.svg">resources/customstyle/light/icon_checkbox_checked_pressed.svg</file>
         <file alias="icon_checkbox_indeterminate.svg">resources/customstyle/light/icon_checkbox_indeterminate.png</file>
         <file alias="icon_checkbox_indeterminate_disabled.svg">resources/customstyle/light/icon_checkbox_indeterminate_disabled.png</file>
         <file alias="icon_checkbox_indeterminate_pressed.svg">resources/customstyle/light/icon_checkbox_indeterminate_pressed.png</file>
