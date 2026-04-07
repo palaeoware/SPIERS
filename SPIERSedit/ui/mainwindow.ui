@@ -539,7 +539,7 @@
     <bool>true</bool>
    </property>
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -552,8 +552,8 @@
    </property>
    <property name="maximumSize">
     <size>
-     <width>180</width>
-     <height>100000</height>
+     <width>524287</width>
+     <height>524287</height>
     </size>
    </property>
    <property name="features">
@@ -1139,7 +1139,7 @@
     <bool>true</bool>
    </property>
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -2375,7 +2375,7 @@
     <bool>true</bool>
    </property>
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -2383,7 +2383,7 @@
    <property name="minimumSize">
     <size>
      <width>350</width>
-     <height>253</height>
+     <height>249</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -3000,7 +3000,7 @@
   </widget>
   <widget class="QDockWidget" name="DockHist">
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -3013,7 +3013,7 @@
    </property>
    <property name="maximumSize">
     <size>
-     <width>350</width>
+     <width>524287</width>
      <height>524287</height>
     </size>
    </property>
@@ -3058,7 +3058,7 @@
     <bool>true</bool>
    </property>
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -3071,7 +3071,7 @@
    </property>
    <property name="maximumSize">
     <size>
-     <width>350</width>
+     <width>524287</width>
      <height>524287</height>
     </size>
    </property>
@@ -3220,7 +3220,7 @@
   </widget>
   <widget class="QDockWidget" name="DockInfo">
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -3233,7 +3233,7 @@
    </property>
    <property name="maximumSize">
     <size>
-     <width>350</width>
+     <width>524287</width>
      <height>524287</height>
     </size>
    </property>
@@ -3314,7 +3314,7 @@ Interpreted Images:</string>
     <bool>true</bool>
    </property>
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -3327,7 +3327,7 @@ Interpreted Images:</string>
    </property>
    <property name="maximumSize">
     <size>
-     <width>350</width>
+     <width>524287</width>
      <height>524287</height>
     </size>
    </property>
@@ -3491,7 +3491,7 @@ Interpreted Images:</string>
     <bool>true</bool>
    </property>
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -3504,7 +3504,7 @@ Interpreted Images:</string>
    </property>
    <property name="maximumSize">
     <size>
-     <width>350</width>
+     <width>524287</width>
      <height>524287</height>
     </size>
    </property>
@@ -3653,7 +3653,7 @@ Interpreted Images:</string>
     <bool>true</bool>
    </property>
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -3666,8 +3666,8 @@ Interpreted Images:</string>
    </property>
    <property name="maximumSize">
     <size>
-     <width>180</width>
-     <height>100000</height>
+     <width>524287</width>
+     <height>524287</height>
     </size>
    </property>
    <property name="floating">
@@ -3768,7 +3768,7 @@ Interpreted Images:</string>
     <set>QDockWidget::DockWidgetFeature::DockWidgetFloatable|QDockWidget::DockWidgetFeature::DockWidgetMovable</set>
    </property>
    <property name="windowTitle">
-    <string>3D Preview</string>
+    <string>3D Preview (F10)</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
