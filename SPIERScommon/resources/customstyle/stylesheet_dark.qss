@@ -109,22 +109,22 @@ QMenu::indicator {
 }
 
 QMenu::indicator:non-exclusive:checked {
-    image: url(:/customstyle/icon_checkbox_checked.png);
+    image: url(:/customstyle/dark/icon_checkbox_checked.svg);
     padding-left: 2px;
 }
 
 QMenu::indicator:non-exclusive:unchecked {
-    image: url(:/customstyle/icon_checkbox_unchecked.png);
+    image: url(:/customstyle/dark/icon_checkbox_unchecked.svg);
     padding-left: 2px;
 }
 
 QMenu::indicator:exclusive:checked {
-    image: url(:/customstyle/icon_radiobutton_checked.png);
+    image: url(:/customstyle/dark/icon_radiobutton_checked.svg);
     padding-left: 2px;
 }
 
 QMenu::indicator:exclusive:unchecked {
-    image: url(:/customstyle/icon_radiobutton_unchecked.png);
+    image: url(:/customstyle/dark/icon_radiobutton_unchecked.svg);
     padding-left: 2px;
 }
 
@@ -193,8 +193,8 @@ QSplitter::handle:vertical   { height: 6px; }
 /* ── Dock widgets ─────────────────────────────────────────────────────── */
 
 QDockWidget {
-    titlebar-close-icon:   url(:/customstyle/icon_close.png);
-    titlebar-normal-icon:  url(:/customstyle/icon_restore.png);
+    titlebar-close-icon:   url(:/customstyle/dark/icon_close.svg);
+    titlebar-normal-icon:  url(:/customstyle/dark/icon_restore.svg);
 }
 
 QDockWidget::title {
@@ -380,63 +380,63 @@ QCheckBox::indicator:checked,
 QTreeView::indicator:checked,
 QTableView::indicator:checked,
 QGroupBox::indicator:checked {
-    image: url(:/customstyle/icon_checkbox_checked.png);
+    image: url(:/customstyle/dark/icon_checkbox_checked.svg);
 }
 
 QCheckBox::indicator:checked:pressed,
 QTreeView::indicator:checked:pressed,
 QTableView::indicator:checked:pressed,
 QGroupBox::indicator:checked:pressed {
-    image: url(:/customstyle/icon_checkbox_checked_pressed.png);
+    image: url(:/customstyle/dark/icon_checkbox_checked_pressed.svg);
 }
 
 QCheckBox::indicator:checked:disabled,
 QTreeView::indicator:checked:disabled,
 QTableView::indicator:checked:disabled,
 QGroupBox::indicator:checked:disabled {
-    image: url(:/customstyle/icon_checkbox_checked_disabled.png);
+    image: url(:/customstyle/dark/icon_checkbox_checked_disabled.svg);
 }
 
 QCheckBox::indicator:unchecked,
 QTreeView::indicator:unchecked,
 QTableView::indicator:unchecked,
 QGroupBox::indicator:unchecked {
-    image: url(:/customstyle/icon_checkbox_unchecked.png);
+    image: url(:/customstyle/dark/icon_checkbox_unchecked.svg);
 }
 
 QCheckBox::indicator:unchecked:pressed,
 QTreeView::indicator:unchecked:pressed,
 QTableView::indicator:unchecked:pressed,
 QGroupBox::indicator:unchecked:pressed {
-    image: url(:/customstyle/icon_checkbox_unchecked_pressed.png);
+    image: url(:/customstyle/dark/icon_checkbox_unchecked_pressed.svg);
 }
 
 QCheckBox::indicator:unchecked:disabled,
 QTreeView::indicator:unchecked:disabled,
 QTableView::indicator:unchecked:disabled,
 QGroupBox::indicator:unchecked:disabled {
-    image: url(:/customstyle/icon_checkbox_unchecked_disabled.png);
+    image: url(:/customstyle/dark/icon_checkbox_unchecked_disabled.svg);
 }
 
 QCheckBox::indicator:indeterminate,
 QTreeView::indicator:indeterminate,
 QTableView::indicator:indeterminate,
 QGroupBox::indicator:indeterminate {
-    image: url(:/customstyle/icon_checkbox_indeterminate.png);
+    image: url(:/customstyle/dark/icon_checkbox_indeterminate.svg);
 }
 
 QCheckBox::indicator:indeterminate:pressed,
 QTreeView::indicator:indeterminate:pressed,
 QTableView::indicator:indeterminate:pressed,
 QGroupBox::indicator:indeterminate:pressed {
-    image: url(:/customstyle/icon_checkbox_indeterminate_pressed.png);
+    image: url(:/customstyle/dark/icon_checkbox_indeterminate_pressed.svg);
 }
 
 QCheckBox::indicator:indeterminate:disabled,
 QTreeView::indicator:indeterminate:disabled,
 QTableView::indicator:indeterminate:disabled,
 QGroupBox::indicator:indeterminate:disabled {
-    image: url(:/customstyle/icon_checkbox_indeterminate_disabled.png);
+    image: url(:/customstyle/dark/icon_checkbox_indeterminate_disabled.svg);
 }
 
 /* ── Radio buttons ────────────────────────────────────────────────────── */
@@ -446,12 +446,12 @@ QRadioButton::indicator {
     height: 16px;
 }
 
-QRadioButton::indicator:checked          { image: url(:/customstyle/icon_radiobutton_checked.png); }
-QRadioButton::indicator:checked:pressed  { image: url(:/customstyle/icon_radiobutton_checked_pressed.png); }
-QRadioButton::indicator:checked:disabled { image: url(:/customstyle/icon_radiobutton_checked_disabled.png); }
-QRadioButton::indicator:unchecked        { image: url(:/customstyle/icon_radiobutton_unchecked.png); }
-QRadioButton::indicator:unchecked:pressed  { image: url(:/customstyle/icon_radiobutton_unchecked_pressed.png); }
-QRadioButton::indicator:unchecked:disabled { image: url(:/customstyle/icon_radiobutton_disabled.png); }
+QRadioButton::indicator:checked          { image: url(:/customstyle/dark/icon_radiobutton_checked.svg); }
+QRadioButton::indicator:checked:pressed  { image: url(:/customstyle/dark/icon_radiobutton_pressed.svg); }
+QRadioButton::indicator:checked:disabled { image: url(:/customstyle/dark/icon_radiobutton_checked_disabled.svg); }
+QRadioButton::indicator:unchecked        { image: url(:/customstyle/dark/icon_radiobutton_unchecked.svg); }
+QRadioButton::indicator:unchecked:pressed  { image: url(:/customstyle/dark/icon_radiobutton_unchecked_pressed.svg); }
+QRadioButton::indicator:unchecked:disabled { image: url(:/customstyle/dark/icon_radiobutton_disabled.svg); }
 
 /* ── Tree & table views ───────────────────────────────────────────────── */
 
@@ -506,27 +506,27 @@ QTreeView::branch {
 }
 
 QTreeView::branch:has-siblings:!adjoins-item {
-    border-image: url(:/customstyle/icon_vline.png) 0;
+    border-image: url(:/customstyle/dark/icon_vline.svg) 0;
 }
 
 QTreeView::branch:has-siblings:adjoins-item {
-    border-image: url(:/customstyle/icon_branch_more.png) 0;
+    border-image: url(:/customstyle/dark/icon_branch_more.svg) 0;
 }
 
 QTreeView::branch:!has-children:!has-siblings:adjoins-item {
-    border-image: url(:/customstyle/icon_branch_end.png) 0;
+    border-image: url(:/customstyle/dark/icon_branch_end.svg) 0;
 }
 
 QTreeView::branch:has-children:!has-siblings:closed,
 QTreeView::branch:closed:has-children:has-siblings {
     border-image: none;
-    image: url(:/customstyle/icon_branch_closed.png);
+    image: url(:/customstyle/dark/icon_branch_closed.svg);
 }
 
 QTreeView::branch:open:has-children:!has-siblings,
 QTreeView::branch:open:has-children:has-siblings {
     border-image: none;
-    image: url(:/customstyle/icon_branch_open.png);
+    image: url(:/customstyle/dark/icon_branch_open.svg);
 }
 
 /* ── Scroll bars ──────────────────────────────────────────────────────── */

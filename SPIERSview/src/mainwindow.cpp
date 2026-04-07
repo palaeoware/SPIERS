@@ -956,22 +956,16 @@ void MainWindow::RefreshOneItem(QTreeWidgetItem *item, int i)
         item->setText(0, SVObjects[i]->Name);
     }
 
-    auto themedPixmap = [](const QString &path) -> QPixmap {
-        QPixmap p(path);
-        if (CustomStyleTheme::currentApplicationMode() == ThemeMode::Light) {
-            QImage img = p.toImage();
-            img.invertPixels(QImage::InvertRgb);
-            return QPixmap::fromImage(img);
-        }
-        return p;
+    auto themedPixmap = [](const QString &iconName) -> QPixmap {
+        return QPixmap(CustomStyleTheme::themedIconPath(iconName));
     };
 
     QLabel *show = new QLabel();
     show->setAlignment(Qt::AlignCenter);
     if (SVObjects[i]->Visible)
-        show->setPixmap(themedPixmap(":/darkstyle/icon_eye_open.png").scaled(18, 18, Qt::KeepAspectRatio));
+        show->setPixmap(themedPixmap(QStringLiteral("icon_eye_open.svg")).scaled(18, 18, Qt::KeepAspectRatio));
     else
-        show->setPixmap(themedPixmap(":/darkstyle/icon_eye_closed.png").scaled(18, 18, Qt::KeepAspectRatio));
+        show->setPixmap(themedPixmap(QStringLiteral("icon_eye_closed.svg")).scaled(18, 18, Qt::KeepAspectRatio));
     ui->treeWidget->setItemWidget(item, 1, show);
 
     item->setText(2, KeySt);

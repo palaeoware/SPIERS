@@ -8,10 +8,11 @@
  * All SPIERS code is Copyright 2008-2019 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
- * NOTE: This file intentionally omits QCheckBox::indicator, QRadioButton::indicator,
- * QTreeView::branch, and QDockWidget icon rules. Fusion draws its own native
- * indicators which are correct for a light background. The PNG assets in
- * :/customstyle/ are white-on-transparent, designed for dark backgrounds only.
+ * NOTE: Icon rules (QCheckBox::indicator, QRadioButton::indicator, QTreeView::branch,
+ * QDockWidget icons) are added here progressively as light-theme SVGs become available
+ * under :/customstyle/light/. Until a light SVG exists for a given icon the rule is
+ * omitted and Fusion falls back to its native drawing, which is correct on a light
+ * background.
  *
  * Palette reference (set in customstyletheme.cpp):
  *   Window         #F0F0F0   Base           #FFFFFF

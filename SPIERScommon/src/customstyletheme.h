@@ -77,6 +77,11 @@ public:
     // Saves the setting and updates style, palette, and stylesheet in one call.
     static void applyToApplication(ThemeMode mode);
 
+    // Returns the full Qt resource path for an icon, choosing the dark or light
+    // variant based on the currently active application theme.
+    // Pass just the filename, e.g. QStringLiteral("icon_eye_open.svg").
+    static QString themedIconPath(const QString &iconName);
+
 private:
     ThemeMode m_mode;
     static ThemeMode s_currentMode;

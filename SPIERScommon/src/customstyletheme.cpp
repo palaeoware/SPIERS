@@ -252,6 +252,21 @@ void CustomStyleTheme::applyToApplication(ThemeMode mode)
 }
 
 /**
+ * @brief CustomStyleTheme::themedIconPath
+ * Returns the full Qt resource path for the given icon filename, selecting the
+ * dark or light resource prefix based on the currently active application theme.
+ * @param iconName  Filename only, e.g. QStringLiteral("icon_eye_open.svg")
+ * @return Full resource path, e.g. ":/customstyle/dark/icon_eye_open.svg"
+ */
+QString CustomStyleTheme::themedIconPath(const QString &iconName)
+{
+    const QString prefix = (s_currentMode == ThemeMode::Light)
+        ? QStringLiteral(":/customstyle/light/")
+        : QStringLiteral(":/customstyle/dark/");
+    return prefix + iconName;
+}
+
+/**
  * @brief CustomStyleTheme::polish (application)
  * Scales font on high-DPI screens and loads the appropriate QSS stylesheet.
  */
