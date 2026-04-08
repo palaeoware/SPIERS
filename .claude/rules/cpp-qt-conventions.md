@@ -152,7 +152,9 @@ If breaking onto multiple lines makes the code *less* readable, keep it on one l
 int segmentCount; /// Total number of active segments in the current project
 ```
 
-Avoid `//` for anything other than short temporary notes during development.
+**Inline development comments** use the double-slash form:
+Use `//` for in-method/function short temporary notes aimed at giving information 
+during development. These will not be picked up by Doxygen.
 
 ---
 

@@ -1,11 +1,11 @@
 /**
  * @file
- * Source: Marchingcubes
+ * Source: Marching Cubes
  *
  * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERS code is Copyright 2008-2026 by Russell J. Garwood, Mark D. Sutton,
+ * All SPIERS code is Copyright 2008-2026 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -14,32 +14,41 @@
  * your option) any later version. This program is distributed in the
  * hope that it will be useful, but WITHOUT ANY WARRANTY.
  */
-#include <QTextStream>
+
+#include <cstdio>
+
 #include <QApplication>
+#include <QCoreApplication>
 #include <QDebug>
 #include <QElapsedTimer>
+#include <QTextStream>
 
 #include "marchingcubes.h"
-#include "svobject.h"
-#include "spv.h"
 #include "compressedslice.h"
 #include "globals.h"
 #include "mainwindow.h"
+#include "spv.h"
+#include "svobject.h"
 #include "ui_mainwindow.h"
 
-// macro to do array-style indexing into the scalar field
+// ============================================================================
+// Macros
+// ============================================================================
+
+/// Array-style indexing into the scalar field: translates (i,j,k) to linear offset
 #define OFFSET(I, J, K, IDIM, JDIM) ((I) + ((IDIM) * (J)) + ((IDIM * JDIM) * (K)))
 
-//new version for chunked data
-#define DATA(I, J, K) (*(slicebuffers[(K-k)+2]+I+(iDim*J)))
-
-// macro to do array-style indexing into the layer edge table
+/// Array-style indexing into the layer edge table: translates edge, position to offset
 #define EDGE_OFFSET(E, I, J, IDIM) ((E) + (12 * (I)) + ((12 * (IDIM-1)) * (J-1)))
 
+/// Interpolation epsilon tolerance for floating-point edge calculations
 #define EPSILON 0.000001
 
-// tag for an empty edge
+/// Sentinel value marking an edge that has not yet been computed
 #define EMPTY_EDGE -1
+
+/// Grid size for acceleration structure (skip blank regions in sparse volumes)
+#define GRIDSIZE 10
 
 // edge lookup table
 int MarchingCubes::edgeTable[256] =
@@ -340,17 +349,26 @@ int MarchingCubes::triTable[256][16] =
 };
 
 /**
- * @brief MarchingCubes::MarchingCubes
- * This class impliments marching cubes, first published in the 1987 SIGGRAPH proceedings by Lorensen and Cline,
- * which ia an alogorithm for extracting a polygonal mesh of an isosurface from a three-dimensional discrete scalar field.
  *
- * @param o
- * @see Lorensen, W. E. and Cline, H. E., "Marching Cubes: A High Resolution 3D Surface Construction Algorithm," Computer Graphics, vol. 21, no. 3, pp. 163-169, July 1987.
- * @see Lorensen, W. E., "Marching Through the Visible Man," IEEE Visualization, Proceedings of the 6th conference on Visualization '95, pp. 368-373. 1994.
- */
-MarchingCubes::MarchingCubes(SVObject *o)
+ * Construct a MarchingCubes algorithm processor for the given SVObject.
+ * Initializes grid dimensions from the associated SPV (SPIERS Volume) data.
+ *
+ * The marching cubes algorithm was first published in the 1987 SIGGRAPH proceedings
+ * by Lorensen and Cline. It is an algorithm for extracting a polygonal mesh of an
+ * isosurface from a three-dimensional discrete scalar field.
+ *
+ * @param object Pointer to the SVObject whose scalar field will be processed
+ *
+ * @see Lorensen, W. E. and Cline, H. E., "Marching Cubes: A High Resolution 3D
+ *      Surface Construction Algorithm," Computer Graphics, vol. 21, no. 3,
+ *      pp. 163-169, July 1987.
+ * @see Lorensen, W. E., "Marching Through the Visible Man," IEEE Visualization,
+ *      Proceedings of the 6th conference on Visualization '95, pp. 368-373, 1994.
+ *
+ **/
+MarchingCubes::MarchingCubes(SVObject *object)
 {
-    object = o;
+    this->object = object;
     iDim = object->spv->iDim;
     jDim = object->spv->jDim;
     kDim = object->spv->kDim;
@@ -358,30 +376,46 @@ MarchingCubes::MarchingCubes(SVObject *o)
 }
 
 /**
- * @brief MarchingCubes::surfaceObject
- * Surfaces an object
- */
+ *
+ * Extract the complete isosurface from the associated SVObject's scalar field.
+ * Automatically selects between chunked and non-chunked processing modes based on
+ * the volume data format. Updates the SVObject's voxel count upon completion.
+ *
+ * Non-chunked mode is used when the entire volume fits in memory (fullarray present).
+ * Chunked mode is used for large volumes that are stored as compressed slice data.
+ *
+ **/
 void MarchingCubes::surfaceObject()
 {
-    // Are we working with old or new format?
+    // Check whether data is in old (full array) or new (chunked) format
     if (object->spv->fullarray)
     {
-        // Old version
+        // Non-chunked: entire volume is decompressed in memory
         surfaceNonChunked();
     }
     else
     {
-        // New version that returns the single slice Isosurface object
+        // Chunked: volume processed slice-by-slice with memory constraints
         surfaceChunked();
     }
 
+    // Store the voxel count in the SVObject
     object->voxels = pointcount;
-    return;
 }
 
 /**
- * @brief MarchingCubes::surfaceChunked
- */
+ *
+ * Process a large scalar field volume in chunked mode, maintaining only a limited
+ * set of slices (layers) in memory at once to accommodate memory constraints.
+ *
+ * This method manages six slice buffers in a sliding window, decompressing new slices
+ * as needed and processing each layer through the marching cubes algorithm. Individual
+ * isosurfaces are generated per layer and accumulated in the SVObject's isosurface list.
+ *
+ * Uses a grid acceleration structure to skip blank regions and improve performance on
+ * sparse volumes. Includes progress updates for UI responsiveness.
+ *
+ **/
 void MarchingCubes::surfaceChunked()
 {
     QElapsedTimer t;
@@ -570,8 +604,18 @@ void MarchingCubes::surfaceChunked()
 }
 
 /**
- * @brief MarchingCubes::surfaceNonChunked
- */
+ *
+ * Process the entire scalar field volume in non-chunked mode when the complete
+ * volume is present in memory as a single contiguous fullarray.
+ *
+ * This method iterates through all layers (k-slices) of the volume, processing each
+ * with the marching cubes algorithm. All vertices and triangles are accumulated into
+ * a single isosurface object.
+ *
+ * This mode provides maximum efficiency for small-to-medium volumes that fit completely
+ * in available memory. Includes progress updates for UI responsiveness.
+ *
+ **/
 void MarchingCubes::surfaceNonChunked()
 {
     //Old version
@@ -649,15 +693,21 @@ void MarchingCubes::surfaceNonChunked()
 }
 
 /**
- * @brief MarchingCubes::marchNonChunked
- * Old version
  *
- * @param dataset
- * @param layer
- * @param k
- * @param threshold
- * @param iso
- */
+ * Process a single layer of the volume using the non-chunked marching cubes algorithm.
+ * Computes vertex and triangle data for all voxels in this layer and accumulates
+ * results into the provided isosurface.
+ *
+ * Vertex caching is used to avoid redundant interpolation: edge vertices are cached
+ * and propagated to adjacent cells within the same layer and to adjacent layers.
+ *
+ * @param dataset       Pointer to the complete volumetric scalar field data
+ * @param layer         Pointer to the current layer's data pointers and edge cache
+ * @param k             Layer index (z-coordinate) being processed
+ * @param threshold     Isosurface threshold value for level-set extraction
+ * @param iso           Output isosurface object to accumulate vertices and triangles
+ *
+ **/
 void MarchingCubes::marchNonChunked(unsigned char *dataset, ScalarFieldLayer *layer, int k, float threshold, Isosurface *iso)
 {
 
@@ -803,17 +853,25 @@ void MarchingCubes::marchNonChunked(unsigned char *dataset, ScalarFieldLayer *la
 }
 
 /**
- * @brief MarchingCubes::marchChunked
- * New version that returns the single slice Isosurface object
  *
- * @param layer
- * @param k
- * @param vertbase
- * @param grid
- * @param gridxscale
- * @param gridyscale
- * @return
- */
+ * Process a single layer of the volume using the chunked marching cubes algorithm.
+ * This variant is optimized for large volumes where only a limited number of slices
+ * can be held in memory. Returns a newly allocated isosurface containing vertices
+ * and triangles for this layer only.
+ *
+ * Uses a grid acceleration structure (GRIDSIZE blocks) to skip regions of the volume
+ * that are completely empty, improving performance on sparse data. Vertex caching
+ * operates identically to the non-chunked version but results are isolated per-layer.
+ *
+ * @param layer         Pointer to the current layer's data pointers and edge cache
+ * @param k             Layer index (z-coordinate) being processed
+ * @param vertbase      Base index offset for vertices in the global vertex array
+ * @param grid          Grid acceleration structure for blank region detection
+ * @param gridxscale    X scale factor for grid indexing
+ * @param gridyscale    Y scale factor for grid indexing
+ * @return Newly allocated Isosurface object containing this layer's mesh data
+ *
+ **/
 Isosurface *MarchingCubes::marchChunked(ScalarFieldLayer *layer, int k, int vertbase, unsigned char *grid, int gridxscale, int gridyscale)
 {
     Q_UNUSED(grid)
@@ -965,18 +1023,25 @@ Isosurface *MarchingCubes::marchChunked(ScalarFieldLayer *layer, int k, int vert
 }
 
 /**
- * @brief MarchingCubes::makeVertex
- * Old version
  *
- * @param whichEdge
- * @param i
- * @param j
- * @param k
- * @param threshold
- * @param dataset
- * @param layerIso
- * @return
- */
+ * Create a vertex on a cube edge where the scalar field crosses the isosurface threshold.
+ * Uses linear interpolation between the edge's two endpoint values to determine the
+ * exact position of the isosurface crossing.
+ *
+ * The vertex coordinates are stored at twice the grid resolution (2x scaling) to preserve
+ * precision when working with integer coordinates. Results are accumulated in the provided
+ * isosurface's vertex array with automatic allocation growth.
+ *
+ * @param whichEdge     Index of the cube edge (0-11) where vertex lies
+ * @param i             Grid position X coordinate
+ * @param j             Grid position Y coordinate
+ * @param k             Grid position Z coordinate
+ * @param threshold     Isosurface threshold value for level-set computation
+ * @param dataset       Pointer to complete volumetric scalar field
+ * @param layerIso      Output isosurface to accumulate this vertex
+ * @return Index of the newly created vertex in the isosurface vertex array
+ *
+ **/
 int MarchingCubes::makeVertex(int whichEdge, int i, int j, int k, float threshold, unsigned char *dataset, Isosurface *layerIso)
 {
 
@@ -1123,17 +1188,27 @@ int MarchingCubes::makeVertex(int whichEdge, int i, int j, int k, float threshol
 }
 
 /**
- * @brief MarchingCubes::makeVertexFast
- * Newer optimised version
  *
- * @param whichEdge
- * @param i
- * @param j
- * @param k
- * @param layerIso
- * @param vertbase
- * @return
- */
+ * Create a vertex on a cube edge using a fast lookup-table approach optimized for
+ * chunked processing where only grid endpoints (not interpolated positions) are needed.
+ *
+ * This is a performance-critical optimization that replaces a 12-case switch statement
+ * with a static lookup table of edge coordinate offsets. Each edge's position relative
+ * to its cube is precomputed and stored in a compact table that remains in L1 cache.
+ *
+ * The vertex coordinates are stored at twice the grid resolution (2x scaling) to preserve
+ * precision. Results are accumulated in the provided isosurface's vertex array with
+ * automatic allocation growth.
+ *
+ * @param whichEdge     Index of the cube edge (0-11) where vertex lies
+ * @param i             Grid position X coordinate
+ * @param j             Grid position Y coordinate
+ * @param k             Grid position Z coordinate
+ * @param layerIso      Output isosurface to accumulate this vertex
+ * @param vertbase      Base index offset for vertices in the global vertex array
+ * @return Index of the newly created vertex in the isosurface vertex array
+ *
+ **/
 int MarchingCubes::makeVertexFast(int whichEdge, int i, int j, int k, Isosurface *layerIso, int vertbase)
 {
     /// Precomputed (dx, dy, dz) offsets from (2i, 2j, 2k) for each of the 12 cube edges.
