@@ -680,6 +680,16 @@ void MarchingCubes::marchNonChunked(unsigned char *dataset, ScalarFieldLayer *la
     /* allocate and initialize storage for this layer's portion of Isosurface */
     layerIso = new Isosurface;
 
+    /// Pre-allocate based on layer dimensions to reduce reallocation steps during processing.
+    /// A surface covering ~10% of cells is a practical initial estimate; floor at 1000.
+    {
+        int estimatedCells = qMax(1000, (iDim - 1) * (jDim - 1) / 10);
+        layerIso->trianglearraysize = estimatedCells * 2;
+        layerIso->vertexarraysize   = estimatedCells * 3;
+        layerIso->triangles.resize(layerIso->trianglearraysize * 3);
+        layerIso->vertices.resize(layerIso->vertexarraysize * 3);
+    }
+
     //Counting
     for (i = 0; i < iDim; i++)
         for (j = 0; j < jDim; j++)
@@ -713,151 +723,21 @@ void MarchingCubes::marchNonChunked(unsigned char *dataset, ScalarFieldLayer *la
             if (cell[6] < threshold) cellIndex |=  64;
             if (cell[7] < threshold) cellIndex |= 128;
 
-            /* get the coordinates for the vertices */
-            /* compute the triangulation */
-            /* interpolate the normals */
-            if (edgeTable[cellIndex] &    1)
+            /* get the coordinates for the vertices, compute the triangulation */
+            for (int edgeIdx = 0; edgeIdx < 12; edgeIdx++)
             {
-                if (*(layer->edges + EDGE_OFFSET(0, i, j, iDim)) == EMPTY_EDGE)
+                if (edgeTable[cellIndex] & (1 << edgeIdx))
                 {
-                    cellVerts[0]  = iso->nVertices +
-                                    makeVertex(0, i, j, k, threshold, dataset, layerIso);
-                }
-                else
-                {
-                    cellVerts[0] = *(layer->edges + EDGE_OFFSET(0, i, j, iDim));
-                }
-            }
-            if (edgeTable[cellIndex] &    2)
-            {
-                if (*(layer->edges + EDGE_OFFSET(1, i, j, iDim)) == EMPTY_EDGE)
-                {
-                    cellVerts[1]  = iso->nVertices +
-                                    makeVertex(1, i, j, k, threshold, dataset, layerIso);
-                }
-                else
-                {
-                    cellVerts[1] = *(layer->edges + EDGE_OFFSET(1, i, j, iDim));
-                }
-            }
-            if (edgeTable[cellIndex] &    4)
-            {
-                if (*(layer->edges + EDGE_OFFSET(2, i, j, iDim)) == EMPTY_EDGE)
-                {
-                    cellVerts[2]  = iso->nVertices +
-                                    makeVertex(2, i, j, k, threshold, dataset, layerIso);
-                }
-                else
-                {
-                    cellVerts[2] = *(layer->edges + EDGE_OFFSET(2, i, j, iDim));
-                }
-            }
-            if (edgeTable[cellIndex] &    8)
-            {
-                if (*(layer->edges + EDGE_OFFSET(3, i, j, iDim)) == EMPTY_EDGE)
-                {
-                    cellVerts[3]  = iso->nVertices +
-                                    makeVertex(3, i, j, k, threshold, dataset, layerIso);
-                }
-                else
-                {
-                    cellVerts[3] = *(layer->edges + EDGE_OFFSET(3, i, j, iDim));
-                }
-            }
-            if (edgeTable[cellIndex] &    16)
-            {
-                if (*(layer->edges + EDGE_OFFSET(4, i, j, iDim)) == EMPTY_EDGE)
-                {
-                    cellVerts[4]  = iso->nVertices +
-                                    makeVertex(4, i, j, k, threshold, dataset, layerIso);
-                }
-                else
-                {
-                    cellVerts[4] = *(layer->edges + EDGE_OFFSET(4, i, j, iDim));
-                }
-            }
-            if (edgeTable[cellIndex] &    32)
-            {
-                if (*(layer->edges + EDGE_OFFSET(5, i, j, iDim)) == EMPTY_EDGE)
-                {
-                    cellVerts[5]  = iso->nVertices +
-                                    makeVertex(5, i, j, k, threshold, dataset, layerIso);
-                }
-                else
-                {
-                    cellVerts[5] = *(layer->edges + EDGE_OFFSET(5, i, j, iDim));
-                }
-            }
-            if (edgeTable[cellIndex] &    64)
-            {
-                if (*(layer->edges + EDGE_OFFSET(6, i, j, iDim)) == EMPTY_EDGE)
-                {
-                    cellVerts[6]  = iso->nVertices +
-                                    makeVertex(6, i, j, k, threshold, dataset, layerIso);
-                }
-                else
-                {
-                    cellVerts[6] = *(layer->edges + EDGE_OFFSET(6, i, j, iDim));
-                }
-            }
-            if (edgeTable[cellIndex] &    128)
-            {
-                if (*(layer->edges + EDGE_OFFSET(7, i, j, iDim)) == EMPTY_EDGE)
-                {
-                    cellVerts[7]  = iso->nVertices +
-                                    makeVertex(7, i, j, k, threshold, dataset, layerIso);
-                }
-                else
-                {
-                    cellVerts[7] = *(layer->edges + EDGE_OFFSET(7, i, j, iDim));
-                }
-            }
-            if (edgeTable[cellIndex] &    256)
-            {
-                if (*(layer->edges + EDGE_OFFSET(8, i, j, iDim)) == EMPTY_EDGE)
-                {
-                    cellVerts[8]  = iso->nVertices +
-                                    makeVertex(8, i, j, k, threshold, dataset, layerIso);
-                }
-                else
-                {
-                    cellVerts[8] = *(layer->edges + EDGE_OFFSET(8, i, j, iDim));
-                }
-            }
-            if (edgeTable[cellIndex] &    512)
-            {
-                if (*(layer->edges + EDGE_OFFSET(9, i, j, iDim)) == EMPTY_EDGE)
-                {
-                    cellVerts[9]  = iso->nVertices +
-                                    makeVertex(9, i, j, k, threshold, dataset, layerIso);
-                }
-                else
-                {
-                    cellVerts[9] = *(layer->edges + EDGE_OFFSET(9, i, j, iDim));
-                }
-            }
-            if (edgeTable[cellIndex] &    1024)
-            {
-                if (*(layer->edges + EDGE_OFFSET(10, i, j, iDim)) == EMPTY_EDGE)
-                {
-                    cellVerts[10]  = iso->nVertices +
-                                     makeVertex(10, i, j, k, threshold, dataset, layerIso);
-                }
-                else
-                {
-                    cellVerts[10] = *(layer->edges + EDGE_OFFSET(10, i, j, iDim));
-                }
-            }
-            if (edgeTable[cellIndex] &    2048)
-            {
-                if (*(layer->edges + EDGE_OFFSET(11, i, j, iDim)) == EMPTY_EDGE)
-                {
-                    cellVerts[11]  = iso->nVertices +
-                                     makeVertex(11, i, j, k, threshold, dataset, layerIso);
-                }
-                else
-                {
-                    cellVerts[11] = *(layer->edges + EDGE_OFFSET(11, i, j, iDim));
+                    int *edgeSlot = layer->edges + EDGE_OFFSET(edgeIdx, i, j, iDim);
+                    if (*edgeSlot == EMPTY_EDGE)
+                    {
+                        cellVerts[edgeIdx] = iso->nVertices +
+                                             makeVertex(edgeIdx, i, j, k, threshold, dataset, layerIso);
+                    }
+                    else
+                    {
+                        cellVerts[edgeIdx] = *edgeSlot;
+                    }
                 }
             }
 
@@ -960,6 +840,16 @@ Isosurface *MarchingCubes::marchChunked(ScalarFieldLayer *layer, int k, int vert
     // allocate and initialize storage for this layer's portion of Isosurface
     layerIso = new Isosurface;
 
+    /// Pre-allocate based on layer dimensions to reduce reallocation steps during processing.
+    /// A surface covering ~10% of cells is a practical initial estimate; floor at 1000.
+    {
+        int estimatedCells = qMax(1000, (iDim - 1) * (jDim - 1) / 10);
+        layerIso->trianglearraysize = estimatedCells * 2;
+        layerIso->vertexarraysize   = estimatedCells * 3;
+        layerIso->triangles.resize(layerIso->trianglearraysize * 3);
+        layerIso->vertices.resize(layerIso->vertexarraysize * 3);
+    }
+
     //do counting
     for (i = 0; i < iDim; i++)
         for (j = 0; j < jDim; j++)
@@ -1002,140 +892,20 @@ Isosurface *MarchingCubes::marchChunked(ScalarFieldLayer *layer, int k, int vert
                     if (cell[6]) cellIndex |=  64;
                     if (cell[7]) cellIndex |= 128;
 
-                    //if (cellindex==0) break;
-                    /* get the coordinates for the vertices */
-                    /* compute the triangulation */
-                    /* interpolate the normals */
-                    if (edgeTable[cellIndex] &    1)
+                    /* get the coordinates for the vertices, compute the triangulation */
+                    for (int edgeIdx = 0; edgeIdx < 12; edgeIdx++)
                     {
-                        if (*(layer->edges + EDGE_OFFSET(0, i, j, iDim)) == EMPTY_EDGE)
+                        if (edgeTable[cellIndex] & (1 << edgeIdx))
                         {
-                            cellVerts[0]  = makeVertexFast(0, i, j, k, layerIso, vertbase);
-                        }
-                        else
-                        {
-                            cellVerts[0] = *(layer->edges + EDGE_OFFSET(0, i, j, iDim));
-                        }
-                    }
-                    if (edgeTable[cellIndex] &    2)
-                    {
-                        if (*(layer->edges + EDGE_OFFSET(1, i, j, iDim)) == EMPTY_EDGE)
-                        {
-                            cellVerts[1]  =  makeVertexFast(1, i, j, k, layerIso, vertbase);
-                        }
-                        else
-                        {
-                            cellVerts[1] = *(layer->edges + EDGE_OFFSET(1, i, j, iDim));
-                        }
-                    }
-                    if (edgeTable[cellIndex] &    4)
-                    {
-                        if (*(layer->edges + EDGE_OFFSET(2, i, j, iDim)) == EMPTY_EDGE)
-                        {
-                            cellVerts[2]  = makeVertexFast(2, i, j, k, layerIso, vertbase);
-                        }
-                        else
-                        {
-                            cellVerts[2] = *(layer->edges + EDGE_OFFSET(2, i, j, iDim));
-                        }
-                    }
-                    if (edgeTable[cellIndex] &    8)
-                    {
-                        if (*(layer->edges + EDGE_OFFSET(3, i, j, iDim)) == EMPTY_EDGE)
-                        {
-                            cellVerts[3]  = makeVertexFast(3, i, j, k, layerIso, vertbase);
-                        }
-                        else
-                        {
-                            cellVerts[3] = *(layer->edges + EDGE_OFFSET(3, i, j, iDim));
-                        }
-                    }
-                    if (edgeTable[cellIndex] &    16)
-                    {
-                        if (*(layer->edges + EDGE_OFFSET(4, i, j, iDim)) == EMPTY_EDGE)
-                        {
-                            cellVerts[4]  = makeVertexFast(4, i, j, k, layerIso, vertbase);
-                        }
-                        else
-                        {
-                            cellVerts[4] = *(layer->edges + EDGE_OFFSET(4, i, j, iDim));
-                        }
-                    }
-                    if (edgeTable[cellIndex] &    32)
-                    {
-                        if (*(layer->edges + EDGE_OFFSET(5, i, j, iDim)) == EMPTY_EDGE)
-                        {
-                            cellVerts[5]  = makeVertexFast(5, i, j, k, layerIso, vertbase);
-                        }
-                        else
-                        {
-                            cellVerts[5] = *(layer->edges + EDGE_OFFSET(5, i, j, iDim));
-                        }
-                    }
-                    if (edgeTable[cellIndex] &    64)
-                    {
-                        if (*(layer->edges + EDGE_OFFSET(6, i, j, iDim)) == EMPTY_EDGE)
-                        {
-                            cellVerts[6]  =  makeVertexFast(6, i, j, k, layerIso, vertbase);
-                        }
-                        else
-                        {
-                            cellVerts[6] = *(layer->edges + EDGE_OFFSET(6, i, j, iDim));
-                        }
-                    }
-                    if (edgeTable[cellIndex] &    128)
-                    {
-                        if (*(layer->edges + EDGE_OFFSET(7, i, j, iDim)) == EMPTY_EDGE)
-                        {
-                            cellVerts[7]  = makeVertexFast(7, i, j, k, layerIso, vertbase);
-                        }
-                        else
-                        {
-                            cellVerts[7] = *(layer->edges + EDGE_OFFSET(7, i, j, iDim));
-                        }
-                    }
-                    if (edgeTable[cellIndex] &    256)
-                    {
-                        if (*(layer->edges + EDGE_OFFSET(8, i, j, iDim)) == EMPTY_EDGE)
-                        {
-                            cellVerts[8]  = makeVertexFast(8, i, j, k, layerIso, vertbase);
-                        }
-                        else
-                        {
-                            cellVerts[8] = *(layer->edges + EDGE_OFFSET(8, i, j, iDim));
-                        }
-                    }
-                    if (edgeTable[cellIndex] &    512)
-                    {
-                        if (*(layer->edges + EDGE_OFFSET(9, i, j, iDim)) == EMPTY_EDGE)
-                        {
-                            cellVerts[9]  = makeVertexFast(9, i, j, k, layerIso, vertbase);
-                        }
-                        else
-                        {
-                            cellVerts[9] = *(layer->edges + EDGE_OFFSET(9, i, j, iDim));
-                        }
-                    }
-                    if (edgeTable[cellIndex] &    1024)
-                    {
-                        if (*(layer->edges + EDGE_OFFSET(10, i, j, iDim)) == EMPTY_EDGE)
-                        {
-                            cellVerts[10]  =  makeVertexFast(10, i, j, k, layerIso, vertbase);
-                        }
-                        else
-                        {
-                            cellVerts[10] = *(layer->edges + EDGE_OFFSET(10, i, j, iDim));
-                        }
-                    }
-                    if (edgeTable[cellIndex] &    2048)
-                    {
-                        if (*(layer->edges + EDGE_OFFSET(11, i, j, iDim)) == EMPTY_EDGE)
-                        {
-                            cellVerts[11]  =  makeVertexFast(11, i, j, k, layerIso, vertbase);
-                        }
-                        else
-                        {
-                            cellVerts[11] = *(layer->edges + EDGE_OFFSET(11, i, j, iDim));
+                            int *edgeSlot = layer->edges + EDGE_OFFSET(edgeIdx, i, j, iDim);
+                            if (*edgeSlot == EMPTY_EDGE)
+                            {
+                                cellVerts[edgeIdx] = makeVertexFast(edgeIdx, i, j, k, layerIso, vertbase);
+                            }
+                            else
+                            {
+                                cellVerts[edgeIdx] = *edgeSlot;
+                            }
                         }
                     }
 
@@ -1366,76 +1136,31 @@ int MarchingCubes::makeVertex(int whichEdge, int i, int j, int k, float threshol
  */
 int MarchingCubes::makeVertexFast(int whichEdge, int i, int j, int k, Isosurface *layerIso, int vertbase)
 {
-    int v[3];
-
-    switch (whichEdge)
+    /// Precomputed (dx, dy, dz) offsets from (2i, 2j, 2k) for each of the 12 cube edges.
+    /// Replaces the 12-case switch: table fits in 3 cache lines and stays hot in L1.
+    /// Values verified directly against the original switch cases.
+    static const int edgeOffsets[12][3] =
     {
-    case 0:
-        v[0] = 2 * i + 1;
-        v[1] = 2 * j;
-        v[2] = 2 * k;
-        break;
-    case 1:
-        v[0] = 2 * i + 2;
-        v[1] = 2 * j - 1;
-        v[2] = 2 * k;
-        break;
-    case 2:
-        v[0] = 2 * i + 1;
-        v[1] = 2 * j - 2;
-        v[2] = 2 * k;
-        break;
-    case 3:
-        v[0] = 2 * i;
-        v[1] = 2 * j - 1;
-        v[2] = 2 * k;
-        break;
-    case 4:
-        v[0] = 2 * i + 1;
-        v[1] = 2 * j;
-        v[2] = 2 * k + 2;
-        break;
-    case 5:
-        v[0] = 2 * i + 2;
-        v[1] = 2 * j - 1;
-        v[2] = 2 * k + 2;
-        break;
-    case 6:
-        v[0] = 2 * i + 1;
-        v[1] = 2 * j - 2;
-        v[2] = 2 * k + 2;
-        break;
-    case 7:
-        v[0] = 2 * i;
-        v[1] = 2 * j - 1;
-        v[2] = 2 * k + 2;
-        break;
-    case 8:
-        v[0] = 2 * i;
-        v[1] = 2 * j;
-        v[2] = 2 * k + 1;
-        break;
-    case 9:
-        v[0] = 2 * i + 2;
-        v[1] = 2 * j;
-        v[2] = 2 * k + 1;
-        break;
-    case 10:
-        v[0] = 2 * i + 2;
-        v[1] = 2 * j - 2;
-        v[2] = 2 * k + 1;
-        break;
-    case 11:
-        v[0] = 2 * i;
-        v[1] = 2 * j - 2;
-        v[2] = 2 * k + 1;
-        break;
-    }
+        { 1,  0,  0},  /// edge  0: midpoint of bottom-front edge
+        { 2, -1,  0},  /// edge  1: midpoint of bottom-right edge
+        { 1, -2,  0},  /// edge  2: midpoint of bottom-back edge
+        { 0, -1,  0},  /// edge  3: midpoint of bottom-left edge
+        { 1,  0,  2},  /// edge  4: midpoint of top-front edge
+        { 2, -1,  2},  /// edge  5: midpoint of top-right edge
+        { 1, -2,  2},  /// edge  6: midpoint of top-back edge
+        { 0, -1,  2},  /// edge  7: midpoint of top-left edge
+        { 0,  0,  1},  /// edge  8: midpoint of front-left vertical edge
+        { 2,  0,  1},  /// edge  9: midpoint of front-right vertical edge
+        { 2, -2,  1},  /// edge 10: midpoint of back-right vertical edge
+        { 0, -2,  1},  /// edge 11: midpoint of back-left vertical edge
+    };
 
-    for (int ii = 0; ii < 3; ii++)
-    {
-        layerIso->vertices[ii + layerIso->nVertices * 3] = static_cast<int>(v[ii]);
-    }
+    const int *off = edgeOffsets[whichEdge];
+    const int base = layerIso->nVertices * 3;
+    layerIso->vertices[base]     = 2 * i + off[0];
+    layerIso->vertices[base + 1] = 2 * j + off[1];
+    layerIso->vertices[base + 2] = 2 * k + off[2];
+
     if (++(layerIso->nVertices) >= layerIso->vertexarraysize)
     {
         layerIso->vertexarraysize += 500;
