@@ -94,6 +94,7 @@ private:
     QLabel *scalelabel;
     QLabel *ktrlabel;
 
+    bool m_isStartTimerFired = false;
     QTimer *StartTimer;
     QTimer *SpinTimer;
     QTimer *PBtimer;

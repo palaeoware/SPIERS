@@ -40,10 +40,7 @@
 #include <QStandardPaths>
 #include <QDesktopServices>
 #include <QImageWriter>
-
-
 #include "scalegridoverlay.h"
-
 
 #include <QScreen>
 
@@ -279,8 +276,10 @@ void MainWindow::UpdateGL()
  */
 void MainWindow::releaseStartup()
 {
-    if (!StartTimer->isActive())
+    if (!StartTimer->isActive() && !m_isStartTimerFired) {
+        m_isStartTimerFired = true; // guard against double starts
         StartTimer->start();
+    }
 }
 
 /**
@@ -298,7 +297,7 @@ void MainWindow::onConnectivityChanged(bool online)
  */
 void MainWindow::StartTimer_fired()
 {
-    //qDebug() << "[Where I'm I?] In StartTimer_fired | fname = " << fname;
+    qDebug() << "[Where I'm I?] In StartTimer_fired | fname = " << fname;
 
     //Some General initialisation
     nextActualDlist = 1;
