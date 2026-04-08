@@ -2,10 +2,10 @@
  * @file
  * Header: Main
  *
- * All SPIERSversion code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSversion code is Copyright 2008-2019 by Alan R.T. Spencer, Russell J. Garwood,
+ * All SPIERS code is Copyright 2008-2026 by Alan R.T. Spencer, Russell J. Garwood,
  * and Mark D. Sutton.
  *
  * This program is free software; you can redistribute it and/or modify

@@ -37,6 +37,9 @@ MOC_DIR += build
 
 OBJECTS_DIR += build
 
+# Include path for zlib headers
+INCLUDEPATH += src/zlib
+
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
     ../SPIERScommon/src/customstyletheme.cpp \
@@ -69,17 +72,17 @@ SOURCES += src/main.cpp \
     src/fullscreenwindow.cpp \
     src/spvwriter.cpp \
     src/staticfunctions.cpp \
-    src/adler32.c \
-    src/compress.c \
-    src/crc32.c \
-    src/deflate.c \
-    src/infback.c \
-    src/inffast.c \
-    src/inflate.c \
-    src/inftrees.c \
-    src/trees.c \
-    src/uncompr.c \
-    src/zutil.c
+    src/zlib/adler32.c \
+    src/zlib/compress.c \
+    src/zlib/crc32.c \
+    src/zlib/deflate.c \
+    src/zlib/infback.c \
+    src/zlib/inffast.c \
+    src/zlib/inflate.c \
+    src/zlib/inftrees.c \
+    src/zlib/trees.c \
+    src/zlib/uncompr.c \
+    src/zlib/zutil.c
 HEADERS += src/mainwindow.h \
     ../SPIERScommon/src/customstyletheme.h \
     ../SPIERScommon/src/advancedpreferencesdialog.h \
@@ -111,7 +114,18 @@ HEADERS += src/mainwindow.h \
     src/scalarfieldlayer.h \
     src/fullscreenwindow.h \
     src/spvwriter.h \
-    src/staticfunctions.h
+    src/staticfunctions.h \
+    src/zlib/crc32.h \
+    src/zlib/deflate.h \
+    src/zlib/gzguts.h \
+    src/zlib/inffast.h \
+    src/zlib/inffixed.h \
+    src/zlib/inflate.h \
+    src/zlib/inftrees.h \
+    src/zlib/trees.h \
+    src/zlib/zconf.h \
+    src/zlib/zlib.h \
+    src/zlib/zutil.h
 
 FORMS += ui/mainwindow.ui \
     ui/movetogroup.ui \

@@ -1,11 +1,11 @@
 /**
  * @file
- * Source: MainWindow 3
+ * Source: Main Window
  *
- * All SPIERSversion code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSversion code is Copyright 2008-2019 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERS code is Copyright 2008-2026 by Russell J. Garwood, Mark D. Sutton,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,20 +15,10 @@
  * hope that it will be useful, but WITHOUT ANY WARRANTY.
  */
 
-#include "dialogaboutimpl.h"
-#include "newprojectdialog.h"
-#include "curves.h"
-#include "resampleimpl.h"
 #include "mainwindow.h"
-#include "copyingimpl.h"
 #include "globals.h"
 #include "display.h"
-#include "myrangescene.h"
-#include "mygraphicsview.h"
 #include "brush.h"
-#include "fileio.h"
-#include "moreimpl.h"
-#include "undo.h"
 #include "histogram.h"
 #include "globals.h"
 
@@ -43,10 +33,13 @@
 #include <QDesktopServices>
 #include <QHeaderView>
 
-
+/**
+ * @brief MainWindow::SetUpDocks
+ * Initializes and configures all dock widgets and the main toolbar.
+ * Sets up dock positions, visibility states, and the brush size toolbar control.
+ */
 void MainWindow::SetUpDocks()
 {
-
     addDockWidget (Qt::LeftDockWidgetArea, dockWidget_Main);
     addDockWidget (Qt::LeftDockWidgetArea, SliceSelector);
     addDockWidget (Qt::RightDockWidgetArea, DockPreview3D);
@@ -98,14 +91,21 @@ void MainWindow::SetUpDocks()
     toolBar->addWidget(BrushSize);   
 }
 
-
+/**
+ * @brief MainWindow::on_actionRefresh_triggered
+ * Slot called when the refresh action is triggered. Redraws the current image view.
+ */
 void MainWindow::on_actionRefresh_triggered()
 {
     ShowImage(graphicsView);
 }
 
-
-
+/**
+ * @brief MainWindow::on_action3D_Brush_toggled
+ * Slot called when the 3D brush mode toggle is changed.
+ * Updates brush mode and redraws the brush preview.
+ * @param mode  True to enable 3D brush mode, false for 2D mode
+ */
 void MainWindow::on_action3D_Brush_toggled(bool mode)
 {
     ThreeDmode = mode;
@@ -124,6 +124,11 @@ void MainWindow::on_action3D_Brush_toggled(bool mode)
     }
 }
 
+/**
+ * @brief MainWindow::SetUpBrushEnabling
+ * Configures the enabled/disabled state of brush-related controls based on the current mode.
+ * Currently placeholder for future brush mode-specific UI state management.
+ */
 void MainWindow::SetUpBrushEnabling()
 {
     if (ThreeDmode)
@@ -144,20 +149,27 @@ void MainWindow::SetUpBrushEnabling()
     }
 }
 
+/**
+ * @brief MainWindow::on_actionManual_triggered
+ * Slot called when the manual/help action is triggered.
+ * Opens the Read the Docs documentation page in the default web browser.
+ */
 void MainWindow::on_actionManual_triggered()
 {
     QDesktopServices::openUrl(QUrl(QString(READTHEDOCS)));
 }
 
-
+/**
+ * @brief MainWindow::wheelEvent
+ * Handles mouse wheel events for zooming the image view.
+ * Each wheel tick increments/decrements the zoom slider.
+ * @param event  The wheel event
+ */
 void MainWindow::wheelEvent(QWheelEvent *event)
 {
     ZoomSlider->setValue(ZoomSlider->value() + event->angleDelta().y() / 12);
     event->ignore();
 }
-
-
-
 
 void MainWindow::on_actionExport_Curves_as_CSV_triggered()
 {
@@ -280,20 +292,34 @@ void MainWindow::on_actionOutput_visible_image_set_triggered()
     statusBar()->showMessage("Done.");
 }
 
+/**
+ * @brief MainWindow::on_actionBugIssueFeatureRequest_triggered
+ * Slot called when the bug/issue/feature request action is triggered.
+ * Opens the GitHub issues page for the SPIERS repository in the default web browser.
+ */
 void MainWindow::on_actionBugIssueFeatureRequest_triggered()
 {
     QDesktopServices::openUrl(QUrl(QString(GITURL) + QString(GITREPOSITORY) + QString(GITISSUE)));
 }
 
+/**
+ * @brief MainWindow::on_actionCode_on_GitHub_triggered
+ * Slot called when the GitHub code action is triggered.
+ * Opens the SPIERS repository main page in the default web browser.
+ */
 void MainWindow::on_actionCode_on_GitHub_triggered()
 {
     QDesktopServices::openUrl(QUrl(QString(GITURL) + QString(GITREPOSITORY)));
 }
 
-
+/**
+ * @brief MainWindow::DoGradientsUpdate
+ * Called when gradient settings change in the UI to trigger a preview update.
+ * Refreshes the image view to reflect the new gradient values.
+ */
 void MainWindow::DoGradientsUpdate()
 {
-    //Values changed in UI for Gradients - redo preview if preview is on
+    /// Redo preview with updated gradient values
     ShowImage(graphicsView);
 }
 

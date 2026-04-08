@@ -1,11 +1,11 @@
 /**
  * @file
- * Source: MainWindow2
+ * Source: Main Window
  *
- * All SPIERSversion code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSversion code is Copyright 2008-2019 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERS code is Copyright 2008-2026 by Russell J. Garwood, Mark D. Sutton,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -47,16 +47,23 @@
 #include <QImageWriter>
 
 
-QTreeWidgetItem *LastItemClicked;
-QTime LastTimeClicked;
-int LastColumnClicked = -1;
+QTreeWidgetItem *LastItemClicked; /// Last clicked item in tree widget
+QTime LastTimeClicked; /// Timestamp of last click
+int LastColumnClicked = -1; /// Column index of last click
 
-void MainWindow::RefreshOneMaskItem(QTreeWidgetItem *item, int i) //i is index of item in my array
+/**
+ * @brief MainWindow::RefreshOneMaskItem
+ * Refreshes the visual representation of a single mask item in the masks tree widget.
+ * Updates the color swatches, visibility and lock icons, and mask name display.
+ * @param item  The QTreeWidgetItem to refresh
+ * @param i     Index of the mask in the MasksSettings array
+ */
+void MainWindow::RefreshOneMaskItem(QTreeWidgetItem *item, int i)
 {
-    //if passed an item
+    /// Create color swatch for background color
     QLabel *test = new ColourSwatchLabel(QColor(MasksSettings[i]->BackColour[0], MasksSettings[i]->BackColour[1], MasksSettings[i]->BackColour[2]));
 
-    //now fg
+    /// Create color swatch for foreground color
     QLabel *test2 = new ColourSwatchLabel(QColor(MasksSettings[i]->ForeColour[0], MasksSettings[i]->ForeColour[1], MasksSettings[i]->ForeColour[2]));
 
     item->setText(0, " ");
@@ -89,21 +96,32 @@ void MainWindow::RefreshOneMaskItem(QTreeWidgetItem *item, int i) //i is index o
     MasksTreeWidget->setItemWidget (item, 5, lock);
 }
 
+/**
+ * @brief MainWindow::RefreshMasks
+ * Completely refreshes the masks tree widget display. Rebuilds all mask items in the tree,
+ * preserving selection state and list order. Disables updates during refresh for performance.
+ */
 void MainWindow::RefreshMasks()
 {
+    // Guard against calls with no active dataset
+    if (MaxUsedMask < 0 || MasksSettings.isEmpty())
+        return;
+
     bodgeflag = true;
     QElapsedTimer t;
     t.start();
 
     QList <bool> selflags;
 
-    //MasksTreeWidget->setSortingEnabled(false);
+    /// Save current selection state before clearing tree
     MasksTreeWidget->setUpdatesEnabled(false);
-    //first record selected
+    /// Record which items are currently selected
     for (int i = 0; i <= MaxUsedMask; i++)
     {
-        bool sf;
-        sf = false;
+        bool sf = false;
+        /// Skip if this mask entry is not initialized
+        if (!MasksSettings[i])
+            continue;
         if (MasksSettings[i]->widgetitem)
         {
             if ((MasksSettings[i]->widgetitem)->isSelected()) sf = true;
@@ -114,16 +132,19 @@ void MainWindow::RefreshMasks()
     MasksTreeWidget->clear();
     QTreeWidgetItem *item;
 
-    //first find lowest listorder...
+    /// Find lowest listorder...
     QList <bool> usedflags;
     for (int i = 0; i <= MaxUsedMask; i++) usedflags.append(false);
     for (int kloop = 0; kloop <= MaxUsedMask; kloop++)
     {
-        //find lowest
+        /// Find the mask with the lowest list order that hasn't been processed yet
         int lowestval = 999999;
         int lowestindex = -1;
         for (int j = 0; j <= MaxUsedMask; j++)
         {
+            /// Skip null entries
+            if (!MasksSettings[j])
+                continue;
             if (MasksSettings[j]->ListOrder < lowestval && usedflags[j] == false)
             {
                 lowestval = MasksSettings[j]->ListOrder;
@@ -161,10 +182,18 @@ void MainWindow::RefreshMasks()
 
 }
 
-void MainWindow::RefreshOneSegmentItem(QTreeWidgetItem *item, int i) //i is index of item in my array
+/**
+ * @brief MainWindow::RefreshOneSegmentItem
+ * Refreshes the visual representation of a single segment item in the segments tree widget.
+ * Updates the color swatch, activation state icon, and lock icon. Similar to RefreshOneMaskItem.
+ * @param item  The QTreeWidgetItem to refresh
+ * @param i     Index of the segment in the Segments array
+ */
+void MainWindow::RefreshOneSegmentItem(QTreeWidgetItem *item, int i)
 {
-    //Modified from mask equivalent. Redraws item in list
+    /// Return early if index is out of range
     if (i < 0) return;
+    /// Create color swatch for segment color
     QLabel *test = new ColourSwatchLabel(QColor(Segments[i]->Colour[0], Segments[i]->Colour[1], Segments[i]->Colour[2]));
 
     item->setText(0, " ");
@@ -196,20 +225,29 @@ void MainWindow::RefreshOneSegmentItem(QTreeWidgetItem *item, int i) //i is inde
     SegmentsTreeWidget->setItemWidget (item, 4, lock);
 }
 
-
+/**
+ * @brief MainWindow::RefreshSegments
+ * Completely refreshes the segments tree widget display. Rebuilds all segment items,
+ * preserving selection state and list order. Disables updates during refresh for performance.
+ */
 void MainWindow::RefreshSegments()
 {
+    /// Guard against calls with no active dataset
+    if (SegmentCount <= 0 || Segments.empty())
+        return;
+
     QList <bool> selflags;
     bodgeflag = true;
 
-//stops selection chaining event cascades
-    //MasksTreeWidget->setSortingEnabled(false);
+    /// Disable updates to prevent selection chaining event cascades
     SegmentsTreeWidget->setUpdatesEnabled(false);
-    //first record selected
+    /// Record which items are currently selected
     for (int i = 0; i < SegmentCount; i++)
     {
-        bool sf;
-        sf = false;
+        bool sf = false;
+        /// Skip if this segment entry is not initialized
+        if (!Segments[i])
+            continue;
         if (Segments[i]->widgetitem)
         {
             if ((Segments[i]->widgetitem)->isSelected()) sf = true;
@@ -278,7 +316,12 @@ void MainWindow::RefreshSegments()
     return;
 }
 
-
+/**
+ * @brief MainWindow::AmIMerged
+ * Recursively checks if an output object is marked as merged or has a merged parent.
+ * @param i  Index of the output object in the OutputObjects array
+ * @return   True if the object or any of its parents is marked as merged
+ */
 bool MainWindow::AmIMerged(int i)
 {
     if (OutputObjects[i]->Merge) return true;
@@ -286,9 +329,16 @@ bool MainWindow::AmIMerged(int i)
     else return AmIMerged(OutputObjects[i]->Parent);
 }
 
-void MainWindow::RefreshOneOOItem(QTreeWidgetItem *item, int i) //i is index of item in my array
+/**
+ * @brief MainWindow::RefreshOneOOItem
+ * Refreshes the visual representation of a single output object item in the tree widget.
+ * Updates color swatch, key display, resample percentage, visibility icon, and merge state.
+ * @param item  The QTreeWidgetItem to refresh
+ * @param i     Index of the output object in the OutputObjects array
+ */
+void MainWindow::RefreshOneOOItem(QTreeWidgetItem *item, int i)
 {
-    //Modified from mask equivalent. Redraws item in list
+    /// Return early if index is out of range
     if (i < 0) return;
     QLabel *test = new ColourSwatchLabel(QColor(OutputObjects[i]->Colour[0], OutputObjects[i]->Colour[1], OutputObjects[i]->Colour[2]));
 
@@ -387,16 +437,21 @@ void MainWindow::OODrawChildren( QList <bool> selflags, int parent)
     }
 }
 
+/**
+ * @brief MainWindow::RefreshOO
+ * Completely refreshes the output objects tree widget display. Rebuilds all output objects
+ * including hierarchical parent-child relationships and groups. Preserves selection state.
+ */
 void MainWindow::RefreshOO()
 {
-
-    if (OutputObjectsCount == 0)
+    /// Guard against calls with no active dataset
+    if (OutputObjectsCount <= 0 || OutputObjects.empty())
     {
         OOTreeWidget->clear();
         return;
     }
 
-    //Look for objects whose parent is not a group. They are spurious - delete them
+    /// Look for objects whose parent is not a group. They are spurious - delete them
     bool flag;
 
     do
@@ -404,6 +459,9 @@ void MainWindow::RefreshOO()
         flag = false;
         for (int i = 0; i < OutputObjectsCount; i++)
         {
+            /// Skip null entries
+            if (!OutputObjects[i])
+                continue;
             if (OutputObjects[i]->Parent != -1)
             {
                 if (OutputObjects[i]->Parent < 0 || OutputObjects[i]->Parent >= OutputObjectsCount ) flag = true;
@@ -492,11 +550,18 @@ void MainWindow::RefreshOO()
     return;
 }
 
-
-void MainWindow::RefreshOneCurveItem(QTreeWidgetItem *item, int i) //i is index of item in my array
+/**
+ * @brief MainWindow::RefreshOneCurveItem
+ * Refreshes the visual representation of a single curve item in the curves tree widget.
+ * Updates color swatch, open/closed/filled state icon, and associated segment information.
+ * @param item  The QTreeWidgetItem to refresh
+ * @param i     Index of the curve in the Curves array
+ */
+void MainWindow::RefreshOneCurveItem(QTreeWidgetItem *item, int i)
 {
-    //Modified from mask equivalent. Redraws item in list
+    /// Return early if index is out of range
     if (i < 0) return;
+    /// Create color swatch for curve color
     QLabel *test = new ColourSwatchLabel(QColor(Curves[i]->Colour[0], Curves[i]->Colour[1], Curves[i]->Colour[2]));
 
     CurvesTreeWidget->setItemWidget (item, 1, test);
@@ -563,22 +628,31 @@ void MainWindow::RefreshOneCurveItem(QTreeWidgetItem *item, int i) //i is index 
     }
 }
 
+/**
+ * @brief MainWindow::RefreshCurves
+ * Completely refreshes the curves tree widget display. Rebuilds all curve items,
+ * preserving selection state and list order. Disables updates during refresh for performance.
+ */
 void MainWindow::RefreshCurves()
 {
-    bodgeflag = true;
+    /// Guard against calls with no active dataset
+    if (CurveCount <= 0 || Curves.empty())
+        return;
+
     bodgeflag = true;
 
     QList <bool> selflags;
 
-
-    //qDebug()<<"RC1";
+    /// Disable updates to prevent unnecessary redraws during rebuild
     CurvesTreeWidget->setUpdatesEnabled(false);
 
-    //qDebug()<<"RC2";
-    //first record selected
+    /// Record which items are currently selected
     for (int i = 0; i < CurveCount; i++)
     {
         bool sf = false;
+        /// Skip if this curve entry is not initialized
+        if (!Curves[i])
+            continue;
         if (Curves[i]->widgetitem)
         {
             if ((Curves[i]->widgetitem)->isSelected()) sf = true;
@@ -590,18 +664,19 @@ void MainWindow::RefreshCurves()
     CurvesTreeWidget->clear();
     QTreeWidgetItem *item;
 
-    //first find lowest listorder...
-
-    //qDebug()<<"RC4";
+    /// Find lowest listorder...
     QList <bool> usedflags;
     for (int i = 0; i < CurveCount; i++) usedflags.append(false);
     for (int kloop = 0; kloop < CurveCount; kloop++)
     {
-        //find lowest
+        /// Find the curve with the lowest list order that hasn't been processed yet
         int lowestval = 999999;
         int lowestindex = -1;
         for (int j = 0; j < CurveCount; j++)
         {
+            /// Skip null entries
+            if (!Curves[j])
+                continue;
             if (Curves[j]->ListOrder < lowestval && usedflags[j] == false)
             {
                 lowestval = Curves[j]->ListOrder;

@@ -2,12 +2,17 @@
  * @file
  * Header: 3D Preview Widget
  *
- * Real-time volume preview for SPIERSedit using GPU ray-cast rendering.
- * Two render modes: Segment (activated segments) and Output (output list).
+ * All SPIERS code is released under the GNU General Public License.
+ * See LICENSE.md files in the programme directory.
  *
- * Texture building runs on a background thread (PreviewBuilderWorker) so
- * the main thread stays responsive during full rebuilds on large datasets.
- * A "Loading… X%" pill is drawn over the GL viewport while the worker runs.
+ * All SPIERS code is Copyright 2008-2026 by Mark D. Sutton, Russell J. Garwood,
+ * and Alan R.T. Spencer.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version. This program is distributed in the
+ * hope that it will be useful, but WITHOUT ANY WARRANTY.
  */
 
 #ifndef PREVIEWWIDGET_H
