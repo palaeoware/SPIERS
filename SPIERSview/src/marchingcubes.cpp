@@ -48,7 +48,7 @@
 #define EMPTY_EDGE -1
 
 /// Grid size for acceleration structure (skip blank regions in sparse volumes)
-#define GRIDSIZE 10
+#define LOCAL_GRIDSIZE 10
 
 // edge lookup table
 int MarchingCubes::edgeTable[256] =
@@ -427,8 +427,8 @@ void MarchingCubes::surfaceChunked()
     int k;
     int e;
     bool empty[6];
-    int gridxscale = ((object->spv->iDim) / GRIDSIZE) + 1;
-    int gridyscale = ((object->spv->jDim) / GRIDSIZE) + 1;
+    int gridxscale = ((object->spv->iDim) / LOCAL_GRIDSIZE) + 1;
+    int gridyscale = ((object->spv->jDim) / LOCAL_GRIDSIZE) + 1;
 
     int size = object->spv->size;
 
@@ -859,7 +859,7 @@ void MarchingCubes::marchNonChunked(unsigned char *dataset, ScalarFieldLayer *la
  * can be held in memory. Returns a newly allocated isosurface containing vertices
  * and triangles for this layer only.
  *
- * Uses a grid acceleration structure (GRIDSIZE blocks) to skip regions of the volume
+ * Uses a grid acceleration structure (LOCAL_GRIDSIZE blocks) to skip regions of the volume
  * that are completely empty, improving performance on sparse data. Vertex caching
  * operates identically to the non-chunked version but results are isolated per-layer.
  *
@@ -918,12 +918,12 @@ Isosurface *MarchingCubes::marchChunked(ScalarFieldLayer *layer, int k, int vert
         bool flag = false;
         for (int gj = 0; gj < gridyscale; gj++)
         {
-            //if (grid[i/GRIDSIZE + gj*gridxscale])
+            //if (grid[i/LOCAL_GRIDSIZE + gj*gridxscale])
             {
                 flag = true;
-                int ymax = gj * GRIDSIZE + GRIDSIZE;
+                int ymax = gj * LOCAL_GRIDSIZE + LOCAL_GRIDSIZE;
                 if (ymax > jDim) ymax = jDim;
-                for (j = gj * GRIDSIZE; j < ymax; j++)
+                for (j = gj * LOCAL_GRIDSIZE; j < ymax; j++)
                 {
                     if (j == 0) j++; //should really start at 1!
                     //March
@@ -1011,7 +1011,7 @@ Isosurface *MarchingCubes::marchChunked(ScalarFieldLayer *layer, int k, int vert
                 }
             }
         }
-        if (flag == false) i += (GRIDSIZE - 1); //if all cells blank - can skip to next grid column!
+        if (flag == false) i += (LOCAL_GRIDSIZE - 1); //if all cells blank - can skip to next grid column!
     }
 
     //do memory squeeze
