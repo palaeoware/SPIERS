@@ -123,13 +123,20 @@ public:
     double scale;
     bool buggedData;
     bool isSurfacing;
-private:
-    void GetFinalPolyData();
-    void MakePolyVerts(int slice, int VertexBase);
-    QString DoMatrixDXFoutput(int v, float x, float y, float z);
 
+    // Mesh data - made public for export operations
     MeshData localMesh;   // input mesh (built from Isosurfaces)
     MeshData finalMesh;   // output mesh (after processing - currently a direct copy)
+
+    /**
+     * Prepare final polygon data for rendering/export.
+     * Applies filters (decimation, smoothing, island removal) and computes normals.
+     */
+    void GetFinalPolyData();
+
+private:
+    void MakePolyVerts(int slice, int VertexBase);
+    QString DoMatrixDXFoutput(int v, float x, float y, float z);
 
     int object_ktr;
 

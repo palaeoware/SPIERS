@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RCC>
+    <qresource prefix="/blender">
+        <file>blender_converter.py</file>
+    </qresource>
+</RCC>

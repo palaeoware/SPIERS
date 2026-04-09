@@ -18,7 +18,7 @@
 #include <QtWidgets/QApplication>
 #include "../../SPIERScommon/src/colourswatchlabel.h"
 #include "../../SPIERScommon/src/customstyletheme.h"
-#include "../../SPIERScommon/src/advancedpreferencesdialog.h"
+#include "settingsimpl.h"
 #include <QActionGroup>
 #include <QFileDialog>
 #include <QMenuBar>
@@ -51,7 +51,11 @@
 #include "vaxml.h"
 #include "quickhelpbox.h"
 #include "aboutdialog.h"
+#include "blenderbridge.h"
+#include "fbxexporter.h"
 #include "globals.h"
+#include "marchingcubes.h"
+#include "objexporter.h"
 #include "spvreader.h"
 #include "spvwriter.h"
 #include "../SPIERScommon/src/netmodule.h"
@@ -77,6 +81,13 @@ MainWindow::MainWindow(QWidget *parent)
     showMaximized();
 
     setWindowTitle(QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION));
+
+    // Disable "Export as Blend" menu item if Blender is not available
+    if (!BlenderBridge::isBlenderAvailable())
+    {
+        ui->actionExport_as_Blend->setEnabled(false);
+        ui->actionExport_as_Blend->setText(ui->actionExport_as_Blend->text() + " (Blender not found)");
+    }
 
     FilterKeys = true; //set to true to turn off interception of keys needed for type-in boxes
 
@@ -3981,7 +3992,7 @@ void MainWindow::on_actionCode_on_GitHub_triggered()
  */
 void MainWindow::on_actionAdvancedPrefs_triggered()
 {
-    AdvancedPreferencesDialog dlg(this);
+    SettingsImpl dlg;
     dlg.exec();
 }
 
@@ -4377,5 +4388,377 @@ void MainWindow::on_cmbShadowsSecondary_currentIndexChanged(int index)
 void MainWindow::on_actionClear_Scale_Markers_triggered()
 {
     gridOverlay->clearMarkers();
+}
 
+/**
+ *
+ * Export visible objects to OBJ format with accompanying MTL material file.
+ *
+ * OBJ is a widely-supported 3D model format that preserves vertex positions,
+ * normals, and per-object material assignments. Transform matrices are baked
+ * into vertex geometry before export.
+ *
+ **/
+void MainWindow::on_actionExport_as_OBJ_triggered()
+{
+    QString cpath = fname;
+    cpath = fname.left(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")));
+    FilterKeys = false;
+
+    QString objPath = QFileDialog::getSaveFileName(this, tr("Export as OBJ"),
+                                                    cpath,
+                                                    tr("OBJ files (*.obj)"));
+    FilterKeys = true;
+    if (objPath.isEmpty())
+    {
+        return;
+    }
+    if (!objPath.endsWith(".obj", Qt::CaseInsensitive))
+    {
+        objPath.append(".obj");
+    }
+
+    DisableRenderCommands();
+
+    // Check if any visible objects need surfacing
+    bool needsSurfacing = false;
+    for (int i = 0; i < SVObjects.count(); i++)
+    {
+        if (!SVObjects[i]->IsGroup && SVObjects[i]->Visible && SVObjects[i]->Dirty)
+        {
+            needsSurfacing = true;
+            break;
+        }
+    }
+
+    // Run surfacing if needed
+    if (needsSurfacing)
+    {
+        ui->OutputLabelOverall->setText("Surfacing objects...");
+        ui->ProgBarOverall->setValue(0);
+        qApp->processEvents();
+
+        // Run marching cubes on objects that need surfacing
+        int objcount = 0;
+        for (int i = 0; i < SVObjects.count(); i++)
+            if (SVObjects[i]->Dirty && !SVObjects[i]->IsGroup) objcount++;
+
+        int objindex = 0;
+        for (int i = 0; i < SVObjects.count(); i++)
+        {
+            if (SVObjects[i]->Dirty && !SVObjects[i]->IsGroup)
+            {
+                MarchingCubes surfacer(SVObjects[i]);
+                surfacer.surfaceObject();
+                SVObjects[i]->MakePolyData();
+                SVObjects[i]->ForceUpdates(objindex, objcount);
+                objindex++;
+                qApp->processEvents();
+            }
+        }
+        UpdateGL();
+    }
+
+    ui->OutputLabelOverall->setText("Exporting to OBJ format...");
+    ui->ProgBarOverall->setValue(0);
+    qApp->processEvents();
+
+    // Collect objects with geometry - must call GetFinalPolyData() first
+    QList<SVObject*> visibleObjects;
+    for (SVObject *obj : SVObjects)
+    {
+        if (!obj->IsGroup)
+        {
+            obj->GetFinalPolyData();
+            if (obj->localMesh.vertexCount() > 0)
+            {
+                visibleObjects.append(obj);
+            }
+        }
+    }
+
+    if (visibleObjects.empty())
+    {
+        ui->OutputLabelOverall->setText("No objects with geometry to export");
+        EnableRenderCommands();
+        return;
+    }
+
+    // Export to OBJ
+    if (OBJExporter::exportToOBJ(objPath, visibleObjects))
+    {
+        ui->OutputLabelOverall->setText("OBJ export complete");
+        ui->ProgBarOverall->setValue(100);
+    }
+    else
+    {
+        ui->OutputLabelOverall->setText("OBJ export failed - check file permissions");
+    }
+
+    EnableRenderCommands();
+}
+
+/**
+ * Export visible objects to FBX format with geometry and materials.
+ *
+ * This export path uses FBXExporter to create an FBX file.
+ *
+ */
+void MainWindow::on_actionExport_as_FBX_triggered()
+{
+    QString cpath = fname;
+    cpath = fname.left(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")));
+    FilterKeys = false;
+
+    QString fbxPath = QFileDialog::getSaveFileName(this, tr("Export as FBX File"),
+                                                     cpath,
+                                                     tr("FBX files (*.fbx)"));
+    FilterKeys = true;
+    if (fbxPath.isEmpty())
+    {
+        return;
+    }
+
+    if (!fbxPath.endsWith(".fbx", Qt::CaseInsensitive))
+    {
+        fbxPath.append(".fbx");
+    }
+
+    DisableRenderCommands();
+
+    // Check if any visible objects need surfacing
+    bool needsSurfacing = false;
+    for (int i = 0; i < SVObjects.count(); i++)
+    {
+        if (!SVObjects[i]->IsGroup && SVObjects[i]->Visible && SVObjects[i]->Dirty)
+        {
+            needsSurfacing = true;
+            break;
+        }
+    }
+
+    // Run surfacing if needed
+    if (needsSurfacing)
+    {
+        ui->OutputLabelOverall->setText("Surfacing objects...");
+        ui->ProgBarOverall->setValue(0);
+        qApp->processEvents();
+
+        // Run marching cubes on objects that need surfacing
+        int objcount = 0;
+        for (int i = 0; i < SVObjects.count(); i++)
+            if (SVObjects[i]->Dirty && !SVObjects[i]->IsGroup) objcount++;
+
+        int objindex = 0;
+        for (int i = 0; i < SVObjects.count(); i++)
+        {
+            if (SVObjects[i]->Dirty && !SVObjects[i]->IsGroup)
+            {
+                MarchingCubes surfacer(SVObjects[i]);
+                surfacer.surfaceObject();
+                SVObjects[i]->MakePolyData();
+                SVObjects[i]->ForceUpdates(objindex, objcount);
+                objindex++;
+                qApp->processEvents();
+            }
+        }
+        UpdateGL();
+    }
+
+    ui->OutputLabelOverall->setText("Exporting to FBX format...");
+    ui->ProgBarOverall->setValue(0);
+    qApp->processEvents();
+
+    // Collect objects with geometry - must call GetFinalPolyData() first
+    QList<SVObject*> visibleObjects;
+    for (SVObject *obj : SVObjects)
+    {
+        if (!obj->IsGroup)
+        {
+            obj->GetFinalPolyData();
+            if (obj->localMesh.vertexCount() > 0)
+            {
+                visibleObjects.append(obj);
+            }
+        }
+    }
+
+    if (visibleObjects.empty())
+    {
+        ui->OutputLabelOverall->setText("No objects with geometry to export");
+        EnableRenderCommands();
+        return;
+    }
+
+    ui->ProgBarOverall->setValue(50);
+    qApp->processEvents();
+
+    // Export to FBX
+    if (!FBXExporter::exportToFBX(fbxPath, visibleObjects))
+    {
+        ui->OutputLabelOverall->setText("FBX export failed");
+        QMessageBox::critical(this, "Error", QString("FBX export failed."));
+        EnableRenderCommands();
+        return;
+    }
+
+    ui->ProgBarOverall->setValue(100);
+    qApp->processEvents();
+
+    EnableRenderCommands();
+}
+
+/**
+ *
+ * Export visible objects to Blender .blend format with geometry and materials.
+ *
+ * This export path uses FBXExporter to create an intermediate FBX file,
+ * then BlenderBridge to convert it to .blend format with materials applied.
+ * If Blender is not installed, the FBX file is saved instead.
+ *
+ **/
+void MainWindow::on_actionExport_as_Blend_triggered()
+{
+    QString cpath = fname;
+    cpath = fname.left(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")));
+    FilterKeys = false;
+
+    QString blendPath = QFileDialog::getSaveFileName(this, tr("Export as Blender File"),
+                                                      cpath,
+                                                      tr("Blender files (*.blend);;FBX files (*.fbx)"));
+    FilterKeys = true;
+    if (blendPath.isEmpty())
+    {
+        return;
+    }
+
+    DisableRenderCommands();
+
+    // Check if any visible objects need surfacing
+    bool needsSurfacing = false;
+    for (int i = 0; i < SVObjects.count(); i++)
+    {
+        if (!SVObjects[i]->IsGroup && SVObjects[i]->Visible && SVObjects[i]->Dirty)
+        {
+            needsSurfacing = true;
+            break;
+        }
+    }
+
+    // Run surfacing if needed
+    if (needsSurfacing)
+    {
+        ui->OutputLabelOverall->setText("Surfacing objects...");
+        ui->ProgBarOverall->setValue(0);
+        qApp->processEvents();
+
+        // Run marching cubes on objects that need surfacing
+        int objcount = 0;
+        for (int i = 0; i < SVObjects.count(); i++)
+            if (SVObjects[i]->Dirty && !SVObjects[i]->IsGroup) objcount++;
+
+        int objindex = 0;
+        for (int i = 0; i < SVObjects.count(); i++)
+        {
+            if (SVObjects[i]->Dirty && !SVObjects[i]->IsGroup)
+            {
+                MarchingCubes surfacer(SVObjects[i]);
+                surfacer.surfaceObject();
+                SVObjects[i]->MakePolyData();
+                SVObjects[i]->ForceUpdates(objindex, objcount);
+                objindex++;
+                qApp->processEvents();
+            }
+        }
+        UpdateGL();
+    }
+
+    ui->OutputLabelOverall->setText("Exporting to Blender format...");
+    ui->ProgBarOverall->setValue(0);
+    qApp->processEvents();
+
+    // Collect objects with geometry - must call GetFinalPolyData() first
+    QList<SVObject*> visibleObjects;
+    for (SVObject *obj : SVObjects)
+    {
+        if (!obj->IsGroup)
+        {
+            obj->GetFinalPolyData();
+            if (obj->localMesh.vertexCount() > 0)
+            {
+                visibleObjects.append(obj);
+            }
+        }
+    }
+
+    if (visibleObjects.empty())
+    {
+        ui->OutputLabelOverall->setText("No objects with geometry to export");
+        EnableRenderCommands();
+        return;
+    }
+
+    // Create temporary FBX file for Blender import
+    QFileInfo blendInfo(blendPath);
+    QString tempDir = blendInfo.dir().absolutePath();
+    QString baseName = blendInfo.baseName();
+    QString fbxPath = tempDir + "/" + baseName + "_temp.fbx";
+
+    ui->ProgBarOverall->setValue(25);
+    qApp->processEvents();
+
+    // Export to FBX
+    if (!FBXExporter::exportToFBX(fbxPath, visibleObjects))
+    {
+        ui->OutputLabelOverall->setText("FBX export failed");
+        QMessageBox::critical(this, "Error", QString("FBX export failed."));
+        EnableRenderCommands();
+        return;
+    }
+
+    ui->ProgBarOverall->setValue(50);
+    qApp->processEvents();
+
+    // Check if Blender is available
+    if (!BlenderBridge::isBlenderAvailable())
+    {
+        // Blender not available - just return the FBX file path
+        if (blendPath.endsWith(".fbx", Qt::CaseInsensitive))
+        {
+            // User selected .fbx, so just use the temporary file as final output
+            QFile::rename(fbxPath, blendPath);
+            ui->OutputLabelOverall->setText("FBX export complete (Blender not found)");
+            ui->ProgBarOverall->setValue(100);
+        }
+        else
+        {
+            // User selected .blend but Blender not available
+            QFile::remove(fbxPath);
+            ui->OutputLabelOverall->setText("Blender not found.");
+            QMessageBox::critical(this, "Error", QString("Blender not found - cannot create .blend file. Please install Blender or export as FBX instead."));
+        }
+        EnableRenderCommands();
+        return;
+    }
+
+    ui->ProgBarOverall->setValue(75);
+    qApp->processEvents();
+
+    // Convert FBX to .blend using Blender
+    QString errorMsg;
+    if (BlenderBridge::convertFBXToBlend(fbxPath, blendPath, visibleObjects, errorMsg))
+    {
+        ui->OutputLabelOverall->setText("Blender export complete");
+        ui->ProgBarOverall->setValue(100);
+    }
+    else
+    {
+        ui->OutputLabelOverall->setText(QString("Blender conversion failed"));
+        QMessageBox::critical(this, "Error", QString("Blender conversion failed: %1").arg(errorMsg));
+    }
+
+    // Clean up temporary FBX file
+    QFile::remove(fbxPath);
+
+    EnableRenderCommands();
 }

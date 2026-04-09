@@ -14,7 +14,7 @@
    <string>SPIERSview</string>
   </property>
   <property name="windowIcon">
-   <iconset>
+   <iconset resource="../view.qrc">
     <normaloff>:/resources/SPIERSviewIcon.svg</normaloff>:/resources/SPIERSviewIcon.svg</iconset>
   </property>
   <property name="dockOptions">
@@ -133,6 +133,9 @@
     <addaction name="actionSave_Finalised_As"/>
     <addaction name="actionSTL"/>
     <addaction name="actionDXF"/>
+    <addaction name="actionExport_as_OBJ"/>
+    <addaction name="actionExport_as_FBX"/>
+    <addaction name="actionExport_as_Blend"/>
     <addaction name="actionExport_Hidden_Objects"/>
     <addaction name="separator"/>
     <addaction name="actionScreen_Capture"/>
@@ -1728,6 +1731,16 @@
     <string>Export DXF...</string>
    </property>
   </action>
+  <action name="actionExport_as_OBJ">
+   <property name="text">
+    <string>Export as OBJ...</string>
+   </property>
+  </action>
+  <action name="actionExport_as_Blend">
+   <property name="text">
+    <string>Export as Blend...</string>
+   </property>
+  </action>
   <action name="actionAnaglyph_Stereo">
    <property name="checkable">
     <bool>true</bool>
@@ -2986,8 +2999,15 @@
     <string>Clear Scale Markers</string>
    </property>
   </action>
+  <action name="actionExport_as_FBX">
+   <property name="text">
+    <string>Export FBX...</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="../view.qrc"/>
+ </resources>
  <connections/>
 </ui>

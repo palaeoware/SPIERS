@@ -255,21 +255,17 @@ private slots:
     void on_secondaryLightZ_valueChanged(int value);
     void on_secondaryLightPower_valueChanged(int value);
     void on_headlightPower_valueChanged(int value);
-
-
     void on_chkSecondaryLightActive_stateChanged(int newState);
     void on_chkHeadlightActive_stateChanged(int newState);
     void on_cmbShadowsMain_currentIndexChanged(int index);
     void on_cmbShadowsSecondary_currentIndexChanged(int index);
-
-
     void on_actionClear_Scale_Markers_triggered();
     void on_actionAdvancedPrefs_triggered();
-
-
-
-
+    void on_actionExport_as_OBJ_triggered();
+    void on_actionExport_as_FBX_triggered();
+    void on_actionExport_as_Blend_triggered();
 };
+
 
 extern MainWindow *mainWindow;
 

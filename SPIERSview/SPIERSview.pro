@@ -43,7 +43,6 @@ INCLUDEPATH += src/zlib
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
     ../SPIERScommon/src/customstyletheme.cpp \
-    ../SPIERScommon/src/advancedpreferencesdialog.cpp \
     ../SPIERScommon/src/colourswatchlabel.cpp \
     ../SPIERScommon/src/themeselectorwidget.cpp \
     src/globals.cpp \
@@ -53,9 +52,12 @@ SOURCES += src/main.cpp \
     src/spvreader.cpp \
     src/svobject.cpp \
     src/spv.cpp \
+    src/blenderbridge.cpp \
     src/compressedslice.cpp \
+    src/fbxexporter.cpp \
     src/marchingcubes.cpp \
     src/dataconnectivityfilter.cpp \
+    src/objexporter.cpp \
     src/movetogroup.cpp \
     src/vaxml.cpp \
     src/quickhelpbox.cpp \
@@ -72,6 +74,7 @@ SOURCES += src/main.cpp \
     src/fullscreenwindow.cpp \
     src/spvwriter.cpp \
     src/staticfunctions.cpp \
+    src/settingsimpl.cpp \
     src/zlib/adler32.c \
     src/zlib/compress.c \
     src/zlib/crc32.c \
@@ -85,7 +88,6 @@ SOURCES += src/main.cpp \
     src/zlib/zutil.c
 HEADERS += src/mainwindow.h \
     ../SPIERScommon/src/customstyletheme.h \
-    ../SPIERScommon/src/advancedpreferencesdialog.h \
     ../SPIERScommon/src/colourswatchlabel.h \
     ../SPIERScommon/src/themeselectorwidget.h \
     src/globals.h \
@@ -95,9 +97,12 @@ HEADERS += src/mainwindow.h \
     src/spvreader.h \
     src/svobject.h \
     src/spv.h \
+    src/blenderbridge.h \
     src/compressedslice.h \
+    src/fbxexporter.h \
     src/marchingcubes.h \
     src/dataconnectivityfilter.h \
+    src/objexporter.h \
     src/movetogroup.h \
     src/vaxml.h \
     src/quickhelpbox.h \
@@ -115,6 +120,7 @@ HEADERS += src/mainwindow.h \
     src/fullscreenwindow.h \
     src/spvwriter.h \
     src/staticfunctions.h \
+    src/settingsimpl.h \
     src/zlib/crc32.h \
     src/zlib/deflate.h \
     src/zlib/gzguts.h \
@@ -130,7 +136,8 @@ HEADERS += src/mainwindow.h \
 FORMS += ui/mainwindow.ui \
     ui/movetogroup.ui \
     ui/quickhelpbox.ui \
-    ui/aboutdialog.ui
+    ui/aboutdialog.ui \
+    ui/settings.ui
 
 # MacOS build here
 macx {
