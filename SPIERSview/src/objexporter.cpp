@@ -280,11 +280,12 @@ bool OBJExporter::writeOBJGeometry(
     const QVector<float> &allNormals,
     const QVector<int> &allTriangles)
 {
+    Q_UNUSED(mtlName);
+
     QTextStream out(&objFile);
     out.setRealNumberNotation(QTextStream::FixedNotation);
     out.setRealNumberPrecision(6);
 
-    // Write all vertices
     for (int i = 0; i < allVertices.size(); i += 3)
     {
         out << "v " << allVertices[i] << " "
@@ -294,50 +295,46 @@ bool OBJExporter::writeOBJGeometry(
 
     out << "\n";
 
-    // Write all normals
     for (int i = 0; i < allNormals.size(); i += 3)
     {
-        out << "vn " << allNormals[i] << " "
-            << allNormals[i + 1] << " "
-            << allNormals[i + 2] << "\n";
+        out << "vn " << -allNormals[i] << " "
+            << -allNormals[i + 1] << " "
+            << -allNormals[i + 2] << "\n";
     }
 
     out << "\n";
 
-    // Write faces grouped by object
-    int vertexOffset = 0;
     int triangleOffset = 0;
+    int vertexOffset = 0;
 
     for (SVObject *obj : visibleObjects)
     {
-        if (obj->Isosurfaces.empty())
+        int vertexCount = obj->localMesh.vertexCount();
+        int triangleCount = obj->localMesh.triangleCount();
+
+        if (vertexCount == 0 || triangleCount == 0)
         {
             continue;
         }
 
-        const Isosurface *iso = obj->Isosurfaces[0];
-        int triangleCount = iso->nTriangles;
-
-        // Write material assignment
         out << "usemtl " << obj->Name << "_Material\n";
         out << "g " << obj->Name << "\n";
 
-        // Write faces for this object
         for (int i = 0; i < triangleCount * 3; i += 3)
         {
-            int idx0 = allTriangles[triangleOffset + i] + 1;     // OBJ indices are 1-based
+            int idx0 = allTriangles[triangleOffset + i] + 1;
             int idx1 = allTriangles[triangleOffset + i + 1] + 1;
             int idx2 = allTriangles[triangleOffset + i + 2] + 1;
 
             out << "f " << idx0 << "//" << idx0 << " "
-                << idx1 << "//" << idx1 << " "
-                << idx2 << "//" << idx2 << "\n";
+                << idx2 << "//" << idx2 << " "
+                << idx1 << "//" << idx1 << "\n";
         }
 
         out << "\n";
 
-        vertexOffset += iso->nVertices;
         triangleOffset += triangleCount * 3;
+        vertexOffset += vertexCount;
     }
 
     return true;
@@ -366,49 +363,32 @@ bool OBJExporter::writeMTLFile(
     out.setRealNumberNotation(QTextStream::FixedNotation);
     out.setRealNumberPrecision(4);
 
-    // Write header
     out << "# Material library exported from SPIERSview\n\n";
 
-    // Write material for each object
     for (SVObject *obj : visibleObjects)
     {
-        if (obj->Isosurfaces.empty())
+        if (obj->localMesh.vertexCount() == 0 || obj->localMesh.triangleCount() == 0)
         {
             continue;
         }
 
         out << "newmtl " << obj->Name << "_Material\n";
 
-        // Normalize RGB to 0.0-1.0 range
         float r = obj->Colour[0] / 255.0f;
         float g = obj->Colour[1] / 255.0f;
         float b = obj->Colour[2] / 255.0f;
 
-        // Ambient color (Ka) - usually same as diffuse
         out << "Ka " << r << " " << g << " " << b << "\n";
-
-        // Diffuse color (Kd)
         out << "Kd " << r << " " << g << " " << b << "\n";
-
-        // Specular color (Ks) - white for most objects
         out << "Ks 1.0 1.0 1.0\n";
 
-        // Specular exponent (Ns) - map from shininess codes
-        // Shininess: 0=0.8, 1=0.5, 2=0.2, 3=0.0 (roughness)
-        // Specular exponent: 0.0 (dull) to 128.0 (shiny)
-        // Map: roughness 0.8 -> Ns 4, roughness 0.0 -> Ns 128
-        float roughness = 0.8f - (obj->Shininess * 0.2667f);  // 0-3 -> 0.8-0.0 (approx)
+        float roughness = 0.8f - (obj->Shininess * 0.2667f);
         float specularExponent = (1.0f - roughness) * 128.0f;
         out << "Ns " << specularExponent << "\n";
 
-        // Alpha (dissolve factor d)
-        // Transparency: 0-4 -> alpha: 1.0-0.0
         float alpha = 1.0f - (obj->Transparency * 0.25f);
-        out << "d " << alpha << "\n";
-
-        out << "\n";
+        out << "d " << alpha << "\n\n";
     }
 
-    mtlFile.close();
     return true;
 }
