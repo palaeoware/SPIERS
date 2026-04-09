@@ -316,7 +316,7 @@
    </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="title">
      <string>Window</string>
@@ -331,6 +331,7 @@
     <addaction name="actionOutput"/>
     <addaction name="actionHistorgram"/>
     <addaction name="actionInfo"/>
+    <addaction name="actionGenerateTestData"/>
     <addaction name="separator"/>
     <addaction name="action3DPreview"/>
    </widget>
@@ -4071,6 +4072,29 @@ Interpreted Images:</string>
     </layout>
    </widget>
   </widget>
+  <widget class="QDockWidget" name="DockGenerateTestData">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>300</width>
+     <height>400</height>
+    </size>
+   </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetFeature::DockWidgetFloatable|QDockWidget::DockWidgetFeature::DockWidgetMovable</set>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::DockWidgetArea::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>Generate Test Data</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+  </widget>
   <action name="actionA_command">
    <property name="text">
     <string>Open...</string>
@@ -5027,6 +5051,17 @@ Interpreted Images:</string>
    </property>
    <property name="shortcut">
     <string>F10</string>
+   </property>
+  </action>
+  <action name="actionGenerateTestData">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Generate Test Data</string>
    </property>
   </action>
   <action name="actionShow_position_slice_selector">

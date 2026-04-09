@@ -76,6 +76,9 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags f)
 
     SetUpDocks();
 
+    // Disable window menu items by default (no project loaded yet)
+    SetWindowMenuState(false);
+
     //Connect all the menu commands
     //For commands which rely on F keys that are non functional on macOS define backup shortcuts
     QList<QKeySequence> shortcuts;
@@ -119,6 +122,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags f)
     shortcuts.append(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_7));
     actionOutput->setShortcuts(shortcuts);
     QObject::connect(actionOutput, SIGNAL(triggered()), this, SLOT(Menu_Window_Output()));
+
+    QObject::connect(actionGenerateTestData, SIGNAL(triggered()), this, SLOT(Menu_Window_GenerateTestData()));
 
     shortcuts.clear();
     shortcuts.append(QKeySequence(Qt::Key_F8));
@@ -1131,6 +1136,29 @@ void MainWindow::Menu_Window_Generate()
     MenuGenChecked = actionGeneration->isChecked();
 }
 
+void MainWindow::Menu_Window_GenerateTestData()
+{
+    if (actionGenerateTestData->isChecked()) // show the dock
+        DockGenerateTestData->setVisible(true);
+    else                                     // hide it
+        DockGenerateTestData->setVisible(false);
+}
+
+void MainWindow::SetWindowMenuState(bool enabled)
+{
+    // Enable/disable all window menu items except actionGenerateTestData
+    actionMain_Toolbox->setEnabled(enabled);
+    actionSlice_Selector->setEnabled(enabled);
+    actionGeneration->setEnabled(enabled);
+    actionMasks->setEnabled(enabled);
+    actionSegments->setEnabled(enabled);
+    actionCurves->setEnabled(enabled);
+    actionOutput->setEnabled(enabled);
+    actionHistorgram->setEnabled(enabled);
+    actionInfo->setEnabled(enabled);
+    action3DPreview->setEnabled(enabled);
+    // actionGenerateTestData is always enabled
+}
 
 void MainWindow::FileOpen()
 {
@@ -1270,6 +1298,7 @@ void MainWindow::Start()
 
     setWindowTitle(QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION) + " - " + SettingsFileName + " - " + Files[CurrentFile]);
     Active = true; //flag that we are GO
+    SetWindowMenuState(true);  // Enable window menu items now that a project has been loaded
 
     // Enable all 3D preview controls now that a project has been loaded.
     preview3DModeCombo->setEnabled(true);

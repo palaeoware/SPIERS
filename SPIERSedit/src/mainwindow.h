@@ -204,6 +204,7 @@ private slots:
     void Menu_Window_Curves();                            /// Toggles visibility of the curves dock.
     void Menu_Window_Segments();                          /// Toggles visibility of the segments dock.
     void Menu_Window_Output();                            /// Toggles visibility of the output objects dock.
+    void Menu_Window_GenerateTestData();                  /// Toggles visibility of the generate test data dock.
     void ScreenUpdate();                                  /// Forces a full repaint of the current slice view.
     void InitStates();                                    /// Resets all tool-state flags to their default values.
 
@@ -577,6 +578,15 @@ private:
      *
      **/
     void FixUpStretches();
+
+    /**
+     *
+     * Enables or disables the window menu items based on whether a project is active.
+     * When @p enabled is false, all items except actionGenerateTestData are disabled.
+     * When @p enabled is true, all items are enabled.
+     *
+     **/
+    void SetWindowMenuState(bool enabled);
 
     /**
      *

@@ -65,6 +65,7 @@ HEADERS += src/display.h \
     src/bytearray2d.h \
     src/curves.h \
     src/fileio.h \
+    src/generatetestdata.h \
     src/globals.h \
     src/newprojectdialog.h \
     src/labelledpoint.h \
@@ -138,6 +139,7 @@ SOURCES += src/display.cpp \
     src/bytearray2d.cpp \
     src/curves.cpp \
     src/fileio.cpp \
+    src/generatetestdata.cpp \
     src/globals.cpp \
     src/newprojectdialog.cpp \
     src/labelledpoint.cpp \

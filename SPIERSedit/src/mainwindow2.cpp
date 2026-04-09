@@ -980,6 +980,7 @@ void MainWindow::SetUpGUIFromSettings()
     menuSegments->setEnabled(true);
     menuCurves->setEnabled(true);
     menuWindow->setEnabled(true);
+    SetWindowMenuState(true);  // Enable window menu items when project is opened
     dockWidget_Main->setEnabled(true);
     dockWidget_Generate->setEnabled(true);
     SliceSelector->setEnabled(true);

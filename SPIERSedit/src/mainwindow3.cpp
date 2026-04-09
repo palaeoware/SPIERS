@@ -20,6 +20,7 @@
 #include "display.h"
 #include "brush.h"
 #include "histogram.h"
+#include "generatetestdata.h"
 #include "globals.h"
 
 #include <QColorDialog>
@@ -50,6 +51,7 @@ void MainWindow::SetUpDocks()
     addDockWidget (Qt::RightDockWidgetArea, DockCurvesSettings);
     addDockWidget (Qt::RightDockWidgetArea, DockOutputSettings);
     addDockWidget (Qt::RightDockWidgetArea, DockHist);
+    addDockWidget (Qt::RightDockWidgetArea, DockGenerateTestData);
 
     tabifyDockWidget(dockWidget_Main, SliceSelector);
 
@@ -62,6 +64,7 @@ void MainWindow::SetUpDocks()
     DockHist->setVisible(false);
     DockInfo->setVisible(false);
     dockWidget_Generate->setVisible(true);
+    DockGenerateTestData->setVisible(false);
 
     SliceSelector->setFloating(false);
     DockMasksSettings->setFloating(false);
@@ -73,9 +76,13 @@ void MainWindow::SetUpDocks()
     DockPreview3D->setVisible(true);
     DockPreview3D->setFloating(false);
     dockWidget_Generate->setFloating(false);
+    DockGenerateTestData->setFloating(false);
 
     GVHist = new histgv;
     DockHist->setWidget(GVHist);
+
+    GenerateTestData *generateTestDataWidget = new GenerateTestData;
+    DockGenerateTestData->setWidget(generateTestDataWidget);
 
     //sort out toolbar too
     toolBar->addSeparator();
