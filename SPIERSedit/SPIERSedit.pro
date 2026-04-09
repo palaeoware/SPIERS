@@ -120,6 +120,8 @@ HEADERS += src/display.h \
     src/keysafespinbox.h \
     src/mainview.h \
     src/previewwidget.h \
+    src/project.h \
+    src/projectmanager.h \
     ../SPIERScommon/src/customstyletheme.h \
     ../SPIERScommon/src/advancedpreferencesdialog.h \
     ../SPIERScommon/src/colourswatchlabel.h \
@@ -197,6 +199,8 @@ SOURCES += src/display.cpp \
     src/keysafespinbox.cpp \
     src/mainview.cpp \
     src/previewwidget.cpp \
+    src/project.cpp \
+    src/projectmanager.cpp \
     ../SPIERScommon/src/customstyletheme.cpp \
     ../SPIERScommon/src/advancedpreferencesdialog.cpp \
     ../SPIERScommon/src/colourswatchlabel.cpp \

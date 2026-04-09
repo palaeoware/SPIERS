@@ -66,8 +66,9 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags f)
     bh = new BeamHardening();
     DontRedoZoom = false;
     mainwin = this;
-    ReadSuperGlobals();
     AppMainWindow = this;
+    m_projectManager = new ProjectManager(this);  // NEW: Create project manager, parented to this
+    ReadSuperGlobals();
     setupUi(this);
     setStatusBar(nullptr);
     currentOpenFileName = "";

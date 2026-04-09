@@ -29,6 +29,7 @@
 #include "../ui/ui_mainwindow.h"
 #include "beamhardeningcentericon.h"
 #include "beamhardening.h"
+#include "projectmanager.h"
 #include "qelapsedtimer.h"
 
 /**
@@ -637,6 +638,7 @@ private:
 
     BeamHardeningCenterIcon *centerIcon; /// Overlay icon marking the beam-hardening correction centre on the slice view.
     BeamHardening *bh;                   /// Beam-hardening correction processing object.
+    ProjectManager *m_projectManager;    /// Project manager singleton — owns current project data.
 };
 
 extern MainWindow *AppMainWindow; /// Global pointer to the single MainWindow instance.
