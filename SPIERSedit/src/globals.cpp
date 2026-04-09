@@ -130,9 +130,9 @@ Mask::Mask(QString name)
 
     n = static_cast<quint64>(50. * static_cast<double>(QRandomGenerator::global()->generate()));
 
-    ForeColour[0] = 128 + static_cast<int>( static_cast<double>(126) * sin(static_cast<double>(n)));
-    ForeColour[1] = 128 + static_cast<int>( static_cast<double>(126) * cos(static_cast<double>(n)));
-    ForeColour[2] = 128 + static_cast<int>( static_cast<double>(127) * (QRandomGenerator::global()->generate() / RAND_MAX));
+    ForeColour[0] = 128 + static_cast<int>(static_cast<double>(126) * sin(static_cast<double>(n)));
+    ForeColour[1] = 128 + static_cast<int>(static_cast<double>(126) * cos(static_cast<double>(n)));
+    ForeColour[2] = 128 + static_cast<int>(static_cast<double>(127) * (static_cast<double>(QRandomGenerator::global()->generate()) / static_cast<double>(UINT_MAX)));
 
     Contrast = 2;
 
@@ -150,9 +150,9 @@ Segment::Segment(QString name)
 {
     Name = name;
     quint64 n = static_cast<quint64>(50. * static_cast<double>(QRandomGenerator::global()->generate()));
-    Colour[0] = 128 + int( static_cast<double>(126) * sin(static_cast<double>(n)));
-    Colour[1] = 128 + int( static_cast<double>(126) * cos(static_cast<double>(n)));
-    Colour[2] = 128 + int( static_cast<double>(127) * (QRandomGenerator::global()->generate() / RAND_MAX));
+    Colour[0] = 128 + int(static_cast<double>(126) * sin(static_cast<double>(n)));
+    Colour[1] = 128 + int(static_cast<double>(126) * cos(static_cast<double>(n)));
+    Colour[2] = 128 + int(static_cast<double>(127) * (static_cast<double>(QRandomGenerator::global()->generate()) / static_cast<double>(UINT_MAX)));
     LinPercent[0] = 100;
     LinPercent[1] = 100;
     LinPercent[2] = 100;
@@ -214,9 +214,9 @@ Curve::Curve(QString name)
 {
     Name = name;
     quint64 n = static_cast<quint64>(50. * static_cast<double>(QRandomGenerator::global()->generate()));
-    Colour[0] = 128 + int( static_cast<double>(126) * sin(static_cast<double>(n)));
-    Colour[1] = 128 + int( static_cast<double>(126) * cos(static_cast<double>(n)));
-    Colour[2] = 128 + int( static_cast<double>(127) * (QRandomGenerator::global()->generate() / RAND_MAX));
+    Colour[0] = 128 + int(static_cast<double>(126) * sin(static_cast<double>(n)));
+    Colour[1] = 128 + int(static_cast<double>(126) * cos(static_cast<double>(n)));
+    Colour[2] = 128 + int(static_cast<double>(127) * (static_cast<double>(QRandomGenerator::global()->generate()) / static_cast<double>(UINT_MAX)));
     Closed = false;
     Filled = false;
     Segment = 0;
