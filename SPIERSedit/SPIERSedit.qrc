@@ -23,8 +23,10 @@
         <file alias="segment.bmp">resources/icons/segment.bmp</file>
         <file alias="square.bmp">resources/icons/square.bmp</file>
         <file alias="TODO.bmp">resources/icons/TODO.bmp</file>
-        <file>resources/icons/undo.bmp</file>
+        <file alias="undo.bmp">resources/icons/undo.bmp</file>
+        <file alias="refresh.svg">resources/icons/refresh.svg</file>
+    </qresource>
+    <qresource prefix="/">
         <file>resources/SPIERSeditIcon.svg</file>
-        <file>resources/icons/refresh.svg</file>
     </qresource>
 </RCC>
