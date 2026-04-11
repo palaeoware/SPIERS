@@ -152,6 +152,10 @@ macx {
     # Mac icon
     ICON = resources/SPIERSviewIcon.icns
 
+    # macOS file associations are done through the Info.plist files under the application pakages
+    # QT/qmake should be able to overwrite the default generated file with this custom file
+    # We need to make sure that the custom Info.plist (below) is in XML format and not binary
+    # as qmake uses sed for string replacements within it.
     QMAKE_INFO_PLIST = Info.plist
 }
 
