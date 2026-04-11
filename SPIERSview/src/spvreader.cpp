@@ -164,7 +164,12 @@ void SPVReader::internalProcessFile(QString filename)
                 buffer[strlen(buffer) - 1] = 0; //lose the newline character
 
             char namebuff[200];
+#ifdef Q_OS_WIN
             strncpy_s(namebuff, sizeof(namebuff), buffer, _TRUNCATE);
+#else
+            strncpy(namebuff, buffer, sizeof(namebuff) - 1);
+            namebuff[sizeof(namebuff) - 1] = '\0';
+#endif
 
             if (strcmp("END", buffer) == 0 && filecount == 0) return; //Error - sp2 file does not refer to any spv files
             if (strcmp("END", buffer) != 0)
@@ -211,12 +216,21 @@ int SPVReader::processSPV(QString filename, float *passedMatrix = nullptr)
     FILE *file;
     int errnum = 0;
 
+#ifdef Q_OS_WIN
     errno_t fopenErr = fopen_s(&file, filename.toLocal8Bit().constData(), "rb");
     if (fopenErr != 0 || file == nullptr)
     {
         fileReadFailed(filename, false, errnum);
         return 1;
     }
+#else
+    file = fopen(filename.toLocal8Bit().constData(), "rb");
+    if (file == nullptr)
+    {
+        fileReadFailed(filename, false, errnum);
+        return 1;
+    }
+#endif
 
     //read all the parameters in
     fread(&p1, 8, 1, file);
@@ -289,12 +303,21 @@ void SPVReader::version5Below(QString filename, float *passedMatrix = nullptr)
     int firstgroup;
     int errnum = 0;
 
+#ifdef Q_OS_WIN
     errno_t fopenErr2 = fopen_s(&file, filename.toLocal8Bit().constData(), "rb");
     if (fopenErr2 != 0 || file == nullptr)
     {
         fileReadFailed(filename, false, errnum);
         return;
     }
+#else
+    file = fopen(filename.toLocal8Bit().constData(), "rb");
+    if (file == nullptr)
+    {
+        fileReadFailed(filename, false, errnum);
+        return;
+    }
+#endif
 
     // Read all the parameters in
     fread(&p1, 8, 1, file);
