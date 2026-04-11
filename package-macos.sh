@@ -169,7 +169,7 @@ hdiutil create -volname "SPIERS $VERSION" -srcfolder "$STAGING_DIR" -ov -format 
 # Mount the DMG to customize it
 echo -e "${YELLOW}  Customizing DMG layout...${NC}"
 MOUNT_RESULT=$(hdiutil attach "$TEMP_RW_DMG" -readwrite -noautoopen 2>&1)
-MOUNT_POINT=$(echo "$MOUNT_RESULT" | grep -oP '/Volumes/SPIERS \d+\.\d+\.\d+' | head -1)
+MOUNT_POINT=$(echo "$MOUNT_RESULT" | grep -oE '/Volumes/SPIERS [0-9]+\.[0-9]+\.[0-9]+' | head -1)
 
 if [ -z "$MOUNT_POINT" ]; then
     MOUNT_POINT="/Volumes/SPIERS $VERSION"

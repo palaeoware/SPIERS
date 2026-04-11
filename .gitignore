@@ -52,6 +52,7 @@ SPIERSview/.DS_Store
 SPIERSview/.DS_Store
 
 build*/
+bin*/
 
 .DS_Store
 CLAUDE.local.md
