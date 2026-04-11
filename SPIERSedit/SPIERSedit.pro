@@ -130,7 +130,7 @@ HEADERS += src/display.h \
     ../SPIERScommon/src/updatedialog.h \
     ../SPIERScommon/src/semanticversion.h \
     ../SPIERScommon/src/prereleasecomponent.h \
-    ui/mladdfeature.h
+    src/mladdfeature.h
 
 macx: HEADERS += src/main.h
 
@@ -209,7 +209,7 @@ SOURCES += src/display.cpp \
     ../SPIERScommon/src/updatedialog.cpp \
     ../SPIERScommon/src/semanticversion.cpp \
     ../SPIERScommon/src/prereleasecomponent.cpp \
-    ui/mladdfeature.cpp
+    src/mladdfeature.cpp
 
 win32 {
     # Auto-detect OpenCV installation directory if not already set externally

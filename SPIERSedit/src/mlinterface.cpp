@@ -31,7 +31,7 @@
 #include "mlfeaturecontrast.h"
 #include "mlfeaturedifferenceofgaussians.h"
 #include "mlfeatureuimanager.h"
-#include "ui/mladdfeature.h"
+#include "mladdfeature.h"
 #include <QMessageBox>
 #include "mlfileio.h"
 #include <QFileDialog>
