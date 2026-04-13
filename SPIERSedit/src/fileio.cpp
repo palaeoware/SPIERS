@@ -204,7 +204,6 @@ int GetCacheIndex(int fnum)
     }
 }
 
-int Counter;
 int Errors;
 
 void LoadAllData(int fnum)

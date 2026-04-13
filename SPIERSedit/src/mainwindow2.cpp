@@ -47,10 +47,6 @@
 #include <QImageWriter>
 
 
-QTreeWidgetItem *LastItemClicked; /// Last clicked item in tree widget
-QTime LastTimeClicked; /// Timestamp of last click
-int LastColumnClicked = -1; /// Column index of last click
-
 /**
  * @brief MainWindow::RefreshOneMaskItem
  * Refreshes the visual representation of a single mask item in the masks tree widget.

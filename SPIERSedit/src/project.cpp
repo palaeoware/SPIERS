@@ -398,40 +398,40 @@ void Project::setContrastMax(int cmax)
 
 // ---- Binary Data Accessors ----
 
-QByteArray Project::maskData() const
+QByteArray Project::maskBinaryData() const
 {
     QMutexLocker locker(&m_dataMutex);
-    return m_masks;
+    return m_maskBinaryData;
 }
 
-void Project::setMaskData(const QByteArray &data)
+void Project::setMaskBinaryData(const QByteArray &data)
 {
     QMutexLocker locker(&m_dataMutex);
-    m_masks = data;
+    m_maskBinaryData = data;
 }
 
-QByteArray Project::lockData() const
+QByteArray Project::lockBinaryData() const
 {
     QMutexLocker locker(&m_dataMutex);
-    return m_locks;
+    return m_lockBinaryData;
 }
 
-void Project::setLockData(const QByteArray &data)
+void Project::setLockBinaryData(const QByteArray &data)
 {
     QMutexLocker locker(&m_dataMutex);
-    m_locks = data;
+    m_lockBinaryData = data;
 }
 
-QByteArray Project::dirtyData() const
+QByteArray Project::dirtyBinaryData() const
 {
     QMutexLocker locker(&m_dataMutex);
-    return m_dirty;
+    return m_dirtyBinaryData;
 }
 
-void Project::setDirtyData(const QByteArray &data)
+void Project::setDirtyBinaryData(const QByteArray &data)
 {
     QMutexLocker locker(&m_dataMutex);
-    m_dirty = data;
+    m_dirtyBinaryData = data;
 }
 
 // ---- Calibration Accessors ----
@@ -543,9 +543,9 @@ void Project::clear()
     m_cmax = 255;
 
     // Clear binary data
-    m_masks.clear();
-    m_locks.clear();
-    m_dirty.clear();
+    m_maskBinaryData.clear();
+    m_lockBinaryData.clear();
+    m_dirtyBinaryData.clear();
 
     // Reset calibration
     m_pixPerMM = 1.0;

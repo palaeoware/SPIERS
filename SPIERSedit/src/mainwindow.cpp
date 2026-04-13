@@ -55,8 +55,6 @@
 #include <QStandardPaths>
 #include "mlfeaturepresets.h"
 
-bool temptestflag = false;
-
 MainWindow *AppMainWindow;
 //Contains all main window manipulation code - e.g. dock handling
 

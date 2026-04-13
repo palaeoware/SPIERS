@@ -33,10 +33,6 @@
 #include "mainwindow.h"
 #include "mlupdateblockingdialog.h"
 
-QGraphicsPixmapItem *MainImage;
-double LastZoom;
-double CurrentPolyContrast;
-
 //add these to scene at some point!
 
 void SaveMainImage(QString fname)

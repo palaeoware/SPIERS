@@ -32,301 +32,415 @@
 #include <QGraphicsRectItem>
 #include <QGraphicsTextItem>
 #include <QSurfaceFormat>
+#include <QTime>
 #include "mlinterface.h"
 #include "mainwindow.h"
+
+// ============================================================================
+// COMPILE-TIME CONSTANTS
+// ============================================================================
 
 // Internal versions for input/output file purposes
 #define SPEFILEVERSION 3
 #define SPVFILEVERSION 1010
 
-//Legal Stuff
+// Legal Stuff
 #define COPYRIGHT "Copyright © 2008-2026 Mark D. Sutton, Russell J. Garwood, Alan R.T. Spencer"
 #define LICENCE "This program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under the conditions of the GPL v3 license"
 
-//Programme Name
+// Programme Name
 #define PRODUCTNAME "SPIERSedit"
 
-//Email
+// Email
 #define EMAIL "palaeoware@gmail.com"
 
-//Github
+// Github
 #define GITURL "https://github.com/"
 #define GITREPOSITORY "palaeoware/SPIERS"
 #define GITISSUE "/issues"
 
-//OpenGL
+// OpenGL
 #define GL_MAJOR 4
 #define GL_MINOR 1
 #define GL_MAJOR_MAC 4
 #define GL_MINOR_MAC 1
 
-//Readthedocs
+// Read the Docs
 #define READTHEDOCS "https://spiersedit.readthedocs.io/"
 
-extern QSurfaceFormat surfaceFormat;
-extern QList<bool> FilesDirty; //for re-rendering.
-extern QString openfile;
-extern QString currentOpenFileName; // stores the currently open file name/path
-extern bool bodgeflag;
-extern bool ThreeDmode;
-extern int BrushY, BrushZ;
-extern double yaw, pitch, roll;
-extern bool pausetimers;
-extern QString Notes;
-extern int zsparsity;
-extern int CacheCompressionLevel;
-extern int FileCompressionLevel;
-extern QVector<int> SegmentMap;
-extern MainWindow *mainwin;
-extern bool MasksMoveBack, MasksMoveForward;
-extern QRecursiveMutex mutex;
-extern QList<double> Stretches;
-extern QList<double> FullStretches;
-extern bool ShowSlicePosition;
-extern bool temptestflag;
-extern int Counter;
-extern double k; // the integer part of the thing
-extern double RedConsts[10];
-extern double GreenConsts[10];
-extern double BlueConsts[10];
-extern QString DefaultPath;
+// Pixel manipulation macros (endian-sensitive, not portable)
+#define ALPHA(pointer, offset) pointer[offset+3]
+#define RED(pointer, offset) pointer[offset+2]
+#define GREEN(pointer, offset) pointer[offset+1]
+#define BLUE(pointer, offset) pointer[offset]
 
-extern QGraphicsPixmapItem *MainImage;
-extern double LastZoom;
-extern double CurrentPolyContrast;
+// Export gridding table scale
+#define GRID_SCALE 32
 
-extern QTreeWidgetItem *LastItemClicked;
-extern QTime LastTimeClicked;
-extern int LastColumnClicked;
-extern MLInterface *mlInterface;
+// ============================================================================
+// DATA STRUCTURES
+// ============================================================================
 
-extern QByteArray FeaturesByteArray;
 /**
- * @brief The Segment class
+ * @brief The Segment class — represents a 3D reconstructed anatomical structure
  */
 class Segment
 {
 public:
-
     Segment(QString name);
     ~Segment();
 
     QString Name;
-    int Colour[3]; //r,g,b
-    int LinPercent[3]; //r,g,b
-    int LinGlobal;
-    bool LinInvert;
-    double NeighbourBright;
-    int NeighbourSparse;
-    bool NeighbourSingle;
-    double PolyRedConsts[10];
-    double PolyGreenConsts[10];
-    double PolyBlueConsts[10];
-    double PolyKall;
-    int PolyOrder;
-    int PolySparse, PolyRetries, PolyConverge;
-    double PolyScale;
-    int PolyContrast;
-    int RangeBase;
-    int RangeTop;
-    double RangeGradient;
-    double RangeCenter;
-    int ListOrder; //position in display list
-    bool Dirty;  //changed on this slice
-    bool UndoDirty; //changed since last undo save
-    bool Locked;
-    bool Activated;
-    QTreeWidgetItem *widgetitem;
-    QGraphicsRectItem *rectitem;
-    QGraphicsTextItem *textitem;
+    int Colour[3];                          /// RGB color
+    int LinPercent[3];                      /// Linearization percentages (RGB)
+    int LinGlobal;                          /// Global linearization percentage
+    bool LinInvert;                         /// Invert linearization
+    double NeighbourBright;                 /// Neighbor brightness parameter
+    int NeighbourSparse;                    /// Neighbor sparsity
+    bool NeighbourSingle;                   /// Single neighbor mode
+    double PolyRedConsts[10];               /// Polynomial color constants (red)
+    double PolyGreenConsts[10];             /// Polynomial color constants (green)
+    double PolyBlueConsts[10];              /// Polynomial color constants (blue)
+    double PolyKall;                        /// Polynomial overall constant
+    int PolyOrder;                          /// Polynomial order
+    int PolySparse;                         /// Polynomial sparsity
+    int PolyRetries;                        /// Polynomial fit retries
+    int PolyConverge;                       /// Polynomial convergence threshold
+    double PolyScale;                       /// Polynomial scale factor
+    int PolyContrast;                       /// Polynomial contrast
+    int RangeBase;                          /// Range base value
+    int RangeTop;                           /// Range top value
+    double RangeGradient;                   /// Range gradient
+    double RangeCenter;                     /// Range center
+    int ListOrder;                          /// Display list position
+    bool Dirty;                             /// Changed on current slice
+    bool UndoDirty;                         /// Changed since last undo save
+    bool Locked;                            /// Locked from editing
+    bool Activated;                         /// Active/visible
+    QTreeWidgetItem *widgetitem;            /// Tree widget item pointer
+    QGraphicsRectItem *rectitem;            /// Graphics scene rect item
+    QGraphicsTextItem *textitem;            /// Graphics scene text item
 };
 
 /**
- * @brief The Mask class
+ * @brief The Mask class — overlay mask/layer
  */
 class Mask
 {
 public:
     Mask(QString name);
+
     QString Name;
-    int ForeColour[3]; //r,g,b
-    int BackColour[3];
-    bool Show;
-    bool Write;
-    int Contrast;
-    bool Lock;
-    QTreeWidgetItem *widgetitem;
-    int ListOrder; //position in display list
+    int ForeColour[3];                      /// Foreground RGB color
+    int BackColour[3];                      /// Background RGB color
+    bool Show;                              /// Visible
+    bool Write;                             /// Editable
+    int Contrast;                           /// Display contrast
+    bool Lock;                              /// Locked from editing
+    QTreeWidgetItem *widgetitem;            /// Tree widget item pointer
+    int ListOrder;                          /// Display list position
 };
 
 /**
- * @brief The PointList class
+ * @brief The PointList class — points on a single slice for a curve
  */
 class PointList
 {
 public:
     PointList();
-    QList <double> X;
-    QList <double> Y;
-    int Count;
+
+    QList<double> X;                        /// X coordinates
+    QList<double> Y;                        /// Y coordinates
+    int Count;                              /// Number of points
 };
 
 /**
- * @brief The Curve class
+ * @brief The Curve class — annotation curve (spline) across slices
  */
 class Curve
 {
 public:
     Curve(QString name);
     ~Curve();
+
     QString Name;
-    int Colour[3]; //r,g,b
-    bool Closed;
-    bool Filled;
-    int Segment; //This is segment +1, as '0' reserved for 'none'
-    QList <class PointList *> SplinePoints; // list for each file
-    int ListOrder; //position in display list
-    QTreeWidgetItem *widgetitem;
+    int Colour[3];                          /// RGB color
+    bool Closed;                            /// Closed curve
+    bool Filled;                            /// Filled region
+    int Segment;                            /// Associated segment (segment+1; 0 = none)
+    QList<PointList *> SplinePoints;        /// Points on each file/slice
+    int ListOrder;                          /// Display list position
+    QTreeWidgetItem *widgetitem;            /// Tree widget item pointer
 };
 
 /**
- * @brief The OutputObject class
+ * @brief The OutputObject class — 3D object component for export
  */
 class OutputObject
 {
 public:
     OutputObject(QString name);
     ~OutputObject();
-    QString Name;
-    int Resample;
-    int Colour[3]; //r,g,b
-    QList <int> ComponentMasks;
-    QList <int> ComponentSegments;
-    QList <int> CurveComponents;
-    int ListOrder; //position in display list
-    QTreeWidgetItem *widgetitem;
-    bool IsGroup;
-    int Parent;
-    uchar Key;
-    bool Show;
-    bool Merge;
-    bool Expanded;
-    bool TempSelected;
 
-    //some stuff only used in output
-    QByteArray temparray, Outputarray;
-    QList <QByteArray *> CompressedSPVarrays;
-    QList <QByteArray *> GridArrays;
-    int bigposfirst, bigpos, tpos;
-    QList <bool> UseMasks;
-    QList <bool> UseSegs;
-    QList <OutputObject *> MergeObjects;
+    QString Name;
+    int Resample;                           /// Resample percentage
+    int Colour[3];                          /// RGB color
+    QList<int> ComponentMasks;              /// Included masks
+    QList<int> ComponentSegments;           /// Included segments
+    QList<int> CurveComponents;             /// Included curves
+    int ListOrder;                          /// Display list position
+    QTreeWidgetItem *widgetitem;            /// Tree widget item pointer
+    bool IsGroup;                           /// Is a group container
+    int Parent;                             /// Parent object index (-1 = root)
+    uchar Key;                              /// Hotkey
+    bool Show;                              /// Visible in output
+    bool Merge;                             /// Merge with other objects
+    bool Expanded;                          /// Tree expanded state
+    bool TempSelected;                      /// Temporary selection state
+
+    // Output-only temporary data
+    QByteArray temparray;                   /// Temporary work array
+    QByteArray Outputarray;                 /// Output data array
+    QList<QByteArray *> CompressedSPVarrays; /// Per-file compressed SPV data
+    QList<QByteArray *> GridArrays;        /// Per-file grid arrays
+    int bigposfirst;                        /// Output position start
+    int bigpos;                             /// Current output position
+    int tpos;                               /// Temporary position
+    QList<bool> UseMasks;                   /// Per-mask usage flag
+    QList<bool> UseSegs;                    /// Per-segment usage flag
+    QList<OutputObject *> MergeObjects;     /// Objects to merge with
 
     void SetUpForRender();
 };
 
-extern int fwidth4;
-extern int cwidth4;
-extern int AutoSaveFrequency;
-extern bool NoUpdateSelectionFlag;
-extern bool escapeFlag;
-extern bool previewGradient;
-extern int GradientDensity;
-extern int GradientMinDist;
-extern int GradientMinDistValue;
-extern int GradientMaxDist;
-extern int GradientMaxDistValue;
-extern bool OutputRegroupMode;
-extern QList <class Segment *> Segments;
-extern QList <class Mask *> MasksSettings;
-extern QList <class Curve *> Curves;
-extern QList <class OutputObject *> OutputObjects;
-extern bool CurveShapeLocked;
-extern QStringList Files;
-extern QStringList FullFiles;
-extern int FileCount, CurrentFile, cwidth, cheight, ColMonoScale, fwidth, fheight;
-extern double CurrentZoom;
-extern bool Active;
-extern bool clearing;
-extern int Trans, CMin, CMax;
-extern int SegmentCount;
-extern QList <QImage *> GA; //this is the grey arrays
-extern QByteArray GradientArray;
-extern QImage ColArray; //other data
-extern QByteArray Masks, Locks;
-extern QByteArray dirty;
-extern void Error(QString);
-extern void Message(QString);
-extern void Message1(char *message, int x);
-extern int CurrentMode;
-extern int Brush_Size;
-extern int BrightUp;
-extern int BrightDown;
-extern int BrightSoft;
-extern int LCE_Boost;
-extern int LCE_Radius;
-extern int LCE_Adjust;
-extern int LastTrans;
-extern int CurrentSegment, CurrentRSegment;
-extern bool ThreshFlag, MasksFlag, SegsFlag;
-extern bool MoveFlag, ChangeFlag;
-extern QList <class Segment *> Segments;
-extern int MaxUsedMask, SelectedMask, SelectedRMask, SelectedCurve, CurveCount, OutputObjectsCount;
-extern int SampleArraySize;
-extern QByteArray SampleArray;
-extern double PixPerMM, SlicePerMM, SkewDown, SkewLeft;
-extern int  FirstOutputFile, LastOutputFile;
-extern int MaxTriangles;
-extern bool RangeHardFill, RangeSelectedOnly, OutputMirroring;
-extern int  PixSens, XYDownsample, ZDownsample;
-extern bool HiddenMasksLockedForGeneration, SegmentBrushAppliesMasks, SegmentBrushAppliesLocks;
-extern bool SegmentsLocked, CurveMarkersAsCrosses, CurveShapeLocked;
-extern int LastMouseX, LastMouseY;
-extern bool SquareBrush;
-extern QString SettingsFileName, FileNotes;
-extern QString FullSettingsFileName;
-extern bool MasksDirty, LocksDirty, CurvesDirty; //for file writing
-extern bool MasksUndoDirty, LocksUndoDirty, CurvesUndoDirty; //for file writing
-extern bool HorribleBodgeFlagDontStoreUndo;
-
-// 'superglobals' - written to registry or equivalent
-extern bool BackgroundCacheFilling;
-extern bool RenderCache;
-extern bool MenuHistSelectedOnly, MenuHistChecked, MenuInfoChecked, MenuGenChecked, MenuMasksChecked, MenuSegsChecked, MenuCurvesChecked, MenuOutputChecked, MenuToolboxChecked,
-       MenuSliceSelectorChecked, Menu3DPreviewChecked;
-
 /**
- * @brief The RecentFiles struct
+ * @brief The RecentFiles struct — entry in recent files list
  */
 struct RecentFiles
 {
-    QString File;
-    QString Notes;
+    QString File;                           /// File path
+    QString Notes;                          /// Associated notes
 };
 
-extern QList<RecentFiles> RecentFileList;
-extern int CacheMem, CacheMemMLGb;
-extern int UndoMem;
-extern int UndoTimerSetting;
+// ============================================================================
+// GLOBAL POINTERS & CORE SERVICES
+// ============================================================================
 
-extern void WriteSuperGlobals();
-extern void ReadSuperGlobals();
-extern void RecentFile(QString fname);
-extern bool IsDatasetLoaded();
-extern void ResetFilesDirty();
-
+extern MainWindow *mainwin;
 extern QTabWidget *tabwidget;
-extern bool GreyImage; // flag for current colour image is actually a greyscale image
+extern MLInterface *mlInterface;
+extern QSurfaceFormat surfaceFormat;
 
-// Macros for reading/writing RGB from arrays - these are endian sensitive and NOT portable (though easily tweaked)
+// ============================================================================
+// SYNCHRONIZATION & STATE
+// ============================================================================
+
+extern QRecursiveMutex mutex;
+extern bool Active;                         /// Overall program active state
+extern bool clearing;                       /// Currently clearing project data
+extern bool pausetimers;                    /// Pause timer-based operations
+extern bool temptestflag;                   /// Temporary test/debug flag
+extern bool bodgeflag;                      /// Temporary bodge/hack flag
+extern int Counter;                         /// General-purpose counter
+
+// ============================================================================
+// PROJECT FILE MANAGEMENT
+// ============================================================================
+
+extern QString openfile;                    /// Current working directory for file dialogs
+extern QString currentOpenFileName;         /// Full path to currently open project file
+extern QString SettingsFileName;            /// Settings file name (relative)
+extern QString FullSettingsFileName;        /// Settings file full path
+extern QString DefaultPath;                 /// Default file browser path
+extern QList<RecentFiles> RecentFileList;   /// Recently opened projects
+
+// ============================================================================
+// PROJECT-SPECIFIC: FILE & IMAGE DATA
+// (Should eventually migrate to Project class)
+// ============================================================================
+
+extern QStringList Files;                   /// Slice file paths (relative)
+extern QStringList FullFiles;               /// Slice file full paths
+extern int FileCount;                       /// Total number of slice files
+extern int CurrentFile;                     /// Currently loaded slice index
+
+extern QList<QImage *> GA;                  /// Grey array images (one per slice)
+extern QImage ColArray;                     /// Current color source image
+extern QByteArray GradientArray;            /// Gradient modifier array
+extern QByteArray FeaturesByteArray;        /// ML-extracted features
+extern QByteArray Masks;                    /// Binary mask data
+extern QByteArray Locks;                    /// Binary lock pixel data
+extern QByteArray dirty;                    /// Binary dirty pixel tracking
+extern QByteArray SampleArray;              /// Per-project sample data buffer
+extern int SampleArraySize;                 /// Size of sample array
+
+extern int cwidth, cheight;                 /// Color source image dimensions
+extern int fwidth, fheight;                 /// Mono output image dimensions
+extern int cwidth4, fwidth4;                /// Width×4 (for pixel arithmetic)
+extern int ColMonoScale;                    /// Resample/binning factor (source→output)
+
+extern QList<double> Stretches;             /// Per-slice pixel stretch mapping
+extern QList<double> FullStretches;         /// Full resolution stretch mapping
+extern int zsparsity;                       /// Slice sampling sparsity factor
+extern double SkewDown, SkewLeft;           /// Image alignment skew parameters
+extern double PixPerMM;                     /// Pixels per millimeter calibration
+extern double SlicePerMM;                   /// Slices per millimeter calibration
+
+extern bool GreyImage;                      /// Flag: project is greyscale (not RGB)
+extern QString Notes;                       /// Project notes/description
+extern QString FileNotes;                   /// File-level notes
+extern QVector<int> SegmentMap;             /// Per-project segment mapping table
+
+// ============================================================================
+// PROJECT-SPECIFIC: DISPLAY & RENDERING STATE
+// (Should eventually migrate to Project class)
+// ============================================================================
+
+extern double CurrentZoom;                  /// Current zoom level of slice viewer
+extern int CurrentMode;                     /// Editing mode (0=bright, 1=masks, 2=curves, 3=lock, 4=segment, 5=recalc)
+extern int CurrentSegment;                  /// Currently selected segment index
+extern int CurrentRSegment;                 /// Currently selected range segment
+extern int Trans;                           /// Transparency for color source display
+extern int CMin, CMax;                      /// Contrast min/max for display
+extern int LastTrans;                       /// Last transparency value used
+extern double CurrentPolyContrast;          /// Current polynomial contrast rendering param
+
+extern QList<bool> FilesDirty;              /// Per-file dirty flag for re-rendering
+
+// ============================================================================
+// PROJECT-SPECIFIC: SEGMENT/MASK/CURVE/OUTPUT DATA
+// (Should eventually migrate to Project class)
+// ============================================================================
+
+extern int SegmentCount;                    /// Total number of segments
+extern int MaxUsedMask;                     /// Highest mask index in use
+extern int SelectedMask;                    /// Currently selected mask index
+extern int SelectedRMask;                   /// Currently selected range mask
+extern int SelectedCurve;                   /// Currently selected curve index
+extern int CurveCount;                      /// Total number of curves
+extern int OutputObjectsCount;              /// Total number of output objects
+
+extern QList<Segment *> Segments;           /// Segment objects with metadata
+extern QList<Mask *> MasksSettings;         /// Mask settings objects
+extern QList<Curve *> Curves;               /// Curve annotation objects
+extern QList<OutputObject *> OutputObjects; /// 3D output objects for export
+
+// ============================================================================
+// PROJECT-SPECIFIC: DIRTY/UNDO TRACKING
+// (Should eventually migrate to Project class)
+// ============================================================================
+
+extern bool MasksDirty;                     /// Masks changed since last file save
+extern bool LocksDirty;                     /// Locks changed since last file save
+extern bool CurvesDirty;                    /// Curves changed since last file save
+extern bool MasksUndoDirty;                 /// Masks changed since last undo save
+extern bool LocksUndoDirty;                 /// Locks changed since last undo save
+extern bool CurvesUndoDirty;                /// Curves changed since last undo save
+extern bool HorribleBodgeFlagDontStoreUndo; /// Prevent undo save for this operation
+
+// ============================================================================
+// PROJECT-SPECIFIC: OUTPUT GENERATION SETTINGS
+// (Should eventually migrate to Project class)
+// ============================================================================
+
+extern bool RangeHardFill;                  /// Output: use hard fill mode
+extern bool RangeSelectedOnly;              /// Output: only selected range
+extern bool OutputMirroring;                /// Output: mirror geometry
+extern int FirstOutputFile;                 /// Output file range start
+extern int LastOutputFile;                  /// Output file range end
+extern int PixSens;                         /// Output: pixel sensitivity
+extern int XYDownsample, ZDownsample;       /// Output: downsampling factors
+extern int MaxTriangles;                    /// Output: triangle limit
+
+// ============================================================================
+// EDITOR TOOL STATE
+// ============================================================================
+
+extern int Brush_Size;                      /// Current brush size
+extern int BrushY, BrushZ;                  /// Brush position
+extern bool SquareBrush;                    /// Brush shape: square vs circular
+extern int BrightUp, BrightDown, BrightSoft; /// Brightness tool parameters
+extern int LCE_Boost, LCE_Radius, LCE_Adjust; /// Local contrast enhancement params
+extern bool HiddenMasksLockedForGeneration; /// Output: hidden masks locked
+extern bool SegmentBrushAppliesMasks;       /// Segment brush affects masks too
+extern bool SegmentBrushAppliesLocks;       /// Segment brush affects locks too
+extern bool SegmentsLocked;                 /// Global segment lock
+extern bool CurveMarkersAsCrosses;          /// Render curve markers as crosses
+extern bool CurveShapeLocked;               /// Prevent curve shape modification
+extern bool MasksMoveBack, MasksMoveForward; /// Mask navigation direction flags
+
+// ============================================================================
+// UI INTERACTION STATE
+// ============================================================================
+
+extern int LastMouseX, LastMouseY;          /// Last mouse position
+extern bool ThreshFlag, MasksFlag, SegsFlag; /// UI display flags
+extern bool MoveFlag, ChangeFlag;           /// Interaction state flags
+extern bool NoUpdateSelectionFlag;          /// Suppress selection updates
+extern bool escapeFlag;                     /// Escape key pressed
+extern bool previewGradient;                /// Preview gradient before apply
+extern int GradientDensity;                 /// Gradient preview density
+extern int GradientMinDist, GradientMinDistValue; /// Gradient min distance settings
+extern int GradientMaxDist, GradientMaxDistValue; /// Gradient max distance settings
+extern bool OutputRegroupMode;              /// Output object regroup mode
+extern bool ShowSlicePosition;              /// Show slice position display
+extern bool ThreeDmode;                     /// 3D preview mode active
+extern double yaw, pitch, roll;             /// 3D camera orientation
+extern double k;                            /// Temporary calculation variable
+extern double LastZoom;                     /// Last recorded zoom level
+
+extern QGraphicsPixmapItem *MainImage;      /// Main canvas image item
+extern QTreeWidgetItem *LastItemClicked;    /// Last clicked tree widget item
+extern QTime LastTimeClicked;               /// Time of last click
+extern int LastColumnClicked;               /// Last clicked column index
+
+extern double RedConsts[10];                /// Red channel constants (historical)
+extern double GreenConsts[10];              /// Green channel constants (historical)
+extern double BlueConsts[10];               /// Blue channel constants (historical)
+
+// ============================================================================
+// PROGRAM SETTINGS (Persisted via QSettings)
+// ============================================================================
+
+extern int CacheCompressionLevel;           /// Cache compression (0-9)
+extern int FileCompressionLevel;            /// File compression (0-9)
+extern int CacheMem;                        /// Cache memory limit (MB)
+extern int CacheMemMLGb;                    /// ML cache memory limit (GB)
+extern int UndoMem;                         /// Undo memory limit (MB)
+extern int UndoTimerSetting;                /// Auto-undo save timer (seconds)
+extern int AutoSaveFrequency;               /// Auto-save frequency (minutes)
+extern bool BackgroundCacheFilling;         /// Enable background cache generation
+extern bool RenderCache;                    /// Enable render caching
+
+// ============================================================================
+// UI MENU STATE (Persisted via QSettings)
+// ============================================================================
+
+extern bool MenuHistSelectedOnly;
+extern bool MenuHistChecked;
+extern bool MenuInfoChecked;
+extern bool MenuGenChecked;
+extern bool MenuMasksChecked;
+extern bool MenuSegsChecked;
+extern bool MenuCurvesChecked;
+extern bool MenuOutputChecked;
+extern bool MenuToolboxChecked;
+extern bool MenuSliceSelectorChecked;
+extern bool Menu3DPreviewChecked;
+
+// ============================================================================
+// UTILITY FUNCTIONS
+// ============================================================================
+
+extern void Error(QString message);
+extern void Message(QString message);
+extern void Message1(char *message, int x);
 extern int randn(int n);
 
-#define ALPHA(pointer, offset) pointer[offset+3]
-#define RED(pointer, offset) pointer[offset+2]
-#define GREEN(pointer, offset) pointer[offset+1]
-#define BLUE(pointer, offset) pointer[offset]
-//size for export gridding table - high values give smaller SPVs, lower performance of SPIERSview
-#define GRID_SCALE 32
-
+extern void WriteSuperGlobals();            /// Save app settings to QSettings
+extern void ReadSuperGlobals();             /// Load app settings from QSettings
+extern void RecentFile(QString fname);      /// Add file to recent list
+extern bool IsDatasetLoaded();              /// Check if project data loaded
+extern void ResetFilesDirty();              /// Reset per-file dirty flags
 
 #endif // __GLOBALS_H__

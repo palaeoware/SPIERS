@@ -182,19 +182,19 @@ public:
     // ---- Binary Data Accessors ----
 
     /// Get binary mask data
-    QByteArray maskData() const;
+    QByteArray maskBinaryData() const;
     /// Set binary mask data
-    void setMaskData(const QByteArray &data);
+    void setMaskBinaryData(const QByteArray &data);
 
     /// Get binary lock data
-    QByteArray lockData() const;
+    QByteArray lockBinaryData() const;
     /// Set binary lock data
-    void setLockData(const QByteArray &data);
+    void setLockBinaryData(const QByteArray &data);
 
     /// Get binary dirty pixel tracking data
-    QByteArray dirtyData() const;
+    QByteArray dirtyBinaryData() const;
     /// Set binary dirty pixel tracking data
-    void setDirtyData(const QByteArray &data);
+    void setDirtyBinaryData(const QByteArray &data);
 
     // ---- Calibration Accessors ----
 
@@ -265,6 +265,7 @@ private:
     /// Full paths to image slice files
     QStringList m_fullFiles;
 
+
     /// Current slice being edited (index into Files list)
     int m_currentFile;
     /// Total number of segments
@@ -274,7 +275,7 @@ private:
     /// Highest mask index in use
     int m_maxUsedMask;
 
-    /// Dirty flags for each file (true if needs re-rendering)
+    /// Dirty flags for each slice file (true if needs re-rendering)
     QList<bool> m_filesDirty;
 
     /// Current zoom level of slice viewer
@@ -292,11 +293,11 @@ private:
     int m_cmax;
 
     /// Binary mask data
-    QByteArray m_masks;
+    QByteArray m_maskBinaryData;
     /// Binary lock pixel data
-    QByteArray m_locks;
+    QByteArray m_lockBinaryData;
     /// Binary dirty pixel tracking
-    QByteArray m_dirty;
+    QByteArray m_dirtyBinaryData;
 
     /// Pixels per millimeter calibration
     double m_pixPerMM;
