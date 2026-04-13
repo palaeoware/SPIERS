@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="../SPIERSedit.qrc">
-    <normaloff>:/icons/resources/SPIERSeditIcon.svg</normaloff>:/icons/resources/SPIERSeditIcon.svg</iconset>
+    <normaloff>:/resources/SPIERSeditIcon.svg</normaloff>:/resources/SPIERSeditIcon.svg</iconset>
   </property>
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">

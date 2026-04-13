@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1071</width>
-    <height>1397</height>
+    <height>1794</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -27,7 +27,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="../SPIERSedit.qrc">
-    <normaloff>:/icons/resources/SPIERSeditIcon.svg</normaloff>:/icons/resources/SPIERSeditIcon.svg</iconset>
+    <normaloff>:/resources/SPIERSeditIcon.svg</normaloff>:/resources/SPIERSeditIcon.svg</iconset>
   </property>
   <property name="dockNestingEnabled">
    <bool>false</bool>
@@ -553,7 +553,7 @@
    </property>
    <property name="maximumSize">
     <size>
-     <width>524287</width>
+     <width>180</width>
      <height>524287</height>
     </size>
    </property>
@@ -3014,7 +3014,7 @@
    </property>
    <property name="maximumSize">
     <size>
-     <width>524287</width>
+     <width>350</width>
      <height>524287</height>
     </size>
    </property>
@@ -3072,7 +3072,7 @@
    </property>
    <property name="maximumSize">
     <size>
-     <width>524287</width>
+     <width>350</width>
      <height>524287</height>
     </size>
    </property>
@@ -3234,7 +3234,7 @@
    </property>
    <property name="maximumSize">
     <size>
-     <width>524287</width>
+     <width>350</width>
      <height>524287</height>
     </size>
    </property>
@@ -3328,7 +3328,7 @@ Interpreted Images:</string>
    </property>
    <property name="maximumSize">
     <size>
-     <width>524287</width>
+     <width>350</width>
      <height>524287</height>
     </size>
    </property>
@@ -3505,7 +3505,7 @@ Interpreted Images:</string>
    </property>
    <property name="maximumSize">
     <size>
-     <width>524287</width>
+     <width>350</width>
      <height>524287</height>
     </size>
    </property>
@@ -3667,7 +3667,7 @@ Interpreted Images:</string>
    </property>
    <property name="maximumSize">
     <size>
-     <width>524287</width>
+     <width>180</width>
      <height>524287</height>
     </size>
    </property>
@@ -3922,8 +3922,8 @@ Interpreted Images:</string>
           <string>Refresh</string>
          </property>
          <property name="icon">
-          <iconset resource="../SPIERSedit.qrc">
-           <normaloff>:/icons/resources/icons/refresh.svg</normaloff>:/icons/resources/icons/refresh.svg</iconset>
+          <iconset resource="../../SPIERScommon/commonresources.qrc">
+           <normaloff>:/customstyle/light/icon_refresh.svg</normaloff>:/customstyle/light/icon_refresh.svg</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -5313,6 +5313,7 @@ Interpreted Images:</string>
   </customwidget>
  </customwidgets>
  <resources>
+  <include location="../../SPIERScommon/commonresources.qrc"/>
   <include location="../SPIERSedit.qrc"/>
  </resources>
  <connections>

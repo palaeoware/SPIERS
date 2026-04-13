@@ -14,6 +14,7 @@
  * your option) any later version. This program is distributed in the
  * hope that it will be useful, but WITHOUT ANY WARRANTY.
  */
+#include "mainwindow.h"
 
 #include <math.h>
 #include "dialogaboutimpl.h"
@@ -21,7 +22,6 @@
 #include "curves.h"
 #include "qactiongroup.h"
 #include "resampleimpl.h"
-#include "mainwindow.h"
 #include "copyingimpl.h"
 #include "globals.h"
 #include "display.h"
