@@ -59,6 +59,7 @@
 #include "spvreader.h"
 #include "spvwriter.h"
 #include "../SPIERScommon/src/netmodule.h"
+#include "../SPIERScommon/src/crashdetector.h"
 #include "movetogroup.h"
 #include "positionclickhandler.h"
 /**
@@ -88,6 +89,11 @@ MainWindow::MainWindow(QWidget *parent)
         ui->actionExport_as_Blend->setEnabled(false);
         ui->actionExport_as_Blend->setText(ui->actionExport_as_Blend->text() + " (Blender not found)");
     }
+
+    // Hide Test menu in Release builds
+#ifndef QT_DEBUG
+    ui->menuTest->setVisible(false);
+#endif
 
     FilterKeys = true; //set to true to turn off interception of keys needed for type-in boxes
 
@@ -2146,6 +2152,21 @@ void MainWindow::on_actionCheck_for_Updates_triggered()
 {
     NetModule *netModule = new NetModule(this);
     netModule->checkForNewManual();
+}
+
+/**
+ * @brief MainWindow::on_actionTestCrashHandler_triggered
+ * Tests the crash handler by triggering an intentional crash.
+ */
+void MainWindow::on_actionTestCrashHandler_triggered()
+{
+    if (QMessageBox::question(this, QStringLiteral("Test Crash Handler"),
+        QStringLiteral("This will intentionally crash the application to test the crash handler.\n\n"
+                       "Continue?"))
+        == QMessageBox::Yes)
+    {
+        CrashDetector::testCrash(QStringLiteral("SPIERSview"));
+    }
 }
 
 /**

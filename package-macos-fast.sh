@@ -55,7 +55,7 @@ fi
 
 # Check binaries
 echo -e "${YELLOW}Checking binaries...${NC}"
-for app in "SPIERSalign/bin/SPIERSalign64.app" "SPIERSedit/bin/SPIERSedit64.app" "SPIERSview/bin/SPIERSview64.app"; do
+for app in "SPIERSalign/bin/SPIERSalign64.app" "SPIERSedit/bin/SPIERSedit64.app" "SPIERSview/bin/SPIERSview64.app" "SPIERScrashhandler/bin/SPIERScrashhandler64.app"; do
     if [ ! -d "${BUILD_DIR}/${app}" ]; then
         echo -e "${RED}Error: Missing ${app}${NC}"
         exit 1
@@ -75,6 +75,7 @@ echo -e "${YELLOW}Copying applications (no Qt bundling)...${NC}"
 cp -r "${BUILD_DIR}/SPIERSalign/bin/SPIERSalign64.app" "$STAGING_DIR/SPIERSalign64.app"
 cp -r "${BUILD_DIR}/SPIERSedit/bin/SPIERSedit64.app" "$STAGING_DIR/SPIERSedit64.app"
 cp -r "${BUILD_DIR}/SPIERSview/bin/SPIERSview64.app" "$STAGING_DIR/SPIERSview64.app"
+cp -r "${BUILD_DIR}/SPIERScrashhandler/bin/SPIERScrashhandler64.app" "$STAGING_DIR/SPIERScrashhandler64.app"
 
 # Copy docs
 echo -e "${YELLOW}Copying documentation...${NC}"
@@ -112,10 +113,11 @@ tell application "Finder"
         delay 1
         set current view of container window to icon view
         set icon size of icon view options of container window to 64
-        set position of item "SPIERSalign.app" of container window to {100, 100}
-        set position of item "SPIERSedit.app" of container window to {200, 100}
-        set position of item "SPIERSview.app" of container window to {300, 100}
-        set position of item "Applications" of container window to {450, 100}
+        set position of item "SPIERSalign.app" of container window to {80, 100}
+        set position of item "SPIERSedit.app" of container window to {180, 100}
+        set position of item "SPIERSview.app" of container window to {280, 100}
+        set position of item "SPIERScrashhandler.app" of container window to {380, 100}
+        set position of item "Applications" of container window to {480, 100}
         close
     end tell
 end tell

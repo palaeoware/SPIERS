@@ -67,6 +67,7 @@ SOURCES += src/main.cpp \
     ../SPIERScommon/src/updatedialog.cpp \
     ../SPIERScommon/src/semanticversion.cpp \
     ../SPIERScommon/src/prereleasecomponent.cpp \
+    ../SPIERScommon/src/crashdetector.cpp \
     src/vaxmlgroup.cpp \
     src/vaxmlobject.cpp \
     src/isosurface.cpp \
@@ -113,6 +114,7 @@ HEADERS += src/mainwindow.h \
     ../SPIERScommon/src/updatedialog.h \
     ../SPIERScommon/src/semanticversion.h \
     ../SPIERScommon/src/prereleasecomponent.h \
+    ../SPIERScommon/src/crashdetector.h \
     src/vaxmlgroup.h \
     src/vaxmlobject.h \
     src/isosurface.h \

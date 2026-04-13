@@ -151,6 +151,12 @@
     <addaction name="actionCheck_for_Updates"/>
     <addaction name="actionAbout"/>
    </widget>
+   <widget class="QMenu" name="menuTest">
+    <property name="title">
+     <string>Test</string>
+    </property>
+    <addaction name="actionTestCrashHandler"/>
+   </widget>
    <widget class="QMenu" name="menuNavigate">
     <property name="enabled">
      <bool>false</bool>
@@ -212,6 +218,7 @@
    <addaction name="menuTransform"/>
    <addaction name="menuMagnification"/>
    <addaction name="menuWindows"/>
+   <addaction name="menuTest"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -242,6 +249,11 @@
   <action name="actionCheck_for_Updates">
    <property name="text">
     <string>Check for Updates...</string>
+   </property>
+  </action>
+  <action name="actionTestCrashHandler">
+   <property name="text">
+    <string>Test Crash Handler</string>
    </property>
   </action>
   <action name="actionNext_Image">

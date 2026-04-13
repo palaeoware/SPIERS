@@ -430,6 +430,7 @@ private slots:
     void on_actionManual_triggered();                    /// Opens the online documentation in the system browser.
     void on_actionCode_on_GitHub_triggered();            /// Opens the SPIERS GitHub repository in the system browser.
     void on_actionBugIssueFeatureRequest_triggered();    /// Opens the GitHub issue tracker in the system browser.
+    void on_actionTestCrashHandler_triggered();          /// Tests the crash handler by triggering a controlled crash.
     void on_actionInfo_triggered(bool checked);          /// Toggles the information overlay on the slice display.
 
     // ── Extra Tools ─────────────────────────────────────────────────

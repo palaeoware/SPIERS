@@ -36,6 +36,7 @@
 #include "deletemaskdialogimpl.h"
 #include "settingsimpl.h"
 #include "../../SPIERScommon/src/netmodule.h"
+#include "../../SPIERScommon/src/crashdetector.h"
 #include "mlinterface.h"
 
 #include <QColorDialog>
@@ -77,6 +78,11 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags f)
 
     // Disable window menu items by default (no project loaded yet)
     SetWindowMenuState(false);
+
+    // Hide Test menu in Release builds
+#ifndef QT_DEBUG
+    menuTest->setVisible(false);
+#endif
 
     //Connect all the menu commands
     //For commands which rely on F keys that are non functional on macOS define backup shortcuts
@@ -2429,6 +2435,21 @@ void MainWindow::on_actionCheck_for_Updates_triggered()
 {
     NetModule *netModule = new NetModule(this);
     netModule->checkForNewManual();
+}
+
+/**
+ * @brief MainWindow::on_actionTestCrashHandler_triggered
+ * Tests the crash handler by triggering an intentional crash.
+ */
+void MainWindow::on_actionTestCrashHandler_triggered()
+{
+    if (QMessageBox::question(this, QStringLiteral("Test Crash Handler"),
+        QStringLiteral("This will intentionally crash the application to test the crash handler.\n\n"
+                       "Continue?"))
+        == QMessageBox::Yes)
+    {
+        CrashDetector::testCrash(QStringLiteral("SPIERSedit"));
+    }
 }
 
 /**

@@ -34,6 +34,7 @@
 #include "globals.h"
 #include "../SPIERScommon/src/netmodule.h"
 #include "../SPIERScommon/src/customstyletheme.h"
+#include "../SPIERScommon/src/crashdetector.h"
 
 #ifdef _WIN64
 #include <windows.h>
@@ -117,6 +118,9 @@ int main(int argc, char *argv[])
 
     // Allow OpenGL context sharing between normal and full screen mode
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+
+    /// Install crash handlers early
+    CrashDetector::installCrashHandlers(QStringLiteral("SPIERSview"));
 
     QApplication app(argc, argv);
 

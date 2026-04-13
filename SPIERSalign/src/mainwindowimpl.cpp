@@ -56,6 +56,7 @@
 
 #include "../SPIERScommon/src/netmodule.h"
 #include "../SPIERScommon/src/advancedpreferencesdialog.h"
+#include "../SPIERScommon/src/crashdetector.h"
 
 #define PI 3.14159265
 #define TOLERANCE 20
@@ -77,6 +78,11 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     //Set up initial variables
     setupUi(this);
     setWindowTitle(QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION));
+
+    // Hide Test menu in Release builds
+#ifndef QT_DEBUG
+    menuTest->setVisible(false);
+#endif
 
     showMaximized();
 
@@ -3880,6 +3886,21 @@ void MainWindowImpl::on_actionCheck_for_Updates_triggered()
 {
     NetModule *netModule = new NetModule(this);
     netModule->checkForNewManual();
+}
+
+/**
+ * @brief MainWindowImpl::on_actionTestCrashHandler_triggered
+ * Tests the crash handler by triggering an intentional crash.
+ */
+void MainWindowImpl::on_actionTestCrashHandler_triggered()
+{
+    if (QMessageBox::question(this, QStringLiteral("Test Crash Handler"),
+        QStringLiteral("This will intentionally crash the application to test the crash handler.\n\n"
+                       "Continue?"))
+        == QMessageBox::Yes)
+    {
+        CrashDetector::testCrash(QStringLiteral("SPIERSalign"));
+    }
 }
 
 /**

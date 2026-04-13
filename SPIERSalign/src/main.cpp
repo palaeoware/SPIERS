@@ -27,6 +27,7 @@
 #include "globals.h"
 #include "../../SPIERScommon/src/customstyletheme.h"
 #include "../../SPIERScommon/src/netmodule.h"
+#include "../../SPIERScommon/src/crashdetector.h"
 
 /**
  * @brief qMain
@@ -37,6 +38,9 @@
 int main(int argc, char **argv)
 {
     QImageReader::setAllocationLimit(2048);
+
+    /// Install crash handlers early
+    CrashDetector::installCrashHandlers(QStringLiteral("SPIERSalign"));
 
     //This has QPixmap images use the @2x images when available
     //See this bug for more details on how to get this right: https://bugreports.qt.io/browse/QTBUG-44486#comment-327410

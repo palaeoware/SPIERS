@@ -54,7 +54,8 @@ HEADERS += src/mainwindowimpl.h \
     ../SPIERScommon/src/netmodule.h \
     ../SPIERScommon/src/updatedialog.h \
     ../SPIERScommon/src/semanticversion.h \
-    ../SPIERScommon/src/prereleasecomponent.h
+    ../SPIERScommon/src/prereleasecomponent.h \
+    ../SPIERScommon/src/crashdetector.h
 
 SOURCES += src/mainwindowimpl.cpp \
     src/main.cpp \
@@ -68,7 +69,8 @@ SOURCES += src/mainwindowimpl.cpp \
     ../SPIERScommon/src/netmodule.cpp \
     ../SPIERScommon/src/updatedialog.cpp \
     ../SPIERScommon/src/semanticversion.cpp \
-    ../SPIERScommon/src/prereleasecomponent.cpp
+    ../SPIERScommon/src/prereleasecomponent.cpp \
+    ../SPIERScommon/src/crashdetector.cpp
 
 # MacOS common build here
 macx {

@@ -447,6 +447,12 @@
     <addaction name="actionCheck_for_Updates"/>
     <addaction name="actionAb_out"/>
    </widget>
+   <widget class="QMenu" name="menuTest">
+    <property name="title">
+     <string>Test</string>
+    </property>
+    <addaction name="actionTestCrashHandler"/>
+   </widget>
    <widget class="QMenu" name="menuUndo">
     <property name="enabled">
      <bool>false</bool>
@@ -528,6 +534,7 @@
    <addaction name="menuOutput"/>
    <addaction name="menuWindow"/>
    <addaction name="menuML"/>
+   <addaction name="menuTest"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar">
@@ -4505,6 +4512,11 @@ Interpreted Images:</string>
   <action name="actionCheck_for_Updates">
    <property name="text">
     <string>Check for Updates...</string>
+   </property>
+  </action>
+  <action name="actionTestCrashHandler">
+   <property name="text">
+    <string>Test Crash Handler</string>
    </property>
   </action>
   <action name="actionKeyboard_Commands">

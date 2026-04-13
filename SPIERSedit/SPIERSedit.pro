@@ -130,6 +130,7 @@ HEADERS += src/display.h \
     ../SPIERScommon/src/updatedialog.h \
     ../SPIERScommon/src/semanticversion.h \
     ../SPIERScommon/src/prereleasecomponent.h \
+    ../SPIERScommon/src/crashdetector.h \
     src/mladdfeature.h
 
 macx: HEADERS += src/main.h
@@ -209,6 +210,7 @@ SOURCES += src/display.cpp \
     ../SPIERScommon/src/updatedialog.cpp \
     ../SPIERScommon/src/semanticversion.cpp \
     ../SPIERScommon/src/prereleasecomponent.cpp \
+    ../SPIERScommon/src/crashdetector.cpp \
     src/mladdfeature.cpp
 
 win32 {

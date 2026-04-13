@@ -89,6 +89,7 @@ private slots:
     void on_actionCreate_Crop_Area_triggered(bool checked);
     void on_actionAbout_triggered();
     void on_actionCheck_for_Updates_triggered();
+    void on_actionTestCrashHandler_triggered();
     void on_actionEnlarge_More_triggered();
     void on_actionShrink_More_triggered();
     void on_actionEnlarge_Less_triggered();

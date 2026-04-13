@@ -167,6 +167,7 @@ private slots:
     void on_actionProgress_Bars_triggered();
     void on_actionAbout_triggered();
     void on_actionCheck_for_Updates_triggered();
+    void on_actionTestCrashHandler_triggered();
     void on_actionQuick_Guide_triggered();
     void on_actionSave_Changes_triggered();
     void on_actionSave_As_triggered();

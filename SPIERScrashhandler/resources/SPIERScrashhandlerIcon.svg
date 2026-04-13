@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Creator: CorelDRAW X7 -->
+
+<svg
+   xml:space="preserve"
+   width="90.311mm"
+   height="90.311mm"
+   version="1.1"
+   style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+   viewBox="0 0 9031 9031"
+   id="svg8"
+   sodipodi:docname="SPIERScrashhandlerIcon.svg"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><sodipodi:namedview
+   id="namedview8"
+   pagecolor="#ffffff"
+   bordercolor="#000000"
+   borderopacity="0.25"
+   inkscape:showpageshadow="2"
+   inkscape:pageopacity="0.0"
+   inkscape:pagecheckerboard="0"
+   inkscape:deskcolor="#d1d1d1"
+   inkscape:document-units="mm"
+   inkscape:zoom="2.3642608"
+   inkscape:cx="170.66645"
+   inkscape:cy="170.66645"
+   inkscape:window-width="1920"
+   inkscape:window-height="1009"
+   inkscape:window-x="1912"
+   inkscape:window-y="-8"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="Layer_x0020_1" />
+ <defs
+   id="defs1">
+  <style
+   type="text/css"
+   id="style1">
+   <![CDATA[
+    .str3 {stroke:red;stroke-width:564.44}
+    .str1 {stroke:black;stroke-width:35.28}
+    .str0 {stroke:black;stroke-width:20}
+    .str2 {stroke:#FFCF3D;stroke-width:7.62}
+    .fil3 {fill:none}
+    .fil0 {fill:black}
+    .fil2 {fill:#FFCF3D}
+    .fil1 {fill:white}
+   ]]>
+  </style>
+ </defs>
+ <g
+   id="Layer_x0020_1"
+   inkscape:label="Layer 1">
+  <metadata
+   id="CorelCorpID_0Corel-Layer" />
+  <rect
+   class="fil0"
+   width="9031"
+   height="9031"
+   rx="1764"
+   ry="1764"
+   id="rect1" />
+  
+  
+  
+  
+  
+  
+  <polygon
+   class="fil1 str0"
+   points="3608,3162 5570,3162 5570,3781 6230,3781 6230,3809 6230,5103 6891,5103 6891,5805 6272,5805 6272,6465 4950,6465 4950,5805 4290,5805 4290,6465 2968,6465 2968,5805 2308,5805 2308,5144 2968,5144 2968,3823 3608,3823 "
+   id="polygon7" />
+  
+  
+  <polyline
+   class="fil3 str0"
+   points="6227,3810 6227,3616 5733,3616 5733,3157 5539,3157 "
+   id="polyline8" />
+ <path
+   style="fill:#ff0000;stroke:#ff0000;stroke-width:499.99445949;stroke-linecap:round;fill-opacity:1;stroke-dasharray:none"
+   d="M 1007.1747,1152.6555 7934.2982,7833.5809"
+   id="path8" /><path
+   style="clip-rule:evenodd;fill:#ff0000;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:499.994;stroke-linecap:round;stroke-dasharray:none;image-rendering:optimizeQuality;shape-rendering:geometricPrecision;text-rendering:geometricPrecision"
+   d="M 7979.0616,1175.0371 1051.9381,7855.9625"
+   id="path8-4" /></g>
+</svg>

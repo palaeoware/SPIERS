@@ -87,6 +87,7 @@ APPS=(
     "SPIERSalign/bin/SPIERSalign64.app"
     "SPIERSedit/bin/SPIERSedit64.app"
     "SPIERSview/bin/SPIERSview64.app"
+    "SPIERScrashhandler/bin/SPIERScrashhandler64.app"
 )
 
 for app in "${APPS[@]}"; do
@@ -114,7 +115,7 @@ mkdir -p "$STAGING_DIR"
 echo -e "${YELLOW}Deploying applications with Qt frameworks...${NC}"
 
 # Copy each app and run macdeployqt on it
-for app_name in "SPIERSalign" "SPIERSedit" "SPIERSview"; do
+for app_name in "SPIERSalign" "SPIERSedit" "SPIERSview" "SPIERScrashhandler"; do
     SRC_APP="${BUILD_DIR}/${app_name}/bin/${app_name}64.app"
     DEST_APP="${STAGING_DIR}/${app_name}64.app"
 
@@ -197,10 +198,11 @@ tell application "Finder"
         set arrangement of icon view options of container window to arranged by name
 
         -- Position items
-        set position of item "SPIERSalign.app" of container window to {100, 100}
-        set position of item "SPIERSedit.app" of container window to {200, 100}
-        set position of item "SPIERSview.app" of container window to {300, 100}
-        set position of item "Applications" of container window to {450, 100}
+        set position of item "SPIERSalign.app" of container window to {80, 100}
+        set position of item "SPIERSedit.app" of container window to {180, 100}
+        set position of item "SPIERSview.app" of container window to {280, 100}
+        set position of item "SPIERScrashhandler.app" of container window to {380, 100}
+        set position of item "Applications" of container window to {480, 100}
         set position of item "README.md" of container window to {100, 250}
         set position of item "LICENSE.md" of container window to {200, 250}
 
