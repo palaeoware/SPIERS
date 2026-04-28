@@ -18,7 +18,7 @@ model might include a group called 'appendages' - this in turn might
 include a subgroup called 'cephalic' appendages, which might in turn
 include a 'mandibles' group, consisting of a left and right mandible.
 Object grouping not only provides a convenient way to explain
-relationships, but also allows visiblity to be controlled for sets of
+relationships, but also allows visibility to be controlled for sets of
 objects - in the above example for instance a key could be assigned to
 the appendages group, allowing the entire appendage set to be quickly
 hidden or shown.
