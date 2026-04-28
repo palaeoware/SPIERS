@@ -4,13 +4,13 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>10. Output &mdash; SPIERSedit 4.0.0 documentation</title>
+  <title>10. Output &mdash; SPIERSedit 4.0.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=86f27845" />
 
   
   
-        <script src="_static/documentation_options.js?v=3304f9e4"></script>
+        <script src="_static/documentation_options.js?v=a084f797"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -33,7 +33,7 @@
               <img src="_static/SPIERS.jpg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                4.0.0
+                4.0.2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -124,11 +124,11 @@ performance gains in SPIERSview as it reduced the complexity of the
 model to be displayed. Like dataset downsampling, output downsampling is
 defined as an XY and a Z setting. While XY downsampling works in the
 same way for both dataset and output downsampling, Z downsampling does
-not. A Z-downsampled dataset simply skips files – for example if Z
+not. A Z-downsampled dataset simply skips files - for example if Z
 downsampling is set to 3, only every third file in the sequence is used.
 Z-downsampling at output instead merges files; if set to 3, each set of
 3 files is merged at output to determine whether any individual pixel is
-‘on’ or ‘off’. Output downsampling is additive to dataset downsampling –
+‘on’ or ‘off’. Output downsampling is additive to dataset downsampling -
 if the dataset is downsampled by a factor of 2 and the output is also a
 downsampled by a factor of 2, it will in fact be downsampled by a factor
 of four from the source data.</p>
@@ -208,7 +208,7 @@ use the <em>New Output Object</em> command on the <em>Output</em> menu). For
 multi-segment datasets the segments that are to comprise the object must
 also be selected in the <em>Segment</em> panel before the object is created.
 <em>The masks and segments comprising an object cannot be edited after it
-is created – if need changing the object must be deleted and recreated.</em>
+is created - if need changing the object must be deleted and recreated.</em>
 Objects are created with name based on the masks they use. The keyboard
 shortcut is set from the <em>Next Key</em> drop-down (which is also incremented
 after each object is created), and the fidelity is set from the Fidelity
@@ -263,7 +263,7 @@ fails.</p>
 <h2><span class="section-number">10.5. </span>Deskewing<a class="headerlink" href="#deskewing" title="Link to this heading">¶</a></h2>
 <p><em>SPIERSedit</em> incorporates a system to correct for skew in models caused
 by ‘drift’ of fiduciary markings in serial grinding datasets. These
-corrections are best explained by example – see Figure 16 (overleaf).
+corrections are best explained by example - see Figure 16 (overleaf).
 Figure 16A shows a block in the image that contains a fossil on its left
 corner; it has edges cut as fiduciary markers, but these are not at
 exactly 90 degrees to the plane in which the specimen will be serially
@@ -282,7 +282,7 @@ not appear in normal photographs of the fossil as they are too far away
 However, suppose that the images B and C were captured at slices 10 and
 70 of the grinding run (at some lower magnification). By overlaying
 these images (and knowing the scale of the image) we can measure how
-much the edges have moved over these 60 slices – in this case 0.8mm to
+much the edges have moved over these 60 slices - in this case 0.8mm to
 the right and 0.6mm downwards. This example is a little artificial, but
 these sorts of errors do occur in serial grinding datasets, and do
 require correction.</p>

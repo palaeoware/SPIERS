@@ -1,6 +1,6 @@
 .. _appendixavtkusage:
 
-Appendix A – VTK Usage
+Appendix A - VTK Usage
 ======================
 
 Introduction
@@ -19,12 +19,12 @@ documentation to interpret the notes below.
 Fidelity Reduction
 ------------------
 
-SPIERSview default ‘fast and safe’ fidelity reduction uses the
-*vtkDecimatePro* filter. *AccumulateError* is set to ‘off’,
+SPIERSview default 'fast and safe' fidelity reduction uses the
+*vtkDecimatePro* filter. *AccumulateError* is set to 'off',
 *PreserveTopology* is set to on; no other settings are changed from
 defaults.
 
-SPIERSview ‘Quadric’ fidelity reduction uses the *vtkQuadricDecimation*
+SPIERSview 'Quadric' fidelity reduction uses the *vtkQuadricDecimation*
 filter. No settings are changed from defaults.
 
 Island Removal
@@ -32,7 +32,7 @@ Island Removal
 
 Island removal uses the *vtkPolyDataConnectivityFilter* class.
 *ColorRegions* is set to off; no other settings are changed from
-defaults. ‘All’ mode uses *SetExtractionModeToLargestRegion*; otherwise
+defaults. 'All' mode uses *SetExtractionModeToLargestRegion*; otherwise
 the filter is run in *SetExtractionModeToAllRegions* mode. Tiny, Small,
 Medium and Large settings remove regions of up to 20, 100, 600 and 4000
 triangles in size respectively.
@@ -51,14 +51,14 @@ STL reader
 ----------
 
 SPIERSview uses the *vtkSTLreader* class to import STL triangle meshes
-during VAXML import; its restrictions and capabalities are thus those of
+during VAXML import; its restrictions and capabilities are thus those of
 this VTK class.
 
 PLY reader
 ----------
 
 SPIERSview uses the *vtkPLYreader* class to import PLY triangle meshes
-and surface colour information during VAXML import; it’s restrictions
-and capabalities are thus those of this VTK class; in particular colour
-information input is restricted to ‘red’, ‘green’ and ‘blue’ properties
+and surface colour information during VAXML import; it's restrictions
+and capabilities are thus those of this VTK class; in particular colour
+information input is restricted to 'red', 'green' and 'blue' properties
 of vertex elements.

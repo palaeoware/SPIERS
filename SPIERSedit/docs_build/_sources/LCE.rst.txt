@@ -43,7 +43,7 @@ over a region should be done with a single brush stroke, to avoid applying the e
  .. figure:: _static/figure_LCE3.png
     :align: center
 	
-    Figure LCE3. The data from Figure LCE2, with an LCE generation applied to the green mask subsequent to the linear generation. Note that many more spines are visible, and that the red curved stripe on the left has been supressed.
+    Figure LCE3. The data from Figure LCE2, with an LCE generation applied to the green mask subsequent to the linear generation. Note that many more spines are visible, and that the red curved stripe on the left has been suppressed.
 
 
 LCE Generation Panel

@@ -4,13 +4,13 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>5. Segments &mdash; SPIERSedit 4.0.0 documentation</title>
+  <title>5. Segments &mdash; SPIERSedit 4.0.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=86f27845" />
 
   
   
-        <script src="_static/documentation_options.js?v=3304f9e4"></script>
+        <script src="_static/documentation_options.js?v=a084f797"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -33,7 +33,7 @@
               <img src="_static/SPIERS.jpg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                4.0.0
+                4.0.2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -108,7 +108,7 @@ datasets in SPIERSedit (background is a special case, so not counted as
 a segment). In some datasets however the situation is more complex; for
 instance in Figure 11A two different types of material are present in
 the fossil (light and dark grey). This is best modelled as a
-multi-segment dataset <em>–</em> there are two types of material (recall that
+multi-segment dataset <em>-</em> there are two types of material (recall that
 background does not count), so it they requires <em>two</em> segments in
 SPIERSedit, rather than the default one. In a multi-segment dataset each
 source image has more than one corresponding working image, one for each
@@ -159,12 +159,12 @@ drop-downs only affects the right mouse button in segmentation mode. As
 with masks, these choices are displayed as L and R (or B) in the
 leftmost column of the <em>Segments</em> panel, and left/right clicking in here
 will select them. Note that the R drop-down also has a ‘delete all’
-option – if set to this, the right mouse will remove pixels from all
+option - if set to this, the right mouse will remove pixels from all
 segments (i.e. turn them off).</p>
 <p><em>Brush in segment mode</em>: In segment mode the brush is used to assign
 pixels directly to the selected segment (left mouse button) or segment
 specified in the ‘R’ drop-down (right mouse button). Note that the R
-drop-down also has a ‘delete all’ option – if set to this, the right
+drop-down also has a ‘delete all’ option - if set to this, the right
 mouse will remove pixels from all segments (i.e. turn them off).</p>
 <p><em>Brush in brighten mode</em>: The brighten brush only affects the selected
 segment. Note that brightening in a multi-segment dataset can not only
@@ -195,7 +195,7 @@ inside a fossil otherwise reconstructed with a single segment. The
 segments system allows a simple trick to be used to handle this. First,
 the normal segment is created and properly edited (if desired). Once
 prepared, it is locked and a second ‘fill’ segment created. No
-slice-based generation is performed on this second segment – slices are
+slice-based generation is performed on this second segment - slices are
 left blank. To fill the holes, the first segment is locked, and the
 ‘fill’ segment then brushed roughly over the holes using the segment
 brush.</p>

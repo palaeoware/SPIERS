@@ -1,94 +1,48 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html4" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>14. Scale &mdash; SPIERSview 3.1.1 documentation</title>
-  
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>15. Scale and Measurement &mdash; SPIERSview 4.0.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=86f27845" />
 
   
   
-  
-  
-
-  
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+        <script src="_static/documentation_options.js?v=a084f797"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="15. Update system" href="updatesystem.html" />
-    <link rel="prev" title="13. Animation System" href="animationsystem.html" /> 
+    <link rel="next" title="16. Update system" href="updatesystem.html" />
+    <link rel="prev" title="14. Animation System" href="animationsystem.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> SPIERSview
           
-
-          
-            
-            <img src="_static/SPIERS.jpg" class="logo" alt="Logo"/>
-          
+          <a href="index.html" class="icon icon-home">
+            SPIERSview
+              <img src="_static/SPIERS.jpg" class="logo" alt="Logo"/>
           </a>
-
-          
-            
-            
               <div class="version">
-                3.1.1
+                4.0.2
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">1. Introduction and File Formats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="requirements.html">2. System Requirements and Triangle Count</a></li>
@@ -100,118 +54,91 @@
 <li class="toctree-l1"><a class="reference internal" href="manipulatingobjectsindependently.html">8. Manipulating objects independently</a></li>
 <li class="toctree-l1"><a class="reference internal" href="multipiecedatasets.html">9. Multi-piece datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="clippingpanel.html">10. Clipping panel</a></li>
-<li class="toctree-l1"><a class="reference internal" href="infopanel.html">11. Info panel</a></li>
-<li class="toctree-l1"><a class="reference internal" href="savingexporting.html">12. Saving and exporting</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animationsystem.html">13. Animation System</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">14. Scale</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#scale-grid">14.1. Scale Grid</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#rescaling-objects">14.2. Rescaling objects</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lightingpanel.html">11. Lighting Panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="infopanel.html">12. Info panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="savingexporting.html">13. Saving and exporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animationsystem.html">14. Animation System</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">15. Scale and Measurement</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#scale-grid">15.1. Scale Grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#point-to-point-measurement">15.2. Point-to-Point measurement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rescaling-objects">15.3. Rescaling objects</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="updatesystem.html">15. Update system</a></li>
-<li class="toctree-l1"><a class="reference internal" href="appendixavtkusage.html">16. Appendix A – VTK Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="updatesystem.html">16. Update system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendixavtkusage.html">17. Appendix A – VTK Usage</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">SPIERSview</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
-      <li>14. Scale</li>
-    
-    
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active"><span class="section-number">15. </span>Scale and Measurement</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="_sources/scale.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="scale">
-<span id="id1"></span><h1>14. Scale<a class="headerlink" href="#scale" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="scale-grid">
-<h2>14.1. Scale Grid<a class="headerlink" href="#scale-grid" title="Permalink to this headline">¶</a></h2>
+             
+  <section id="scale-and-measurement">
+<span id="scale"></span><h1><span class="section-number">15. </span>Scale and Measurement<a class="headerlink" href="#scale-and-measurement" title="Link to this heading">¶</a></h1>
+<section id="scale-grid">
+<h2><span class="section-number">15.1. </span>Scale Grid<a class="headerlink" href="#scale-grid" title="Link to this heading">¶</a></h2>
 <p>Select <em>Show Scale Grid</em> on the <em>Scale</em> menu, or <em>Ctrl+K</em>, to overlay a grid on the
 specimen; the grid scales in resolution as the user zooms in and out. As
 perspective effects can complicate measurement it is normal to use this
-grid in Orthographic mode. Measurement in perspective modes
+grid in orthographic mode. In SPIERSview 4 or later, the grid is <em>only</em> available in orthographic mode.
+Measurement in perspective modes
 is possible however, although the user will need to bear in mind the
 relative distances to the grid and to the model. To facilitate these
 judgements all portion of the model beyond the plane of the grid are
 partially greyed-out.</p>
-<p>The scale grid will change the displayed mesurment unit based on the current
+<p>The scale grid will change the displayed measurement unit based on the current
 field of view and model scale. Units that can be shown are meters (m), centimeters (cm),
 millimeters (mm), and micrometer/micron (um). Major scale lines and text are displayed
 in bold. <em>Note:</em> the current field of view (FOV) is shown in the status bar at the bottom left
 of the SPIERSview program.</p>
-<p>Scale grid setings can be found under the <em>Scale &gt; Scale Grid Settings…</em>
+<p>Scale grid settings can be found under the <em>Scale &gt; Scale Grid Settings…</em>
 sub-menu. Options include: <em>Show Minor Scale Lines</em>, <em>Show Minor Scale Values</em>,
 <em>Major Grid Colour…</em>, <em>Minor Grid Colour…</em>, and <em>Font Size…</em>. Also under
 this sub-menu is the <em>Reset Scale Grids to Defaults</em> option.</p>
 <ol class="arabic simple">
 <li></li>
 </ol>
-<div class="figure align-center" id="id2">
+<figure class="align-center" id="id1">
 <img alt="_images/figure_6.png" src="_images/figure_6.png" />
-<p class="caption"><span class="caption-text">Figure 6. The scale grid</span></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Figure 6. The scale grid</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
 <p>Note that as of version 2.20 the older ‘Scale Ball’ system has been
 removed.</p>
 <p>For files imported from SPIERSedit the internal scale should
 automatically be correct, assuming the pixels / mm and slices / mm
 values were set correctly at export time. If however the scale is not
 correct, the entire model can be rescaled (see below) as necessary.</p>
-</div>
-<div class="section" id="rescaling-objects">
-<h2>14.2. Rescaling objects<a class="headerlink" href="#rescaling-objects" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="point-to-point-measurement">
+<h2><span class="section-number">15.2. </span>Point-to-Point measurement<a class="headerlink" href="#point-to-point-measurement" title="Link to this heading">¶</a></h2>
+<p>If your mouse has a middle button, you can click on an object to place a marker. Clicking a second time will create a second marker, with
+a measurement displayed showing the linear distance between the two markers. Markers are placed in 3D space, and will move with the object
+if it is rotated or repositioned.</p>
+<p>To clear measurement markers, use ‘Remove Scale Markers’ from the Scale menu</p>
+</section>
+<section id="rescaling-objects">
+<h2><span class="section-number">15.3. </span>Rescaling objects<a class="headerlink" href="#rescaling-objects" title="Link to this heading">¶</a></h2>
 <p>The <em>Scale</em> menu has four commands that can be used to change the scale
 of either the whole model or, if <em>Reposition Selected</em> is ticked in the
 <em>Mode</em> menu, individual objects. These commands are <em>Increase</em> <em>Size</em>
@@ -220,63 +147,38 @@ two increase or decrease size by a small increment. <em>Rescale By…</em>
 allows resizes of arbitrary amounts, input as a decimal factor (e.g. 0.5
 is half size, 2.5 is 2 and a half times bigger, etc). Reset size undoes
 any scale changes.</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="updatesystem.html" class="btn btn-neutral float-right" title="15. Update system" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="animationsystem.html" class="btn btn-neutral float-left" title="13. Animation System" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="animationsystem.html" class="btn btn-neutral float-left" title="14. Animation System" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="updatesystem.html" class="btn btn-neutral float-right" title="16. Update system" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        
-        &copy; Copyright 2018-2019,  Mark Sutton, Russell J. Garwood, Alan R.T. Spencer
-
-    </p>
+    <p>&#169; Copyright 2018-2026,  Mark Sutton, Russell J. Garwood, Alan R.T. Spencer.</p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
