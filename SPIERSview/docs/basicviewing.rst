@@ -167,3 +167,7 @@ Selecting the *Bounding Box Mode* command on the Mode menu causes all
 items to render as wireframe boxes. Bounding box rendering is far faster
 than normal rendering, and may, for instance, assist with the initial
 placement of objects when assembling multi-piece models.
+
+Lighting
+-----------------
+From SPIERSview 4, models are by default lit from the north-west of the view, and include shadows. Lighting setup can be configured using the lighting panel (F8).

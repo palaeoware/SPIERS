@@ -46,8 +46,9 @@ Table of Contents
    masks
    segments
    rangegeneration
-   polynomialgeneration
+   machinelearninggeneration
    lce
+   gradientgeneration
    radial
    output
    volumes

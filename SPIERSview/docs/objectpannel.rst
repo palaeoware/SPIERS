@@ -3,6 +3,11 @@
 Object Panel
 ============
 
+Selection
+------
+Objects can be selected directly in the object panel, or (in SPIERSview 4 or later) by clicking on them in the main view window.
+
+
 Groups
 ------
 

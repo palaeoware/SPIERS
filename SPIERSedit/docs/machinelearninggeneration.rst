@@ -1,3 +1,4 @@
+.. _machinelearninggeneration:
 
 Machine Learning (ML) Generation
 ================

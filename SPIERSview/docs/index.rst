@@ -49,6 +49,7 @@ Table of Contents
    manipulatingobjectsindependently
    multipiecedatasets
    clippingpanel
+   lightingpanel
    infopanel
    savingexporting
    animationsystem

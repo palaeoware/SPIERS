@@ -1,3 +1,4 @@
+.. _gradientgeneration:
 
 Gradient Generation
 ================
