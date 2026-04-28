@@ -1,94 +1,48 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html4" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>6. Range Generation &mdash; SPIERSedit 3.1.1 documentation</title>
-  
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>6. Range Generation &mdash; SPIERSedit 4.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=86f27845" />
 
   
   
-  
-  
-
-  
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+        <script src="_static/documentation_options.js?v=3304f9e4"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="7. Polynomial Generation" href="polynomialgeneration.html" />
+    <link rel="next" title="7. Machine Learning (ML) Generation" href="machinelearninggeneration.html" />
     <link rel="prev" title="5. Segments" href="segments.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> SPIERSedit
           
-
-          
-            
-            <img src="_static/SPIERS.jpg" class="logo" alt="Logo"/>
-          
+          <a href="index.html" class="icon icon-home">
+            SPIERSedit
+              <img src="_static/SPIERS.jpg" class="logo" alt="Logo"/>
           </a>
-
-          
-            
-            
               <div class="version">
-                3.1.1
+                4.0.0
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">1. Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="requirements.html">2. Requirements</a></li>
@@ -101,88 +55,51 @@
 <li class="toctree-l2"><a class="reference internal" href="#hard-and-soft-fills">6.3. Hard and Soft Fills</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="polynomialgeneration.html">7. Polynomial Generation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="output.html">8. Output</a></li>
-<li class="toctree-l1"><a class="reference internal" href="volumes.html">9. Measuring volumes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="exportingworkingimages.html">10. Exporting Working Images</a></li>
-<li class="toctree-l1"><a class="reference internal" href="3dbrush.html">11. 3D Brush</a></li>
-<li class="toctree-l1"><a class="reference internal" href="curves.html">12. Curves</a></li>
-<li class="toctree-l1"><a class="reference internal" href="lockselectionmode.html">13. Lock/Selection Mode</a></li>
-<li class="toctree-l1"><a class="reference internal" href="slicespacing.html">14. Slice Spacing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="histogram.html">15. Histogram</a></li>
-<li class="toctree-l1"><a class="reference internal" href="info.html">16. Info</a></li>
-<li class="toctree-l1"><a class="reference internal" href="datadownsampling.html">17. Dataset Downsampling</a></li>
-<li class="toctree-l1"><a class="reference internal" href="advancedprefs.html">18. Advanced Prefs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="updatesystem.html">19. Update System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="machinelearninggeneration.html">7. Machine Learning (ML) Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gradientgeneration.html">8. Gradient Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="radial.html">9. Radial Artefact Correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="output.html">10. Output</a></li>
+<li class="toctree-l1"><a class="reference internal" href="volumes.html">11. Measuring volumes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exportingworkingimages.html">12. Exporting Working Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="3dbrush.html">13. 3D Brush</a></li>
+<li class="toctree-l1"><a class="reference internal" href="curves.html">14. Curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lockselectionmode.html">15. Lock/Selection Mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="slicespacing.html">16. Slice Spacing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="histogram.html">17. Histogram</a></li>
+<li class="toctree-l1"><a class="reference internal" href="info.html">18. Info</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datadownsampling.html">19. Dataset Downsampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advancedprefs.html">20. Advanced Prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="updatesystem.html">21. Update System</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">SPIERSedit</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
-      <li>6. Range Generation</li>
-    
-    
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active"><span class="section-number">6. </span>Range Generation</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="_sources/rangegeneration.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="range-generation">
-<span id="rangegeneration"></span><h1>6. Range Generation<a class="headerlink" href="#range-generation" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="concept">
-<h2>6.1. Concept<a class="headerlink" href="#concept" title="Permalink to this headline">¶</a></h2>
+             
+  <section id="range-generation">
+<span id="rangegeneration"></span><h1><span class="section-number">6. </span>Range Generation<a class="headerlink" href="#range-generation" title="Link to this heading">¶</a></h1>
+<section id="concept">
+<h2><span class="section-number">6.1. </span>Concept<a class="headerlink" href="#concept" title="Link to this heading">¶</a></h2>
 <p>Range generation is a generation mode primarily intended for
 multi-segment monochrome (e.g. CT) datasets, although it can also be
 used on colour datasets. In range generation the user splits up the
@@ -211,9 +128,9 @@ they are doing!</p>
 changes) affects all selected slices as does normal generation, but
 unlike generation in <em>Linear</em> or Poly<em>n</em>omial modes it also affects
 ALL segments, not just the selected one.</p>
-</div>
-<div class="section" id="range-generation-panel">
-<h2>6.2. Range Generation Panel<a class="headerlink" href="#range-generation-panel" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="range-generation-panel">
+<h2><span class="section-number">6.2. </span>Range Generation Panel<a class="headerlink" href="#range-generation-panel" title="Link to this heading">¶</a></h2>
 <p>The <em>Generation</em> Panel in range mode consists of a shaded strip running
 from black to white (representing the range of shades to be assigned),
 together with <em>Base</em> and <em>Top</em> ‘spinboxes’ and two tick boxes. Segments
@@ -240,18 +157,20 @@ implemented.</p>
 selected segment, not all segments. This option is not normally helpful,
 and is included only for completeness.</p>
 <p><em>Hard fill</em>: Generates in hard rather than soft-fill mode – see below.</p>
-<div class="figure align-center" id="id1">
+<figure class="align-center" id="id1">
 <img alt="_images/figure_12.png" src="_images/figure_12.png" />
-<p class="caption"><span class="caption-text">Figure 12. Multi-segment CT dataset handled using range generation.* A; Source Image. B; Thresholded image showing multi-segment interpretation. C; Segmented image with masks overlayed; D, Range generation settings used, top shows ‘Default’ segment selected, bottom shows ‘Segment 2’ selected.</span></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Figure 12. Multi-segment CT dataset handled using range generation.* A; Source Image. B; Thresholded image showing multi-segment interpretation. C; Segmented image with masks overlayed; D, Range generation settings used, top shows ‘Default’ segment selected, bottom shows ‘Segment 2’ selected.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
 <p><em>Distributing segments.</em> The <em>Distribute over range</em> command takes all
 segments selected in the <em>Segments</em> panel and distributes them evenly
 over a specified range (by default the entire range, 0 to 255). This is
 primarily useful when setting segments up initially, as a prelude to
 moving their boundaries to optimal positions.</p>
-</div>
-<div class="section" id="hard-and-soft-fills">
-<h2>6.3. Hard and Soft Fills<a class="headerlink" href="#hard-and-soft-fills" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="hard-and-soft-fills">
+<h2><span class="section-number">6.3. </span>Hard and Soft Fills<a class="headerlink" href="#hard-and-soft-fills" title="Link to this heading">¶</a></h2>
 <p>By default, <em>Range</em> generation uses a ‘soft fill’ algorithm to generate
 each working image (recall that there is one working image per segment).
 If source image pixels are at the midpoint of the range, the
@@ -261,10 +180,12 @@ pixels get darker linearly, crossing the threshold value (of 127) at the
 correct points (the specified Top and Base values for the segment), and
 tailing away to 0 beyond that. Figure 13 provides a visual explanation
 of soft-fill values for a hypothetical four-segment dataset</p>
-<div class="figure align-center" id="id2">
+<figure class="align-center" id="id2">
 <img alt="_images/figure_13.png" src="_images/figure_13.png" />
-<p class="caption"><span class="caption-text">Figure 13. Soft-fill range generation. Top; the grayscale range of the source images. Second row; Segment definitions for four segments. Bottom four rows; working image levels generated for each segment for each source image level.</span></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Figure 13. Soft-fill range generation. Top; the grayscale range of the source images. Second row; Segment definitions for four segments. Bottom four rows; working image levels generated for each segment for each source image level.</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
 <p>The point of soft-fill range generation is to enable the brighten brush
 to be on range-generated dataset. If used on working images generated in
 this way, it will function to ‘bring out’ a segment, pushing boundaries
@@ -277,63 +198,38 @@ assigned correctly, tick the ‘hard fill’ box. With hard-fill in
 operation, SPIERSedit sets all pixels in the designated range to pure
 white in the segment greyscale file, and all outside it to pure black,
 ensuring that this problem does not arise.</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="polynomialgeneration.html" class="btn btn-neutral float-right" title="7. Polynomial Generation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="segments.html" class="btn btn-neutral float-left" title="5. Segments" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="segments.html" class="btn btn-neutral float-left" title="5. Segments" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="machinelearninggeneration.html" class="btn btn-neutral float-right" title="7. Machine Learning (ML) Generation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        
-        &copy; Copyright 2018-2021,  Mark Sutton, Russell J. Garwood, Alan R.T. Spencer
-
-    </p>
+    <p>&#169; Copyright 2018-2026,  Mark D. Sutton, Russell J. Garwood, Alan R.T. Spencer.</p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

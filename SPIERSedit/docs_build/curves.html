@@ -1,94 +1,48 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html4" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>12. Curves &mdash; SPIERSedit 3.1.1 documentation</title>
-  
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>14. Curves &mdash; SPIERSedit 4.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=86f27845" />
 
   
   
-  
-  
-
-  
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+        <script src="_static/documentation_options.js?v=3304f9e4"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="13. Lock/Selection Mode" href="lockselectionmode.html" />
-    <link rel="prev" title="11. 3D Brush" href="3dbrush.html" /> 
+    <link rel="next" title="15. Lock/Selection Mode" href="lockselectionmode.html" />
+    <link rel="prev" title="13. 3D Brush" href="3dbrush.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> SPIERSedit
           
-
-          
-            
-            <img src="_static/SPIERS.jpg" class="logo" alt="Logo"/>
-          
+          <a href="index.html" class="icon icon-home">
+            SPIERSedit
+              <img src="_static/SPIERS.jpg" class="logo" alt="Logo"/>
           </a>
-
-          
-            
-            
               <div class="version">
-                3.1.1
+                4.0.0
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">1. Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="requirements.html">2. Requirements</a></li>
@@ -96,96 +50,59 @@
 <li class="toctree-l1"><a class="reference internal" href="masks.html">4. Masks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="segments.html">5. Segments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rangegeneration.html">6. Range Generation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="polynomialgeneration.html">7. Polynomial Generation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="output.html">8. Output</a></li>
-<li class="toctree-l1"><a class="reference internal" href="volumes.html">9. Measuring volumes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="exportingworkingimages.html">10. Exporting Working Images</a></li>
-<li class="toctree-l1"><a class="reference internal" href="3dbrush.html">11. 3D Brush</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">12. Curves</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#concepts">12.1. Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#curves-panel">12.2. Curves Panel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#editing-curves">12.3. Editing Curves</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#copying-curves">12.4. Copying curves</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#interpolating-curves">12.5. Interpolating Curves</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#creating-masks-from-curves">12.6. Creating Masks from Curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="machinelearninggeneration.html">7. Machine Learning (ML) Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gradientgeneration.html">8. Gradient Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="radial.html">9. Radial Artefact Correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="output.html">10. Output</a></li>
+<li class="toctree-l1"><a class="reference internal" href="volumes.html">11. Measuring volumes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exportingworkingimages.html">12. Exporting Working Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="3dbrush.html">13. 3D Brush</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">14. Curves</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#concepts">14.1. Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#curves-panel">14.2. Curves Panel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#editing-curves">14.3. Editing Curves</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#copying-curves">14.4. Copying curves</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#interpolating-curves">14.5. Interpolating Curves</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-masks-from-curves">14.6. Creating Masks from Curves</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="lockselectionmode.html">13. Lock/Selection Mode</a></li>
-<li class="toctree-l1"><a class="reference internal" href="slicespacing.html">14. Slice Spacing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="histogram.html">15. Histogram</a></li>
-<li class="toctree-l1"><a class="reference internal" href="info.html">16. Info</a></li>
-<li class="toctree-l1"><a class="reference internal" href="datadownsampling.html">17. Dataset Downsampling</a></li>
-<li class="toctree-l1"><a class="reference internal" href="advancedprefs.html">18. Advanced Prefs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="updatesystem.html">19. Update System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lockselectionmode.html">15. Lock/Selection Mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="slicespacing.html">16. Slice Spacing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="histogram.html">17. Histogram</a></li>
+<li class="toctree-l1"><a class="reference internal" href="info.html">18. Info</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datadownsampling.html">19. Dataset Downsampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advancedprefs.html">20. Advanced Prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="updatesystem.html">21. Update System</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">SPIERSedit</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
-      <li>12. Curves</li>
-    
-    
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active"><span class="section-number">14. </span>Curves</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="_sources/curves.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="curves">
-<span id="id1"></span><h1>12. Curves<a class="headerlink" href="#curves" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="concepts">
-<h2>12.1. Concepts<a class="headerlink" href="#concepts" title="Permalink to this headline">¶</a></h2>
+             
+  <section id="curves">
+<span id="id1"></span><h1><span class="section-number">14. </span>Curves<a class="headerlink" href="#curves" title="Link to this heading">¶</a></h1>
+<section id="concepts">
+<h2><span class="section-number">14.1. </span>Concepts<a class="headerlink" href="#concepts" title="Link to this heading">¶</a></h2>
 <p>SPIERSedit supports a form of ‘spline’ object (technically Catmull-Rom
 splines) which it calls ‘curves’; these are curved lines defined with a
 series of points (‘nodes’) through which they pass. Curves can be closed
@@ -222,15 +139,17 @@ stored in separate files but within the .spe file. If many curves are
 being used it is hence recommended that the user increases the autosave
 frequency (see Advanced Prefs) or manually saves more regularly.</p>
 <p>There is no maximum number of curves.</p>
-</div>
-<div class="section" id="curves-panel">
-<h2>12.2. Curves Panel<a class="headerlink" href="#curves-panel" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="curves-panel">
+<h2><span class="section-number">14.2. </span>Curves Panel<a class="headerlink" href="#curves-panel" title="Link to this heading">¶</a></h2>
 <p>Curves are listed in the <em>Curves</em> panel (Fig. 17), which works in a very
 similar way to the <em>Masks</em> panel.</p>
-<div class="figure align-center" id="id2">
+<figure class="align-center" id="id2">
 <img alt="_images/figure_17.png" src="_images/figure_17.png" />
-<p class="caption"><span class="caption-text">Figure 17. The Curves Panel</span></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Figure 17. The Curves Panel</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
 <p><em>Creating curves:</em> Curves are created using the <em>New</em> button on
 the <em>Curves</em> panel. New curves are given a unique name and colour; by
 default they are open and not assigned to a segment. A newly created
@@ -260,13 +179,15 @@ selecting a curve and using the <em>Up</em> and <em>Down</em> buttons. This reor
 only affects how the curves appear in this list.</p>
 <p><em>Deleting curves</em>. Select curves in the panel then use the <em>Delete</em>
 button to remove them.</p>
-<div class="figure align-center" id="id3">
+<figure class="align-center" id="id3">
 <img alt="_images/figure_18.png" src="_images/figure_18.png" />
-<p class="caption"><span class="caption-text">Figure 18. Curve modes. Note that in Open mode curves have two square end markers, which are specialised nodes through which the curves does not pass, but whose position affects the curvature of the final section. The blue square affects the end with the blue circle, the green square the end with the green circle. When the curve is closed these are treated as normal nodes.</span></p>
-</div>
-</div>
-<div class="section" id="editing-curves">
-<h2>12.3. Editing Curves<a class="headerlink" href="#editing-curves" title="Permalink to this headline">¶</a></h2>
+<figcaption>
+<p><span class="caption-text">Figure 18. Curve modes. Note that in Open mode curves have two square end markers, which are specialised nodes through which the curves does not pass, but whose position affects the curvature of the final section. The blue square affects the end with the blue circle, the green square the end with the green circle. When the curve is closed these are treated as normal nodes.</span><a class="headerlink" href="#id3" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="editing-curves">
+<h2><span class="section-number">14.3. </span>Editing Curves<a class="headerlink" href="#editing-curves" title="Link to this heading">¶</a></h2>
 <p>Curves are edited on a per-slice basis by adding, removing or moving
 nodes. <em>To perform this sort of editing, a single curve must be selected
 in the *Curves</em> panel, and SPIERSedit must be in curve mode*. Curve
@@ -293,15 +214,15 @@ an individual node.</p>
 <p><em>Resizing curves</em>: The <em>Resize curves on selected slices</em> command on the
 <em>Curves</em> menu lets the user resize all selected curves on all selected
 slices by a specified percentage.</p>
-</div>
-<div class="section" id="copying-curves">
-<h2>12.4. Copying curves<a class="headerlink" href="#copying-curves" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="copying-curves">
+<h2><span class="section-number">14.4. </span>Copying curves<a class="headerlink" href="#copying-curves" title="Link to this heading">¶</a></h2>
 <p>Curves can be copied between slices using the copy commands in the
 <em>Curves</em> menu. This works in a way completely analogous to copying
 masks; the reader is referred to the masks section for more details.</p>
-</div>
-<div class="section" id="interpolating-curves">
-<h2>12.5. Interpolating Curves<a class="headerlink" href="#interpolating-curves" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="interpolating-curves">
+<h2><span class="section-number">14.5. </span>Interpolating Curves<a class="headerlink" href="#interpolating-curves" title="Link to this heading">¶</a></h2>
 <p>Curves can be interpolated between slices; if, for example, slice 10 and
 slice 20 have nodes defined for a particular curve, interpolating
 between these slices will gradually alter the curve in between the two
@@ -318,9 +239,9 @@ but if they do they will be over-written by the interpolation operation.</p>
 then interpolating them is a fast way to rather precisely specify
 regions to be masked, and is a technique the authors make extensive use
 of.</p>
-</div>
-<div class="section" id="creating-masks-from-curves">
-<h2>12.6. Creating Masks from Curves<a class="headerlink" href="#creating-masks-from-curves" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="creating-masks-from-curves">
+<h2><span class="section-number">14.6. </span>Creating Masks from Curves<a class="headerlink" href="#creating-masks-from-curves" title="Link to this heading">¶</a></h2>
 <p>As intimated in previous sections, an important use of curves,
 especially interpolated curves, is to draw masks. To create a mask from
 a curve or curves, select the curve (or curves) in the <em>Curves</em> Panel,
@@ -340,67 +261,44 @@ curve</em> operation.</p>
 not create any sort of permanent link. If the curve is later modified,
 the area masked by a <em>Mask from curve</em> operation based on it will not
 update, and the masked area and the curve will no longer be in synch.</p>
-<div class="figure align-center" id="id4">
+<figure class="align-center" id="id4">
 <img alt="_images/figure_19.png" src="_images/figure_19.png" />
-<p class="caption"><span class="caption-text">Figure 19. Curve interpolated over seven slices</span></p>
-</div>
-</div>
-</div>
+<figcaption>
+<p><span class="caption-text">Figure 19. Curve interpolated over seven slices</span><a class="headerlink" href="#id4" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="lockselectionmode.html" class="btn btn-neutral float-right" title="13. Lock/Selection Mode" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="3dbrush.html" class="btn btn-neutral float-left" title="11. 3D Brush" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="3dbrush.html" class="btn btn-neutral float-left" title="13. 3D Brush" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="lockselectionmode.html" class="btn btn-neutral float-right" title="15. Lock/Selection Mode" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        
-        &copy; Copyright 2018-2021,  Mark Sutton, Russell J. Garwood, Alan R.T. Spencer
-
-    </p>
+    <p>&#169; Copyright 2018-2026,  Mark D. Sutton, Russell J. Garwood, Alan R.T. Spencer.</p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

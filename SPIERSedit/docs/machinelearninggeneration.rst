@@ -1,7 +1,7 @@
 .. _machinelearninggeneration:
 
 Machine Learning (ML) Generation
-================
+================================
 
 Concept
 -------
@@ -25,7 +25,7 @@ The ML system uses a "random forest" algorithm for prediction; the reader is ref
 NOTE - the ML system was introduced in SPIERSedit version 4. It replaces the older polynomial prediction system implemented in earlier versions of SPIERS.
 
 Usage
-----------------------
+-----
 
 The ML system is one of the most complex parts of SPIERSedit, and takes experimentation and practice to master. This usage guide cannot document all possible workflows, as the system is deliberately built to be flexible and support many ways of working. Instead, it provides one suggested workflow using an example (colour) dataset, and covers the most frequently encountered considerations and concepts.
 
@@ -86,7 +86,7 @@ When iteratively adding more pixels to your sample, beware of increasing sample 
 ML is not magic - noisy and ambiguous data will remain difficult to segment even after many passes of ML sample refinement, and a manual editing pass of ML-generated slices will often be necessary. The outputs of ML-generated slices are the same greyscale working image files as produced by all other generation approaches, so can be manually edited in the same way.
 
 Advanced sampling
----------------------
+-----------------
 
 While the simplest way to create a training sample from locked pixels is to select all slices, in many cases you will want finer control over sample generation to improve training outcomes and to reduce processing time. There are several facilities available to assist with this.
 
@@ -116,7 +116,7 @@ Refer to online explanations of Random Forests for more detailed explanations, w
 
 
 Strategies to improve ML segmentation
---------------------
+-------------------------------------
 
 We recommend an iterative approach to ML segmentation, as the optimal strategy will depend on many factors, including the nature of the dataset, the capabilities of the computer, the available time, and more besides. This section describes approaches that can be used to both increase segmentation quality, reduce workflow friction, and reduce processing time. These should be viewed as a toolkit of techniques to be considered, rather than a recipe that should always be followed. The items are not presented in any particular order.
 
@@ -145,7 +145,7 @@ If segmentation is failing because of an over- or under-reliance on pixel values
 Many features include a 'sigma' value, which controls the range at which they consider neighbouring pixels. Larger sigma values may provide much useful information for the training system, but are computationally expensive. Consider removing high-sigma features if computation is too slow, or adding high-sigma features if the segmentation appears to be paying insufficient attention to broad-scale structure. Note that 3D high sigma (sigma over 8) features are particular expensive, and should be used sparingly.
 
 Persistence of model and sample
----------------------
+-------------------------------
 
 Saving a SPIERSedit dataset (e.g. by simply closing SPIERSedit) saves all ML related settings, but does NOT save the current sample, or the model trained on it. After reloading, you will need to regenerate the sample to continue.
 
@@ -153,7 +153,7 @@ In addition, changing either segment count or downsampling parameters will clear
 
 
 Features system
-------------
+---------------
 
 *Features User Interface (UI)*
 The features panel in the ML tab of the Generation window lists all features assigned to this dataset. You can populate this list using the presets, by loading a previously saved feature set (ML menu), or by manual addition/removal using the New and Delete buttons. You can save a feature set to disk using the save command in the ML menu - use this approach if you want to copy a feature set from one dataset to another.
@@ -161,7 +161,7 @@ Once added, features cannot be edited - remove and re-add if you want to change.
 The feature list is fully sortable - click column headings to sort (e.g. by feature name).
 
 *Activation*
-All features can be activated or deactivated (tick box in the feature list). An active feature is included in training and generation, and an inactive one is not. Use activation to control the feature-set reaching the training algorithms, while retaining features for possible later use. Note too that features may not be deletable as they are depencies of other features (see below), but they can always be deactivated.
+All features can be activated or deactivated (tick box in the feature list). An active feature is included in training and generation, and an inactive one is not. Use activation to control the feature-set reaching the training algorithms, while retaining features for possible later use. Note too that features may not be deletable as they are dependencies of other features (see below), but they can always be deactivated.
 
 *Dependency model*
 Many SPIERSedit features depend on other features, i.e. reuse their values. For this reason, adding a feature may add others you were not expecting - these are its dependencies. You cannot remove a feature if another one depends on it. When adding a feature, dependencies are automatically added but *not* automatically activated - you may choose to activate them manually. 
@@ -176,10 +176,10 @@ Many features include neighbouring pixels in their calculations - these can oper
 Many features include a 'sigma' argument, which controls the extent of their reach into neighbouring pixels. High sigma values reach further - a sigma 8 3D feature will include neighbouring pixels up to 8 slices ahead/behind of the current slice, as well as 8 pixels in all directions within the slice. Sigma values of 1,2,4,8,16,32 and 64 are supported in all cases, but high values are not recommended. For most datasets, restrict sigmas to 1,2, 4 or 8.
 
 *Importance*
-The training algorithm returns 'importance' values for each active feature - these are displayed in the Imp column of the feature list after 'Sample/Train' is clicked. High importance value features were found useful by the classifier, while low importance ones were rarely used. These values may be helpful when considering modifications to the active feature set. Note that you can sort features by importance vallue by clicking the 'Imp' heading.
+The training algorithm returns 'importance' values for each active feature - these are displayed in the Imp column of the feature list after 'Sample/Train' is clicked. High importance value features were found useful by the classifier, while low importance ones were rarely used. These values may be helpful when considering modifications to the active feature set. Note that you can sort features by importance value by clicking the 'Imp' heading.
 
 Supported feature types
-------------
+-----------------------
 
 This lists the features supported by SPIERS edit, along with approximate summaries of their function. A few features (e.g. 'square') are never user-added as they are not useful in models, but may appear in the feature UI as they are dependencies of other features. These are not listed below. Activating them is not harmful, but is also not useful.
 

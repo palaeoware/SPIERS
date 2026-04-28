@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>8. Gradient Generation &mdash; SPIERSedit 4.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=86f27845" />
+
+  
+  
+        <script src="_static/documentation_options.js?v=3304f9e4"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="9. Radial Artefact Correction" href="radial.html" />
+    <link rel="prev" title="7. Machine Learning (ML) Generation" href="machinelearninggeneration.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            SPIERSedit
+              <img src="_static/SPIERS.jpg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                4.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">2. Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basicconcepts.html">3. Basic Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="masks.html">4. Masks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="segments.html">5. Segments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rangegeneration.html">6. Range Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="machinelearninggeneration.html">7. Machine Learning (ML) Generation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">8. Gradient Generation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#concept">8.1. Concept</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#usage">8.2. Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#gradient-generation-panel">8.3. Gradient Generation Panel</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="radial.html">9. Radial Artefact Correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="output.html">10. Output</a></li>
+<li class="toctree-l1"><a class="reference internal" href="volumes.html">11. Measuring volumes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exportingworkingimages.html">12. Exporting Working Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="3dbrush.html">13. 3D Brush</a></li>
+<li class="toctree-l1"><a class="reference internal" href="curves.html">14. Curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lockselectionmode.html">15. Lock/Selection Mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="slicespacing.html">16. Slice Spacing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="histogram.html">17. Histogram</a></li>
+<li class="toctree-l1"><a class="reference internal" href="info.html">18. Info</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datadownsampling.html">19. Dataset Downsampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advancedprefs.html">20. Advanced Prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="updatesystem.html">21. Update System</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SPIERSedit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active"><span class="section-number">8. </span>Gradient Generation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/gradientgeneration.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="gradient-generation">
+<span id="gradientgeneration"></span><h1><span class="section-number">8. </span>Gradient Generation<a class="headerlink" href="#gradient-generation" title="Link to this heading">¶</a></h1>
+<section id="concept">
+<h2><span class="section-number">8.1. </span>Concept<a class="headerlink" href="#concept" title="Link to this heading">¶</a></h2>
+<p>Gradients generation is a generation mode that applies a graded brightening or darkening effect in a specific area of a slice-image. It provides an alternative approach to manual brightening or darkening by brush, which can rapidly be applied in a consistent way over a large number of slices.</p>
+<p>Like LCE generation, gradients generation does not replace existing working data, but applies a filter to modify it. For the same reasons as LCE, therefore, the ‘invert’ and ‘auto’ checkboxes are not available.</p>
+<p>Gradients generation uses the curves system to define a <em>central line</em> ? pixels are then brightened or darkened according to their distance from that line. Because curves positions can easily be duplicated or interpolated over slices, you can use the gradients system to correct for dark and light regions over many slices, even if those regions do not remain stationary.</p>
+<p>Gradient generation uses the concept of a minimum and maximum distance ? these are distances from the central line, in pixels, and control the start and end of the gradation effect.</p>
+</section>
+<section id="usage">
+<h2><span class="section-number">8.2. </span>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
+<p>To use gradient generation, you need to have a curve defined and selected to provide the central line. Note that it is only the curve line (not curve fill) that is used, so it is recommended that your curve visualisation mode is set to unfilled, either in open-ended or close-loop mode. If you want a central point rather than a central line, define an open-ended curve with the minimum number of points, and move the two active control points to the same position. Note that you can then move them together by using ‘Lock Curve Shape’ (Curves menu).</p>
+<p>With your curve selected, use Preview mode to inspect the effects of the gradient you are applying, and modify settings to acheive the desired effect. Once you are happy, use the Generate button to permanently apply the effect to your working dataset (potentially to many slices at once, if these are selected in the slice selector). Note that the Generate button turns off preview mode, which would otherwise preview a second application of the same effect.</p>
+</section>
+<section id="gradient-generation-panel">
+<h2><span class="section-number">8.3. </span>Gradient Generation Panel<a class="headerlink" href="#gradient-generation-panel" title="Link to this heading">¶</a></h2>
+<p>There are five settings values in the Gradients generation window that control the effect.</p>
+<p><em>Dist min</em> and <em>Dist max</em> are the minimum and maximum distances (from the control line, in pixels) for the grading effect. Dist min should always be set to a lower value than Dist max.</p>
+<p><em>Effect (dist min)</em> and <em>Effect (dist max)</em> control the strength and sign of the effect. Negative values mean ‘darken’, and positive values mean ‘lighten’.</p>
+<p>Pixels closer to the control line than <em>Dist min</em> are modified by the <em>Effect (dist min)</em> value. Pixels further from the control line than <em>Dist max</em> are modified by the <em>Effect (dist max)</em> value. Pixels between <em>Dist min</em>  and <em>Dist max</em> from the control line are modified by a linear interpolation between <em>Effect (dist min)</em> and <em>Effect (dist max)</em>.</p>
+<p>Typically, <em>Effect (dist max)</em> should be set to zero, so that the gradient has no effect beyond the maximum distance. If you don’t want a ‘plateau’ region close to the line where the full effect is appllied (preferring that it drop off straight away from the line), set <em>Dist min</em> to zero.</p>
+<p>Figure GRD1 shows the effects of several different settings configurations in an example slice-image.</p>
+<p>The final setting is <em>Point Density</em>. This controls the precision with which Gradient Generation follows the curve between control points. If set to 1, distances are calculated from straight-line segments between control points. If set to a higher value, ‘virtual’ control points are inserted for gradient calculation along the true curve between the real ones, increasing precision. Use higher values if your curve is not followed precisely enough - but note that higher values result in slower screen updates and generation. In most cases a value of 2-4 will be sufficient.</p>
+<p>Figure GRD2 shows the effect of increasing point density in an example slice-image.</p>
+<p>The ‘Preview’ checkbox in the generation panel turns Preview mode on/off (see usage section above). Note that while in preview mode, changes are NOT applied to the working dataset, and so will not be visible in exported models. Use ‘Generate’ to lock them in and use them.</p>
+<figure class="align-center" id="id1">
+<img alt="_images/figure_GRD1.png" src="_images/figure_GRD1.png" />
+<figcaption>
+<p><span class="caption-text">Figure GRD2. Effects of different gradient settings, shown on a homogenous grey non-thresholded working image for clarity. The image is 512x512 pixels in size, and the central line curve is overlaid. Point density is 15 for all images. (a) Effect (dist max) = 0, Effect (dist min) = 50, Dist min = 0, Dist max = 75. (b) as (a), but Dist min = 50 - the graded part of the effect occurs between 50 and 75 pixels from the line. (c) as (a), but Effect (dist min) = -50 - the effect is a darkening not a lightening</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id2">
+<img alt="_images/figure_GRD2.png" src="_images/figure_GRD2.png" />
+<figcaption>
+<p><span class="caption-text">Figure GRD2. Point density demonstrated, using the same image, central line and settings as in GRD2a. (a) point density of 1, (b) point density of 3, (c) point density of 7.</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="machinelearninggeneration.html" class="btn btn-neutral float-left" title="7. Machine Learning (ML) Generation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="radial.html" class="btn btn-neutral float-right" title="9. Radial Artefact Correction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018-2026,  Mark D. Sutton, Russell J. Garwood, Alan R.T. Spencer.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
