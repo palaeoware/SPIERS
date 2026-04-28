@@ -227,7 +227,7 @@ single command.
 Masks and Segments
 ------------------
 
-If the *Segment brush applies mask* option on the *Masks* menu is ticked
+If the *Segment brush applies mask* option on the *Brush* menu is ticked
 then drawing segments on using the brush (with either mouse button) will
 also apply the selected masks to the same pixels.
 
