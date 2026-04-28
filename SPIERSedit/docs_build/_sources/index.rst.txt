@@ -47,7 +47,7 @@ Table of Contents
    segments
    rangegeneration
    machinelearninggeneration
-   lce
+   LCE
    gradientgeneration
    radial
    output

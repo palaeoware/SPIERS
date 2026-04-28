@@ -24,7 +24,7 @@ e.g. from before a downsample had taken place). If in doubt, it is best
 to interpolate.
 
 Changing downsampling on the fly like this is allowed for, but is not to
-be taken lightly – it is a major operation, which takes some time to
+be taken lightly - it is a major operation, which takes some time to
 complete, and will result in either the discarding of data
 (downsampling) or potential differences in editing of areas (upsampling
 with later editing of certain regions).

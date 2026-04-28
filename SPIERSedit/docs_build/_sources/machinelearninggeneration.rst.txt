@@ -1,31 +1,31 @@
 .. _machinelearninggeneration:
 
 Machine Learning (ML) Generation
-================
+================================
 
 Concept
 -------
 
-ML generation provides a means to identify structures in datasets using a small training sample of correctly identified pixels. Figure MLG1 shows how the resultant segmentation is typically superior to that acheived by linear generation, and how iterative sample improvement can further refine the model
+ML generation provides a means to identify structures in datasets using a small training sample of correctly identified pixels. Figure MLG1 shows how the resultant segmentation is typically superior to that achieved by linear generation, and how iterative sample improvement can further refine the model
 
  .. figure:: _static/figure_MLG1.png
     :align: center
 	
     Figure MLG1. SPIERSview renders of a test dataset segmented using ML. (a) Model created using linear (non-ML) generation - note that brightness variation in slices renders one end of the model noisy. (b), (c) renders after 'first pass' ML segmentation, using small sample on three slices, and 'Complex Colour' feature presets. Note artefacts at rear of model. (d),(e) Improved renders after iterative improvement of training sample.
     
-ML generation uses a machine-learning sgementation approach to determine, on the basis of a training dataset, which pixels in a dataset should be assigned to different segments. For instance, a dataset may contain three identifiable types of material - fossil, matrix and void. In a ML workflow, the user first creates one SPIERSedit segment for each of these material types, then identifies a small set of pixels that can be assigned to each, forming a training sample. The machine learning algorithm then uses this training sample to deduce rules for predicting segments for pixels. These rules are then applied to the rest of the dataset. For each segment, an approximate-probability map is produced for each slice, where light pixels represent a high probability for that segment, and dark pixels repesent a low probability (see Figure MLG2). These approximate-probability maps are treated as normal SPIERS working images for each segment, and are combined in the normal SPIERS manner to produce a segment classification for all pixels.
+ML generation uses a machine-learning segmentation approach to determine, on the basis of a training dataset, which pixels in a dataset should be assigned to different segments. For instance, a dataset may contain three identifiable types of material - fossil, matrix and void. In a ML workflow, the user first creates one SPIERSedit segment for each of these material types, then identifies a small set of pixels that can be assigned to each, forming a training sample. The machine learning algorithm then uses this training sample to deduce rules for predicting segments for pixels. These rules are then applied to the rest of the dataset. For each segment, an approximate-probability map is produced for each slice, where light pixels represent a high probability for that segment, and dark pixels represent a low probability (see Figure MLG2). These approximate-probability maps are treated as normal SPIERS working images for each segment, and are combined in the normal SPIERS manner to produce a segment classification for all pixels.
 
  .. figure:: _static/figure_MLG2.png
     :align: center
 	
-    Figure MLG2. Source image (a), and appoximate-probability maps for 'fossil' (b) and 'matrix' (c) segments, produced using ML algorithms.
+    Figure MLG2. Source image (a), and approximate-probability maps for 'fossil' (b) and 'matrix' (c) segments, produced using ML algorithms.
 
-The ML system uses a "random forest" algorithm for prediction; the reader is referred externally for detailed informtion on this approach. It can operate on both greyscale data (e.g. CT) and colour data (e.g. serial grinding optical photographs). Predictions are based not just on the colour/shade of an individual pixel, but on its context, i.e. the colours/shades of surrounding pixel, both in 2D (within a slice) and in 3D (between slices). The ML system is processor and disk-space intensive; a full ML segmentation of a very large dataset can in some cases take many hours to calculate. Nonetheless for many datasets the ML system will be the quickest way to generate high-quality results from noisy or otherwise difficult data.
+The ML system uses a "random forest" algorithm for prediction; the reader is referred externally for detailed information on this approach. It can operate on both greyscale data (e.g. CT) and colour data (e.g. serial grinding optical photographs). Predictions are based not just on the colour/shade of an individual pixel, but on its context, i.e. the colours/shades of surrounding pixel, both in 2D (within a slice) and in 3D (between slices). The ML system is processor and disk-space intensive; a full ML segmentation of a very large dataset can in some cases take many hours to calculate. Nonetheless for many datasets the ML system will be the quickest way to generate high-quality results from noisy or otherwise difficult data.
 
 NOTE - the ML system was introduced in SPIERSedit version 4. It replaces the older polynomial prediction system implemented in earlier versions of SPIERS.
 
 Usage
-----------------------
+-----
 
 The ML system is one of the most complex parts of SPIERSedit, and takes experimentation and practice to master. This usage guide cannot document all possible workflows, as the system is deliberately built to be flexible and support many ways of working. Instead, it provides one suggested workflow using an example (colour) dataset, and covers the most frequently encountered considerations and concepts.
 
@@ -39,7 +39,7 @@ The first step in ML generation is always to ensure that the correct number of s
 
 *2. Define Features*
 
-The SPIERS ML system uses the concept of 'features'. A feature is a value calculated for each pixel according to some algorithm, on the basis of its shade/colour, and normall also the shade/colour of neighbouring pixels. For example 'intensity' is the simplest possible feature - simply the brightness of the pixel. Another feature is 'contrast', which is the difference between the intensity of a pixel and the mean intensity of its neighbouring pixels. There are many other features - see Feature List section below for an exhaustive list. The ML system works by determining what combination of features best predicts the segment of a pixel - for this reason it will produce better results if a large number of features are used. However calculating features can be slow, and for some datasets equally good results can be obtained with only a few features.
+The SPIERS ML system uses the concept of 'features'. A feature is a value calculated for each pixel according to some algorithm, on the basis of its shade/colour, and normal also the shade/colour of neighbouring pixels. For example 'intensity' is the simplest possible feature - simply the brightness of the pixel. Another feature is 'contrast', which is the difference between the intensity of a pixel and the mean intensity of its neighbouring pixels. There are many other features - see Feature List section below for an exhaustive list. The ML system works by determining what combination of features best predicts the segment of a pixel - for this reason it will produce better results if a large number of features are used. However calculating features can be slow, and for some datasets equally good results can be obtained with only a few features.
 
 Features can be manually added, removed or activated/deactivated using the ML generation tab in the Generation window. However feature selection is advanced usage, requiring an in-depth understanding of the nature of all features involved. A simpler approach is to use one of the four pre-generated recommended features sets, which are available under 'Feature Presets' in the ML menu. Selecting one of these will load that preset feature set into the ML system. Simple and Complex presets are supplied for colour data (e.g. from serial grinding) and CT (monochrome) data. Use CT presets for all data where source images are monochrome. The Simple presets will work faster, but for 'harder' datasets may provide lower-quality segmentation.
 
@@ -49,7 +49,7 @@ Once features are defined, SPIERSedit needs to calculate their values for each p
 
 To trigger feature precalculation, select all slices you wish to precalculate for (typically all slices in the dataset), and use 'Precalculate Features' from the ML menu. The process may take some time, especially for large datasets where complex feature sets are in use. 
 
-Once calculated, feature files are stored as files in the working data folder, so they do not need to be calculated again. These files are prefixed by 'ml_', and (for large datasets and/or rich feature sets) there may be a very large number of them, and their total filesize can be high. You can safely delete them later to save space (though of course they will need to be recalculated if they are actually needed); SPIERSedit provides a 'Remove feature files' command in the ML menu to remove them all for this reason.
+Once calculated, feature files are stored as files in the working data folder, so they do not need to be calculated again. These files are prefixed by 'ml\_', and (for large datasets and/or rich feature sets) there may be a very large number of them, and their total filesize can be high. You can safely delete them later to save space (though of course they will need to be recalculated if they are actually needed); SPIERSedit provides a 'Remove feature files' command in the ML menu to remove them all for this reason.
 
 Note also that feature files are cached in RAM to speed calculation. A setting is provided in advanced prefs for the maximum size of this cache - increasing this value may speed up later ML operations, as it will reduce the number of times that calculated features need to be loaded from storage. Ensure though that your system can support the cache size you choose; for instance on a 32Gb RAM Windows computer, a cache size no bigger than 24Gb is recommended.
 
@@ -64,7 +64,7 @@ It is possible to use a pre-edited slice and lock regions of it to provide train
 	
     Figure MLG3. Example of sample definition on a single slice from a colour dataset. Yellow is fossil segment, purple is matrix. 
 
-Samples are not restricted to a single slice - in most datasets you will achieve better results if you provide a sample on more than one slice, particularly where slices vary in brightness, colour balance, or in any other way. Nontheless it is normally easiest to start with a relatively small sample size from a small number of slices - more can be added later for a second attempt.
+Samples are not restricted to a single slice - in most datasets you will achieve better results if you provide a sample on more than one slice, particularly where slices vary in brightness, colour balance, or in any other way. Nonetheless it is normally easiest to start with a relatively small sample size from a small number of slices - more can be added later for a second attempt.
 
 Once you have a viable first attempt at a sample, select all slices from which you wish to assemble the sample (select all slices is normally fine, as non-locked pixels are ignored) and click 'Sample/Generate' in the ML tab of the Generation window. This assembles your sample, and trains the ML system on the basis of that sample. Depending on the resolution of your dataset, the size of your sample, the speed of your computer, and the number of features in use, sampling/training can take some time, but on many datasets it will be a few seconds at most. Text next to the Sample/Train button give you the number of pixels sampled. As a rule of thumb, a good sample should be between 1000 and 50,000 pixels.
 
@@ -86,18 +86,18 @@ When iteratively adding more pixels to your sample, beware of increasing sample 
 ML is not magic - noisy and ambiguous data will remain difficult to segment even after many passes of ML sample refinement, and a manual editing pass of ML-generated slices will often be necessary. The outputs of ML-generated slices are the same greyscale working image files as produced by all other generation approaches, so can be manually edited in the same way.
 
 Advanced sampling
----------------------
+-----------------
 
 While the simplest way to create a training sample from locked pixels is to select all slices, in many cases you will want finer control over sample generation to improve training outcomes and to reduce processing time. There are several facilities available to assist with this.
 
 *Slice selection*
-Only the locked pixels from selected slices are added to the sample - one crude approach to reducing the sample is to exclude some slices from the selection. Whenever you click 'Sample/Train' the exisitng sample is replaced with the new one, so only slices in the current selection are used.
+Only the locked pixels from selected slices are added to the sample - one crude approach to reducing the sample is to exclude some slices from the selection. Whenever you click 'Sample/Train' the existing sample is replaced with the new one, so only slices in the current selection are used.
 
 *Percentage control*
 The ML tab in the Generation window includes a percentage box. Use this to control 'sparsity' of sampling - if set to 25% for instance, only 25% of locked pixels in the selected slice are added to the sample. This can be used to reduce overall sample size, while retaining coverage over many slices.
 
 *Incremental sampling*
-The ML menu includes an 'Incremental sampling' checkbox. When this mode is turned on, the 'Sample/Train' button no longer removes the existing sample when clicked, instead adding the new sample to it. Importantly, this is done on a slice-basis only, so all existing sample points for selected slices *are* still removed before the new sample is added. Becasuse the percentage control only affects sampling at the point where the 'Sample/Train' button is pressed, you can use this mode to assemble samples where some slices are more strongly sampled than others. 
+The ML menu includes an 'Incremental sampling' checkbox. When this mode is turned on, the 'Sample/Train' button no longer removes the existing sample when clicked, instead adding the new sample to it. Importantly, this is done on a slice-basis only, so all existing sample points for selected slices *are* still removed before the new sample is added. Because the percentage control only affects sampling at the point where the 'Sample/Train' button is pressed, you can use this mode to assemble samples where some slices are more strongly sampled than others. 
 To assist with incremental sampling, there is also a 'Clear Sample' menu item in the ML menu - this is not needed with incremental turned off, where the sample is always cleared before a new one is made.
 
 *Train/Generate this slice*
@@ -116,7 +116,7 @@ Refer to online explanations of Random Forests for more detailed explanations, w
 
 
 Strategies to improve ML segmentation
---------------------
+-------------------------------------
 
 We recommend an iterative approach to ML segmentation, as the optimal strategy will depend on many factors, including the nature of the dataset, the capabilities of the computer, the available time, and more besides. This section describes approaches that can be used to both increase segmentation quality, reduce workflow friction, and reduce processing time. These should be viewed as a toolkit of techniques to be considered, rather than a recipe that should always be followed. The items are not presented in any particular order.
 
@@ -133,7 +133,7 @@ Segmentation may work better where your segment plan matches real material types
 You may not need to carefully segment regions away from the fossil that you can simply mask off in output. Restrict training samples and judgement of quality to the genuine region of interest. Remember as well that, if you are struggling to generate a single trained model that works over all your slices, you can train and use different models for a subset of slices if that works better.
 
 *Deactivating features*
-If processing is slow, consider disabling features (rather than removing them entirely). Removal may not be possibile if the feature is a dependency of another, and reinstatement of removed features is more work. Disabling them retains files on disk for later use, but keeps them out of training and generation calculations.
+If processing is slow, consider disabling features (rather than removing them entirely). Removal may not be possible if the feature is a dependency of another, and reinstatement of removed features is more work. Disabling them retains files on disk for later use, but keeps them out of training and generation calculations.
 
 *Adding features*
 If you need more model 'intelligence', consider swapping from the simple to complex preset, or manually adding more features. See features section below.
@@ -145,7 +145,7 @@ If segmentation is failing because of an over- or under-reliance on pixel values
 Many features include a 'sigma' value, which controls the range at which they consider neighbouring pixels. Larger sigma values may provide much useful information for the training system, but are computationally expensive. Consider removing high-sigma features if computation is too slow, or adding high-sigma features if the segmentation appears to be paying insufficient attention to broad-scale structure. Note that 3D high sigma (sigma over 8) features are particular expensive, and should be used sparingly.
 
 Persistence of model and sample
----------------------
+-------------------------------
 
 Saving a SPIERSedit dataset (e.g. by simply closing SPIERSedit) saves all ML related settings, but does NOT save the current sample, or the model trained on it. After reloading, you will need to regenerate the sample to continue.
 
@@ -153,7 +153,7 @@ In addition, changing either segment count or downsampling parameters will clear
 
 
 Features system
-------------
+---------------
 
 *Features User Interface (UI)*
 The features panel in the ML tab of the Generation window lists all features assigned to this dataset. You can populate this list using the presets, by loading a previously saved feature set (ML menu), or by manual addition/removal using the New and Delete buttons. You can save a feature set to disk using the save command in the ML menu - use this approach if you want to copy a feature set from one dataset to another.
@@ -161,7 +161,7 @@ Once added, features cannot be edited - remove and re-add if you want to change.
 The feature list is fully sortable - click column headings to sort (e.g. by feature name).
 
 *Activation*
-All features can be activated or deactivated (tick box in the feature list). An active feature is included in training and generation, and an inactive one is not. Use activation to control the feature-set reaching the training algorithms, while retaining features for possible later use. Note too that features may not be deletable as they are depencies of other features (see below), but they can always be deactivated.
+All features can be activated or deactivated (tick box in the feature list). An active feature is included in training and generation, and an inactive one is not. Use activation to control the feature-set reaching the training algorithms, while retaining features for possible later use. Note too that features may not be deletable as they are dependencies of other features (see below), but they can always be deactivated.
 
 *Dependency model*
 Many SPIERSedit features depend on other features, i.e. reuse their values. For this reason, adding a feature may add others you were not expecting - these are its dependencies. You cannot remove a feature if another one depends on it. When adding a feature, dependencies are automatically added but *not* automatically activated - you may choose to activate them manually. 
@@ -176,10 +176,10 @@ Many features include neighbouring pixels in their calculations - these can oper
 Many features include a 'sigma' argument, which controls the extent of their reach into neighbouring pixels. High sigma values reach further - a sigma 8 3D feature will include neighbouring pixels up to 8 slices ahead/behind of the current slice, as well as 8 pixels in all directions within the slice. Sigma values of 1,2,4,8,16,32 and 64 are supported in all cases, but high values are not recommended. For most datasets, restrict sigmas to 1,2, 4 or 8.
 
 *Importance*
-The training algorithm returns 'importance' values for each active feature - these are displayed in the Imp column of the feature list after 'Sample/Train' is clicked. High importance value features were found useful by the classifier, while low importance ones were rarely used. These values may be helpful when considering modifications to the active feature set. Note that you can sort features by importance vallue by clicking the 'Imp' heading.
+The training algorithm returns 'importance' values for each active feature - these are displayed in the Imp column of the feature list after 'Sample/Train' is clicked. High importance value features were found useful by the classifier, while low importance ones were rarely used. These values may be helpful when considering modifications to the active feature set. Note that you can sort features by importance value by clicking the 'Imp' heading.
 
 Supported feature types
-------------
+-----------------------
 
 This lists the features supported by SPIERS edit, along with approximate summaries of their function. A few features (e.g. 'square') are never user-added as they are not useful in models, but may appear in the feature UI as they are dependencies of other features. These are not listed below. Activating them is not harmful, but is also not useful.
 

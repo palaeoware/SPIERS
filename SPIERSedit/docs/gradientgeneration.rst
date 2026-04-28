@@ -20,7 +20,7 @@ Usage
 
 To use gradient generation, you need to have a curve defined and selected to provide the central line. Note that it is only the curve line (not curve fill) that is used, so it is recommended that your curve visualisation mode is set to unfilled, either in open-ended or close-loop mode. If you want a central point rather than a central line, define an open-ended curve with the minimum number of points, and move the two active control points to the same position. Note that you can then move them together by using 'Lock Curve Shape' (Curves menu).
 
-With your curve selected, use Preview mode to inspect the effects of the gradient you are applying, and modify settings to acheive the desired effect. Once you are happy, use the Generate button to permanently apply the effect to your working dataset (potentially to many slices at once, if these are selected in the slice selector). Note that the Generate button turns off preview mode, which would otherwise preview a second application of the same effect.
+With your curve selected, use Preview mode to inspect the effects of the gradient you are applying, and modify settings to achieve the desired effect. Once you are happy, use the Generate button to permanently apply the effect to your working dataset (potentially to many slices at once, if these are selected in the slice selector). Note that the Generate button turns off preview mode, which would otherwise preview a second application of the same effect.
 
 
 Gradient Generation Panel

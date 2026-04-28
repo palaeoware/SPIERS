@@ -6,7 +6,7 @@ Machine Learning (ML) Generation
 Concept
 -------
 
-ML generation provides a means to identify structures in datasets using a small training sample of correctly identified pixels. Figure MLG1 shows how the resultant segmentation is typically superior to that acheived by linear generation, and how iterative sample improvement can further refine the model
+ML generation provides a means to identify structures in datasets using a small training sample of correctly identified pixels. Figure MLG1 shows how the resultant segmentation is typically superior to that achieved by linear generation, and how iterative sample improvement can further refine the model
 
  .. figure:: _static/figure_MLG1.png
     :align: center
@@ -49,7 +49,7 @@ Once features are defined, SPIERSedit needs to calculate their values for each p
 
 To trigger feature precalculation, select all slices you wish to precalculate for (typically all slices in the dataset), and use 'Precalculate Features' from the ML menu. The process may take some time, especially for large datasets where complex feature sets are in use. 
 
-Once calculated, feature files are stored as files in the working data folder, so they do not need to be calculated again. These files are prefixed by "ml_", and (for large datasets and/or rich feature sets) there may be a very large number of them, and their total filesize can be high. You can safely delete them later to save space (though of course they will need to be recalculated if they are actually needed); SPIERSedit provides a 'Remove feature files' command in the ML menu to remove them all for this reason.
+Once calculated, feature files are stored as files in the working data folder, so they do not need to be calculated again. These files are prefixed by 'ml\_', and (for large datasets and/or rich feature sets) there may be a very large number of them, and their total filesize can be high. You can safely delete them later to save space (though of course they will need to be recalculated if they are actually needed); SPIERSedit provides a 'Remove feature files' command in the ML menu to remove them all for this reason.
 
 Note also that feature files are cached in RAM to speed calculation. A setting is provided in advanced prefs for the maximum size of this cache - increasing this value may speed up later ML operations, as it will reduce the number of times that calculated features need to be loaded from storage. Ensure though that your system can support the cache size you choose; for instance on a 32Gb RAM Windows computer, a cache size no bigger than 24Gb is recommended.
 

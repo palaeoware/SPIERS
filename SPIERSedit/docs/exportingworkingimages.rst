@@ -3,7 +3,7 @@
 Exporting Working Images
 ========================
 
-In some situations it can be useful to export SPIERSedit’s working
+In some situations it can be useful to export SPIERSedit's working
 images, as displayed on-screen. For instance, this can be used to
 document the interpretation stage of a virtual specimen for publication.
 The *Export Working Image Set…* command on the *Output* menu provides

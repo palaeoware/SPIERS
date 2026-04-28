@@ -17,7 +17,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="9. Radial Artefact Correction" href="radial.html" />
-    <link rel="prev" title="7. Machine Learning (ML) Generation" href="machinelearninggeneration.html" /> 
+    <link rel="prev" title="Local Contrast Enhancement (LCE)" href="LCE.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -102,8 +102,8 @@
 <h2><span class="section-number">8.1. </span>Concept<a class="headerlink" href="#concept" title="Link to this heading">¶</a></h2>
 <p>Gradients generation is a generation mode that applies a graded brightening or darkening effect in a specific area of a slice-image. It provides an alternative approach to manual brightening or darkening by brush, which can rapidly be applied in a consistent way over a large number of slices.</p>
 <p>Like LCE generation, gradients generation does not replace existing working data, but applies a filter to modify it. For the same reasons as LCE, therefore, the ‘invert’ and ‘auto’ checkboxes are not available.</p>
-<p>Gradients generation uses the curves system to define a <em>central line</em> ? pixels are then brightened or darkened according to their distance from that line. Because curves positions can easily be duplicated or interpolated over slices, you can use the gradients system to correct for dark and light regions over many slices, even if those regions do not remain stationary.</p>
-<p>Gradient generation uses the concept of a minimum and maximum distance ? these are distances from the central line, in pixels, and control the start and end of the gradation effect.</p>
+<p>Gradients generation uses the curves system to define a <em>central line</em>; pixels are then brightened or darkened according to their distance from that line. Because curves positions can easily be duplicated or interpolated over slices, you can use the gradients system to correct for dark and light regions over many slices, even if those regions do not remain stationary.</p>
+<p>Gradient generation uses the concept of a minimum and maximum distance: these are distances from the central line, in pixels, and control the start and end of the gradation effect.</p>
 </section>
 <section id="usage">
 <h2><span class="section-number">8.2. </span>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
@@ -116,7 +116,7 @@
 <p><em>Dist min</em> and <em>Dist max</em> are the minimum and maximum distances (from the control line, in pixels) for the grading effect. Dist min should always be set to a lower value than Dist max.</p>
 <p><em>Effect (dist min)</em> and <em>Effect (dist max)</em> control the strength and sign of the effect. Negative values mean ‘darken’, and positive values mean ‘lighten’.</p>
 <p>Pixels closer to the control line than <em>Dist min</em> are modified by the <em>Effect (dist min)</em> value. Pixels further from the control line than <em>Dist max</em> are modified by the <em>Effect (dist max)</em> value. Pixels between <em>Dist min</em>  and <em>Dist max</em> from the control line are modified by a linear interpolation between <em>Effect (dist min)</em> and <em>Effect (dist max)</em>.</p>
-<p>Typically, <em>Effect (dist max)</em> should be set to zero, so that the gradient has no effect beyond the maximum distance. If you don’t want a ‘plateau’ region close to the line where the full effect is appllied (preferring that it drop off straight away from the line), set <em>Dist min</em> to zero.</p>
+<p>Typically, <em>Effect (dist max)</em> should be set to zero, so that the gradient has no effect beyond the maximum distance. If you don’t want a ‘plateau’ region close to the line where the full effect is applied (preferring that it drop off straight away from the line), set <em>Dist min</em> to zero.</p>
 <p>Figure GRD1 shows the effects of several different settings configurations in an example slice-image.</p>
 <p>The final setting is <em>Point Density</em>. This controls the precision with which Gradient Generation follows the curve between control points. If set to 1, distances are calculated from straight-line segments between control points. If set to a higher value, ‘virtual’ control points are inserted for gradient calculation along the true curve between the real ones, increasing precision. Use higher values if your curve is not followed precisely enough - but note that higher values result in slower screen updates and generation. In most cases a value of 2-4 will be sufficient.</p>
 <p>Figure GRD2 shows the effect of increasing point density in an example slice-image.</p>
@@ -140,7 +140,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="machinelearninggeneration.html" class="btn btn-neutral float-left" title="7. Machine Learning (ML) Generation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="LCE.html" class="btn btn-neutral float-left" title="Local Contrast Enhancement (LCE)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="radial.html" class="btn btn-neutral float-right" title="9. Radial Artefact Correction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

@@ -1,7 +1,7 @@
 .. _radial:
 
 Radial Artefact Correction
-================
+==========================
 
 Concept
 -------

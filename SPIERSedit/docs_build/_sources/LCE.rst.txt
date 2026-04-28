@@ -1,7 +1,7 @@
 .. _LCE:
 
 Local Contrast Enhancement (LCE)
-================
+================================
 
 Concept
 -------
