@@ -779,7 +779,7 @@ void ExportSPV::Run(int flag)
         return;
     }
     QDataStream out(&File);
-    out.setVersion(QDataStream::Qt_6_11);
+    out.setVersion(QDataStream::Qt_4_4);
     out.setByteOrder(QDataStream::LittleEndian);
 
     out << static_cast<double>(-1);
