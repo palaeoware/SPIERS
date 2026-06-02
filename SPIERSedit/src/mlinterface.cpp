@@ -472,7 +472,18 @@ void MLInterface::CreateSingletonsIfNeeded()
 {
     if (data == nullptr)
     {
-        data = new MLCachedAccess(FileCount, !ColArray.isGrayscale(), fwidth, fheight, ColMonoScale, ZDownsample);
+        bool isGrey = false;
+        auto format = ColArray.format();
+        if (ColArray.format() == QImage::Format_Indexed8)
+        {
+            if (ColArray.allGray()) isGrey = true;
+        }
+        else
+        {
+            if (ColArray.isGrayscale()) isGrey = true;
+        }
+
+        data = new MLCachedAccess(FileCount, !isGrey, fwidth, fheight, ColMonoScale, ZDownsample);
 
         if (uiManager != nullptr)
         {

@@ -2391,7 +2391,7 @@ void  MainWindowImpl::redrawDecorations()
         if (cropping != 1)
         {
             QString output = "Crop mode enabled - crop area";
-            QString output2= QString::asprintf(" - %d pixels wide, %d pixels high)", cropArea->width(), cropArea->height());
+            QString output2= QString::asprintf(" - Top Left is %d, %d: %d pixels wide, %d pixels high)", cropArea->left(), cropArea->top(), cropArea->width(), cropArea->height());
             statusbar->showMessage(output + output2);
         }
     }
@@ -2603,7 +2603,7 @@ void  MainWindowImpl::redrawJustCropBox()
     rectPointer = scene->addRect(*cropArea, pen, brush);
     rectPointer->setZValue(1);
     QString output = "Crop mode enabled - crop area";
-    QString output2= QString::asprintf(" - %d pixels wide, %d pixels high)", cropArea->width(), cropArea->height());
+    QString output2= QString::asprintf(" - Top Left is %d, %d: %d pixels wide, %d pixels high)", cropArea->left(), cropArea->top(), cropArea->width(), cropArea->height());
     cropWidth->setValue(cropArea->width());
     cropHeight->setValue(cropArea->height());
     statusbar->showMessage(output + output2);
