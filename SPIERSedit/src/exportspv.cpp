@@ -779,7 +779,7 @@ void ExportSPV::Run(int flag)
         return;
     }
     QDataStream out(&File);
-    out.setVersion(QDataStream::Qt_6_11);
+    out.setVersion(QDataStream::Qt_4_4);
     out.setByteOrder(QDataStream::LittleEndian);
 
     out << static_cast<double>(-1);
@@ -835,8 +835,10 @@ void ExportSPV::Run(int flag)
     // Set up per-object working arrays
     foreach (OutputObject *Object, outlist)
     {
-        if (Object->Merge) {
-            foreach (OutputObject *Object2, Object->MergeObjects) {
+        if (Object->Merge)
+        {
+            foreach (OutputObject *Object2, Object->MergeObjects)
+            {
                 Object2->SetUpForRender();
             }
         }
@@ -909,7 +911,7 @@ void ExportSPV::Run(int flag)
 
                 // Parallel: GA[] / Masks[] / Segments[] / Curves[] are now
                 // read-only; each object writes only to its own arrays.
-                QtConcurrent::blockingMap(outlist, [&](OutputObject *Object)
+                QtConcurrent::blockingMap(outlist, [&](OutputObject * Object)
                 {
                     QList<OutputObject *> ObsToUse;
                     if (Object->Merge) ObsToUse = Object->MergeObjects;
@@ -937,7 +939,11 @@ void ExportSPV::Run(int flag)
                                             if (Segments[s]->Activated)
                                             {
                                                 int pval = static_cast<int>(*((GA[s]->constBits()) + (fheight - 1 - y) * fwidth4 + x));
-                                                if (pval >= high) { high = pval; seg = s; }
+                                                if (pval >= high)
+                                                {
+                                                    high = pval;
+                                                    seg = s;
+                                                }
                                             }
                                         }
                                         if (seg != -1 && (*uSegs)[seg])
@@ -970,7 +976,11 @@ void ExportSPV::Run(int flag)
                                             if (Segments[s]->Activated)
                                             {
                                                 int pval = static_cast<int>(*((GA[s]->constBits()) + (fheight - 1 - y) * fwidth4 + x));
-                                                if (pval >= high) { high = pval; seg = s; }
+                                                if (pval >= high)
+                                                {
+                                                    high = pval;
+                                                    seg = s;
+                                                }
                                             }
                                         }
                                         if (seg != -1 && (*uSegs)[seg])
@@ -1003,7 +1013,7 @@ void ExportSPV::Run(int flag)
             // Each object is independent — run in parallel.
             // zflag check is folded into the grid loop.
             // -------------------------------------------------------
-            QtConcurrent::blockingMap(outlist, [&](OutputObject *Object)
+            QtConcurrent::blockingMap(outlist, [&](OutputObject * Object)
             {
                 QByteArray *outArr = &(Object->Outputarray);
                 QByteArray *tmpArr = &(Object->temparray);

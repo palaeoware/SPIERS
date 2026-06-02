@@ -46,7 +46,10 @@ Table of Contents
    masks
    segments
    rangegeneration
-   polynomialgeneration
+   machinelearninggeneration
+   LCE
+   gradientgeneration
+   radial
    output
    volumes
    exportingworkingimages

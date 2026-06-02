@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>11. Lighting Panel &mdash; SPIERSview 4.0.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=86f27845" />
+
+  
+  
+        <script src="_static/documentation_options.js?v=a084f797"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="12. Info panel" href="infopanel.html" />
+    <link rel="prev" title="10. Clipping panel" href="clippingpanel.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            SPIERSview
+              <img src="_static/SPIERS.jpg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                4.0.2
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">1. Introduction and File Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">2. System Requirements and Triangle Count</a></li>
+<li class="toctree-l1"><a class="reference internal" href="startingspiersview.html">3. Starting SPIERSview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basicviewing.html">4. Basic viewing and manipulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="antialiasing.html">5. Anti-aliasing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="objectpannel.html">6. Object Panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advobjectproperties.html">7. Advanced Object properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manipulatingobjectsindependently.html">8. Manipulating objects independently</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multipiecedatasets.html">9. Multi-piece datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clippingpanel.html">10. Clipping panel</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">11. Lighting Panel</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#colour">11.1. Colour</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#light-positioning">11.2. Light positioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#shadows">11.3. Shadows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#light-power">11.4. Light power</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#light-activation">11.5. Light activation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="infopanel.html">12. Info panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="savingexporting.html">13. Saving and exporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animationsystem.html">14. Animation System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scale.html">15. Scale and Measurement</a></li>
+<li class="toctree-l1"><a class="reference internal" href="updatesystem.html">16. Update system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendixavtkusage.html">17. Appendix A - VTK Usage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SPIERSview</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active"><span class="section-number">11. </span>Lighting Panel</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/lightingpanel.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="lighting-panel">
+<span id="lightingpanel"></span><h1><span class="section-number">11. </span>Lighting Panel<a class="headerlink" href="#lighting-panel" title="Link to this heading">¶</a></h1>
+<p>SPIERSview 4 introduced an improved lighting and rendering system, capable of rendering models with shadows, and
+of using multiple light sources. The lighting panel provides controls for this system.</p>
+<p>Lighting is split into three light sources:</p>
+<ol class="arabic simple">
+<li><p>‘main’ light, by default placed in north-west, casting soft shadows</p></li>
+<li><p>‘secondary’ light, by default slightly weaker than main, and placed east, without shadows</p></li>
+<li><p>‘headlight’, always placed at the camera position and pointing forwards. This never casts shadows, and is off by default</p></li>
+</ol>
+<p>Note that previous versions of SPIERSview only implemented a headlight; the main and secondary lights are new to version 4.</p>
+<section id="colour">
+<h2><span class="section-number">11.1. </span>Colour<a class="headerlink" href="#colour" title="Link to this heading">¶</a></h2>
+<p>All lights by default emit white light. Click the colour box if you wish to modify this to coloured light. Some bizarre effects are possible, though not recommended.</p>
+</section>
+<section id="light-positioning">
+<h2><span class="section-number">11.2. </span>Light positioning<a class="headerlink" href="#light-positioning" title="Link to this heading">¶</a></h2>
+<p>Main and secondary lights have position controls. Use the XY dial in conjunction with the Z slider to control the position of the light. The XY dial rotates the light position around the direction of view (i.e. around the Z direction). The Z slider controls the distance of the light from the model in the Z direction - set the slider to the top of the range for a light positioned to the side of the model, and to the bottom of the range for a light positioned near the view position.</p>
+</section>
+<section id="shadows">
+<h2><span class="section-number">11.3. </span>Shadows<a class="headerlink" href="#shadows" title="Link to this heading">¶</a></h2>
+<p>Main and secondary lights can optionally cast shadows. Depending on the nature of the model, these may either assist or interfere with interpretation. Shadows can be set to ‘off’, ‘hard shadows’, or ‘soft shadows’. Soft shadows a more realistic and avoid hard-edge shadow pixellation artefacts, but are more computationally expensive. Any shadows introduce computational cost - if the frame rate in SPIERSview is low, consider turning shadows off for all lights.</p>
+</section>
+<section id="light-power">
+<h2><span class="section-number">11.4. </span>Light power<a class="headerlink" href="#light-power" title="Link to this heading">¶</a></h2>
+<p>The strength of each light source can be controlled with the power slider. Use this if your model is too bright or too dark under current lighting.</p>
+</section>
+<section id="light-activation">
+<h2><span class="section-number">11.5. </span>Light activation<a class="headerlink" href="#light-activation" title="Link to this heading">¶</a></h2>
+<p>The secondary light and headlight can be switched on and off - the main light is always active. Switching a light off entirely removes its computation cost, so use this approach (rather than just dropping light power) if you need to improve rendering performance.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="clippingpanel.html" class="btn btn-neutral float-left" title="10. Clipping panel" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="infopanel.html" class="btn btn-neutral float-right" title="12. Info panel" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018-2026,  Mark Sutton, Russell J. Garwood, Alan R.T. Spencer.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

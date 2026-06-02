@@ -35,7 +35,7 @@ curve are only visible if the curve is selected.
 
 Each curve can only appear once on any one slice. If more than one curve
 is needed on one slice then multiple curves must be created. The same
-curve can be used to model different objects as long as they never don’t
+curve can be used to model different objects as long as they never don't
 appear on the same slice, but it is better practice to create a new
 curve for each new object. If a large number of curves are used it can
 become difficult to keep track of them; the *Grey-out curves not on
@@ -79,8 +79,8 @@ double-clicking.
 *Segment*: The segment the curve is assigned to, or [None] if not
 assigned. Double click to edit.
 
-*Slices*: [Added v2.14, not shown in Fig 17] – gives the flrst and last
-slice on which the curve is used, or ‘Not Used’ if not currently active
+*Slices*: [Added v2.14, not shown in Fig 17] - gives the first and last
+slice on which the curve is used, or 'Not Used' if not currently active
 on any slice.
 
 *Selecting curves*: One or more curves can be selected by left clicking
@@ -111,11 +111,11 @@ nodes. *To perform this sort of editing, a single curve must be selected
 in the *Curves* panel, and SPIERSedit must be in curve mode*. Curve
 editing uses the brush for position, but brush size is ignored.
 
-*Creating nodes:* The ‘=’ key adds a node to the curve at the current
+*Creating nodes:* The '=' key adds a node to the curve at the current
 mouse cursor position. If no nodes exist for the curve on the current
 slice, the minimum of 4 are created near the cursor position.
 
-*Removing nodes*: The ‘-‘ key removes a node from the current mouse
+*Removing nodes*: The '-' key removes a node from the current mouse
 cursor position. If this would reduce the number of nodes on the slice
 below four, the user is asked if they want to entirely remove the curve
 from the slice or not.
@@ -178,7 +178,7 @@ especially interpolated curves, is to draw masks. To create a mask from
 a curve or curves, select the curve (or curves) in the *Curves* Panel,
 select the slices involved in the *Slice Selector* panel (it doesn’t
 matter if slices are selected on which the curve does not exist, so
-often it’s fine to use the *Select All* button here), and select the
+often it's fine to use the *Select All* button here), and select the
 mask which the curve is draw into in the *Masks* panel. To trigger the
 operation use the *Mask from curve* command in the *Masks* menu. All
 pixels from the curves on all selected slices will then be drawn into

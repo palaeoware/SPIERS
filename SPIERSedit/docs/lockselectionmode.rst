@@ -3,10 +3,10 @@
 Lock/Selection Mode
 ===================
 
-This is by far the least used of SPIERSedit’s six brush modes. It is
-used to brush a blue ‘selection’ colour onto images; this is similar to
+This is by far the least used of SPIERSedit's six brush modes. It is
+used to brush a blue 'selection' colour onto images; this is similar to
 a mask, but stored and handled separately. Each image in the dataset has
-a separate lock/selection mode ‘mask’. The blue colour is applied with
+a separate lock/selection mode 'mask'. The blue colour is applied with
 the brush and the left mouse button, and removed with the right mouse
 button. It is only visible in Lock/Selection mode.
 

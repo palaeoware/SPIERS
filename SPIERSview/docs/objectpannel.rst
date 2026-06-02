@@ -4,7 +4,7 @@ Object Panel
 ============
 
 Selection
-------
+---------
 Objects can be selected directly in the object panel, or (in SPIERSview 4 or later) by clicking on them in the main view window.
 
 
@@ -14,12 +14,12 @@ Groups
 Objects can be combined into groups; groups can also exist as subgroups
 within other groups (see Fig. 2), enabling the user to build up a
 hierarchy of objects to describe an anatomy. For instance, an arthropod
-model might include a group called ‘appendages’ – this in turn might
-include a subgroup called ‘cephalic’ appendages, which might in turn
-include a ‘mandibles’ group, consisting of a left and right mandible.
+model might include a group called 'appendages' - this in turn might
+include a subgroup called 'cephalic' appendages, which might in turn
+include a 'mandibles' group, consisting of a left and right mandible.
 Object grouping not only provides a convenient way to explain
-relationships, but also allows visiblity to be controlled for sets of
-objects – in the above example for instance a key could be assigned to
+relationships, but also allows visibility to be controlled for sets of
+objects - in the above example for instance a key could be assigned to
 the appendages group, allowing the entire appendage set to be quickly
 hidden or shown.
 
@@ -39,13 +39,13 @@ existing group with the *Move To Group* command (Ctrl-G) on the
 .. figure:: _static/figure_2.png
     :align: center
 	
-    Figure 2. Default anatomy of a SPIERSview object pannel
+    Figure 2. Default anatomy of a SPIERSview object panel
 
 Turning visibility off for a group does not alter the individual
-visibiity settings of contained objects (or groups), but overrides them
+visibility settings of contained objects (or groups), but overrides them
 so they are all hidden. In Figure 2 for instance, all objects in the
-‘Trunk Apps’ group are currently invisible (whatever their individual
-visibility setting), as this group is set to invisible. Once visibililty
+'Trunk Apps' group are currently invisible (whatever their individual
+visibility setting), as this group is set to invisible. Once visibility
 is turned on again for the parent group, the individual visibility
 settings of its contained objects (or groups) are used again.
 

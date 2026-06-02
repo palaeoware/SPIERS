@@ -20,7 +20,7 @@ a name (e.g. *Homo*), which are input separately.
 .. figure:: _static/figure_4.png
     :align: center
 	
-    Figure 4. Default anatomy of the SPIERSview info pannel
+    Figure 4. Default anatomy of the SPIERSview info panel
 
 The upper window of the the Info panel, is known as the *Info items*
 window. It lists these categories, and if any contain data, these are

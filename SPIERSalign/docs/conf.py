@@ -26,10 +26,9 @@ copyright = '2018-2026, Russell J. Garwood, Mark D. Sutton, Alan R.T. Spencer'
 author = 'Russell J. Garwood, Mark D. Sutton, Alan R.T. Spencer'
 
 # The short X.Y version
-version = '4.0.0'
+version = '4.0.2'
 # The full version, including alpha/beta/rc tags
-release = '4.0.0'
-
+release = '4.0.2'
 
 # -- General configuration ---------------------------------------------------
 

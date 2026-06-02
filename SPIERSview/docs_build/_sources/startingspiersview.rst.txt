@@ -6,7 +6,7 @@ Starting SPIERSview
 Opening a file
 --------------
 
-SPIERSview uses a single-document model – it only views one file at
+SPIERSview uses a single-document model - it only views one file at
 once. To view another files you simply open multiple copies of the
 program, and to close a file you close the program.
 
@@ -16,14 +16,14 @@ SPIERSview can be launched in one of two ways
 dialog allowing you to select the file you want to load. If you cancel
 the load dialog, the program will close.
 
-2) (Recommended) Double-clicking a ‘.spv’, ‘.spvf’, ‘.vaxml’ or ‘.sp2’
+2) (Recommended) Double-clicking a '.spv', '.spvf', '.vaxml' or '.sp2'
 file will launch SPIERSview on this data.
 
 Initial processing
 ------------------
 
 When launched, SPIERSview first processes the data to generate viewable
-objects, first calculating ‘isosurfaces’ (3D triangle-meshes) from
+objects, first calculating 'isosurfaces' (3D triangle-meshes) from
 slice-based data using the Marching Cubes algorithm, and then by the
 conversion of these into a viewable format; this entire process may take
 anything from a second or two to several minutes, and depends on the
