@@ -15,30 +15,37 @@
  * hope that it will be useful, but WITHOUT ANY WARRANTY.
  */
 #include "mlinterface.h"
-#include <QDebug>
-#include <QImage>
 
+#include "display.h"
 #include "globals.h"
-#include "display.h"
-#include "src/fileio.h"
-#include "display.h"
-#include <opencv2/imgproc.hpp>
 #include "labelledpoint.h"
 #include "mainwindow.h"
-#include "mlupdateblockingdialog.h"
-#include "mlfeatureintensity.h"
-#include "mlfeaturegaussian.h"
+#include "mladdfeature.h"
 #include "mlfeaturecontrast.h"
 #include "mlfeaturedifferenceofgaussians.h"
-#include "mlfeatureuimanager.h"
-#include "mladdfeature.h"
-#include <QMessageBox>
-#include "mlfileio.h"
-#include <QFileDialog>
-#include <QThread>
-#include "mlparallelforest.h"
+#include "mlfeaturegaussian.h"
+#include "mlfeatureintensity.h"
 #include "mlfeaturepresets.h"
+#include "mlfeatureuimanager.h"
+#include "mlfileio.h"
+#include "mlparallelforest.h"
+#include "mlsegmenttomask.h"
+#include "mlupdateblockingdialog.h"
+#include "src/fileio.h"
+
+#include <QDebug>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QFileDialog>
+#include <QFormLayout>
+#include <QImage>
+#include <QLabel>
 #include <QMessageBox>
+#include <QSpinBox>
+#include <QThread>
+#include <QVBoxLayout>
+
+#include <opencv2/imgproc.hpp>
 
 bool MLInterface::enabled;
 
@@ -49,6 +56,8 @@ MLInterface::MLInterface()
     data = nullptr;
     uiManager = nullptr;
     addFeatureDialog = nullptr;
+    m_maskFromSegmentDirectionPairCount = 16;
+    m_maskFromSegmentSensitivity = 25;
     rf = std::make_unique<MLParallelForest>();
 }
 
@@ -880,3 +889,103 @@ void MLInterface::GetProbabilitiesAllSegments(int x, int y, int z, int *segBuffe
     }
 }
 
+void MLInterface::MaskFromSegment()
+{
+    QList <QTreeWidgetItem *> selectedMasks = mainWin->MasksTreeWidget->selectedItems();
+    QList <QTreeWidgetItem *> selectedSegments = mainWin->SegmentsTreeWidget->selectedItems();
+
+    if (selectedMasks.count()!=1 || selectedSegments.count()!=1)
+    {
+        QMessageBox::warning(mainWin, "Error", "You need exactly one mask and one segment selected to perform this action");
+        return;
+    }
+
+    int maskId=-1;
+    for (int i = 0;  i <= MaxUsedMask; i++)
+    {
+        if ((MasksSettings[i]->widgetitem) == selectedMasks[0])
+        {
+            maskId = i;
+        }
+    }
+    if (maskId == -1)
+    {
+        QMessageBox::warning(mainWin, "Error", "Internal error - could not find mask ID");
+        return;
+    }
+
+    int segId=-1;
+    for (int i = 0;  i < SegmentCount; i++)
+    {
+        if ((Segments[i]->widgetitem) == selectedSegments[0])
+        {
+            segId = i;
+        }
+    }
+    if (segId == -1)
+    {
+        QMessageBox::warning(mainWin, "Error", "Internal error - could not find segment ID");
+        return;
+    }
+
+    QDialog dialog(mainWin);
+    dialog.setWindowTitle(QStringLiteral("Generate Mask from Segment"));
+
+    QVBoxLayout *layout = new QVBoxLayout(&dialog);
+
+    QLabel *messageLabel = new QLabel(QStringLiteral("This will generate a filled mask based on the selected segment"), &dialog);
+    messageLabel->setWordWrap(true);
+    layout->addWidget(messageLabel);
+
+    QFormLayout *formLayout = new QFormLayout();
+
+    QSpinBox *directionFrequencySpinBox = new QSpinBox(&dialog);
+    directionFrequencySpinBox->setRange(4, 32);
+    directionFrequencySpinBox->setValue(m_maskFromSegmentDirectionPairCount);
+    formLayout->addRow(QStringLiteral("Directional frequency"), directionFrequencySpinBox);
+
+    QSpinBox *sensitivitySpinBox = new QSpinBox(&dialog);
+    sensitivitySpinBox->setRange(0, 100);
+    sensitivitySpinBox->setSuffix(QStringLiteral("%"));
+    sensitivitySpinBox->setValue(m_maskFromSegmentSensitivity);
+    formLayout->addRow(QStringLiteral("Sensitivity"), sensitivitySpinBox);
+
+    layout->addLayout(formLayout);
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, &dialog);
+    QObject::connect(buttonBox, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
+    QObject::connect(buttonBox, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+    layout->addWidget(buttonBox);
+
+    if (dialog.exec() != QDialog::Accepted)
+    {
+        return;
+    }
+
+    m_maskFromSegmentDirectionPairCount = directionFrequencySpinBox->value();
+    m_maskFromSegmentSensitivity = sensitivitySpinBox->value();
+
+    const int maxScore = m_maskFromSegmentDirectionPairCount * 2;
+    const int scoreThreshold = qRound(static_cast<double>(maxScore) * (100.0 - static_cast<double>(m_maskFromSegmentSensitivity)) / 100.0);
+
+    WriteAllData(CurrentFile);
+    mlSegmentToMask segToMask;
+    MLUpdateBlockingDialog::showDialog(mainwin, "Calculating segment masks", "");
+    for (int i = 0; i < Files.count(); i++)
+    {
+        if ((mainWin->SliceSelectorList->item(i))->isSelected())
+        {
+            MLUpdateBlockingDialog::updateDetailText(QString("Slice %1").arg(i+1));
+            LoadAllData(i);
+            QVector<int> segMap = GetSegmentMap();
+            segToMask.execute(segId, maskId, segMap, m_maskFromSegmentDirectionPairCount, scoreThreshold);
+            SaveMasks(i);
+        }
+        if (MLUpdateBlockingDialog::isCancelled())
+            break;
+    }
+    MLUpdateBlockingDialog::hideDialog();
+    LoadAllData(CurrentFile);
+    ShowImage(mainWin->graphicsView);
+
+}

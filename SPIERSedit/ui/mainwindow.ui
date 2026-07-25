@@ -260,7 +260,7 @@
      <x>0</x>
      <y>0</y>
      <width>1071</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -385,7 +385,7 @@
    </widget>
    <widget class="QMenu" name="menuMasks">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="title">
      <string>Masks</string>
@@ -408,6 +408,7 @@
     <addaction name="actionUnShow_Selected_Masks"/>
     <addaction name="separator"/>
     <addaction name="actionCreate_mask_from_curve"/>
+    <addaction name="actionMask_from_segment"/>
    </widget>
    <widget class="QMenu" name="menuCurves">
     <property name="enabled">
@@ -5303,6 +5304,11 @@ Interpreted Images:</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+D</string>
+   </property>
+  </action>
+  <action name="actionMask_from_segment">
+   <property name="text">
+    <string>Mask from segment</string>
    </property>
   </action>
   <zorder>DockPreview3D</zorder>

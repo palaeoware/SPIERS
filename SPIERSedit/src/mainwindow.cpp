@@ -2662,3 +2662,9 @@ void MainWindow::on_actionMLAuto_Update_triggered()
     mlInterface->SampleAndTrain(true);
 }
 
+
+void MainWindow::on_actionMask_from_segment_triggered()
+{
+    mlInterface->MaskFromSegment();
+}
+

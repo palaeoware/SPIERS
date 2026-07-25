@@ -156,6 +156,46 @@ QByteArray* GetGradientArray()
     return gradientData;
 }
 
+QVector<int> GetSegmentMap()
+{
+    QVector<int> segMap;
+
+    //First - work out segments at each point
+    segMap.resize(fwidth * fheight);
+
+    QList <uchar *> GApointers;
+    //set up my pointers - an optimisation to point straight to data
+    for (int n = 0; n < SegmentCount; n++)
+        GApointers.append(GA[n]->bits());
+
+
+    for (int jx = 0; jx < fwidth; jx++)
+        for (int jy = 0; jy < fheight; jy++)
+        {
+            int high = 128;
+            int seg = -1;
+
+            for (int i = 0; i < SegmentCount; i++)
+            {
+                if (Segments[i]->Activated)
+                {
+                    int temp = (int)  * ((GApointers[i]) + jy * fwidth4 + jx);
+
+                    if (temp>255) temp=255;
+                    if (temp<0) temp=0;
+
+                    if (temp >= high)
+                    {
+                        high = temp;
+                        seg = i;
+                    }
+                }
+            }
+            segMap[jy * fwidth + jx] = seg;
+        }
+    return segMap;
+}
+
 QImage GenerateThresh()
 {
     //Using current settings generate the threshold file for output

@@ -104,7 +104,7 @@ void MLCachedAccess::SetFeatures(QList<MLFeature *> newFeatures)
         ResizeCache();
     }
     RebuildFeatureIDsInUse();
-    //qDebug()<<"Done Set Features "<<features.count();
+    qDebug()<<"Done Set Features "<<features.count();
 }
 
 void MLCachedAccess::Reset()
@@ -173,25 +173,6 @@ int MLCachedAccess::GetYSize()
 bool MLCachedAccess::GetSourceColour()
 {
     return sourceImageRGB;
-}
-
-cv::Mat MLCachedAccess::GetWholeSliceIntensity(int z)
-{
-    MLCachedSlice *slice = GetSlice(z);
-    slice->FetchSourceDataIfNeeded();
-
-    if (sourceImageRGB)
-    {
-        cv::Mat mat32;
-        cv::cvtColor(sourceImageRGB, mat32, cv::COLOR_BGR2GRAY);
-        mat32.convertTo(mat32, CV_32F, 1.0 / 255.0);
-        return mat32;
-    }
-    else
-    {
-        //qDebug()<<"Inside: "<<slice->sourceImage.rows;
-        return slice->sourceImage;
-    }
 }
 
 cv::Mat MLCachedAccess::GetWholeSliceFeature(int z, int featureIndex)

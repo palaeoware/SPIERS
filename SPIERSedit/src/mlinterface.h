@@ -61,6 +61,7 @@ public:
     void AutoSampleTrainAndGenerate();
     void ResizeCache();
     void DoPreset(int presetCode);
+    void MaskFromSegment();
 private:
     bool dataComputed;
     int currentSlice;
@@ -71,6 +72,8 @@ private:
     MLFeatureUIManager *uiManager;
     MLAddFeature *addFeatureDialog;
     int samplePercent, minSampleCount, treeCount, treeDepth;
+    int m_maskFromSegmentDirectionPairCount;
+    int m_maskFromSegmentSensitivity;
     void UpdateStatusLabel();
 
     QLabel *lblStatus;

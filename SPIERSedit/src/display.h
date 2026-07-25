@@ -48,5 +48,6 @@ extern uchar GenPixel(int x, int y, int s, QVector<uchar> *sample, QByteArray *l
 extern double CalcPoly(unsigned char r, unsigned char g, unsigned char b, Segment *seg);
 extern void SaveMainImage(QString fname);
 extern QByteArray DoMaskLocking();
+extern QVector<int> GetSegmentMap();
 
 #endif // __DISPLAY_H__

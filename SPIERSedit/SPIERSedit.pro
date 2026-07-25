@@ -67,6 +67,7 @@ HEADERS += src/display.h \
     src/fileio.h \
     src/generatetestdata.h \
     src/globals.h \
+    src/mlsegmenttomask.h \
     src/newprojectdialog.h \
     src/labelledpoint.h \
     src/mainwindow.h \
@@ -144,6 +145,7 @@ SOURCES += src/display.cpp \
     src/fileio.cpp \
     src/generatetestdata.cpp \
     src/globals.cpp \
+    src/mlsegmenttomask.cpp \
     src/newprojectdialog.cpp \
     src/labelledpoint.cpp \
     src/main.cpp \

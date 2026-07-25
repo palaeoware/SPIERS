@@ -44,7 +44,7 @@ public:
     int GetYSize();
     bool GetSourceColour();
     void CalculateFeature(cv::Mat &mat, int sliceIndex, int featureID);
-    cv::Mat GetWholeSliceIntensity(int sliceIndex);
+
     cv::Mat GetWholeSliceFeature(int z, int featureIndex);
     void SetFeatureInUse(int featureID, bool inUse);
     QList<int> GetFeaturesInUse();
