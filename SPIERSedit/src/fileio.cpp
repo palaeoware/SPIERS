@@ -354,9 +354,13 @@ past:  //so can get here with a valid cache entry but no colour file
 
 bool SimpleLoadGreyData(int fnum, int seg, QImage *greydata)
 {
+    return SimpleLoadGreyDataForFile(FullFiles.at(fnum), seg, greydata);
+}
 
+bool SimpleLoadGreyDataForFile(const QString &fileName, int seg, QImage *greydata)
+{
     int lastsep, lastdot;
-    QString Fname = FullFiles.at(fnum);
+    QString Fname = fileName;
     lastsep = qMax(Fname.lastIndexOf("\\"), Fname.lastIndexOf("/")); //this is last separator in path
     lastdot = Fname.lastIndexOf(".");
     QString sfname = Fname.left(lastsep);

@@ -72,8 +72,10 @@ private:
     MLFeatureUIManager *uiManager;
     MLAddFeature *addFeatureDialog;
     int samplePercent, minSampleCount, treeCount, treeDepth;
-    int m_maskFromSegmentDirectionPairCount;
-    int m_maskFromSegmentSensitivity;
+    int m_envelopeClosingRadius;
+    int m_envelopeExpansionRadius;
+    int m_envelopeSensitivity;
+    int m_envelopeSmoothingRadius;
     void UpdateStatusLabel();
 
     QLabel *lblStatus;

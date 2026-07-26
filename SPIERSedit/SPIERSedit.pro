@@ -84,6 +84,7 @@ HEADERS += src/display.h \
     src/mlfeaturelog.h \
     src/mlfeaturepresets.h \
     src/mlfeaturesquareintensity.h \
+    src/mlenvelopemaskgenerator.h \
     src/mlfeaturetensorcoherencelocal.h \
     src/mlfeaturetensorcoherencewide.h \
     src/mlfeaturetensorcomponentlocal.h \
@@ -163,6 +164,7 @@ SOURCES += src/display.cpp \
     src/mlfeaturelog.cpp \
     src/mlfeaturepresets.cpp \
     src/mlfeaturesquareintensity.cpp \
+    src/mlenvelopemaskgenerator.cpp \
     src/mlfeaturetensorcoherencelocal.cpp \
     src/mlfeaturetensorcoherencewide.cpp \
     src/mlfeaturetensorcomponentlocal.cpp \

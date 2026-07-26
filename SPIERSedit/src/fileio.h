@@ -53,6 +53,7 @@ extern bool SimpleLoadMasks(int fnum, int expectedsize, QByteArray *array);
 extern void SimpleSaveMasks(int fnum, QByteArray array);
 extern void SimpleSaveGreyData(int fnum, int seg, QImage greydata);
 extern bool SimpleLoadGreyData(int fnum, int seg, QImage *greydata);
+extern bool SimpleLoadGreyDataForFile(const QString &fileName, int seg, QImage *greydata);
 extern bool SimpleLoadColourData(QString fname);
 
 /**

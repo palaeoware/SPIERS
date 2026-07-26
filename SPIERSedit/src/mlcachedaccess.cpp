@@ -111,8 +111,28 @@ void MLCachedAccess::Reset()
 {
     qDebug()<<"RESET";
     //Called after a resample change
+    ReleaseCacheMemoryForExclusiveOperation();
+}
+
+void MLCachedAccess::ReleaseCacheMemoryForExclusiveOperation()
+{
+    /**
+     *
+     * Release all resident matrices while retaining the feature configuration
+     * and disk cache. Envelope generation uses this immediately before creating
+     * its private MLCachedAccess instance, so that only one cache consumes the
+     * user-configured CacheMemMLGb allowance at a time.
+     *
+     * WARNING: This is an exclusive, modal handover of the ML RAM budget. A
+     * background envelope operation must not use this mechanism. Supporting
+     * concurrent cache users requires a shared global budget manager first.
+     *
+     **/
+
     qDeleteAll(cachedSlices);
     cachedSlices.clear();
+    slicesByCacheIndex.clear();
+    cacheIndicesBySlice.fill(-1, zSize);
     ResizeCache();
     timeStamp = 0;
 }
@@ -320,6 +340,7 @@ void MLCachedAccess::ResizeCache()
     int newCacheLength = (int)(((uint64_t) CacheMemMLGb * 1024ull * 1024ull * 1024ull)/ GetMemorySizeOfSlice());
 
     if (newCacheLength > zSize) newCacheLength = zSize; //no need for more!
+    if (newCacheLength < 1 && zSize > 0) newCacheLength = 1;
     int oldCacheLength= cachedSlices.count();
 
     if (newCacheLength == oldCacheLength) //nothing to do

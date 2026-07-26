@@ -27,21 +27,27 @@
 #include "mlfeatureintensity.h"
 #include "mlfeaturepresets.h"
 #include "mlfeatureuimanager.h"
+#include "mlenvelopemaskgenerator.h"
 #include "mlfileio.h"
 #include "mlparallelforest.h"
-#include "mlsegmenttomask.h"
 #include "mlupdateblockingdialog.h"
 #include "src/fileio.h"
 
 #include <QDebug>
+#include <QComboBox>
 #include <QDialog>
 #include <QDialogButtonBox>
+#include <QFile>
 #include <QFileDialog>
 #include <QFormLayout>
 #include <QImage>
 #include <QLabel>
 #include <QMessageBox>
+#include <QPixmap>
+#include <QPushButton>
+#include <QScrollArea>
 #include <QSpinBox>
+#include <QTemporaryDir>
 #include <QThread>
 #include <QVBoxLayout>
 
@@ -56,8 +62,10 @@ MLInterface::MLInterface()
     data = nullptr;
     uiManager = nullptr;
     addFeatureDialog = nullptr;
-    m_maskFromSegmentDirectionPairCount = 16;
-    m_maskFromSegmentSensitivity = 25;
+    m_envelopeClosingRadius = 5;
+    m_envelopeExpansionRadius = 1;
+    m_envelopeSensitivity = 80;
+    m_envelopeSmoothingRadius = 2;
     rf = std::make_unique<MLParallelForest>();
 }
 
@@ -929,28 +937,132 @@ void MLInterface::MaskFromSegment()
     }
 
     QDialog dialog(mainWin);
-    dialog.setWindowTitle(QStringLiteral("Generate Mask from Segment"));
+    dialog.setWindowTitle(QStringLiteral("Generate Envelope Mask from Segment"));
 
     QVBoxLayout *layout = new QVBoxLayout(&dialog);
 
-    QLabel *messageLabel = new QLabel(QStringLiteral("This will generate a filled mask based on the selected segment"), &dialog);
+    QLabel *messageLabel = new QLabel(
+        QStringLiteral("This will generate a filled envelope mask from the selected segment on the selected slices. "
+                       "Unselected neighbouring slices may be read to condition the boundary, but will not be changed."),
+        &dialog);
     messageLabel->setWordWrap(true);
     layout->addWidget(messageLabel);
 
     QFormLayout *formLayout = new QFormLayout();
 
-    QSpinBox *directionFrequencySpinBox = new QSpinBox(&dialog);
-    directionFrequencySpinBox->setRange(4, 32);
-    directionFrequencySpinBox->setValue(m_maskFromSegmentDirectionPairCount);
-    formLayout->addRow(QStringLiteral("Directional frequency"), directionFrequencySpinBox);
+    QSpinBox *smoothingRadiusSpinBox = new QSpinBox(&dialog);
+    smoothingRadiusSpinBox->setRange(0, 20);
+    smoothingRadiusSpinBox->setSuffix(QStringLiteral(" px"));
+    smoothingRadiusSpinBox->setValue(m_envelopeSmoothingRadius);
+    formLayout->addRow(QStringLiteral("Smoothing radius"), smoothingRadiusSpinBox);
+
+    QSpinBox *closingRadiusSpinBox = new QSpinBox(&dialog);
+    closingRadiusSpinBox->setRange(0, 50);
+    closingRadiusSpinBox->setSuffix(QStringLiteral(" px"));
+    closingRadiusSpinBox->setValue(m_envelopeClosingRadius);
+    formLayout->addRow(QStringLiteral("Gap-closing radius"), closingRadiusSpinBox);
 
     QSpinBox *sensitivitySpinBox = new QSpinBox(&dialog);
-    sensitivitySpinBox->setRange(0, 100);
+    sensitivitySpinBox->setRange(1, 99);
     sensitivitySpinBox->setSuffix(QStringLiteral("%"));
-    sensitivitySpinBox->setValue(m_maskFromSegmentSensitivity);
+    sensitivitySpinBox->setValue(m_envelopeSensitivity);
     formLayout->addRow(QStringLiteral("Sensitivity"), sensitivitySpinBox);
 
+    QSpinBox *expansionRadiusSpinBox = new QSpinBox(&dialog);
+    expansionRadiusSpinBox->setRange(0, 50);
+    expansionRadiusSpinBox->setSuffix(QStringLiteral(" px"));
+    expansionRadiusSpinBox->setValue(m_envelopeExpansionRadius);
+    formLayout->addRow(QStringLiteral("Final expansion"), expansionRadiusSpinBox);
+
     layout->addLayout(formLayout);
+
+    QComboBox *previewModeComboBox = new QComboBox(&dialog);
+    previewModeComboBox->addItem(QStringLiteral("Segment evidence"));
+    previewModeComboBox->addItem(QStringLiteral("Conditioned boundary"));
+    previewModeComboBox->addItem(QStringLiteral("Filled envelope"));
+    previewModeComboBox->setCurrentIndex(2);
+    layout->addWidget(previewModeComboBox);
+
+    QLabel *previewLabel = new QLabel(QStringLiteral("Preview has not been generated"), &dialog);
+    previewLabel->setAlignment(Qt::AlignCenter);
+    previewLabel->setMinimumSize(320, 240);
+
+    QScrollArea *previewScrollArea = new QScrollArea(&dialog);
+    previewScrollArea->setWidget(previewLabel);
+    previewScrollArea->setWidgetResizable(true);
+    previewScrollArea->setMinimumSize(480, 360);
+    layout->addWidget(previewScrollArea);
+
+    QPushButton *previewButton = new QPushButton(QStringLiteral("Preview Current Slice"), &dialog);
+    layout->addWidget(previewButton);
+
+    QVector<QImage> previewImages(3);
+    const auto displayPreview = [previewLabel, previewModeComboBox, &previewImages]()
+    {
+        const int previewIndex = previewModeComboBox->currentIndex();
+        if (previewIndex < 0 || previewIndex >= previewImages.count() || previewImages[previewIndex].isNull())
+        {
+            return;
+        }
+
+        previewLabel->setPixmap(
+            QPixmap::fromImage(previewImages[previewIndex]).scaled(
+                QSize(900, 700),
+                Qt::KeepAspectRatio,
+                Qt::FastTransformation));
+    };
+
+    QObject::connect(previewModeComboBox,
+                     QOverload<int>::of(&QComboBox::currentIndexChanged),
+                     &dialog,
+                     [displayPreview](int)
+                     {
+                         displayPreview();
+                     });
+
+    QObject::connect(previewButton,
+                     &QPushButton::clicked,
+                     &dialog,
+                     [this,
+                      segId,
+                      smoothingRadiusSpinBox,
+                      closingRadiusSpinBox,
+                      sensitivitySpinBox,
+                      expansionRadiusSpinBox,
+                      &previewImages,
+                      displayPreview]()
+                     {
+                         WriteAllData(CurrentFile);
+
+                         MLEnvelopeMaskParameters parameters;
+                         parameters.smoothingRadius = smoothingRadiusSpinBox->value();
+                         parameters.closingRadius = closingRadiusSpinBox->value();
+                         parameters.sensitivity = sensitivitySpinBox->value();
+                         parameters.expansionRadius = expansionRadiusSpinBox->value();
+
+                         MLUpdateBlockingDialog::showDialog(mainWin, QStringLiteral("Generating envelope preview"), QString());
+                         QString errorMessage;
+                         bool success = false;
+                         {
+                             MLEnvelopeMaskGenerator generator(data, segId, parameters);
+                             success = generator.generatePreview(
+                                 CurrentFile,
+                                 previewImages[0],
+                                 previewImages[1],
+                                 previewImages[2]);
+                             errorMessage = generator.errorMessage();
+                         }
+                         MLUpdateBlockingDialog::hideDialog();
+
+                         if (success)
+                         {
+                             displayPreview();
+                         }
+                         else if (!errorMessage.isEmpty() && errorMessage != QStringLiteral("Envelope generation was cancelled"))
+                         {
+                             QMessageBox::warning(mainWin, QStringLiteral("Envelope Preview"), errorMessage);
+                         }
+                     });
 
     QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, &dialog);
     QObject::connect(buttonBox, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
@@ -962,27 +1074,112 @@ void MLInterface::MaskFromSegment()
         return;
     }
 
-    m_maskFromSegmentDirectionPairCount = directionFrequencySpinBox->value();
-    m_maskFromSegmentSensitivity = sensitivitySpinBox->value();
+    m_envelopeSmoothingRadius = smoothingRadiusSpinBox->value();
+    m_envelopeClosingRadius = closingRadiusSpinBox->value();
+    m_envelopeSensitivity = sensitivitySpinBox->value();
+    m_envelopeExpansionRadius = expansionRadiusSpinBox->value();
 
-    const int maxScore = m_maskFromSegmentDirectionPairCount * 2;
-    const int scoreThreshold = qRound(static_cast<double>(maxScore) * (100.0 - static_cast<double>(m_maskFromSegmentSensitivity)) / 100.0);
-
-    WriteAllData(CurrentFile);
-    mlSegmentToMask segToMask;
-    MLUpdateBlockingDialog::showDialog(mainwin, "Calculating segment masks", "");
+    QList<int> selectedSliceIds;
     for (int i = 0; i < Files.count(); i++)
     {
-        if ((mainWin->SliceSelectorList->item(i))->isSelected())
+        if (mainWin->SliceSelectorList->item(i)->isSelected())
         {
-            MLUpdateBlockingDialog::updateDetailText(QString("Slice %1").arg(i+1));
-            LoadAllData(i);
-            QVector<int> segMap = GetSegmentMap();
-            segToMask.execute(segId, maskId, segMap, m_maskFromSegmentDirectionPairCount, scoreThreshold);
-            SaveMasks(i);
+            selectedSliceIds.append(i);
         }
-        if (MLUpdateBlockingDialog::isCancelled())
-            break;
+    }
+
+    if (selectedSliceIds.isEmpty())
+    {
+        QMessageBox::warning(mainWin, QStringLiteral("Envelope Mask"), QStringLiteral("No slices are selected"));
+        return;
+    }
+
+    MLEnvelopeMaskParameters parameters;
+    parameters.smoothingRadius = m_envelopeSmoothingRadius;
+    parameters.closingRadius = m_envelopeClosingRadius;
+    parameters.sensitivity = m_envelopeSensitivity;
+    parameters.expansionRadius = m_envelopeExpansionRadius;
+
+    WriteAllData(CurrentFile);
+    QTemporaryDir stagingDirectory;
+    if (!stagingDirectory.isValid())
+    {
+        QMessageBox::warning(mainWin, QStringLiteral("Envelope Mask"), QStringLiteral("Could not create a temporary staging directory"));
+        return;
+    }
+
+    MLUpdateBlockingDialog::showDialog(mainWin, QStringLiteral("Generating envelope masks"), QString());
+    QString generationError;
+    bool generationSucceeded = false;
+    {
+        MLEnvelopeMaskGenerator generator(data, segId, parameters);
+        generationSucceeded = generator.stageSlices(selectedSliceIds, stagingDirectory.path());
+        generationError = generator.errorMessage();
+    }
+    MLUpdateBlockingDialog::hideDialog();
+
+    if (!generationSucceeded)
+    {
+        if (!generationError.isEmpty() && generationError != QStringLiteral("Envelope generation was cancelled"))
+        {
+            QMessageBox::warning(mainWin, QStringLiteral("Envelope Mask"), generationError);
+        }
+        LoadAllData(CurrentFile);
+        ShowImage(mainWin->graphicsView);
+        return;
+    }
+
+    MLUpdateBlockingDialog::showDialog(mainWin, QStringLiteral("Writing envelope masks"), QString());
+    const uchar maskValue = static_cast<uchar>(maskId);
+    for (int index = 0; index < selectedSliceIds.count(); index++)
+    {
+        const int sliceId = selectedSliceIds[index];
+        MLUpdateBlockingDialog::updateDetailText(
+            QStringLiteral("Writing selected slice %1 of %2")
+                .arg(index + 1)
+                .arg(selectedSliceIds.count()));
+
+        QFile stagedFile(MLEnvelopeMaskGenerator::stagedSliceFileName(stagingDirectory.path(), sliceId));
+        if (!stagedFile.open(QIODevice::ReadOnly))
+        {
+            MLUpdateBlockingDialog::hideDialog();
+            QMessageBox::warning(mainWin, QStringLiteral("Envelope Mask"), QStringLiteral("Could not read staged envelope mask data"));
+            LoadAllData(CurrentFile);
+            ShowImage(mainWin->graphicsView);
+            return;
+        }
+
+        const QByteArray stagedMask = stagedFile.readAll();
+        if (stagedMask.size() != fwidth * fheight)
+        {
+            MLUpdateBlockingDialog::hideDialog();
+            QMessageBox::warning(mainWin, QStringLiteral("Envelope Mask"), QStringLiteral("Staged envelope mask data has the wrong dimensions"));
+            LoadAllData(CurrentFile);
+            ShowImage(mainWin->graphicsView);
+            return;
+        }
+
+        LoadMasks(sliceId);
+        for (int position = 0; position < Masks.size(); position++)
+        {
+            if (static_cast<uchar>(Masks[position]) == maskValue)
+            {
+                Masks[position] = 0;
+            }
+        }
+
+        for (int y = 0; y < fheight; y++)
+        {
+            const int maskY = fheight - y - 1;
+            for (int x = 0; x < fwidth; x++)
+            {
+                if (static_cast<uchar>(stagedMask[y * fwidth + x]) != 0)
+                {
+                    Masks[maskY * fwidth + x] = static_cast<char>(maskValue);
+                }
+            }
+        }
+        SaveMasks(sliceId);
     }
     MLUpdateBlockingDialog::hideDialog();
     LoadAllData(CurrentFile);

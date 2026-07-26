@@ -54,6 +54,7 @@ public:
     void ClearFeatures();
     void SetFeatures(QList<MLFeature *> newFeatures);
     void Reset();
+    void ReleaseCacheMemoryForExclusiveOperation();
     void IncrementTimestamp();
     void ResizeCache();
 private:
