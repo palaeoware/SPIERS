@@ -23,6 +23,7 @@
 #include "opencv2/imgproc.hpp"
 #include "mlfeaturecontrast.h"
 #include "mlfeaturedifferenceofgaussians.h"
+#include "mlfeaturedistancetomask.h"
 #include "mlfeatureintensity.h"
 #include "mlfeaturegaussian.h"
 #include "mlfeaturegradient.h"
@@ -176,6 +177,9 @@ MLFeature *MLFeature::CreateFromData(FeatureType type, Channel channel, bool is3
     case MLFeature::FeatureType::Gradient_component:
         return new MLFeatureGradientComponent(channel, arg1, arg2);
 
+    case MLFeature::FeatureType::Distance_to_mask:
+        return new MLFeatureDistanceToMask(arg1);
+
     case MLFeature::FeatureType::Tensor_component_local:
         return new MLFeatureTensorComponentLocal(channel, arg1, arg2);
 
@@ -211,6 +215,15 @@ int MLFeature::GetMinMaxForArgs(int arg, bool max)
     if (arg==1 && max) return 6;
     if (arg==2) return 0;
     return 0;
+}
+
+bool MLFeature::ReferencesMask(int) const
+{
+    return false;
+}
+
+void MLFeature::RemapMasks(const QVector<int> &)
+{
 }
 
 QString MLFeature::GetChannelCodeForFile()

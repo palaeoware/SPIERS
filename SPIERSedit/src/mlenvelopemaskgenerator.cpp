@@ -76,8 +76,9 @@ int physicalZRadius(int xyRadius)
         return 0;
     }
 
-    const double xySpacingMillimetres = PixPerMM * static_cast<double>(ColMonoScale);
-    return qMax(0, qRound(static_cast<double>(xyRadius) * xySpacingMillimetres * SlicePerMM));
+    const double xySpacingMillimetres = static_cast<double>(ColMonoScale) / PixPerMM;
+    const double zSpacingMillimetres = static_cast<double>(qMax(1, zsparsity)) / SlicePerMM;
+    return qMax(0, qRound(static_cast<double>(xyRadius) * xySpacingMillimetres / zSpacingMillimetres));
 }
 
 cv::Mat ellipticalKernel(int radius)
@@ -293,14 +294,18 @@ public:
         double weightSum = 0.0;
         mat.setTo(0.0f);
 
-        for (int z = firstSlice; z <= lastSlice; z++)
+        for (int offset = -radius; offset <= radius; offset++)
         {
             throwIfCancelled();
-            const int offset = z - sliceId;
             const double weight = std::exp(-static_cast<double>(offset * offset) / (2.0 * sigma * sigma));
-            const cv::Mat source = data->GetWholeSliceFeature(z, sourceIndex);
-            cv::scaleAdd(source, weight, mat, mat);
             weightSum += weight;
+
+            const int z = sliceId + offset;
+            if (z >= firstSlice && z <= lastSlice)
+            {
+                const cv::Mat source = data->GetWholeSliceFeature(z, sourceIndex);
+                cv::scaleAdd(source, weight, mat, mat);
+            }
         }
 
         if (weightSum > 0.0)
@@ -424,16 +429,57 @@ public:
 
     void CalculateFeature(cv::Mat &mat, int sliceId, MLCachedAccess *data) override
     {
-        const int sourceIndex = dependencyIndex(data, FeatureType::Envelope_xy_erosion, _arg1);
+        const int xyDilationIndex = dependencyIndex(data, FeatureType::Envelope_xy_dilation, _arg1);
+        const int xyErosionIndex = dependencyIndex(data, FeatureType::Envelope_xy_erosion, _arg1);
         const int radius = physicalZRadius(closingRadius);
-        const int firstSlice = qMax(0, sliceId - radius);
-        const int lastSlice = qMin(FileCount - 1, sliceId + radius);
-        data->GetWholeSliceFeature(firstSlice, sourceIndex).copyTo(mat);
+        const int firstSlice = sliceId - radius;
+        const int lastSlice = sliceId + radius;
+        bool firstValue = true;
 
-        for (int z = firstSlice + 1; z <= lastSlice; z++)
+        for (int z = firstSlice; z <= lastSlice; z++)
         {
             throwIfCancelled();
-            cv::min(mat, data->GetWholeSliceFeature(z, sourceIndex), mat);
+
+            cv::Mat source;
+            if (z >= 0 && z < FileCount)
+            {
+                source = data->GetWholeSliceFeature(z, xyErosionIndex);
+            }
+            else
+            {
+                cv::Mat virtualDilation(fheight, fwidth, CV_32F, cv::Scalar(0));
+                const int firstSourceSlice = qMax(0, z - radius);
+                const int lastSourceSlice = qMin(FileCount - 1, z + radius);
+
+                if (firstSourceSlice <= lastSourceSlice)
+                {
+                    data->GetWholeSliceFeature(firstSourceSlice, xyDilationIndex).copyTo(virtualDilation);
+                    for (int sourceZ = firstSourceSlice + 1; sourceZ <= lastSourceSlice; sourceZ++)
+                    {
+                        cv::max(virtualDilation,
+                                data->GetWholeSliceFeature(sourceZ, xyDilationIndex),
+                                virtualDilation);
+                    }
+                }
+
+                cv::erode(virtualDilation,
+                          source,
+                          ellipticalKernel(closingRadius),
+                          cv::Point(-1, -1),
+                          1,
+                          cv::BORDER_CONSTANT,
+                          cv::Scalar(0));
+            }
+
+            if (firstValue)
+            {
+                source.copyTo(mat);
+                firstValue = false;
+            }
+            else
+            {
+                cv::min(mat, source, mat);
+            }
         }
     }
 

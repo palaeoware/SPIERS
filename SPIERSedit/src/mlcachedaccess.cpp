@@ -20,6 +20,9 @@
 #include "mlfileio.h"
 
 #include "globals.h"
+
+#include <stdexcept>
+
 //Public API
 
 MLCachedAccess::MLCachedAccess(int sliceCount, bool colourImages, int fwidth, int fheight, int _xyBin, int _zBin)
@@ -413,6 +416,11 @@ int MLCachedAccess::FindReusableCacheSlot()
 
     for (int i=0; i<cachedSlices.count();i++)
     {
+        if (cachedSlices[i]->activeFetchCount > 0)
+        {
+            continue;
+        }
+
         if (slicesByCacheIndex[i]==-1)
         {
             useCacheIndex= i; //can stop - found an empty one
@@ -434,6 +442,13 @@ int MLCachedAccess::FindReusableCacheSlot()
                 oldest = cachedSlices[i]->lastUsed;
             }
         }
+    }
+
+    if (useCacheIndex < 0)
+    {
+        throw std::runtime_error(
+            "The ML cache is too small for the active feature dependency chain. "
+            "Increase the ML cache size or reduce the envelope smoothing and closing radii.");
     }
 
     if (slicesByCacheIndex[useCacheIndex]!=-1)

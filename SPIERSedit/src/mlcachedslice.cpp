@@ -34,6 +34,7 @@ MLCachedSlice::MLCachedSlice(int featureCount, int zIndex, MLCachedAccess *paren
     }
     sliceIndex = zIndex;
     lastUsed = parent->timeStamp;
+    activeFetchCount = 0;
     sourceValid = false;
 
 }
@@ -103,40 +104,59 @@ void MLCachedSlice::FetchFeatureIfNeeded(int featureIndex)
 
 void MLCachedSlice::FetchFeatureData(int feature)
 {
-    cache->IncrementTimestamp();
-    lastUsed = cache->timeStamp;
-    bool ok;
-    cv::Mat loadedMat = MLFileIO::LoadMatBinary(cache->GetFeature(feature)->GetEncodedNameForFile(),
+    /**
+     *
+     * Feature calculation can recursively request neighbouring slices. Keep
+     * this cache slot pinned until the calculation completes, otherwise an LRU
+     * eviction can reuse the slot and assign the result to the wrong slice.
+     *
+     **/
+    activeFetchCount++;
+
+    try
+    {
+        cache->IncrementTimestamp();
+        lastUsed = cache->timeStamp;
+        bool ok;
+        cv::Mat loadedMat = MLFileIO::LoadMatBinary(cache->GetFeature(feature)->GetEncodedNameForFile(),
                                                     cache->GetXSize(), cache->GetYSize(),
                                                     sliceIndex, ok);
 
-    if (ok)
-    {
-        //file loading worked OK
-        featureData[feature] = loadedMat;
-        MLUpdateBlockingDialog::updateDetailText(
-            QString("Loaded feature %1 for slice %2 from file cache")
-                .arg(cache->GetFeature(feature)->GetPrettyFullName())
-                .arg(sliceIndex));
-    }
-    else
-    {
-        cv::Mat mat;
-        mat.create(cache->GetYSize(), cache->GetXSize(), CV_32F);
-        MLUpdateBlockingDialog::updateDetailText(
-            QString("Calculating feature %1 for slice %2")
-                .arg(cache->GetFeature(feature)->GetPrettyFullName())
-                .arg(sliceIndex));
-        cache->CalculateFeature(mat, sliceIndex, feature);
-        if (!featureData[feature].empty())
+        if (ok)
         {
-            qDebug()<<"Overwriting a mat of size "<<featureData[feature].total() * featureData[feature].elemSize();
+            //file loading worked OK
+            featureData[feature] = loadedMat;
+            MLUpdateBlockingDialog::updateDetailText(
+                QString("Loaded feature %1 for slice %2 from file cache")
+                    .arg(cache->GetFeature(feature)->GetPrettyFullName())
+                    .arg(sliceIndex));
         }
-        featureData[feature] = mat;
-        MLFileIO::SaveMatBinary(cache->GetFeature(feature)->GetEncodedNameForFile(),
+        else
+        {
+            cv::Mat mat;
+            mat.create(cache->GetYSize(), cache->GetXSize(), CV_32F);
+            MLUpdateBlockingDialog::updateDetailText(
+                QString("Calculating feature %1 for slice %2")
+                    .arg(cache->GetFeature(feature)->GetPrettyFullName())
+                    .arg(sliceIndex));
+            cache->CalculateFeature(mat, sliceIndex, feature);
+            if (!featureData[feature].empty())
+            {
+                qDebug()<<"Overwriting a mat of size "<<featureData[feature].total() * featureData[feature].elemSize();
+            }
+            featureData[feature] = mat;
+            MLFileIO::SaveMatBinary(cache->GetFeature(feature)->GetEncodedNameForFile(),
                                     featureData[feature], sliceIndex);
+        }
+        featuresValid[feature] = true;
     }
-    featuresValid[feature] = true;
+    catch (...)
+    {
+        activeFetchCount--;
+        throw;
+    }
+
+    activeFetchCount--;
 }
 
 void MLCachedSlice::FetchSourceData()

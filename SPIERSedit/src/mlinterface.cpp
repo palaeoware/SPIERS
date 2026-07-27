@@ -40,18 +40,106 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QFormLayout>
+#include <QGraphicsPixmapItem>
+#include <QGraphicsScene>
+#include <QGraphicsView>
+#include <QHBoxLayout>
 #include <QImage>
 #include <QLabel>
 #include <QMessageBox>
 #include <QPixmap>
 #include <QPushButton>
-#include <QScrollArea>
+#include <QResizeEvent>
 #include <QSpinBox>
 #include <QTemporaryDir>
 #include <QThread>
+#include <QToolButton>
 #include <QVBoxLayout>
+#include <QWheelEvent>
 
 #include <opencv2/imgproc.hpp>
+
+namespace
+{
+
+class MLEnvelopePreviewView : public QGraphicsView
+{
+public:
+    explicit MLEnvelopePreviewView(QWidget *parent = nullptr)
+        : QGraphicsView(parent)
+        , previewScene(this)
+    {
+        setScene(&previewScene);
+        previewItem = previewScene.addPixmap(QPixmap());
+        setAlignment(Qt::AlignCenter);
+        setDragMode(QGraphicsView::ScrollHandDrag);
+        setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+        setResizeAnchor(QGraphicsView::AnchorViewCenter);
+        setMinimumSize(480, 360);
+    }
+
+    void setImage(const QImage &image)
+    {
+        previewItem->setPixmap(QPixmap::fromImage(image));
+        previewScene.setSceneRect(previewItem->boundingRect());
+        fitImage();
+    }
+
+    void fitImage()
+    {
+        if (previewItem->pixmap().isNull())
+        {
+            return;
+        }
+
+        fitMode = true;
+        fitInView(previewItem, Qt::KeepAspectRatio);
+    }
+
+    void zoomBy(double factor)
+    {
+        if (previewItem->pixmap().isNull())
+        {
+            return;
+        }
+
+        fitMode = false;
+        const double proposedScale = transform().m11() * factor;
+        if (proposedScale >= 0.02 && proposedScale <= 100.0)
+        {
+            scale(factor, factor);
+        }
+    }
+
+protected:
+    void resizeEvent(QResizeEvent *event) override
+    {
+        QGraphicsView::resizeEvent(event);
+        if (fitMode)
+        {
+            fitImage();
+        }
+    }
+
+    void wheelEvent(QWheelEvent *event) override
+    {
+        if (event->angleDelta().y() == 0)
+        {
+            QGraphicsView::wheelEvent(event);
+            return;
+        }
+
+        zoomBy(event->angleDelta().y() > 0 ? 1.25 : 0.8);
+        event->accept();
+    }
+
+private:
+    QGraphicsScene previewScene;
+    QGraphicsPixmapItem *previewItem = nullptr;
+    bool fitMode = true;
+};
+
+}
 
 bool MLInterface::enabled;
 
@@ -246,6 +334,88 @@ void MLInterface::ResetCachedData()
     InvalidateProbabilityCache();
 }
 
+void MLInterface::RemoveDistanceToMaskCacheFiles()
+{
+    QDir directory(MLFileIO::GetWorkingPath());
+    const QStringList files = directory.entryList(
+        {
+            QStringLiteral("ml_*_md1*.bin"),
+            QStringLiteral("ml_*_md1*.png"),
+            QStringLiteral("ml_*_md2*.bin"),
+            QStringLiteral("ml_*_md2*.png")
+        },
+        QDir::Files);
+    for (const QString &file : files)
+    {
+        directory.remove(file);
+    }
+}
+
+void MLInterface::MaskDataChanged()
+{
+    if (data == nullptr)
+    {
+        return;
+    }
+
+    bool hasDistanceFeature = false;
+    for (int featureIndex = 0; featureIndex < data->GetFeatureCount(); featureIndex++)
+    {
+        if (data->GetFeature(featureIndex)->GetType() == MLFeature::FeatureType::Distance_to_mask)
+        {
+            hasDistanceFeature = true;
+            break;
+        }
+    }
+    if (!hasDistanceFeature)
+    {
+        return;
+    }
+
+    RemoveDistanceToMaskCacheFiles();
+    data->Reset();
+    ResetRFAndSample();
+}
+
+int MLInterface::RetargetMaskFeatures(const QVector<int> &maskMap, const QList<int> &deletedMaskIds)
+{
+    if (data == nullptr)
+    {
+        return 0;
+    }
+
+    int retargetedCount = 0;
+    bool hasDistanceFeature = false;
+    for (int featureIndex = 0; featureIndex < data->GetFeatureCount(); featureIndex++)
+    {
+        MLFeature *feature = data->GetFeature(featureIndex);
+        if (feature->GetType() != MLFeature::FeatureType::Distance_to_mask)
+        {
+            continue;
+        }
+
+        hasDistanceFeature = true;
+        for (int deletedMaskId : deletedMaskIds)
+        {
+            if (feature->ReferencesMask(deletedMaskId))
+            {
+                retargetedCount++;
+                break;
+            }
+        }
+        feature->RemapMasks(maskMap);
+    }
+
+    if (hasDistanceFeature)
+    {
+        RemoveDistanceToMaskCacheFiles();
+        data->Reset();
+        ResetRFAndSample();
+        uiManager->Rebuild();
+    }
+    return retargetedCount;
+}
+
 
 //static test method - run by main on startup.
 bool MLInterface::TestML()
@@ -270,14 +440,13 @@ bool MLInterface::TestML()
 void MLInterface::Generate(QListWidget *SliceSelectorList)
 {
     CreateSingletonsIfNeeded();
+    WriteAllData(CurrentFile);
 
     if (!rf->IsValid())
     {
         Message("ML model is not trained");
         return;
     }
-
-    WriteAllData(CurrentFile);
 
     MLUpdateBlockingDialog::showDialog(mainwin, "", "", "Creating segments using ML data");
 
@@ -520,6 +689,7 @@ void MLInterface::CreateSingletonsIfNeeded()
 void MLInterface::CalculateFeatureData()
 {
     CreateSingletonsIfNeeded();
+    WriteAllData(CurrentFile);
 
     MLUpdateBlockingDialog::showDialog(mainWin, "Initialising", "", "Calculating Feature Data");
     int featureCount = data->GetFeatureCount();
@@ -720,14 +890,15 @@ void MLInterface::DoImportances()
 
 void MLInterface::SampleAndTrain(bool autoGen)
 {
+    CreateSingletonsIfNeeded();
+    WriteAllData(CurrentFile);
+
     if (autoGen)
     {
         AutoSampleTrainAndGenerate();
     }
     else
     {
-        CreateSingletonsIfNeeded();
-
         if (!Sample(mainWin->actionIncremental_sampling->isChecked(), false))
             return;
 
@@ -983,21 +1154,32 @@ void MLInterface::MaskFromSegment()
     previewModeComboBox->setCurrentIndex(2);
     layout->addWidget(previewModeComboBox);
 
-    QLabel *previewLabel = new QLabel(QStringLiteral("Preview has not been generated"), &dialog);
-    previewLabel->setAlignment(Qt::AlignCenter);
-    previewLabel->setMinimumSize(320, 240);
+    MLEnvelopePreviewView *previewView = new MLEnvelopePreviewView(&dialog);
+    layout->addWidget(previewView);
 
-    QScrollArea *previewScrollArea = new QScrollArea(&dialog);
-    previewScrollArea->setWidget(previewLabel);
-    previewScrollArea->setWidgetResizable(true);
-    previewScrollArea->setMinimumSize(480, 360);
-    layout->addWidget(previewScrollArea);
+    QHBoxLayout *previewToolLayout = new QHBoxLayout();
+
+    QToolButton *zoomOutButton = new QToolButton(&dialog);
+    zoomOutButton->setText(QStringLiteral("-"));
+    zoomOutButton->setToolTip(QStringLiteral("Zoom out"));
+    previewToolLayout->addWidget(zoomOutButton);
+
+    QToolButton *zoomInButton = new QToolButton(&dialog);
+    zoomInButton->setText(QStringLiteral("+"));
+    zoomInButton->setToolTip(QStringLiteral("Zoom in"));
+    previewToolLayout->addWidget(zoomInButton);
+
+    QPushButton *fitPreviewButton = new QPushButton(QStringLiteral("Fit"), &dialog);
+    fitPreviewButton->setToolTip(QStringLiteral("Fit preview to window"));
+    previewToolLayout->addWidget(fitPreviewButton);
+    previewToolLayout->addStretch();
 
     QPushButton *previewButton = new QPushButton(QStringLiteral("Preview Current Slice"), &dialog);
-    layout->addWidget(previewButton);
+    previewToolLayout->addWidget(previewButton);
+    layout->addLayout(previewToolLayout);
 
     QVector<QImage> previewImages(3);
-    const auto displayPreview = [previewLabel, previewModeComboBox, &previewImages]()
+    const auto displayPreview = [previewView, previewModeComboBox, &previewImages]()
     {
         const int previewIndex = previewModeComboBox->currentIndex();
         if (previewIndex < 0 || previewIndex >= previewImages.count() || previewImages[previewIndex].isNull())
@@ -1005,12 +1187,30 @@ void MLInterface::MaskFromSegment()
             return;
         }
 
-        previewLabel->setPixmap(
-            QPixmap::fromImage(previewImages[previewIndex]).scaled(
-                QSize(900, 700),
-                Qt::KeepAspectRatio,
-                Qt::FastTransformation));
+        previewView->setImage(previewImages[previewIndex]);
     };
+
+    QObject::connect(zoomOutButton,
+                     &QToolButton::clicked,
+                     &dialog,
+                     [previewView]()
+                     {
+                         previewView->zoomBy(0.8);
+                     });
+    QObject::connect(zoomInButton,
+                     &QToolButton::clicked,
+                     &dialog,
+                     [previewView]()
+                     {
+                         previewView->zoomBy(1.25);
+                     });
+    QObject::connect(fitPreviewButton,
+                     &QPushButton::clicked,
+                     &dialog,
+                     [previewView]()
+                     {
+                         previewView->fitImage();
+                     });
 
     QObject::connect(previewModeComboBox,
                      QOverload<int>::of(&QComboBox::currentIndexChanged),
@@ -1182,6 +1382,7 @@ void MLInterface::MaskFromSegment()
         SaveMasks(sliceId);
     }
     MLUpdateBlockingDialog::hideDialog();
+    MaskDataChanged();
     LoadAllData(CurrentFile);
     ShowImage(mainWin->graphicsView);
 

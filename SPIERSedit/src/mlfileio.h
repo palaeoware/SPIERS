@@ -26,6 +26,7 @@ public:
 
     static cv::Mat LoadMatBinary(const QString &featureName, int x, int y, int fileIndex, bool &ok);
     static void SaveMatBinary(const QString &featurename, const cv::Mat &mat, int fileIndex);
+    static void SaveSignedVisualisation(const QString &featureName, const cv::Mat &mat, int fileIndex, float maximumAbsoluteValue);
     static cv::Mat LoadMatFromImageFile(int sliceIndex, bool expectColour);
     static QString GetWorkingPath();
 private:

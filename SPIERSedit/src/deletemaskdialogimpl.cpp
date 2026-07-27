@@ -18,6 +18,10 @@
 #include "globals.h"
 #include "fileio.h"
 #include "deletemaskdialogimpl.h"
+#include "mlinterface.h"
+
+#include <QMessageBox>
+#include <QVector>
 
 DeleteMaskDialogImpl::DeleteMaskDialogImpl(QList <int> MasksToDelete, QWidget *parent, Qt::WindowFlags f)
     : QDialog(parent, f)
@@ -99,6 +103,12 @@ void DeleteMaskDialogImpl::on_buttonBox_accepted()
     //repoint ones being deleted to correct target mask AFTER conversion
     for (int i = 0; i < MasksToDeleteList.count(); i++) ToMasks[MasksToDeleteList[i]] = ToMasks[TargetMask];
 
+    QVector<int> maskMap(256);
+    for (int i = 0; i < maskMap.count(); i++)
+    {
+        maskMap[i] = i <= MaxUsedMask ? ToMasks[i] : i;
+    }
+    const int convertedTargetMask = ToMasks[TargetMask];
 
     //OK, should now have correct conversion list - first handle selections
 
@@ -141,6 +151,20 @@ void DeleteMaskDialogImpl::on_buttonBox_accepted()
     for (int i = 0; i < OutputObjectsCount; i++)
         for (int j = 0; j < OutputObjects[i]->ComponentMasks.count(); j++)
             OutputObjects[i]->ComponentMasks[j] = ToMasks[OutputObjects[i]->ComponentMasks[j]];
+
+    const int retargetedFeatureCount =
+        mlInterface == nullptr ? 0 : mlInterface->RetargetMaskFeatures(maskMap, MasksToDeleteList);
+    if (retargetedFeatureCount > 0)
+    {
+        QMessageBox::warning(
+            this,
+            QStringLiteral("ML Features Updated"),
+            QStringLiteral("%1 distance-to-mask ML feature%2 referenced a deleted mask and %3 retargeted to '%4'.")
+                .arg(retargetedFeatureCount)
+                .arg(retargetedFeatureCount == 1 ? QString() : QStringLiteral("s"))
+                .arg(retargetedFeatureCount == 1 ? QStringLiteral("was") : QStringLiteral("were"))
+                .arg(MasksSettings[convertedTargetMask]->Name));
+    }
 
     close();
 }

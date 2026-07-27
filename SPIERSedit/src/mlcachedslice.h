@@ -34,6 +34,7 @@ public:
     cv::Mat sourceImage;
     QList<cv::Mat> featureData;
     uint64 lastUsed;
+    int activeFetchCount;
     bool sourceValid;
     int sliceIndex;
     MLCachedAccess *cache;

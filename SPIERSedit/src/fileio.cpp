@@ -17,6 +17,7 @@
 
 #include "fileio.h"
 #include "globals.h"
+#include "mlinterface.h"
 #include "undo.h"
 #include <QImage>
 #include <QRgb>
@@ -655,10 +656,16 @@ void WriteAllData(int fnum)
         if (Segments[i]->Dirty) SaveGreyData(fnum, i);
         Segments[i]->Dirty = false;
     }
-    if (MasksDirty) SaveMasks(fnum);
+    const bool masksWereDirty = MasksDirty;
+    if (masksWereDirty) SaveMasks(fnum);
     if (LocksDirty) SaveLocks(fnum);
     MasksDirty = false;
     LocksDirty = false;
+
+    if (masksWereDirty && mlInterface != nullptr)
+    {
+        mlInterface->MaskDataChanged();
+    }
 
 //  for (int i=0; i<Caches.count(); i++)
 //       CacheDebug(i,"");
@@ -1003,9 +1010,14 @@ bool SimpleLoadLocks(int fnum, int expectedsize, QByteArray *array)
 
 bool SimpleLoadMasks(int fnum, int expectedsize, QByteArray *array)
 {
+    return SimpleLoadMasksForFile(FullFiles.at(fnum), expectedsize, array);
+}
+
+bool SimpleLoadMasksForFile(const QString &fileName, int expectedsize, QByteArray *array)
+{
     int lastsep, lastdot;
 
-    QString Fname = FullFiles.at(fnum);
+    QString Fname = fileName;
     lastsep = qMax(Fname.lastIndexOf("\\"), Fname.lastIndexOf("/")); //this is last separator in path
     lastdot = Fname.lastIndexOf(".");
     QString sfname = Fname.left(lastsep);

@@ -106,42 +106,40 @@ void MLFileIO::SaveMatBinary(const QString& featurename, const cv::Mat& mat, int
         }
     }
 
-/*
-    //TEST - create PNG to inspect
-    if (featurename!="src")
+}
+
+void MLFileIO::SaveSignedVisualisation(
+    const QString &featureName,
+    const cv::Mat &mat,
+    int fileIndex,
+    float maximumAbsoluteValue)
+{
+    Q_ASSERT(mat.type() == CV_32F);
+
+    cv::Mat visualisation;
+    if (maximumAbsoluteValue > 0.0f)
     {
-        if (featurename.left(3)=="tow" || featurename.left(3)=="tol")
-        {
-            //Different approach for coherence
-            //qDebug()<<"TO output!";
-            cv::Mat clamped;
-            cv::min(mat, 1.0f, clamped);
-            cv::max(clamped, 0.0f, clamped);
-
-            cv::Mat tmp;
-            clamped.convertTo(tmp, CV_8U, 255.0);
-
-            cv::imwrite((filename + QString(".png")).toStdString(), tmp);
-        }
-        else
-        {
-            cv::Mat absMat;
-            cv::absdiff(mat, 0, absMat);   // abs(mat)
-
-            double minVal, maxVal;
-            cv::minMaxLoc(absMat, &minVal, &maxVal);
-
-            cv::Mat tmp;
-
-            if (maxVal > 0.0)
-                absMat.convertTo(tmp, CV_8U, 255.0 / maxVal);
-            else
-                tmp = cv::Mat::zeros(absMat.size(), CV_8U);
-
-            cv::imwrite((filename + QString(".png")).toStdString(), tmp);
-        }
+        mat.convertTo(
+            visualisation,
+            CV_8U,
+            127.5 / static_cast<double>(maximumAbsoluteValue),
+            127.5);
     }
-*/
+    else
+    {
+        visualisation = cv::Mat(mat.size(), CV_8U, cv::Scalar(128));
+    }
+
+    QString filename = GetFileName(featureName, fileIndex);
+    filename.chop(4);
+    filename.append(QStringLiteral(".png"));
+    if (!cv::imwrite(filename.toStdString(), visualisation))
+    {
+        throw std::runtime_error(
+            QStringLiteral("Failed to write feature visualisation: %1")
+                .arg(filename)
+                .toStdString());
+    }
 }
 
 QString MLFileIO::GetFileName(const QString &fname, int index)

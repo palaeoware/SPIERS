@@ -50,6 +50,7 @@ extern int GetShort(QDataStream *in);
 extern bool SimpleLoadLocks(int fnum, int expectedsize, QByteArray *array);
 extern void SimpleSaveLocks(int fnum, QByteArray array);
 extern bool SimpleLoadMasks(int fnum, int expectedsize, QByteArray *array);
+extern bool SimpleLoadMasksForFile(const QString &fileName, int expectedsize, QByteArray *array);
 extern void SimpleSaveMasks(int fnum, QByteArray array);
 extern void SimpleSaveGreyData(int fnum, int seg, QImage greydata);
 extern bool SimpleLoadGreyData(int fnum, int seg, QImage *greydata);
