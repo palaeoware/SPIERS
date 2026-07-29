@@ -41,6 +41,7 @@ myscene::myscene() : QGraphicsScene()
     mousetimer.start();
     setBackgroundBrush(QColor(35, 35, 35));
     CurrentClosestNode = -1;
+    maskFloodFillStroke = false;
 }
 
 void myscene::DoMouse(int x, int y, int PressedButton)
@@ -194,8 +195,24 @@ void myscene::DoAction(int x, int y)
             else Brush.brighten(LastMouseX, LastMouseY, CurrentSegment, 0 - BrightDown);
             break;
         case 1: //masks
-            if (button == 1) Brush.mask(LastMouseX, LastMouseY, SelectedMask);
-            else Brush.mask(LastMouseX, LastMouseY, SelectedRMask);
+            if (maskFloodFillStroke)
+            {
+                if (Counter2 == 0)
+                {
+                    mainwin->ApplyMLFloodFill(
+                        LastMouseX,
+                        LastMouseY,
+                        button == 1 ? SelectedMask : SelectedRMask);
+                }
+            }
+            else if (button == 1)
+            {
+                Brush.mask(LastMouseX, LastMouseY, SelectedMask);
+            }
+            else
+            {
+                Brush.mask(LastMouseX, LastMouseY, SelectedRMask);
+            }
             break;
         case 2:
             if (button == 1)
@@ -259,6 +276,11 @@ void myscene::mousePressEvent(QGraphicsSceneMouseEvent *event )
     if (event->button() == Qt::RightButton) but = 2;
     if (event->button() == Qt::MiddleButton) but = 3;
 
+    maskFloodFillStroke =
+        CurrentMode == 1
+        && (event->modifiers().testFlag(Qt::ControlModifier)
+            || mainwin->MaskFloodFillForAllClicks());
+
     DoMouse(x, y, but);
     return;
 }
@@ -271,6 +293,7 @@ void myscene::MouseUp()
     button = 0;
     mouse_down=false;
     got_LCE_sample=false;
+    maskFloodFillStroke = false;
     for (n = 0; n < fwidth * fheight; n++) dirty[n] = 0;
     return;
 }

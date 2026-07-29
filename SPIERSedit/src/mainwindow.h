@@ -73,6 +73,9 @@ public:
 
     QTimer *timer2; /// Secondary timer used for autosave and deferred UI updates
 
+    bool ApplyMLFloodFill(int x, int y, int maskId);
+    bool MaskFloodFillForAllClicks() const;
+
     /**
      *
      * Rebuilds the tree widget row for segment @p i, updating its colour
@@ -631,6 +634,14 @@ private:
     QAction *shortcutright2;  /// Secondary keyboard shortcut action for moving one slice forward.
     QAction *shortcutleft2;   /// Secondary keyboard shortcut action for moving one slice backward.
     QAction *shortcutspace;   /// Keyboard shortcut action for the spacebar paint toggle.
+
+    QAction *maskFloodFillAllClicksAction;
+    QAction *maskFloodFillDockAction;
+    QCheckBox *maskFloodFillFillHolesCheckBox;
+    QDockWidget *maskFloodFillDock;
+    QSpinBox *maskFloodFillGrabCutIterationsSpinBox;
+    QSpinBox *maskFloodFillSeedRadiusSpinBox;
+    QSpinBox *maskFloodFillSegmentationInfluenceSpinBox;
 
     QSpinBox *ZoomBox;           /// Spin box embedded in the toolbar for direct zoom entry.
     QSpinBox *BrushSize;         /// Spin box embedded in the toolbar for direct brush-size entry.

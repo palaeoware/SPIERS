@@ -22,10 +22,15 @@
 #include "histogram.h"
 #include "generatetestdata.h"
 #include "globals.h"
+#include "keysafespinbox.h"
 
 #include <QColorDialog>
+#include <QCheckBox>
+#include <QDockWidget>
 #include <QFileDialog>
+#include <QFormLayout>
 #include <QShortcut>
+#include <QSpinBox>
 #include <QTimer>
 #include <QTime>
 #include <QInputDialog>
@@ -53,6 +58,64 @@ void MainWindow::SetUpDocks()
     addDockWidget (Qt::RightDockWidgetArea, DockHist);
     addDockWidget (Qt::RightDockWidgetArea, DockGenerateTestData);
 
+    maskFloodFillDock = new QDockWidget(QStringLiteral("ML Flood Fill (F11)"), this);
+    maskFloodFillDock->setObjectName(QStringLiteral("DockMLFloodFill"));
+    maskFloodFillDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    maskFloodFillDock->setFeatures(
+        QDockWidget::DockWidgetClosable
+        | QDockWidget::DockWidgetFloatable
+        | QDockWidget::DockWidgetMovable);
+
+    QWidget *maskFloodFillWidget = new QWidget(maskFloodFillDock);
+    QFormLayout *maskFloodFillLayout = new QFormLayout(maskFloodFillWidget);
+
+    maskFloodFillSeedRadiusSpinBox = new KeysafeSpinBox(maskFloodFillWidget);
+    maskFloodFillSeedRadiusSpinBox->setRange(1, 50);
+    maskFloodFillSeedRadiusSpinBox->setSuffix(QStringLiteral(" px"));
+    maskFloodFillSeedRadiusSpinBox->setValue(5);
+    maskFloodFillSeedRadiusSpinBox->setToolTip(
+        QStringLiteral("Radius of the definite-foreground area placed around the click"));
+    maskFloodFillLayout->addRow(QStringLiteral("Seed radius"), maskFloodFillSeedRadiusSpinBox);
+
+    maskFloodFillSegmentationInfluenceSpinBox = new KeysafeSpinBox(maskFloodFillWidget);
+    maskFloodFillSegmentationInfluenceSpinBox->setRange(0, 100);
+    maskFloodFillSegmentationInfluenceSpinBox->setSuffix(QStringLiteral("%"));
+    maskFloodFillSegmentationInfluenceSpinBox->setValue(60);
+    maskFloodFillSegmentationInfluenceSpinBox->setToolTip(
+        QStringLiteral("Relative strength of the ML segment probability in the GrabCut image"));
+    maskFloodFillLayout->addRow(
+        QStringLiteral("Segmentation influence"),
+        maskFloodFillSegmentationInfluenceSpinBox);
+
+    maskFloodFillGrabCutIterationsSpinBox = new KeysafeSpinBox(maskFloodFillWidget);
+    maskFloodFillGrabCutIterationsSpinBox->setRange(1, 10);
+    maskFloodFillGrabCutIterationsSpinBox->setValue(3);
+    maskFloodFillGrabCutIterationsSpinBox->setToolTip(
+        QStringLiteral("Number of GrabCut refinement iterations"));
+    maskFloodFillLayout->addRow(
+        QStringLiteral("Iterations"),
+        maskFloodFillGrabCutIterationsSpinBox);
+
+    maskFloodFillFillHolesCheckBox = new QCheckBox(QStringLiteral("Fill enclosed holes"), maskFloodFillWidget);
+    maskFloodFillFillHolesCheckBox->setChecked(true);
+    maskFloodFillLayout->addRow(maskFloodFillFillHolesCheckBox);
+
+    maskFloodFillDock->setWidget(maskFloodFillWidget);
+    addDockWidget(Qt::RightDockWidgetArea, maskFloodFillDock);
+
+    maskFloodFillDockAction = maskFloodFillDock->toggleViewAction();
+    maskFloodFillDockAction->setText(QStringLiteral("ML Flood Fill"));
+    maskFloodFillDockAction->setShortcut(QKeySequence(Qt::Key_F11));
+    menuWindow->addAction(maskFloodFillDockAction);
+
+    maskFloodFillAllClicksAction = new QAction(
+        QStringLiteral("All mask clicks are ML flood fills"),
+        this);
+    maskFloodFillAllClicksAction->setCheckable(true);
+    maskFloodFillAllClicksAction->setChecked(false);
+    menuMasks->addSeparator();
+    menuMasks->addAction(maskFloodFillAllClicksAction);
+
     tabifyDockWidget(dockWidget_Main, SliceSelector);
 
     dockWidget_Main->setVisible(true);
@@ -65,6 +128,7 @@ void MainWindow::SetUpDocks()
     DockInfo->setVisible(false);
     dockWidget_Generate->setVisible(true);
     DockGenerateTestData->setVisible(false);
+    maskFloodFillDock->setVisible(false);
 
     SliceSelector->setFloating(false);
     DockMasksSettings->setFloating(false);
@@ -77,6 +141,7 @@ void MainWindow::SetUpDocks()
     DockPreview3D->setFloating(false);
     dockWidget_Generate->setFloating(false);
     DockGenerateTestData->setFloating(false);
+    maskFloodFillDock->setFloating(false);
 
     GVHist = new histgv;
     DockHist->setWidget(GVHist);

@@ -47,6 +47,7 @@
 #include <QImage>
 #include <QLabel>
 #include <QMessageBox>
+#include <QMutexLocker>
 #include <QPixmap>
 #include <QPushButton>
 #include <QResizeEvent>
@@ -58,6 +59,9 @@
 #include <QWheelEvent>
 
 #include <opencv2/imgproc.hpp>
+
+#include <cstring>
+#include <vector>
 
 namespace
 {
@@ -1066,6 +1070,261 @@ void MLInterface::GetProbabilitiesAllSegments(int x, int y, int z, int *segBuffe
     {
         segBuffer[highseg] = 128; //ensure no black
     }
+}
+
+bool MLInterface::FloodFillMask(
+    int x,
+    int y,
+    int maskId,
+    int seedRadius,
+    int segmentationInfluencePercent,
+    int grabCutIterations,
+    bool fillHoles,
+    QString *errorMessage)
+{
+    if (errorMessage != nullptr)
+    {
+        errorMessage->clear();
+    }
+
+    if (x < 0 || x >= fwidth || y < 0 || y >= fheight)
+    {
+        return false;
+    }
+    if (maskId < 0 || maskId > MaxUsedMask || maskId >= MasksSettings.count())
+    {
+        if (errorMessage != nullptr)
+        {
+            *errorMessage = QStringLiteral("The destination mask is invalid");
+        }
+        return false;
+    }
+    if (Masks.size() != fwidth * fheight
+        || GA.count() != SegmentCount
+        || ColArray.isNull())
+    {
+        if (errorMessage != nullptr)
+        {
+            *errorMessage = QStringLiteral("The current slice data is unavailable");
+        }
+        return false;
+    }
+
+    cv::Mat sourceProbability = cv::Mat::zeros(fheight, fwidth, CV_8UC1);
+    QImage ctImage;
+    int sourceSegment = -1;
+    {
+        QMutexLocker<QRecursiveMutex> locker(&mutex);
+        const QVector<int> segmentAssignments = GetSegmentMap();
+        sourceSegment = segmentAssignments.at(y * fwidth + x);
+        if (sourceSegment < 0 || sourceSegment >= SegmentCount)
+        {
+            if (errorMessage != nullptr)
+            {
+                *errorMessage = QStringLiteral("The clicked pixel is not assigned to an active segment");
+            }
+            return false;
+        }
+
+        for (int rowIndex = 0; rowIndex < fheight; rowIndex++)
+        {
+            const uchar *sourceRow = GA[sourceSegment]->constScanLine(rowIndex);
+            memcpy(
+                sourceProbability.ptr<uchar>(rowIndex),
+                sourceRow,
+                static_cast<size_t>(fwidth));
+        }
+
+        ctImage = ColArray.convertToFormat(QImage::Format_Grayscale8).scaled(
+            fwidth,
+            fheight,
+            Qt::IgnoreAspectRatio,
+            Qt::SmoothTransformation);
+    }
+
+    if (ctImage.isNull())
+    {
+        if (errorMessage != nullptr)
+        {
+            *errorMessage = QStringLiteral("The current CT image could not be prepared");
+        }
+        return false;
+    }
+
+    cv::Mat ctIntensity = cv::Mat::zeros(fheight, fwidth, CV_8UC1);
+    for (int rowIndex = 0; rowIndex < fheight; rowIndex++)
+    {
+        memcpy(
+            ctIntensity.ptr<uchar>(rowIndex),
+            ctImage.constScanLine(rowIndex),
+            static_cast<size_t>(fwidth));
+    }
+
+    const int influence = qBound(0, segmentationInfluencePercent, 100);
+    cv::Mat weightedProbability = cv::Mat::zeros(fheight, fwidth, CV_8UC1);
+    for (int rowIndex = 0; rowIndex < fheight; rowIndex++)
+    {
+        const uchar *sourceRow = sourceProbability.ptr<uchar>(rowIndex);
+        uchar *weightedRow = weightedProbability.ptr<uchar>(rowIndex);
+        for (int columnIndex = 0; columnIndex < fwidth; columnIndex++)
+        {
+            const int centredValue = static_cast<int>(sourceRow[columnIndex]) - 128;
+            weightedRow[columnIndex] = static_cast<uchar>(
+                qBound(0, 128 + qRound(centredValue * influence / 100.0), 255));
+        }
+    }
+
+    cv::Mat smoothedProbability;
+    cv::GaussianBlur(
+        weightedProbability,
+        smoothedProbability,
+        cv::Size(),
+        1.2,
+        1.2,
+        cv::BORDER_REPLICATE);
+
+    std::vector<cv::Mat> grabCutChannels {
+        ctIntensity,
+        weightedProbability,
+        smoothedProbability
+    };
+    cv::Mat grabCutImage;
+    cv::merge(grabCutChannels, grabCutImage);
+
+    cv::Mat grabCutMask(
+        fheight,
+        fwidth,
+        CV_8UC1,
+        cv::Scalar(cv::GC_PR_BGD));
+    cv::circle(
+        grabCutMask,
+        cv::Point(x, y),
+        qMax(2, seedRadius * 3),
+        cv::Scalar(cv::GC_PR_FGD),
+        cv::FILLED);
+    for (int rowIndex = 0; rowIndex < fheight; rowIndex++)
+    {
+        const uchar *sourceRow = sourceProbability.ptr<uchar>(rowIndex);
+        uchar *maskRow = grabCutMask.ptr<uchar>(rowIndex);
+        for (int columnIndex = 0; columnIndex < fwidth; columnIndex++)
+        {
+            if (sourceRow[columnIndex] <= 25)
+            {
+                maskRow[columnIndex] = cv::GC_BGD;
+            }
+        }
+    }
+
+    grabCutMask.row(0).setTo(cv::GC_BGD);
+    grabCutMask.row(fheight - 1).setTo(cv::GC_BGD);
+    grabCutMask.col(0).setTo(cv::GC_BGD);
+    grabCutMask.col(fwidth - 1).setTo(cv::GC_BGD);
+    cv::circle(
+        grabCutMask,
+        cv::Point(x, y),
+        qMax(1, seedRadius),
+        cv::Scalar(cv::GC_FGD),
+        cv::FILLED);
+
+    cv::Mat backgroundModel;
+    cv::Mat foregroundModel;
+    try
+    {
+        cv::grabCut(
+            grabCutImage,
+            grabCutMask,
+            cv::Rect(),
+            backgroundModel,
+            foregroundModel,
+            qMax(1, grabCutIterations),
+            cv::GC_INIT_WITH_MASK);
+    }
+    catch (const cv::Exception &exception)
+    {
+        if (errorMessage != nullptr)
+        {
+            *errorMessage = QStringLiteral("GrabCut failed: %1")
+                                .arg(QString::fromUtf8(exception.what()));
+        }
+        return false;
+    }
+
+    cv::Mat foregroundPixels;
+    cv::compare(grabCutMask, cv::GC_FGD, foregroundPixels, cv::CMP_EQ);
+    cv::Mat probableForeground;
+    cv::compare(grabCutMask, cv::GC_PR_FGD, probableForeground, cv::CMP_EQ);
+    cv::bitwise_or(foregroundPixels, probableForeground, foregroundPixels);
+
+    cv::Mat componentLabels;
+    cv::connectedComponents(foregroundPixels, componentLabels, 8, CV_32S);
+    const int componentLabel = componentLabels.at<int>(y, x);
+    if (componentLabel == 0)
+    {
+        if (errorMessage != nullptr)
+        {
+            *errorMessage = QStringLiteral("GrabCut did not retain the clicked position");
+        }
+        return false;
+    }
+
+    cv::Mat selectedComponent;
+    cv::compare(componentLabels, componentLabel, selectedComponent, cv::CMP_EQ);
+    if (fillHoles)
+    {
+        std::vector<std::vector<cv::Point>> contours;
+        cv::findContours(
+            selectedComponent.clone(),
+            contours,
+            cv::RETR_EXTERNAL,
+            cv::CHAIN_APPROX_SIMPLE);
+        selectedComponent.setTo(0);
+        cv::drawContours(
+            selectedComponent,
+            contours,
+            -1,
+            cv::Scalar(255),
+            cv::FILLED);
+    }
+
+    bool changed = false;
+    {
+        QMutexLocker<QRecursiveMutex> locker(&mutex);
+        uchar *maskData = reinterpret_cast<uchar *>(Masks.data());
+        for (int rowIndex = 0; rowIndex < fheight; rowIndex++)
+        {
+            const uchar *componentRow = selectedComponent.ptr<uchar>(rowIndex);
+            const int maskRow = fheight - rowIndex - 1;
+            for (int columnIndex = 0; columnIndex < fwidth; columnIndex++)
+            {
+                if (componentRow[columnIndex] == 0)
+                {
+                    continue;
+                }
+
+                const int maskPosition = maskRow * fwidth + columnIndex;
+                const int oldMaskId = maskData[maskPosition];
+                if (oldMaskId <= MaxUsedMask
+                    && !MasksSettings[oldMaskId]->Lock
+                    && oldMaskId != maskId)
+                {
+                    maskData[maskPosition] = static_cast<uchar>(maskId);
+                    changed = true;
+                }
+            }
+        }
+
+        if (changed)
+        {
+            MasksDirty = true;
+            MasksUndoDirty = true;
+        }
+    }
+
+    if (changed)
+    {
+        MaskDataChanged();
+    }
+    return changed;
 }
 
 void MLInterface::MaskFromSegment()

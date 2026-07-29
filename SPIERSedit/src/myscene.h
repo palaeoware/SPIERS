@@ -42,6 +42,7 @@ private:
     void DoMouse(int x, int y, int PressedButton);
     QElapsedTimer mousetimer;
     int CurrentClosestNode;
+    bool maskFloodFillStroke;
     bool mouse_down;
     bool got_LCE_sample;
     QVector<uchar> LCE_sample;

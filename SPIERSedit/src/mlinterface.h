@@ -64,6 +64,15 @@ public:
     void ResizeCache();
     void DoPreset(int presetCode);
     void MaskFromSegment();
+    bool FloodFillMask(
+        int x,
+        int y,
+        int maskId,
+        int seedRadius,
+        int segmentationInfluencePercent,
+        int grabCutIterations,
+        bool fillHoles,
+        QString *errorMessage);
 private:
     bool dataComputed;
     int currentSlice;
