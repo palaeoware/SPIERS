@@ -65,6 +65,7 @@ HEADERS += src/display.h \
     src/bytearray2d.h \
     src/curves.h \
     src/fileio.h \
+    src/sourceimagenormalizer.h \
     src/generatetestdata.h \
     src/globals.h \
     src/mlsegmenttomask.h \
