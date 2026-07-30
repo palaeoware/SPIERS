@@ -46,6 +46,7 @@ public:
         int height,
         int targetTileCount = TARGET_TILE_COUNT);
     const QByteArray &excludedPixels() const;
+    MLROISlice expandedByPixels(int radius) const;
     int haloTileCount() const;
     int height() const;
     bool isPixelActive(int x, int y) const;

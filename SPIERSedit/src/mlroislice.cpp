@@ -191,6 +191,31 @@ const QByteArray &MLROISlice::excludedPixels() const
     return m_excludedPixels;
 }
 
+MLROISlice MLROISlice::expandedByPixels(int radius) const
+{
+    MLROISlice expanded = *this;
+    if (!expanded.m_valid)
+        return expanded;
+
+    expanded.m_targetTileCount = 0;
+    expanded.m_haloTileCount = 0;
+    for (int tile = 0; tile < expanded.m_tileStates.size(); tile++)
+    {
+        if (expanded.m_tileStates.at(tile)
+            == static_cast<char>(TileState::Inactive))
+        {
+            continue;
+        }
+
+        expanded.m_tileStates[tile] =
+            static_cast<char>(TileState::Target);
+        expanded.m_targetTileCount++;
+    }
+
+    expanded.addHaloPixels(radius);
+    return expanded;
+}
+
 int MLROISlice::haloTileCount() const
 {
     return m_haloTileCount;
