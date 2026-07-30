@@ -24,6 +24,7 @@
 #include <QDockWidget>
 #include <QFile>
 #include <QFileDialog>
+#include <QFileInfo>
 #include <QGraphicsItem>
 #include <QGraphicsLineItem>
 #include <QGraphicsSceneEvent>
@@ -45,6 +46,14 @@
 #include <QFont>
 #include <QStandardPaths>
 #include <QColorDialog>
+#include <QComboBox>
+#include <QFormLayout>
+#include <QGroupBox>
+#include <QHBoxLayout>
+#include <QProcessEnvironment>
+#include <QRegularExpression>
+#include <QTemporaryFile>
+#include <QTimer>
 
 #include <math.h>
 #include <qbitmap.h>
@@ -340,6 +349,105 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     horizontalLayout7->addWidget(folderName);
     cropLayout->addLayout(horizontalLayout7);
 
+    QGroupBox *remoteFetchGroup = new QGroupBox("Fetch from remote", cropDock);
+    QVBoxLayout *remoteFetchLayout = new QVBoxLayout(remoteFetchGroup);
+    QFormLayout *remoteFetchForm = new QFormLayout;
+
+    remoteDirectory = new QLineEdit(remoteFetchGroup);
+    remoteLocalDirectory = new QLineEdit(remoteFetchGroup);
+    remotePassword = new QLineEdit(remoteFetchGroup);
+    remotePassword->setEchoMode(QLineEdit::Password);
+
+    QWidget *localDirectoryRow = new QWidget(remoteFetchGroup);
+    QHBoxLayout *localDirectoryLayout = new QHBoxLayout(localDirectoryRow);
+    localDirectoryLayout->setContentsMargins(0, 0, 0, 0);
+    QPushButton *browseRemoteLocal = new QPushButton("Browse...", localDirectoryRow);
+    localDirectoryLayout->addWidget(remoteLocalDirectory);
+    localDirectoryLayout->addWidget(browseRemoteLocal);
+
+    coordinateBinning = new QSpinBox(remoteFetchGroup);
+    coordinateBinning->setRange(1, 8);
+    coordinateBinning->setValue(2);
+
+    windowLow = new QSpinBox(remoteFetchGroup);
+    windowLow->setRange(0, 65535);
+    windowLow->setValue(27000);
+    windowHigh = new QSpinBox(remoteFetchGroup);
+    windowHigh->setRange(0, 65535);
+    windowHigh->setValue(39000);
+
+    QWidget *windowRow = new QWidget(remoteFetchGroup);
+    QHBoxLayout *windowLayout = new QHBoxLayout(windowRow);
+    windowLayout->setContentsMargins(0, 0, 0, 0);
+    windowLayout->addWidget(new QLabel("Low", windowRow));
+    windowLayout->addWidget(windowLow);
+    windowLayout->addWidget(new QLabel("High", windowRow));
+    windowLayout->addWidget(windowHigh);
+
+    outputBinning = new QSpinBox(remoteFetchGroup);
+    outputBinning->setRange(1, 8);
+    outputBinning->setValue(1);
+
+    remoteStep = new QSpinBox(remoteFetchGroup);
+    remoteStep->setRange(1, 999999);
+    remoteStep->setValue(1);
+
+    conversionWorkers = new QSpinBox(remoteFetchGroup);
+    conversionWorkers->setRange(1, 8);
+    conversionWorkers->setValue(2);
+    conversionWorkers->setToolTip(
+        "Number of JP2-to-image conversions allowed to run concurrently. Downloads remain sequential.");
+
+    remoteOutputFormat = new QComboBox(remoteFetchGroup);
+    remoteOutputFormat->addItem("BMP", "bmp");
+    remoteOutputFormat->addItem("JPEG", "jpg");
+
+    deleteRemoteJp2 = new QCheckBox("Delete JP2 after successful conversion", remoteFetchGroup);
+    deleteRemoteJp2->setChecked(true);
+    launchRemotePowerShell = new QCheckBox("Launch in PowerShell window (fire and forget)", remoteFetchGroup);
+
+    remoteFetchForm->addRow("Remote path", remoteDirectory);
+    remoteFetchForm->addRow("Local path", localDirectoryRow);
+    remoteFetchForm->addRow("Password", remotePassword);
+    remoteFetchForm->addRow("Binning of SPIERSalign image", coordinateBinning);
+    remoteFetchForm->addRow("16-bit display window", windowRow);
+    remoteFetchForm->addRow("Step", remoteStep);
+    remoteFetchForm->addRow("Conversion workers", conversionWorkers);
+    remoteFetchForm->addRow("Output binning", outputBinning);
+    remoteFetchForm->addRow("Output format", remoteOutputFormat);
+    remoteFetchLayout->addLayout(remoteFetchForm);
+    remoteFetchLayout->addWidget(deleteRemoteJp2);
+    remoteFetchLayout->addWidget(launchRemotePowerShell);
+
+    QHBoxLayout *remoteFetchButtons = new QHBoxLayout;
+    remoteFetchButton = new QPushButton("Fetch from remote", remoteFetchGroup);
+    remoteTestButton = new QPushButton("Test 3 images", remoteFetchGroup);
+    remoteTestButton->setToolTip("Download and convert only the first, middle, and last images in the selected range.");
+    remoteFetchCancelButton = new QPushButton("Cancel", remoteFetchGroup);
+    remoteFetchCancelButton->setEnabled(false);
+    remoteFetchButtons->addWidget(remoteFetchButton);
+    remoteFetchButtons->addWidget(remoteTestButton);
+    remoteFetchButtons->addWidget(remoteFetchCancelButton);
+    remoteFetchLayout->addLayout(remoteFetchButtons);
+
+    remoteFetchProgress = new QProgressBar(remoteFetchGroup);
+    remoteFetchProgress->setRange(0, 1);
+    remoteFetchProgress->setValue(0);
+    remoteFetchLayout->addWidget(remoteFetchProgress);
+
+    remoteFetchOutput = new QPlainTextEdit(remoteFetchGroup);
+    remoteFetchOutput->setReadOnly(true);
+    remoteFetchOutput->setMaximumBlockCount(250);
+    remoteFetchOutput->setMaximumHeight(120);
+    remoteFetchLayout->addWidget(remoteFetchOutput);
+
+    cropLayout->addWidget(remoteFetchGroup);
+
+    remoteFetchProcess = new QProcess(this);
+    remoteFetchCompleted = false;
+    remoteFetchCancelled = false;
+    loadRemoteFetchSettings();
+
 
     layoutWidgetThree = new QWidget;
     layoutWidgetThree->setLayout(cropLayout);
@@ -497,6 +605,16 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
     connect(executeCrop, SIGNAL(clicked ()), this, SLOT(on_actionCrop_triggered() ));
     connect(cropWidth, SIGNAL(valueChanged(int)), this, SLOT(resizeCropW(int) ));
     connect(cropHeight, SIGNAL(valueChanged(int)), this, SLOT(resizeCropH(int) ));
+    connect(browseRemoteLocal, &QPushButton::clicked, this, &MainWindowImpl::browseRemoteLocalDirectory);
+    connect(remoteFetchButton, &QPushButton::clicked, this,
+            static_cast<void (MainWindowImpl::*)()>(&MainWindowImpl::startRemoteFetch));
+    connect(remoteTestButton, &QPushButton::clicked, this, &MainWindowImpl::testRemoteFetch);
+    connect(remoteFetchCancelButton, &QPushButton::clicked, this, &MainWindowImpl::cancelRemoteFetch);
+    connect(remoteFetchProcess, &QProcess::readyReadStandardOutput, this, &MainWindowImpl::readRemoteFetchOutput);
+    connect(remoteFetchProcess, &QProcess::readyReadStandardError, this, &MainWindowImpl::readRemoteFetchOutput);
+    connect(remoteFetchProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+            this, &MainWindowImpl::remoteFetchFinished);
+    connect(remoteFetchProcess, &QProcess::errorOccurred, this, &MainWindowImpl::remoteFetchError);
     connect(ok, SIGNAL(clicked ()), this, SLOT(okClicked() ));
     connect(executeAlign, SIGNAL(clicked ()), this, SLOT(executeAutoAlignTriggered() ));
     connect(resetImage, SIGNAL(clicked ()), this, SLOT(on_actionReset_Image_triggered() ));
@@ -530,6 +648,14 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, Qt::WindowFlags f)
  */
 MainWindowImpl::~MainWindowImpl()
 {
+    saveRemoteFetchSettings();
+    if (remoteFetchProcess->state() != QProcess::NotRunning)
+    {
+        remoteFetchProcess->kill();
+        remoteFetchProcess->waitForFinished(2000);
+    }
+    removeRemoteFetchScript();
+
     if (currentImage != -1)
     {
         writeSuperGlobals();
@@ -667,6 +793,386 @@ void MainWindowImpl::getMinClicked()
 void MainWindowImpl::getMaxClicked()
 {
     endCropFile->setValue(spinBox->value());
+}
+
+int MainWindowImpl::cropFileNumber(int oneBasedPosition, bool *ok) const
+{
+    bool valid = oneBasedPosition >= 1 && oneBasedPosition <= drectoryFileList.count();
+    int number = 0;
+
+    if (valid)
+    {
+        const QString baseName = QFileInfo(drectoryFileList.at(oneBasedPosition - 1)).completeBaseName();
+        const QRegularExpressionMatch match = QRegularExpression("(\\d{6})$").match(baseName);
+        valid = match.hasMatch();
+        if (valid) number = match.captured(1).toInt(&valid);
+    }
+
+    if (ok != nullptr) *ok = valid;
+    return number;
+}
+
+void MainWindowImpl::loadRemoteFetchSettings()
+{
+    QSettings settings("Palaeoware", "SPIERSalign");
+    settings.beginGroup("RemoteFetch");
+    remoteDirectory->setText(settings.value("remoteDirectory", "/home/RawData/TubeS04").toString());
+    remoteLocalDirectory->setText(settings.value("localDirectory", "C:/ESRF/Globus/HiResS04/1817").toString());
+    remotePassword->setText(settings.value("password").toString());
+    coordinateBinning->setValue(settings.value("coordinateBinning", 2).toInt());
+    windowLow->setValue(settings.value("windowLow", 27000).toInt());
+    windowHigh->setValue(settings.value("windowHigh", 39000).toInt());
+    remoteStep->setValue(settings.value("step", 1).toInt());
+    conversionWorkers->setValue(settings.value("conversionWorkers", 2).toInt());
+    outputBinning->setValue(settings.value("outputBinning", 1).toInt());
+    const int formatIndex = remoteOutputFormat->findData(settings.value("outputFormat", "bmp").toString());
+    remoteOutputFormat->setCurrentIndex(formatIndex < 0 ? 0 : formatIndex);
+    deleteRemoteJp2->setChecked(settings.value("deleteJp2", true).toBool());
+    launchRemotePowerShell->setChecked(settings.value("launchPowerShell", false).toBool());
+    settings.endGroup();
+}
+
+void MainWindowImpl::saveRemoteFetchSettings() const
+{
+    QSettings settings("Palaeoware", "SPIERSalign");
+    settings.beginGroup("RemoteFetch");
+    settings.setValue("remoteDirectory", remoteDirectory->text().trimmed());
+    settings.setValue("localDirectory", remoteLocalDirectory->text().trimmed());
+    settings.setValue("password", remotePassword->text());
+    settings.setValue("coordinateBinning", coordinateBinning->value());
+    settings.setValue("windowLow", windowLow->value());
+    settings.setValue("windowHigh", windowHigh->value());
+    settings.setValue("step", remoteStep->value());
+    settings.setValue("conversionWorkers", conversionWorkers->value());
+    settings.setValue("outputBinning", outputBinning->value());
+    settings.setValue("outputFormat", remoteOutputFormat->currentData().toString());
+    settings.setValue("deleteJp2", deleteRemoteJp2->isChecked());
+    settings.setValue("launchPowerShell", launchRemotePowerShell->isChecked());
+    settings.endGroup();
+}
+
+void MainWindowImpl::browseRemoteLocalDirectory()
+{
+    const QString directory = QFileDialog::getExistingDirectory(
+        this,
+        tr("Select remote-fetch output folder"),
+        remoteLocalDirectory->text().trimmed(),
+        QFileDialog::ShowDirsOnly);
+    if (!directory.isEmpty()) remoteLocalDirectory->setText(QDir::toNativeSeparators(directory));
+}
+
+void MainWindowImpl::removeRemoteFetchScript()
+{
+    if (remoteFetchScriptPath.isEmpty()) return;
+    QFile::remove(remoteFetchScriptPath);
+    remoteFetchScriptPath.clear();
+}
+
+void MainWindowImpl::setRemoteFetchRunning(bool running)
+{
+    remoteFetchButton->setEnabled(!running);
+    remoteTestButton->setEnabled(!running);
+    remoteFetchCancelButton->setEnabled(running);
+    remoteDirectory->setEnabled(!running);
+    remoteLocalDirectory->setEnabled(!running);
+    remotePassword->setEnabled(!running);
+    coordinateBinning->setEnabled(!running);
+    windowLow->setEnabled(!running);
+    windowHigh->setEnabled(!running);
+    remoteStep->setEnabled(!running);
+    conversionWorkers->setEnabled(!running);
+    outputBinning->setEnabled(!running);
+    remoteOutputFormat->setEnabled(!running);
+    deleteRemoteJp2->setEnabled(!running);
+    launchRemotePowerShell->setEnabled(!running);
+    startCropFile->setEnabled(!running);
+    endCropFile->setEnabled(!running);
+}
+
+void MainWindowImpl::startRemoteFetch()
+{
+    startRemoteFetch(false);
+}
+
+void MainWindowImpl::testRemoteFetch()
+{
+    startRemoteFetch(true);
+}
+
+void MainWindowImpl::startRemoteFetch(bool testMode)
+{
+    if (remoteFetchProcess->state() != QProcess::NotRunning) return;
+    if (cropArea == nullptr || cropUp == 0)
+    {
+        QMessageBox::warning(this, "Fetch from remote", "Create a crop area before fetching.", QMessageBox::Ok);
+        return;
+    }
+    if (startCropFile->value() > endCropFile->value())
+    {
+        QMessageBox::warning(this, "Fetch from remote", "Crop Min must not be greater than Crop Max.", QMessageBox::Ok);
+        return;
+    }
+
+    bool firstOk = false;
+    bool lastOk = false;
+    const int firstFileNumber = cropFileNumber(startCropFile->value(), &firstOk);
+    const int lastFileNumber = cropFileNumber(endCropFile->value(), &lastOk);
+    if (!firstOk || !lastOk)
+    {
+        QMessageBox::warning(
+            this,
+            "Fetch from remote",
+            "The images selected by Crop Min and Max must end in six digits before the file extension.",
+            QMessageBox::Ok);
+        return;
+    }
+    if (lastFileNumber < firstFileNumber)
+    {
+        QMessageBox::warning(
+            this,
+            "Fetch from remote",
+            QString("The selected filename range is reversed (%1 to %2).").arg(firstFileNumber).arg(lastFileNumber),
+            QMessageBox::Ok);
+        return;
+    }
+    if (remoteDirectory->text().trimmed().isEmpty() ||
+        remoteLocalDirectory->text().trimmed().isEmpty() ||
+        remotePassword->text().isEmpty())
+    {
+        QMessageBox::warning(this, "Fetch from remote", "Remote path, local path, and password are required.", QMessageBox::Ok);
+        return;
+    }
+    if (windowHigh->value() <= windowLow->value())
+    {
+        QMessageBox::warning(this, "Fetch from remote", "Window High must be greater than Window Low.", QMessageBox::Ok);
+        return;
+    }
+
+    const QString powerShell =
+        "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe";
+    if (!QFileInfo::exists(powerShell))
+    {
+        QMessageBox::warning(this, "Fetch from remote", "Windows PowerShell was not found.", QMessageBox::Ok);
+        return;
+    }
+
+    removeRemoteFetchScript();
+    QFile resourceScript(":/scripts/fetch_remote_crop.ps1");
+    QTemporaryFile temporaryScript(QDir::tempPath() + "/SPIERSalign_remote_fetch_XXXXXX.ps1");
+    temporaryScript.setAutoRemove(false);
+    if (!resourceScript.open(QFile::ReadOnly) || !temporaryScript.open())
+    {
+        QMessageBox::warning(this, "Fetch from remote", "Could not prepare the PowerShell helper.", QMessageBox::Ok);
+        return;
+    }
+    if (temporaryScript.write(resourceScript.readAll()) < 0)
+    {
+        temporaryScript.remove();
+        QMessageBox::warning(this, "Fetch from remote", "Could not write the PowerShell helper.", QMessageBox::Ok);
+        return;
+    }
+    remoteFetchScriptPath = temporaryScript.fileName();
+    temporaryScript.close();
+
+    const QRect crop = cropArea->normalized();
+    QStringList scriptArguments;
+    scriptArguments
+        << "-RemoteDir" << remoteDirectory->text().trimmed()
+        << "-LocalDir" << remoteLocalDirectory->text().trimmed()
+        << "-FirstFileNumber" << QString::number(firstFileNumber)
+        << "-LastFileNumber" << QString::number(lastFileNumber)
+        << "-CropX" << QString::number(crop.left())
+        << "-CropY" << QString::number(crop.top())
+        << "-CropWidth" << QString::number(crop.width())
+        << "-CropHeight" << QString::number(crop.height())
+        << "-CoordinateBinning" << QString::number(coordinateBinning->value())
+        << "-WindowLow" << QString::number(windowLow->value())
+        << "-WindowHigh" << QString::number(windowHigh->value())
+        << "-Step" << QString::number(remoteStep->value())
+        << "-ConversionWorkers" << QString::number(conversionWorkers->value())
+        << "-OutputBinning" << QString::number(outputBinning->value())
+        << "-OutputFormat" << remoteOutputFormat->currentData().toString()
+        << "-DeleteJp2" << (deleteRemoteJp2->isChecked() ? "true" : "false")
+        << "-TestMode" << (testMode ? "true" : "false");
+
+    saveRemoteFetchSettings();
+
+    if (launchRemotePowerShell->isChecked())
+    {
+        const QString detachedScriptPath = remoteFetchScriptPath;
+        remoteFetchScriptPath.clear();
+        QStringList detachedArguments;
+        detachedArguments << "-NoProfile" << "-ExecutionPolicy" << "Bypass" << "-NoExit"
+                          << "-File" << detachedScriptPath;
+        detachedArguments << scriptArguments
+                          << "-Password" << remotePassword->text()
+                          << "-DeleteScriptAfterLaunch" << "true";
+
+        qint64 processId = 0;
+        if (!QProcess::startDetached(powerShell, detachedArguments, QString(), &processId))
+        {
+            QFile::remove(detachedScriptPath);
+            QMessageBox::warning(this, "Fetch from remote", "Could not launch PowerShell.", QMessageBox::Ok);
+            return;
+        }
+
+        remoteFetchOutput->appendPlainText(
+            QString("Launched PowerShell %1for filename range %2-%3, step %4 (process %5).")
+                .arg(testMode ? "test " : "")
+                .arg(firstFileNumber).arg(lastFileNumber).arg(remoteStep->value()).arg(processId));
+        QMessageBox::information(
+            this,
+            "Fetch from remote",
+            "The remote fetch was launched in a PowerShell window. SPIERSalign will not wait for or control it.",
+            QMessageBox::Ok);
+        return;
+    }
+
+    QStringList arguments;
+    arguments << "-NoProfile" << "-ExecutionPolicy" << "Bypass"
+              << "-File" << remoteFetchScriptPath;
+    arguments << scriptArguments;
+
+    QProcessEnvironment environment = QProcessEnvironment::systemEnvironment();
+    environment.insert("SPIERSALIGN_SFTP_PASSWORD", remotePassword->text());
+    remoteFetchProcess->setProcessEnvironment(environment);
+    remoteFetchProcess->setProcessChannelMode(QProcess::SeparateChannels);
+
+    remoteFetchCompleted = false;
+    remoteFetchCancelled = false;
+    remoteFetchStdoutBuffer.clear();
+    remoteFetchOutput->clear();
+    remoteFetchProgress->setRange(0, 0);
+    setRemoteFetchRunning(true);
+    appendRemoteFetchLine(
+        QString("%1 remote filename range %2-%3, step %4.")
+            .arg(testMode ? "Testing" : "Fetching")
+            .arg(firstFileNumber).arg(lastFileNumber).arg(remoteStep->value()));
+    remoteFetchProcess->start(powerShell, arguments);
+}
+
+void MainWindowImpl::cancelRemoteFetch()
+{
+    if (remoteFetchProcess->state() == QProcess::NotRunning) return;
+    remoteFetchCancelled = true;
+    appendRemoteFetchLine("Cancelling...");
+#ifdef Q_OS_WIN
+    QProcess::startDetached(
+        "taskkill.exe",
+        QStringList() << "/PID" << QString::number(remoteFetchProcess->processId()) << "/T" << "/F");
+#else
+    remoteFetchProcess->terminate();
+#endif
+    QTimer::singleShot(3000, this, [this]()
+    {
+        if (remoteFetchProcess->state() != QProcess::NotRunning) remoteFetchProcess->kill();
+    });
+}
+
+void MainWindowImpl::appendRemoteFetchLine(const QString &line)
+{
+    if (line.startsWith("SPIERSALIGN_DOWNLOAD|"))
+    {
+        const QStringList fields = line.split('|');
+        if (fields.count() >= 4)
+        {
+            statusbar->showMessage(
+                QString("Downloaded %1/%2: %3; %4 conversion(s) active")
+                    .arg(fields.at(1)).arg(fields.at(2)).arg(fields.at(3)).arg(fields.value(4, "0")));
+        }
+        return;
+    }
+    if (line.startsWith("SPIERSALIGN_PROGRESS|"))
+    {
+        const QStringList fields = line.split('|');
+        if (fields.count() >= 4)
+        {
+            const int current = fields.at(1).toInt();
+            const int total = fields.at(2).toInt();
+            remoteFetchProgress->setRange(0, total);
+            remoteFetchProgress->setValue(current);
+            statusbar->showMessage(QString("Remote fetch %1/%2: %3").arg(current).arg(total).arg(fields.at(3)));
+        }
+        return;
+    }
+    if (line.startsWith("SPIERSALIGN_STATUS|"))
+    {
+        const QString message = line.mid(QString("SPIERSALIGN_STATUS|").length());
+        remoteFetchOutput->appendPlainText(message);
+        statusbar->showMessage(message);
+        return;
+    }
+    if (line.startsWith("SPIERSALIGN_COMPLETE|"))
+    {
+        remoteFetchCompleted = true;
+        return;
+    }
+    if (!line.trimmed().isEmpty()) remoteFetchOutput->appendPlainText(line.trimmed());
+}
+
+void MainWindowImpl::readRemoteFetchOutput()
+{
+    remoteFetchStdoutBuffer.append(remoteFetchProcess->readAllStandardOutput());
+    int newline = -1;
+    while ((newline = remoteFetchStdoutBuffer.indexOf('\n')) >= 0)
+    {
+        QByteArray line = remoteFetchStdoutBuffer.left(newline);
+        remoteFetchStdoutBuffer.remove(0, newline + 1);
+        if (line.endsWith('\r')) line.chop(1);
+        appendRemoteFetchLine(QString::fromLocal8Bit(line));
+    }
+
+    const QString standardError = QString::fromLocal8Bit(remoteFetchProcess->readAllStandardError());
+    const QStringList errorLines = standardError.split(QRegularExpression("[\\r\\n]+"), Qt::SkipEmptyParts);
+    for (const QString &line : errorLines) appendRemoteFetchLine(line);
+}
+
+void MainWindowImpl::remoteFetchFinished(int exitCode, QProcess::ExitStatus exitStatus)
+{
+    readRemoteFetchOutput();
+    if (!remoteFetchStdoutBuffer.isEmpty())
+    {
+        appendRemoteFetchLine(QString::fromLocal8Bit(remoteFetchStdoutBuffer));
+        remoteFetchStdoutBuffer.clear();
+    }
+
+    setRemoteFetchRunning(false);
+    removeRemoteFetchScript();
+    statusbar->clearMessage();
+
+    if (remoteFetchCancelled)
+    {
+        appendRemoteFetchLine("Remote fetch cancelled.");
+        return;
+    }
+
+    if (exitStatus == QProcess::NormalExit && exitCode == 0 && remoteFetchCompleted)
+    {
+        appendRemoteFetchLine("Remote fetch completed.");
+        QMessageBox::information(
+            this,
+            "Fetch completed",
+            "The fetched and converted images have been left in:\n" + remoteLocalDirectory->text().trimmed(),
+            QMessageBox::Ok);
+    }
+    else
+    {
+        appendRemoteFetchLine(QString("Remote fetch failed (exit code %1).").arg(exitCode));
+        QMessageBox::warning(
+            this,
+            "Fetch from remote",
+            "The remote fetch failed. See the output in the Crop window for details.",
+            QMessageBox::Ok);
+    }
+}
+
+void MainWindowImpl::remoteFetchError(QProcess::ProcessError error)
+{
+    if (error != QProcess::FailedToStart) return;
+    appendRemoteFetchLine("PowerShell failed to start.");
+    setRemoteFetchRunning(false);
+    removeRemoteFetchScript();
+    statusbar->clearMessage();
 }
 
 
@@ -2200,6 +2706,8 @@ void MainWindowImpl::on_actionOpen_triggered()
 
     endCropFile->setMaximum(imageList.count());
     startCropFile->setMaximum(imageList.count());
+    startCropFile->setValue(1);
+    endCropFile->setValue(imageList.count());
 
 }
 
@@ -3743,15 +4251,15 @@ void MainWindowImpl::on_actionCrop_triggered()
         for (int i = 0; i < count; i++) items <<  imageList[i]->fileName;
         bool ok;
 
-        min = startCropFile->value();
-        max = endCropFile->value();
+        min = startCropFile->value() - 1;
+        max = endCropFile->value() - 1;
 
-        if (max<=min)
+        if (max < min)
         {
             QMessageBox::critical(
                 this,                      // parent widget (nullptr if none)
                 "Error",                   // dialog title
-                "Minimum file must be lower than maximum file!"    // message text
+                "Minimum file must not be greater than maximum file!"    // message text
                 );
             return;
         }
@@ -3811,7 +4319,7 @@ void MainWindowImpl::on_actionCrop_triggered()
             qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
 
             QString output = "Cropping - ";
-            QString output2= QString::asprintf("Processing (%d/%d)", count, (max - min));
+            QString output2= QString::asprintf("Processing (%d/%d)", count, (max - min + 1));
             statusbar->showMessage(output + output2);
 
             QImage cropimage;

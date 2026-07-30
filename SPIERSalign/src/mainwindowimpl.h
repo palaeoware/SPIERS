@@ -25,6 +25,8 @@
 #include <QGridLayout>
 #include <QListWidget>
 #include <QPlainTextEdit>
+#include <QProcess>
+#include <QProgressBar>
 #include <QSpinBox>
 #include <QCheckBox>
 #include "scene.h"
@@ -149,7 +151,21 @@ private slots:
     void pickMarkerColourSlot();
     void getMinClicked();
     void getMaxClicked();
+    void browseRemoteLocalDirectory();
+    void startRemoteFetch();
+    void testRemoteFetch();
+    void cancelRemoteFetch();
+    void readRemoteFetchOutput();
+    void remoteFetchFinished(int exitCode, QProcess::ExitStatus exitStatus);
+    void remoteFetchError(QProcess::ProcessError error);
 private:
+    int cropFileNumber(int oneBasedPosition, bool *ok = nullptr) const;
+    void startRemoteFetch(bool testMode);
+    void loadRemoteFetchSettings();
+    void saveRemoteFetchSettings() const;
+    void setRemoteFetchRunning(bool running);
+    void appendRemoteFetchLine(const QString &line);
+    void removeRemoteFetchScript();
     void rotate (qreal rotateAngle);
     void resize(qreal sizeChange);
     void lateralShift(qreal shiftSize);
@@ -166,17 +182,28 @@ private:
     QSpinBox *red, *red2;
     QSpinBox *green, *green2;
     QSpinBox *blue, *blue2, *startCropFile, *endCropFile;
-    QLineEdit *folderName;
+    QLineEdit *folderName, *remoteDirectory, *remoteLocalDirectory, *remotePassword;
     QGridLayout *aMGridLayout;
     QVBoxLayout *markerLayout, *infoLayout, *cropLayout, *aMVertLayout, *autoLayout;
     QHBoxLayout *horizontalLayout1, *horizontalLayout2, *horizontalLayout3, *horizontalLayout4, *horizontalLayout5, *horizontalLayout6, *horizontalLayout7, *horizontalLayout8, *horizontalLayout9,
                 *horizontalLayout10, *horizontalLayout11;
     QSpinBox *mThickness, *mSize, *cropWidth, *cropHeight;
+    QSpinBox *coordinateBinning, *windowLow, *windowHigh, *outputBinning, *remoteStep, *conversionWorkers;
     QSpinBox *aMTopLeftX, *aMTopLeftY, *aMWidth, *aMHeight, *aMThickness, *aMHoriz, *aMVert;
     QWidget *layoutWidgetOne, *layoutWidgetTwo, *layoutWidgetThree, *layoutWidgetFour, *layoutWidgetFive;
     QPlainTextEdit *notes;
     QRectF sceneRectangle;
     QPushButton *lockMarkers, *autoMarkers, *grid, *setupAlign, *pickMarkerColourButton;
+    QPushButton *remoteFetchButton, *remoteTestButton, *remoteFetchCancelButton;
+    QComboBox *remoteOutputFormat;
+    QCheckBox *deleteRemoteJp2, *launchRemotePowerShell;
+    QPlainTextEdit *remoteFetchOutput;
+    QProgressBar *remoteFetchProgress;
+    QProcess *remoteFetchProcess;
+    QByteArray remoteFetchStdoutBuffer;
+    QString remoteFetchScriptPath;
+    bool remoteFetchCompleted;
+    bool remoteFetchCancelled;
     QString filesDirectoryString;
     int propogateImage, propogateStep, lockImage;
     int redValue;

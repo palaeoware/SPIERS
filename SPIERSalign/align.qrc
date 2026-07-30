@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>resources/SPIERSalignIcon.svg</file>
+        <file>scripts/fetch_remote_crop.ps1</file>
     </qresource>
 </RCC>
