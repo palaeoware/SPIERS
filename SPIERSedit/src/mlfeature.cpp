@@ -143,6 +143,16 @@ int MLFeature::GetImportance()
     return _importancePercent;
 }
 
+bool MLFeature::CalculateFeatureROI(
+    cv::Mat &mat,
+    int sliceID,
+    MLCachedAccess *data,
+    const MLROISlice &)
+{
+    CalculateFeature(mat, sliceID, data);
+    return true;
+}
+
 int MLFeature::GetXYSupportRadius() const
 {
     switch (_type)

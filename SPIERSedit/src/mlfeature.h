@@ -20,11 +20,17 @@
 #include "opencv2/core.hpp"
 
 class MLCachedAccess;
+class MLROISlice;
 class MLFeature
 {
 public:
     virtual ~MLFeature() = default;
     virtual void CalculateFeature(cv::Mat &mat, int sliceID, MLCachedAccess *data) = 0; //makes class abstract
+    virtual bool CalculateFeatureROI(
+        cv::Mat &mat,
+        int sliceID,
+        MLCachedAccess *data,
+        const MLROISlice &roi);
     enum class FeatureType
     {
         Gaussian,

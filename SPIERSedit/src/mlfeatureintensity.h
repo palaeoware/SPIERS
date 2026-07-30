@@ -24,6 +24,11 @@ class MLFeatureIntensity : public MLFeature
 public:
     MLFeatureIntensity(Channel channel);
     void CalculateFeature(cv::Mat &mat, int sliceID, MLCachedAccess *data) override;
+    bool CalculateFeatureROI(
+        cv::Mat &mat,
+        int sliceID,
+        MLCachedAccess *data,
+        const MLROISlice &roi) override;
 private:
     void CalcFeatureIntensity(cv::Mat &mat, int sliceID, MLCachedAccess *data);
     void CalcFeatureColor(cv::Mat &mat, int sliceID, MLCachedAccess *data);

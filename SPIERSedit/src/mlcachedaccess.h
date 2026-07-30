@@ -46,6 +46,11 @@ public:
     int GetFeatureTileCount();
     bool GetSourceColour();
     void CalculateFeature(cv::Mat &mat, int sliceIndex, int featureID);
+    bool CalculateFeatureROI(
+        cv::Mat &mat,
+        int sliceIndex,
+        int featureID,
+        const MLROISlice &roi);
 
     cv::Mat GetWholeSliceFeature(int z, int featureIndex);
     cv::Mat GetROISliceFeature(

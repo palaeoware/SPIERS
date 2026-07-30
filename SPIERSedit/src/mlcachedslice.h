@@ -57,7 +57,9 @@ public:
     void RemoveAllFeatures();
 private:
     void FetchSourceData();
-    void FetchFeatureData(int feature);
+    void FetchFeatureData(
+        int feature,
+        const MLROISlice *roi = nullptr);
     bool FeatureTilesAreValid(
         int feature,
         const MLROISlice &roi) const;

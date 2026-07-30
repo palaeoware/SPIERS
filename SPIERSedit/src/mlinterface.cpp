@@ -1008,13 +1008,6 @@ bool MLInterface::BuildSliceSampleMatrix(
     QVector<cv::Mat> featureSlices;
     featureSlices.reserve(numFeatures);
 
-    MLROISlice featureROI;
-    if (roi != nullptr)
-    {
-        featureROI = *roi;
-        featureROI.addHaloPixels(data->GetRequiredXYHalo());
-    }
-
     for (int f = 0; f < numFeatures; ++f)
     {
         if (roi != nullptr)
@@ -1023,7 +1016,7 @@ bool MLInterface::BuildSliceSampleMatrix(
                 data->GetROISliceFeature(
                     sliceID,
                     featureIndices[f],
-                    featureROI));
+                    *roi));
         }
         else
         {

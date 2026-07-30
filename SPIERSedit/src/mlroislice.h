@@ -18,6 +18,7 @@
 #define MLROISLICE_H
 
 #include <QByteArray>
+#include <QRect>
 
 class MLROISlice
 {
@@ -49,11 +50,13 @@ public:
     int height() const;
     bool isPixelActive(int x, int y) const;
     bool isValid() const;
+    int requiredTileCount() const;
     int targetTileCount() const;
     int tileColumns() const;
     int tileRows() const;
     int tileSize() const;
     TileState tileState(int tileX, int tileY) const;
+    QRect tileRect(int tileX, int tileY) const;
     int totalPixelCount() const;
     int totalTileCount() const;
     int width() const;

@@ -302,6 +302,19 @@ void MLCachedAccess::CalculateFeature(cv::Mat &mat, int sliceIndex, int featureI
     features[featureID]->CalculateFeature(mat, sliceIndex, this);
 }
 
+bool MLCachedAccess::CalculateFeatureROI(
+    cv::Mat &mat,
+    int sliceIndex,
+    int featureID,
+    const MLROISlice &roi)
+{
+    return features[featureID]->CalculateFeatureROI(
+        mat,
+        sliceIndex,
+        this,
+        roi);
+}
+
 int MLCachedAccess::AddFeature(MLFeature *feature)
 {
     //Already exist? If so just return the index

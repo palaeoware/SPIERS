@@ -216,6 +216,11 @@ bool MLROISlice::isValid() const
     return m_valid;
 }
 
+int MLROISlice::requiredTileCount() const
+{
+    return m_targetTileCount + m_haloTileCount;
+}
+
 int MLROISlice::targetTileCount() const
 {
     return m_targetTileCount;
@@ -249,6 +254,26 @@ MLROISlice::TileState MLROISlice::tileState(int tileX, int tileY) const
 
     return static_cast<TileState>(
         m_tileStates.at(tileY * m_tileColumns + tileX));
+}
+
+QRect MLROISlice::tileRect(int tileX, int tileY) const
+{
+    if (!m_valid
+        || tileX < 0
+        || tileX >= m_tileColumns
+        || tileY < 0
+        || tileY >= m_tileRows)
+    {
+        return QRect();
+    }
+
+    const int left = tileX * m_tileSize;
+    const int top = tileY * m_tileSize;
+    return QRect(
+        left,
+        top,
+        qMin(m_tileSize, m_width - left),
+        qMin(m_tileSize, m_height - top));
 }
 
 int MLROISlice::totalPixelCount() const

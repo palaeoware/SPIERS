@@ -18,6 +18,7 @@
 #include "globals.h"
 #include "mlupdateblockingdialog.h"
 #include "mlfeatureintensity.h"
+#include "mlroislice.h"
 
 MLFeatureSquareIntensity::MLFeatureSquareIntensity(Channel channel)
     : MLFeature(FeatureType::Square, channel, false, 0, 0)
@@ -51,6 +52,52 @@ void MLFeatureSquareIntensity::CalculateFeature(cv::Mat &mat, int sliceID, MLCac
             outRow[x] = v * v;
         }
     }
+}
+
+bool MLFeatureSquareIntensity::CalculateFeatureROI(
+    cv::Mat &mat,
+    int sliceID,
+    MLCachedAccess *data,
+    const MLROISlice &roi)
+{
+    Q_ASSERT(mat.type() == CV_32F);
+    Q_ASSERT(mat.cols == fwidth);
+    Q_ASSERT(mat.rows == fheight);
+
+    const int intensityIndex = data->GetIndexForFeature(
+        MLFeature::FeatureType::Intensity,
+        _channel,
+        false,
+        0,
+        0);
+    const cv::Mat intensity =
+        data->GetROISliceFeature(sliceID, intensityIndex, roi);
+
+    for (int tileY = 0; tileY < roi.tileRows(); tileY++)
+    {
+        for (int tileX = 0; tileX < roi.tileColumns(); tileX++)
+        {
+            if (roi.tileState(tileX, tileY)
+                == MLROISlice::TileState::Inactive)
+            {
+                continue;
+            }
+
+            const QRect tile = roi.tileRect(tileX, tileY);
+            for (int y = tile.top(); y <= tile.bottom(); y++)
+            {
+                const float *inRow = intensity.ptr<float>(y);
+                float *outRow = mat.ptr<float>(y);
+                for (int x = tile.left(); x <= tile.right(); x++)
+                {
+                    const float value = inRow[x];
+                    outRow[x] = value * value;
+                }
+            }
+        }
+    }
+
+    return false;
 }
 
 QList<MLFeature *> MLFeatureSquareIntensity::GetDependencies()
