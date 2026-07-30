@@ -33,6 +33,8 @@
 #include "mainwindow.h"
 #include "mlupdateblockingdialog.h"
 
+#include <QDebug>
+
 //add these to scene at some point!
 
 void SaveMainImage(QString fname)
@@ -840,15 +842,60 @@ QByteArray DoMaskLocking()
 {
     //This needs to look through all masks and segments. Any hidden masks and any locked segments shouldn't be written - write in
     //a 1 to the relevent lock entry
-    QByteArray newlocks(fwidth * fheight, 0);
+    const qsizetype pixelCount = static_cast<qsizetype>(fwidth) * fheight;
+    QByteArray newlocks(pixelCount, 0);
 
+    if (Locks.size() < pixelCount * 2)
+    {
+        qWarning() << "Cannot calculate mask locking: lock data has"
+                   << Locks.size() << "bytes; expected" << pixelCount * 2;
+        newlocks.fill(static_cast<char>(255));
+        return newlocks;
+    }
+
+    if (HiddenMasksLockedForGeneration && Masks.size() < pixelCount)
+    {
+        qWarning() << "Cannot calculate hidden-mask locking: mask data has"
+                   << Masks.size() << "bytes; expected" << pixelCount;
+        newlocks.fill(static_cast<char>(255));
+        return newlocks;
+    }
+
+    int firstInvalidMaskId = -1;
+    int invalidMaskPixelCount = 0;
     for (int x = 0; x < fwidth; x++)
         for (int y = 0; y < fheight; y++)
         {
-            int hpos = (fheight - y - 1) * fwidth + x;
-            if (Locks[hpos * 2]) newlocks[fwidth * y + x] = static_cast<uchar>(255);
-            if (HiddenMasksLockedForGeneration) if (!MasksSettings[static_cast<quint8>(Masks[hpos])]->Show) newlocks[fwidth * y + x] = static_cast<char>(255);
+            const int hpos = (fheight - y - 1) * fwidth + x;
+            const int outputPosition = fwidth * y + x;
+            if (Locks[hpos * 2])
+                newlocks[outputPosition] = static_cast<char>(255);
+
+            if (HiddenMasksLockedForGeneration)
+            {
+                const int maskId = static_cast<quint8>(Masks[hpos]);
+                if (maskId >= MasksSettings.size() || MasksSettings.at(maskId) == nullptr)
+                {
+                    newlocks[outputPosition] = static_cast<char>(255);
+                    invalidMaskPixelCount++;
+                    if (firstInvalidMaskId == -1)
+                        firstInvalidMaskId = maskId;
+                }
+                else if (!MasksSettings.at(maskId)->Show)
+                {
+                    newlocks[outputPosition] = static_cast<char>(255);
+                }
+            }
         }
+
+    if (invalidMaskPixelCount > 0)
+    {
+        qWarning() << "Hidden-mask locking found" << invalidMaskPixelCount
+                   << "pixels referring to invalid mask IDs; first ID:"
+                   << firstInvalidMaskId << "mask settings count:"
+                   << MasksSettings.size();
+    }
+
     return newlocks;
 }
 void ApplyRadial(int seg, int fnum, BeamHardening *bh,  bool flag = false)

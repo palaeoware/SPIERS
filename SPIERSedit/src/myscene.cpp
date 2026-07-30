@@ -65,7 +65,7 @@ void myscene::DoMouse(int x, int y, int PressedButton)
         got_LCE_sample=true;
     }
 
-    if (CurrentMode==5) //recalc
+    if (CurrentMode==5 && Active) //recalc
         gen_locks = DoMaskLocking();
 
     if (x != LastMouseX || y != LastMouseY) // an actual move

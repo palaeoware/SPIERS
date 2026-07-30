@@ -1054,6 +1054,9 @@ bool MLInterface::EnsureSliceProbabilityCache(
     if (!BuildSliceSampleMatrix(sliceID, samples, excludedPixels))
         return false;
 
+    if (restricted)
+        qDebug() << "ML prediction pixels:" << samples.rows << "of" << fwidth * fheight;
+
     cv::Mat probabilities;
     if (samples.rows > 0)
     {
