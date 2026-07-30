@@ -166,8 +166,12 @@ int MLFeature::GetXYSupportRadius() const
 
     case FeatureType::Gradient_magnitude:
     case FeatureType::Laplacian_of_gaussian:
-    case FeatureType::Hessian:
         return 1;
+
+    case FeatureType::Hessian:
+        // ZZ and determinant are pointwise in XY. Other primitive Hessian
+        // modes use an adjacent X and/or Y sample.
+        return _arg2 == 3 || _arg2 == 6 ? 0 : 1;
 
     case FeatureType::Local_variance:
     case FeatureType::Tensor_component_local:

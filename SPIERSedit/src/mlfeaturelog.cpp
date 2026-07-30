@@ -18,6 +18,7 @@
 #include "globals.h"
 #include "mlupdateblockingdialog.h"
 #include "mlfeaturegaussian.h"
+#include "mlroislice.h"
 
 MLFeatureLoG::MLFeatureLoG(Channel channel, bool is3D, int arg1)
     : MLFeature(FeatureType::Laplacian_of_gaussian, channel, is3D, arg1, 0)
@@ -30,6 +31,92 @@ void MLFeatureLoG::CalculateFeature(cv::Mat &mat, int sliceID, MLCachedAccess *d
         CalcFeatureLoG3D(mat, sliceID, data);
     else
         CalcFeatureLoG2D(mat, sliceID, data);
+}
+
+bool MLFeatureLoG::CalculateFeatureROI(
+    cv::Mat &mat,
+    int sliceID,
+    MLCachedAccess *data,
+    const MLROISlice &roi)
+{
+    const float sigma = std::pow(2.0f, _arg1);
+    const float scaleFactor = sigma * sigma;
+    const MLROISlice sourceROI = roi.expandedByPixels(1);
+    const int gaussianIndex = data->GetIndexForFeature(
+        MLFeature::FeatureType::Gaussian,
+        _channel,
+        _is3D,
+        _arg1,
+        0);
+
+    const cv::Mat current = data->GetROISliceFeature(
+        sliceID,
+        gaussianIndex,
+        sourceROI);
+    cv::Mat previous;
+    cv::Mat next;
+    if (_is3D)
+    {
+        previous = data->GetROISliceFeature(
+            qMax(0, sliceID - 1),
+            gaussianIndex,
+            sourceROI);
+        next = data->GetROISliceFeature(
+            qMin(FileCount - 1, sliceID + 1),
+            gaussianIndex,
+            sourceROI);
+    }
+
+    for (int tileY = 0; tileY < roi.tileRows(); tileY++)
+    {
+        for (int tileX = 0; tileX < roi.tileColumns(); tileX++)
+        {
+            if (roi.tileState(tileX, tileY)
+                == MLROISlice::TileState::Inactive)
+            {
+                continue;
+            }
+
+            const QRect tile = roi.tileRect(tileX, tileY);
+            for (int y = tile.top(); y <= tile.bottom(); y++)
+            {
+                const int previousY = qMax(0, y - 1);
+                const int nextY = qMin(fheight - 1, y + 1);
+                const float *currentRow = current.ptr<float>(y);
+                const float *previousYRow =
+                    current.ptr<float>(previousY);
+                const float *nextYRow = current.ptr<float>(nextY);
+                const float *previousZRow =
+                    _is3D ? previous.ptr<float>(y) : nullptr;
+                const float *nextZRow =
+                    _is3D ? next.ptr<float>(y) : nullptr;
+                float *outputRow = mat.ptr<float>(y);
+
+                for (int x = tile.left(); x <= tile.right(); x++)
+                {
+                    const int previousX = qMax(0, x - 1);
+                    const int nextX = qMin(fwidth - 1, x + 1);
+                    const float centre = currentRow[x];
+                    float laplacian =
+                        currentRow[previousX]
+                        + currentRow[nextX]
+                        + previousYRow[x]
+                        + nextYRow[x]
+                        - 4.0f * centre;
+                    if (_is3D)
+                    {
+                        laplacian +=
+                            nextZRow[x]
+                            - 2.0f * centre
+                            + previousZRow[x];
+                    }
+                    outputRow[x] = scaleFactor * laplacian;
+                }
+            }
+        }
+    }
+
+    return false;
 }
 
 QList<MLFeature *> MLFeatureLoG::GetDependencies()
