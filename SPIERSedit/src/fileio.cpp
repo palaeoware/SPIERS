@@ -17,7 +17,6 @@
 
 #include "fileio.h"
 #include "globals.h"
-#include "sourceimagenormalizer.h"
 #include "undo.h"
 #include <QImage>
 #include <QRgb>
@@ -252,8 +251,11 @@ bool SimpleLoadColourData(QString fname)
         Error("File is not in a valid format");
     else
     {
-        normalizeIndexedSourceImage(Data);
-        ColArray = Data;
+        //bodge - everything is expected to be in indexed 8 if greyscale, so fix anything that isn't!
+        if (d == QImage::Format_Grayscale8)
+            ColArray = Data.convertToFormat(QImage::Format_Indexed8);
+        else
+            ColArray = Data;
     }
     return true;
 }
@@ -308,8 +310,9 @@ past:  //so can get here with a valid cache entry but no colour file
         }
         else
         {
-            normalizeIndexedSourceImage(Data);
-            ColArray = Data;
+            //bodge - everything is expected to be in indexed 8 if greyscale, so fix anything that isn't!
+            if (d == QImage::Format_Grayscale8) ColArray = Data.convertToFormat(QImage::Format_Indexed8);
+            else ColArray = Data;
         }
 
         if (!RenderCache)
@@ -341,8 +344,6 @@ past:  //so can get here with a valid cache entry but no colour file
         }
     }
 
-    // Cached data created by older code may still contain palette indices.
-    normalizeIndexedSourceImage(ColArray);
     if (ColArray.format() == QImage::Format_Indexed8 || ColArray.format() == QImage::Format_Grayscale8) GreyImage = true;
     else GreyImage = false;
     cwidth4 = cwidth;

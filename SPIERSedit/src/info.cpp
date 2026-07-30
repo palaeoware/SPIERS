@@ -39,14 +39,6 @@ extern void ShowInfo(int x, int y)
     {
         o << "(" << x << "," << y << ") ";
         o << "[" << lx << "," << ly << "]\n";
-        qDebug()<<"Pos"<<(fheight - ly - 1) * fwidth + lx << "Mask len"<<Masks.count();
-        if (Masks.count()==0)
-        {
-            label->setText(QString("Masks empty!"));
-            return;
-        }
-        qDebug()<<"Mask"<<Masks[(fheight - ly - 1) * fwidth + lx];
-        qDebug()<<"MaskSettings len"<<MasksSettings.count();
         QString mn = MasksSettings[static_cast<quint8>(Masks[(fheight - ly - 1) * fwidth + lx])]->Name;
         if (mn.length() >= 15) mn = mn.left(12) + "...";
         o << mn << " (";
