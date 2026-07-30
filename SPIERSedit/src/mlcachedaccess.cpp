@@ -16,6 +16,7 @@
  */
 #include "mlcachedaccess.h"
 #include "mlcachedslice.h"
+#include "mlroislice.h"
 
 #include "mlfileio.h"
 
@@ -260,6 +261,20 @@ int MLCachedAccess::GetYSize()
     return ySize;
 }
 
+int MLCachedAccess::GetFeatureTileCount()
+{
+    const int tileSize = MLROISlice::adaptiveTileSize(
+        xSize,
+        ySize,
+        MLROISlice::TARGET_TILE_COUNT);
+    if (tileSize <= 0)
+        return 0;
+
+    const int tileColumns = ((xSize - 1) / tileSize) + 1;
+    const int tileRows = ((ySize - 1) / tileSize) + 1;
+    return tileColumns * tileRows;
+}
+
 bool MLCachedAccess::GetSourceColour()
 {
     return sourceImageRGB;
@@ -269,6 +284,16 @@ cv::Mat MLCachedAccess::GetWholeSliceFeature(int z, int featureIndex)
 {
     MLCachedSlice *slice = GetSlice(z);
     slice->FetchFeatureIfNeeded(featureIndex);
+    return slice->featureData[featureIndex];
+}
+
+cv::Mat MLCachedAccess::GetROISliceFeature(
+    int z,
+    int featureIndex,
+    const MLROISlice &roi)
+{
+    MLCachedSlice *slice = GetSlice(z);
+    slice->FetchFeatureTilesIfNeeded(featureIndex, roi);
     return slice->featureData[featureIndex];
 }
 

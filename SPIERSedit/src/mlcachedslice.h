@@ -21,10 +21,12 @@
 #include <QHash>
 #include <QDateTime>
 #include <QColor>
+#include <QByteArray>
 #include "opencv2/core.hpp"
 #include "mlfeature.h"
 
 class MLCachedAccess;
+class MLROISlice;
 
 class MLCachedSlice
 {
@@ -39,6 +41,7 @@ public:
     int sliceIndex;
     MLCachedAccess *cache;
     QList<bool> featuresValid;
+    QList<QByteArray> featureValidTiles;
     void AddFeature();
     void RemoveFeature(int index);
     void Clear();
@@ -47,11 +50,21 @@ public:
     QColor GetColor(int x, int y);
     void FetchSourceDataIfNeeded();
     void FetchFeatureIfNeeded(int featureIndex);
+    void FetchFeatureTilesIfNeeded(
+        int featureIndex,
+        const MLROISlice &roi);
 
     void RemoveAllFeatures();
 private:
     void FetchSourceData();
     void FetchFeatureData(int feature);
+    bool FeatureTilesAreValid(
+        int feature,
+        const MLROISlice &roi) const;
+    void SetFeatureFullyValid(int feature);
+    void SetFeatureTilesValid(
+        int feature,
+        const MLROISlice &roi);
 
 
 };

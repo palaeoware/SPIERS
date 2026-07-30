@@ -1008,8 +1008,29 @@ bool MLInterface::BuildSliceSampleMatrix(
     QVector<cv::Mat> featureSlices;
     featureSlices.reserve(numFeatures);
 
+    MLROISlice featureROI;
+    if (roi != nullptr)
+    {
+        featureROI = *roi;
+        featureROI.addHaloPixels(data->GetRequiredXYHalo());
+    }
+
     for (int f = 0; f < numFeatures; ++f)
-        featureSlices.append(data->GetWholeSliceFeature(sliceID, featureIndices[f]));
+    {
+        if (roi != nullptr)
+        {
+            featureSlices.append(
+                data->GetROISliceFeature(
+                    sliceID,
+                    featureIndices[f],
+                    featureROI));
+        }
+        else
+        {
+            featureSlices.append(
+                data->GetWholeSliceFeature(sliceID, featureIndices[f]));
+        }
+    }
 
     samples.create(numSamples, numFeatures, CV_32F);
 

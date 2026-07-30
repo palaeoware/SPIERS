@@ -16,6 +16,7 @@
  */
 #include "mlcachedslice.h"
 #include "mlcachedaccess.h"
+#include "mlroislice.h"
 
 #include "mlfileio.h"
 #include "globals.h"
@@ -27,10 +28,13 @@ MLCachedSlice::MLCachedSlice(int featureCount, int zIndex, MLCachedAccess *paren
     cache = parent;
     featureData.clear();
     featuresValid.clear();
+    featureValidTiles.clear();
     for (int i=0;i< featureCount; i++)
     {
         featureData.append(cv::Mat()); //an empty Mat
         featuresValid.append(false);
+        featureValidTiles.append(
+            QByteArray(parent->GetFeatureTileCount(), 0));
     }
     sliceIndex = zIndex;
     lastUsed = parent->timeStamp;
@@ -52,12 +56,15 @@ void MLCachedSlice::AddFeature()
 {
     featuresValid.append(false);
     featureData.append(cv::Mat()); //an empty Mat
+    featureValidTiles.append(
+        QByteArray(cache->GetFeatureTileCount(), 0));
 }
 
 void MLCachedSlice::RemoveFeature(int index)
 {
     featuresValid.removeAt(index);
     featureData.removeAt(index);
+    featureValidTiles.removeAt(index);
 }
 
 void MLCachedSlice::Clear()
@@ -70,6 +77,7 @@ void MLCachedSlice::Clear()
     {
         featureData[i].release(); //probably done automatically, but just in case!
         featuresValid[i] = false;
+        featureValidTiles[i].fill(0);
     }
 }
 
@@ -81,6 +89,7 @@ void MLCachedSlice::RemoveAllFeatures()
     }
     featureData.clear();
     featuresValid.clear();
+    featureValidTiles.clear();
 }
 
 float MLCachedSlice::GetFeatureData(int x, int y, int feature)
@@ -98,6 +107,83 @@ void MLCachedSlice::FetchFeatureIfNeeded(int featureIndex)
 {
     if (!featuresValid[featureIndex])
         FetchFeatureData(featureIndex);
+}
+
+void MLCachedSlice::FetchFeatureTilesIfNeeded(
+    int featureIndex,
+    const MLROISlice &roi)
+{
+    if (!FeatureTilesAreValid(featureIndex, roi))
+        FetchFeatureData(featureIndex);
+}
+
+bool MLCachedSlice::FeatureTilesAreValid(
+    int feature,
+    const MLROISlice &roi) const
+{
+    if (featuresValid.at(feature))
+        return true;
+
+    if (!roi.isValid()
+        || roi.width() != cache->GetXSize()
+        || roi.height() != cache->GetYSize()
+        || roi.totalTileCount() != featureValidTiles.at(feature).size())
+    {
+        return false;
+    }
+
+    const QByteArray &validTiles = featureValidTiles.at(feature);
+    for (int tileY = 0; tileY < roi.tileRows(); tileY++)
+    {
+        for (int tileX = 0; tileX < roi.tileColumns(); tileX++)
+        {
+            if (roi.tileState(tileX, tileY)
+                == MLROISlice::TileState::Inactive)
+            {
+                continue;
+            }
+
+            const int tile = tileY * roi.tileColumns() + tileX;
+            if (validTiles.at(tile) == 0)
+                return false;
+        }
+    }
+    return true;
+}
+
+void MLCachedSlice::SetFeatureFullyValid(int feature)
+{
+    featuresValid[feature] = true;
+    featureValidTiles[feature].fill(1);
+}
+
+void MLCachedSlice::SetFeatureTilesValid(
+    int feature,
+    const MLROISlice &roi)
+{
+    if (!roi.isValid()
+        || roi.width() != cache->GetXSize()
+        || roi.height() != cache->GetYSize()
+        || roi.totalTileCount() != featureValidTiles.at(feature).size())
+    {
+        return;
+    }
+
+    QByteArray &validTiles = featureValidTiles[feature];
+    for (int tileY = 0; tileY < roi.tileRows(); tileY++)
+    {
+        for (int tileX = 0; tileX < roi.tileColumns(); tileX++)
+        {
+            if (roi.tileState(tileX, tileY)
+                != MLROISlice::TileState::Inactive)
+            {
+                validTiles[tileY * roi.tileColumns() + tileX] = 1;
+            }
+        }
+    }
+
+    featuresValid[feature] =
+        !validTiles.contains(static_cast<char>(0));
 }
 
 
@@ -126,6 +212,7 @@ void MLCachedSlice::FetchFeatureData(int feature)
         {
             //file loading worked OK
             featureData[feature] = loadedMat;
+            SetFeatureFullyValid(feature);
             MLUpdateBlockingDialog::updateDetailText(
                 QString("Loaded feature %1 for slice %2 from file cache")
                     .arg(cache->GetFeature(feature)->GetPrettyFullName())
@@ -147,8 +234,8 @@ void MLCachedSlice::FetchFeatureData(int feature)
             featureData[feature] = mat;
             MLFileIO::SaveMatBinary(cache->GetFeature(feature)->GetEncodedNameForFile(),
                                     featureData[feature], sliceIndex);
+            SetFeatureFullyValid(feature);
         }
-        featuresValid[feature] = true;
     }
     catch (...)
     {

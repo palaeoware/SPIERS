@@ -24,6 +24,7 @@
 #include "mlfeature.h"
 
 class MLCachedSlice;
+class MLROISlice;
 
 class MLCachedAccess
 {
@@ -42,10 +43,15 @@ public:
     int GetFeatureCount();
     int GetXSize();
     int GetYSize();
+    int GetFeatureTileCount();
     bool GetSourceColour();
     void CalculateFeature(cv::Mat &mat, int sliceIndex, int featureID);
 
     cv::Mat GetWholeSliceFeature(int z, int featureIndex);
+    cv::Mat GetROISliceFeature(
+        int z,
+        int featureIndex,
+        const MLROISlice &roi);
     void SetFeatureInUse(int featureID, bool inUse);
     QList<int> GetFeaturesInUse();
     int GetRequiredXYHalo();
