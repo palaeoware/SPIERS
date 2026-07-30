@@ -143,6 +143,41 @@ int MLFeature::GetImportance()
     return _importancePercent;
 }
 
+int MLFeature::GetXYSupportRadius() const
+{
+    switch (_type)
+    {
+    case FeatureType::Gaussian:
+        return _is3D
+                   ? 0
+                   : static_cast<int>(
+                         std::ceil(3.0 * std::pow(2.0, _arg1)));
+
+    case FeatureType::Gradient_magnitude:
+    case FeatureType::Laplacian_of_gaussian:
+    case FeatureType::Hessian:
+        return 1;
+
+    case FeatureType::Local_variance:
+    case FeatureType::Tensor_component_local:
+        return static_cast<int>(std::pow(2.0, _arg1));
+
+    case FeatureType::Tensor_component_wide:
+        return static_cast<int>(std::pow(2.0, _arg1 + 1));
+
+    case FeatureType::Gradient_component:
+        // X and Y derivatives use adjacent pixels. The Z derivative does not.
+        return _arg2 == 2 ? 0 : 1;
+
+    case FeatureType::Distance_to_mask:
+        // An exact distance transform has unbounded spatial support.
+        return -1;
+
+    default:
+        return 0;
+    }
+}
+
 MLFeature *MLFeature::CreateFromData(FeatureType type, Channel channel, bool is3D, int arg1, int arg2)
 {
     switch (type)

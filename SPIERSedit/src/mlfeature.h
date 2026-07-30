@@ -95,6 +95,7 @@ public:
     QString Dump();
     void SetImportance(int percent);
     int GetImportance();
+    int GetXYSupportRadius() const;
     static MLFeature *CreateFromData(FeatureType type, Channel channel, bool is3D, int arg1, int arg2);
     virtual int GetMinMaxForArgs(int arg, bool max);
     virtual bool ReferencesMask(int maskId) const;

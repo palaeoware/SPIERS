@@ -21,6 +21,9 @@
 
 #include "globals.h"
 
+#include <functional>
+#include <limits>
+#include <QSet>
 #include <stdexcept>
 
 //Public API
@@ -159,6 +162,70 @@ void MLCachedAccess::SetFeatureInUse(int featureID, bool inUse)
 QList<int> MLCachedAccess::GetFeaturesInUse()
 {
     return featureIDsInUse;
+}
+
+int MLCachedAccess::GetRequiredXYHalo()
+{
+    QHash<int, int> cachedRadii;
+    QSet<int> visiting;
+
+    std::function<int(int)> calculateRadius = [&](int featureID) -> int
+    {
+        if (cachedRadii.contains(featureID))
+            return cachedRadii.value(featureID);
+
+        if (featureID < 0 || featureID >= features.count()
+            || visiting.contains(featureID))
+        {
+            return -1;
+        }
+
+        visiting.insert(featureID);
+        MLFeature *feature = features.at(featureID);
+        const int localRadius = feature->GetXYSupportRadius();
+        if (localRadius < 0)
+        {
+            visiting.remove(featureID);
+            cachedRadii.insert(featureID, -1);
+            return -1;
+        }
+
+        int dependencyRadius = 0;
+        QList<MLFeature *> dependencies = feature->GetDependencies();
+        for (MLFeature *dependency : dependencies)
+        {
+            const int dependencyID = GetIndexForFeature(dependency);
+            const int radius = calculateRadius(dependencyID);
+            if (radius < 0)
+            {
+                dependencyRadius = -1;
+                break;
+            }
+            dependencyRadius = qMax(dependencyRadius, radius);
+        }
+        qDeleteAll(dependencies);
+
+        int totalRadius = -1;
+        if (dependencyRadius >= 0
+            && localRadius <= std::numeric_limits<int>::max() - dependencyRadius)
+        {
+            totalRadius = localRadius + dependencyRadius;
+        }
+
+        visiting.remove(featureID);
+        cachedRadii.insert(featureID, totalRadius);
+        return totalRadius;
+    };
+
+    int requiredRadius = 0;
+    for (int featureID : featureIDsInUse)
+    {
+        const int radius = calculateRadius(featureID);
+        if (radius < 0)
+            return -1;
+        requiredRadius = qMax(requiredRadius, radius);
+    }
+    return requiredRadius;
 }
 
 void MLCachedAccess::DumpFeatures()

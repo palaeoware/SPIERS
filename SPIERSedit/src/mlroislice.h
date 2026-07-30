@@ -39,11 +39,13 @@ public:
         int tileSize = 0);
 
     int activePixelCount() const;
+    void addHaloPixels(int radius);
     static int adaptiveTileSize(
         int width,
         int height,
         int targetTileCount = TARGET_TILE_COUNT);
     const QByteArray &excludedPixels() const;
+    int haloTileCount() const;
     int height() const;
     bool isPixelActive(int x, int y) const;
     bool isValid() const;
@@ -60,6 +62,7 @@ private:
     int m_activePixelCount = 0;
     QByteArray m_excludedPixels;
     int m_height = 0;
+    int m_haloTileCount = 0;
     int m_targetTileCount = 0;
     int m_tileColumns = 0;
     int m_tileRows = 0;

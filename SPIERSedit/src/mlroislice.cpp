@@ -86,6 +86,75 @@ int MLROISlice::activePixelCount() const
     return m_activePixelCount;
 }
 
+void MLROISlice::addHaloPixels(int radius)
+{
+    if (!m_valid)
+        return;
+
+    m_haloTileCount = 0;
+    for (int tile = 0; tile < m_tileStates.size(); tile++)
+    {
+        if (m_tileStates.at(tile) == static_cast<char>(TileState::Halo))
+            m_tileStates[tile] = static_cast<char>(TileState::Inactive);
+    }
+
+    if (radius == 0)
+        return;
+
+    if (radius < 0)
+    {
+        for (int tile = 0; tile < m_tileStates.size(); tile++)
+        {
+            if (m_tileStates.at(tile)
+                == static_cast<char>(TileState::Inactive))
+            {
+                m_tileStates[tile] = static_cast<char>(TileState::Halo);
+                m_haloTileCount++;
+            }
+        }
+        return;
+    }
+
+    const int tileRadius = (radius + m_tileSize - 1) / m_tileSize;
+    QByteArray expandedStates = m_tileStates;
+
+    for (int tileY = 0; tileY < m_tileRows; tileY++)
+    {
+        for (int tileX = 0; tileX < m_tileColumns; tileX++)
+        {
+            if (tileState(tileX, tileY) != TileState::Target)
+                continue;
+
+            const int firstTileX = qMax(0, tileX - tileRadius);
+            const int lastTileX = qMin(m_tileColumns - 1, tileX + tileRadius);
+            const int firstTileY = qMax(0, tileY - tileRadius);
+            const int lastTileY = qMin(m_tileRows - 1, tileY + tileRadius);
+
+            for (int haloY = firstTileY; haloY <= lastTileY; haloY++)
+            {
+                for (int haloX = firstTileX; haloX <= lastTileX; haloX++)
+                {
+                    const int haloPosition =
+                        haloY * m_tileColumns + haloX;
+                    if (expandedStates.at(haloPosition)
+                        == static_cast<char>(TileState::Inactive))
+                    {
+                        expandedStates[haloPosition] =
+                            static_cast<char>(TileState::Halo);
+                    }
+                }
+            }
+        }
+    }
+
+    m_tileStates = expandedStates;
+    for (char state : m_tileStates)
+    {
+        if (state == static_cast<char>(TileState::Halo))
+            m_haloTileCount++;
+    }
+}
+
 int MLROISlice::adaptiveTileSize(
     int width,
     int height,
@@ -120,6 +189,11 @@ int MLROISlice::adaptiveTileSize(
 const QByteArray &MLROISlice::excludedPixels() const
 {
     return m_excludedPixels;
+}
+
+int MLROISlice::haloTileCount() const
+{
+    return m_haloTileCount;
 }
 
 int MLROISlice::height() const

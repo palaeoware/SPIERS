@@ -48,6 +48,7 @@ public:
     cv::Mat GetWholeSliceFeature(int z, int featureIndex);
     void SetFeatureInUse(int featureID, bool inUse);
     QList<int> GetFeaturesInUse();
+    int GetRequiredXYHalo();
     uint64 timeStamp;
     void DumpFeatures();
     int GetIndexForFeature(MLFeature *feature);

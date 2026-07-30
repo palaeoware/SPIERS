@@ -1065,11 +1065,19 @@ bool MLInterface::EnsureSliceProbabilityCache(
 
     if (restricted)
     {
+        MLROISlice featureROI = *roi;
+        const int xyHalo = data->GetRequiredXYHalo();
+        featureROI.addHaloPixels(xyHalo);
+
         qDebug() << "ML prediction pixels:" << samples.rows
                  << "of" << roi->totalPixelCount()
                  << "- target tiles:" << roi->targetTileCount()
                  << "of" << roi->totalTileCount()
-                 << "- tile size:" << roi->tileSize();
+                 << "- tile size:" << roi->tileSize()
+                 << "- feature halo:" << featureROI.haloTileCount()
+                 << "tiles for"
+                 << (xyHalo < 0 ? QStringLiteral("global support")
+                               : QStringLiteral("%1 px").arg(xyHalo));
     }
 
     cv::Mat probabilities;
