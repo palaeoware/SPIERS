@@ -113,8 +113,15 @@ void MLCachedSlice::FetchFeatureTilesIfNeeded(
     int featureIndex,
     const MLROISlice &roi)
 {
-    if (!FeatureTilesAreValid(featureIndex, roi))
-        FetchFeatureData(featureIndex, &roi);
+    if (FeatureTilesAreValid(featureIndex, roi))
+        return;
+
+    const MLROISlice missingROI =
+        roi.requiringInvalidTiles(featureValidTiles.at(featureIndex));
+    if (missingROI.isValid() && missingROI.requiredTileCount() > 0)
+        FetchFeatureData(featureIndex, &missingROI);
+    else
+        FetchFeatureData(featureIndex);
 }
 
 bool MLCachedSlice::FeatureTilesAreValid(
@@ -249,9 +256,12 @@ void MLCachedSlice::FetchFeatureData(
                     *roi);
             }
 
-            if (!featureData[feature].empty())
+            if (!featureData[feature].empty()
+                && calculatedWholeSlice)
             {
-                qDebug()<<"Overwriting a mat of size "<<featureData[feature].total() * featureData[feature].elemSize();
+                qDebug() << "Replacing a feature matrix of size"
+                         << featureData[feature].total()
+                                * featureData[feature].elemSize();
             }
             featureData[feature] = mat;
 

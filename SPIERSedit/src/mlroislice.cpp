@@ -240,6 +240,38 @@ int MLROISlice::requiredTileCount() const
     return m_targetTileCount + m_haloTileCount;
 }
 
+MLROISlice MLROISlice::requiringInvalidTiles(
+    const QByteArray &validTiles) const
+{
+    if (!m_valid || validTiles.size() != m_tileStates.size())
+        return MLROISlice();
+
+    MLROISlice missing = *this;
+    missing.m_dependencyExpansionPixels = 0;
+    missing.m_targetTileCount = 0;
+    missing.m_haloTileCount = 0;
+
+    for (int tile = 0; tile < missing.m_tileStates.size(); tile++)
+    {
+        const bool required =
+            missing.m_tileStates.at(tile)
+            != static_cast<char>(TileState::Inactive);
+        if (required && validTiles.at(tile) == 0)
+        {
+            missing.m_tileStates[tile] =
+                static_cast<char>(TileState::Target);
+            missing.m_targetTileCount++;
+        }
+        else
+        {
+            missing.m_tileStates[tile] =
+                static_cast<char>(TileState::Inactive);
+        }
+    }
+
+    return missing;
+}
+
 int MLROISlice::targetTileCount() const
 {
     return m_targetTileCount;

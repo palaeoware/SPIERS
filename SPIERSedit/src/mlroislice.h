@@ -52,6 +52,8 @@ public:
     bool isPixelActive(int x, int y) const;
     bool isValid() const;
     int requiredTileCount() const;
+    MLROISlice requiringInvalidTiles(
+        const QByteArray &validTiles) const;
     int targetTileCount() const;
     int tileColumns() const;
     int tileRows() const;
