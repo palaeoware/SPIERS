@@ -100,13 +100,20 @@ private:
 
     //Probabity cache system for recalc brush
     cv::Mat cachedSliceProbabilities;
+    QByteArray cachedProbabilityExcludedPixels;
     int cachedProbabilitySliceID = -1;
     bool cachedProbabilitySliceValid = false;
+    bool cachedProbabilityRestricted = false;
 
     void InvalidateProbabilityCache();
     void RemoveDistanceToMaskCacheFiles();
-    bool BuildSliceSampleMatrix(int sliceID, cv::Mat &samples);
-    bool EnsureSliceProbabilityCache(int sliceID);
+    bool BuildSliceSampleMatrix(
+        int sliceID,
+        cv::Mat &samples,
+        const QByteArray *excludedPixels = nullptr);
+    bool EnsureSliceProbabilityCache(
+        int sliceID,
+        const QByteArray *excludedPixels = nullptr);
 };
 
 #endif // MLINTERFACE_H

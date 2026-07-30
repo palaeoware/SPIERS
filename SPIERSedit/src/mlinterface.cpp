@@ -562,13 +562,14 @@ void MLInterface::ComputeSliceProbabilitiesFromVotes(int sliceID)
 
     MLUpdateBlockingDialog::updateDetailText(QString("Running ML model"));
 
-    if (!EnsureSliceProbabilityCache(sliceID))
+    QByteArray newLocks = DoMaskLocking();
+
+    if (!EnsureSliceProbabilityCache(sliceID, &newLocks))
         return;
 
     MLUpdateBlockingDialog::updateDetailText(QString("Calculating segments from model outputs"));
 
-    QByteArray newLocks = DoMaskLocking();
-
+    int sampleRow = 0;
     for (int y = 0; y < fheight; ++y)
     {
         QVector<uchar *> outRows(SegmentCount);
@@ -577,11 +578,10 @@ void MLInterface::ComputeSliceProbabilitiesFromVotes(int sliceID)
 
         for (int x = 0; x < fwidth; ++x)
         {
-            const int sampleRow = y * fwidth + x;
-            const float *probRow = cachedSliceProbabilities.ptr<float>(sampleRow);
-
             if (!newLocks[fwidth * y + x])
             {
+                const float *probRow = cachedSliceProbabilities.ptr<float>(sampleRow);
+
                 int high = -1;
                 int highSeg = -1;
                 for (int c = 0; c < SegmentCount; ++c)
@@ -602,9 +602,11 @@ void MLInterface::ComputeSliceProbabilitiesFromVotes(int sliceID)
                 {
                     outRows[highSeg][x] = static_cast<uchar>(128);
                 }
+                sampleRow++;
             }
         }
     }
+    Q_ASSERT(sampleRow == cachedSliceProbabilities.rows);
 }
 
 QString MLInterface::DescribeSample()
@@ -962,11 +964,16 @@ void MLInterface::DoPreset(int presetCode)
 void MLInterface::InvalidateProbabilityCache()
 {
     cachedSliceProbabilities.release();
+    cachedProbabilityExcludedPixels.clear();
     cachedProbabilitySliceID = -1;
     cachedProbabilitySliceValid = false;
+    cachedProbabilityRestricted = false;
 }
 
-bool MLInterface::BuildSliceSampleMatrix(int sliceID, cv::Mat &samples)
+bool MLInterface::BuildSliceSampleMatrix(
+    int sliceID,
+    cv::Mat &samples,
+    const QByteArray *excludedPixels)
 {
     if (data == nullptr)
         return false;
@@ -978,33 +985,55 @@ bool MLInterface::BuildSliceSampleMatrix(int sliceID, cv::Mat &samples)
     if (numFeatures < 1 || numPixels < 1)
         return false;
 
+    if (excludedPixels != nullptr && excludedPixels->size() != numPixels)
+        return false;
+
+    int numSamples = numPixels;
+    if (excludedPixels != nullptr)
+    {
+        numSamples = 0;
+        for (char excluded : *excludedPixels)
+        {
+            if (excluded == 0)
+                numSamples++;
+        }
+    }
+
     QVector<cv::Mat> featureSlices;
     featureSlices.reserve(numFeatures);
 
     for (int f = 0; f < numFeatures; ++f)
         featureSlices.append(data->GetWholeSliceFeature(sliceID, featureIndices[f]));
 
-    samples.create(numPixels, numFeatures, CV_32F);
+    samples.create(numSamples, numFeatures, CV_32F);
 
+    int sampleRow = 0;
     for (int y = 0; y < fheight; ++y)
     {
         for (int x = 0; x < fwidth; ++x)
         {
-            const int row = y * fwidth + x;
-            float *sampleRow = samples.ptr<float>(row);
+            const int pixel = y * fwidth + x;
+            if (excludedPixels != nullptr && excludedPixels->at(pixel) != 0)
+                continue;
+
+            float *sample = samples.ptr<float>(sampleRow);
 
             for (int f = 0; f < numFeatures; ++f)
             {
                 const float *srcRow = featureSlices[f].ptr<float>(y);
-                sampleRow[f] = srcRow[x];
+                sample[f] = srcRow[x];
             }
+            sampleRow++;
         }
     }
+    Q_ASSERT(sampleRow == samples.rows);
 
     return true;
 }
 
-bool MLInterface::EnsureSliceProbabilityCache(int sliceID)
+bool MLInterface::EnsureSliceProbabilityCache(
+    int sliceID,
+    const QByteArray *excludedPixels)
 {
     if (data == nullptr)
         return false;
@@ -1012,20 +1041,41 @@ bool MLInterface::EnsureSliceProbabilityCache(int sliceID)
     if (!rf || !rf->IsValid())
         return false;
 
-    if (cachedProbabilitySliceValid && cachedProbabilitySliceID == sliceID)
-        return true;
+    const bool restricted = excludedPixels != nullptr;
+    if (cachedProbabilitySliceValid
+        && cachedProbabilitySliceID == sliceID
+        && cachedProbabilityRestricted == restricted)
+    {
+        if (!restricted || cachedProbabilityExcludedPixels == *excludedPixels)
+            return true;
+    }
 
     cv::Mat samples;
-    if (!BuildSliceSampleMatrix(sliceID, samples))
+    if (!BuildSliceSampleMatrix(sliceID, samples, excludedPixels))
         return false;
 
     cv::Mat probabilities;
-    if (!rf->PredictProbabilities(samples, probabilities))
-        return false;
+    if (samples.rows > 0)
+    {
+        MLUpdateBlockingDialog::updateDetailText(
+            QStringLiteral("Running ML model on %1 of %2 pixels")
+                .arg(samples.rows)
+                .arg(fwidth * fheight));
+
+        if (!rf->PredictProbabilities(samples, probabilities))
+            return false;
+    }
+    else
+    {
+        probabilities.create(0, SegmentCount, CV_32F);
+    }
 
     cachedSliceProbabilities = probabilities;
+    cachedProbabilityExcludedPixels =
+        restricted ? *excludedPixels : QByteArray();
     cachedProbabilitySliceID = sliceID;
     cachedProbabilitySliceValid = true;
+    cachedProbabilityRestricted = restricted;
 
     return true;
 }
