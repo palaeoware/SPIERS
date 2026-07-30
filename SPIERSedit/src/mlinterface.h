@@ -27,6 +27,7 @@ class MLFeatureUIManager;
 class MLAddFeature;
 class LabelledPoint;
 class MLParallelForest;
+class MLROISlice;
 
 class MLInterface
 {
@@ -110,10 +111,10 @@ private:
     bool BuildSliceSampleMatrix(
         int sliceID,
         cv::Mat &samples,
-        const QByteArray *excludedPixels = nullptr);
+        const MLROISlice *roi = nullptr);
     bool EnsureSliceProbabilityCache(
         int sliceID,
-        const QByteArray *excludedPixels = nullptr);
+        const MLROISlice *roi = nullptr);
 };
 
 #endif // MLINTERFACE_H

@@ -30,6 +30,7 @@
 #include "mlenvelopemaskgenerator.h"
 #include "mlfileio.h"
 #include "mlparallelforest.h"
+#include "mlroislice.h"
 #include "mlupdateblockingdialog.h"
 #include "src/fileio.h"
 
@@ -562,9 +563,15 @@ void MLInterface::ComputeSliceProbabilitiesFromVotes(int sliceID)
 
     MLUpdateBlockingDialog::updateDetailText(QString("Running ML model"));
 
-    QByteArray newLocks = DoMaskLocking();
+    MLROISlice roi(fwidth, fheight, DoMaskLocking());
+    if (!roi.isValid())
+    {
+        qWarning() << "Could not create ML ROI for slice" << sliceID;
+        return;
+    }
+    const QByteArray &newLocks = roi.excludedPixels();
 
-    if (!EnsureSliceProbabilityCache(sliceID, &newLocks))
+    if (!EnsureSliceProbabilityCache(sliceID, &roi))
         return;
 
     MLUpdateBlockingDialog::updateDetailText(QString("Calculating segments from model outputs"));
@@ -973,7 +980,7 @@ void MLInterface::InvalidateProbabilityCache()
 bool MLInterface::BuildSliceSampleMatrix(
     int sliceID,
     cv::Mat &samples,
-    const QByteArray *excludedPixels)
+    const MLROISlice *roi)
 {
     if (data == nullptr)
         return false;
@@ -985,19 +992,18 @@ bool MLInterface::BuildSliceSampleMatrix(
     if (numFeatures < 1 || numPixels < 1)
         return false;
 
-    if (excludedPixels != nullptr && excludedPixels->size() != numPixels)
-        return false;
-
-    int numSamples = numPixels;
-    if (excludedPixels != nullptr)
+    if (roi != nullptr
+        && (!roi->isValid()
+            || roi->width() != fwidth
+            || roi->height() != fheight))
     {
-        numSamples = 0;
-        for (char excluded : *excludedPixels)
-        {
-            if (excluded == 0)
-                numSamples++;
-        }
+        return false;
     }
+
+    const int numSamples =
+        roi != nullptr ? roi->activePixelCount() : numPixels;
+    const QByteArray *excludedPixels =
+        roi != nullptr ? &roi->excludedPixels() : nullptr;
 
     QVector<cv::Mat> featureSlices;
     featureSlices.reserve(numFeatures);
@@ -1033,7 +1039,7 @@ bool MLInterface::BuildSliceSampleMatrix(
 
 bool MLInterface::EnsureSliceProbabilityCache(
     int sliceID,
-    const QByteArray *excludedPixels)
+    const MLROISlice *roi)
 {
     if (data == nullptr)
         return false;
@@ -1041,21 +1047,30 @@ bool MLInterface::EnsureSliceProbabilityCache(
     if (!rf || !rf->IsValid())
         return false;
 
-    const bool restricted = excludedPixels != nullptr;
+    const bool restricted = roi != nullptr;
     if (cachedProbabilitySliceValid
         && cachedProbabilitySliceID == sliceID
         && cachedProbabilityRestricted == restricted)
     {
-        if (!restricted || cachedProbabilityExcludedPixels == *excludedPixels)
+        if (!restricted
+            || cachedProbabilityExcludedPixels == roi->excludedPixels())
+        {
             return true;
+        }
     }
 
     cv::Mat samples;
-    if (!BuildSliceSampleMatrix(sliceID, samples, excludedPixels))
+    if (!BuildSliceSampleMatrix(sliceID, samples, roi))
         return false;
 
     if (restricted)
-        qDebug() << "ML prediction pixels:" << samples.rows << "of" << fwidth * fheight;
+    {
+        qDebug() << "ML prediction pixels:" << samples.rows
+                 << "of" << roi->totalPixelCount()
+                 << "- target tiles:" << roi->targetTileCount()
+                 << "of" << roi->totalTileCount()
+                 << "- tile size:" << roi->tileSize();
+    }
 
     cv::Mat probabilities;
     if (samples.rows > 0)
@@ -1075,7 +1090,7 @@ bool MLInterface::EnsureSliceProbabilityCache(
 
     cachedSliceProbabilities = probabilities;
     cachedProbabilityExcludedPixels =
-        restricted ? *excludedPixels : QByteArray();
+        restricted ? roi->excludedPixels() : QByteArray();
     cachedProbabilitySliceID = sliceID;
     cachedProbabilitySliceValid = true;
     cachedProbabilityRestricted = restricted;
