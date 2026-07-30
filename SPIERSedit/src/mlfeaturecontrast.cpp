@@ -32,6 +32,34 @@ void MLFeatureContrast::CalculateFeature(cv::Mat &mat, int sliceID, MLCachedAcce
     CalcFeatureDifferenceOfFeatures(mat, sliceID, data, intensity, gaussian);
 }
 
+bool MLFeatureContrast::CalculateFeatureROI(
+    cv::Mat &mat,
+    int sliceID,
+    MLCachedAccess *data,
+    const MLROISlice &roi)
+{
+    const int intensity = data->GetIndexForFeature(
+        MLFeature::FeatureType::Intensity,
+        _channel,
+        false,
+        0,
+        0);
+    const int gaussian = data->GetIndexForFeature(
+        MLFeature::FeatureType::Gaussian,
+        _channel,
+        _is3D,
+        _arg1,
+        0);
+    CalcFeatureDifferenceOfFeaturesROI(
+        mat,
+        sliceID,
+        data,
+        intensity,
+        gaussian,
+        roi);
+    return false;
+}
+
 QList<MLFeature *> MLFeatureContrast::GetDependencies()
 {
     QList<MLFeature *> deps;

@@ -64,6 +64,7 @@ public:
 
 private:
     int m_activePixelCount = 0;
+    int m_dependencyExpansionPixels = 0;
     QByteArray m_excludedPixels;
     int m_height = 0;
     int m_haloTileCount = 0;

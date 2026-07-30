@@ -197,22 +197,16 @@ MLROISlice MLROISlice::expandedByPixels(int radius) const
     if (!expanded.m_valid)
         return expanded;
 
-    expanded.m_targetTileCount = 0;
-    expanded.m_haloTileCount = 0;
-    for (int tile = 0; tile < expanded.m_tileStates.size(); tile++)
+    if (radius < 0 || expanded.m_dependencyExpansionPixels < 0)
     {
-        if (expanded.m_tileStates.at(tile)
-            == static_cast<char>(TileState::Inactive))
-        {
-            continue;
-        }
-
-        expanded.m_tileStates[tile] =
-            static_cast<char>(TileState::Target);
-        expanded.m_targetTileCount++;
+        expanded.m_dependencyExpansionPixels = -1;
+    }
+    else
+    {
+        expanded.m_dependencyExpansionPixels += radius;
     }
 
-    expanded.addHaloPixels(radius);
+    expanded.addHaloPixels(expanded.m_dependencyExpansionPixels);
     return expanded;
 }
 

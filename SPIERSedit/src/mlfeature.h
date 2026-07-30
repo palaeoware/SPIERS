@@ -121,6 +121,13 @@ protected:
 
     void CalcFeatureDifferenceOfFeatures(cv::Mat &mat, int sliceID,
                                          MLCachedAccess *data, int featureIndex1, int featureIndex2);
+    void CalcFeatureDifferenceOfFeaturesROI(
+        cv::Mat &mat,
+        int sliceID,
+        MLCachedAccess *data,
+        int featureIndex1,
+        int featureIndex2,
+        const MLROISlice &roi);
     void CalcLocalMean2D(cv::Mat &out, const cv::Mat &in, int radiusLog2);
     void CalcZMean(cv::Mat &out, const QVector<cv::Mat> &slicesIn, int centralSliceIndex, int radiusLog2);
 

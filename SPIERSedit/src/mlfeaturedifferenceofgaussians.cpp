@@ -33,6 +33,34 @@ void MLFeatureDifferenceOfGaussians::CalculateFeature(cv::Mat &mat, int sliceID,
     CalcFeatureDifferenceOfFeatures(mat, sliceID, data, feature1, feature2);
 }
 
+bool MLFeatureDifferenceOfGaussians::CalculateFeatureROI(
+    cv::Mat &mat,
+    int sliceID,
+    MLCachedAccess *data,
+    const MLROISlice &roi)
+{
+    const int feature1 = data->GetIndexForFeature(
+        MLFeature::FeatureType::Gaussian,
+        _channel,
+        _is3D,
+        _arg1,
+        0);
+    const int feature2 = data->GetIndexForFeature(
+        MLFeature::FeatureType::Gaussian,
+        _channel,
+        _is3D,
+        _arg2,
+        0);
+    CalcFeatureDifferenceOfFeaturesROI(
+        mat,
+        sliceID,
+        data,
+        feature1,
+        feature2,
+        roi);
+    return false;
+}
+
 QList<MLFeature *> MLFeatureDifferenceOfGaussians::GetDependencies()
 {
     QList<MLFeature *> deps;

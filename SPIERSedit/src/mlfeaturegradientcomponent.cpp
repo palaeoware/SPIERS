@@ -18,6 +18,7 @@
 
 #include "globals.h"
 #include "mlfeaturegaussian.h"
+#include "mlroislice.h"
 #include "mlupdateblockingdialog.h"
 
 #include <cmath>
@@ -105,6 +106,113 @@ void MLFeatureGradientComponent::CalculateFeature(cv::Mat &mat, int sliceID, MLC
         Q_ASSERT(false);
         break;
     }
+}
+
+bool MLFeatureGradientComponent::CalculateFeatureROI(
+    cv::Mat &mat,
+    int sliceID,
+    MLCachedAccess *data,
+    const MLROISlice &roi)
+{
+    const float scaleFactor =
+        std::pow(2.0f, static_cast<float>(_arg1));
+    const GradientDirection direction = GetDirection();
+    const bool zDirection = direction == GradientDirection::Z;
+    const MLROISlice sourceROI =
+        zDirection ? roi : roi.expandedByPixels(1);
+    const int gaussianIndex = data->GetIndexForFeature(
+        MLFeature::FeatureType::Gaussian,
+        _channel,
+        zDirection,
+        _arg1,
+        0);
+
+    cv::Mat current;
+    cv::Mat previous;
+    cv::Mat next;
+    if (zDirection)
+    {
+        const int previousSlice = qMax(0, sliceID - 1);
+        const int nextSlice = qMin(FileCount - 1, sliceID + 1);
+        previous = data->GetROISliceFeature(
+            previousSlice,
+            gaussianIndex,
+            sourceROI);
+        next = data->GetROISliceFeature(
+            nextSlice,
+            gaussianIndex,
+            sourceROI);
+    }
+    else
+    {
+        current = data->GetROISliceFeature(
+            sliceID,
+            gaussianIndex,
+            sourceROI);
+    }
+
+    for (int tileY = 0; tileY < roi.tileRows(); tileY++)
+    {
+        for (int tileX = 0; tileX < roi.tileColumns(); tileX++)
+        {
+            if (roi.tileState(tileX, tileY)
+                == MLROISlice::TileState::Inactive)
+            {
+                continue;
+            }
+
+            const QRect tile = roi.tileRect(tileX, tileY);
+            for (int y = tile.top(); y <= tile.bottom(); y++)
+            {
+                const int previousY = qMax(0, y - 1);
+                const int nextY = qMin(fheight - 1, y + 1);
+                const float *currentRow =
+                    zDirection ? nullptr : current.ptr<float>(y);
+                const float *previousYRow =
+                    direction == GradientDirection::Y
+                        ? current.ptr<float>(previousY)
+                        : nullptr;
+                const float *nextYRow =
+                    direction == GradientDirection::Y
+                        ? current.ptr<float>(nextY)
+                        : nullptr;
+                const float *previousZRow =
+                    zDirection ? previous.ptr<float>(y) : nullptr;
+                const float *nextZRow =
+                    zDirection ? next.ptr<float>(y) : nullptr;
+                float *outputRow = mat.ptr<float>(y);
+
+                for (int x = tile.left(); x <= tile.right(); x++)
+                {
+                    switch (direction)
+                    {
+                    case GradientDirection::X:
+                    {
+                        const int previousX = qMax(0, x - 1);
+                        const int nextX = qMin(fwidth - 1, x + 1);
+                        outputRow[x] =
+                            scaleFactor * 0.5f
+                            * (currentRow[nextX]
+                               - currentRow[previousX]);
+                        break;
+                    }
+                    case GradientDirection::Y:
+                        outputRow[x] =
+                            scaleFactor * 0.5f
+                            * (nextYRow[x] - previousYRow[x]);
+                        break;
+                    case GradientDirection::Z:
+                        outputRow[x] =
+                            scaleFactor * 0.5f
+                            * (nextZRow[x] - previousZRow[x]);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    return false;
 }
 
 QList<MLFeature *> MLFeatureGradientComponent::GetDependencies()

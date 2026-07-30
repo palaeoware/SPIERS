@@ -40,6 +40,7 @@
 #include "mlfeaturetensordeterminantwide.h"
 #include "mlfeaturetensorcoherencelocal.h"
 #include "mlfeaturetensorcoherencewide.h"
+#include "mlroislice.h"
 
 MLFeature::MLFeature(FeatureType type, Channel channel, bool is3D, int arg1, int arg2)
 {
@@ -340,6 +341,42 @@ void MLFeature::CalcFeatureDifferenceOfFeatures(cv::Mat &mat, int sliceID,
     data2 = data->GetWholeSliceFeature(sliceID, featureIndex2);
 
     cv::subtract(data1, data2, mat);
+}
+
+void MLFeature::CalcFeatureDifferenceOfFeaturesROI(
+    cv::Mat &mat,
+    int sliceID,
+    MLCachedAccess *data,
+    int featureIndex1,
+    int featureIndex2,
+    const MLROISlice &roi)
+{
+    const cv::Mat data1 =
+        data->GetROISliceFeature(sliceID, featureIndex1, roi);
+    const cv::Mat data2 =
+        data->GetROISliceFeature(sliceID, featureIndex2, roi);
+
+    for (int tileY = 0; tileY < roi.tileRows(); tileY++)
+    {
+        for (int tileX = 0; tileX < roi.tileColumns(); tileX++)
+        {
+            if (roi.tileState(tileX, tileY)
+                == MLROISlice::TileState::Inactive)
+            {
+                continue;
+            }
+
+            const QRect tile = roi.tileRect(tileX, tileY);
+            for (int y = tile.top(); y <= tile.bottom(); y++)
+            {
+                const float *row1 = data1.ptr<float>(y);
+                const float *row2 = data2.ptr<float>(y);
+                float *outputRow = mat.ptr<float>(y);
+                for (int x = tile.left(); x <= tile.right(); x++)
+                    outputRow[x] = row1[x] - row2[x];
+            }
+        }
+    }
 }
 
 void MLFeature::CalcLocalMean2D(cv::Mat &out, const cv::Mat &in, int radiusLog2)
