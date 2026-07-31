@@ -52,6 +52,7 @@
 #include <QPixmap>
 #include <QPushButton>
 #include <QResizeEvent>
+#include <QScopeGuard>
 #include <QSpinBox>
 #include <QTemporaryDir>
 #include <QThread>
@@ -826,21 +827,130 @@ bool MLInterface::Train(bool noMessages)
     cv::Mat trainingDataMat(labels.count(), featureCount, CV_32F);
     cv::Mat labelsMat(labels.count(), 1, CV_32S);
 
+    QVector<QVector<int>> sampleRowsBySlice(FileCount);
     for (int i = 0; i < labels.count(); i++)
     {
-        if (i % 100 == 0)
-        {
-            MLUpdateBlockingDialog::updateHighLevelText(
-                QString("Fetching features for training %1%").arg((i * 100) / labels.count()));
-            MLUpdateBlockingDialog::updateDetailText(QString(""));
-        }
-
-        LabelledPoint point = labels[i];
+        const LabelledPoint &point = labels.at(i);
+        Q_ASSERT(point.x >= 0 && point.x < fwidth);
+        Q_ASSERT(point.y >= 0 && point.y < fheight);
+        Q_ASSERT(point.z >= 0 && point.z < FileCount);
         labelsMat.at<int>(i, 0) = point.segment;
-
-        for (int j = 0; j < featureCount; j++)
-            trainingDataMat.at<float>(i, j) = data->GetFeatureValueAt(point.x, point.y, point.z, featureIDs[j]);
+        sampleRowsBySlice[point.z].append(i);
     }
+
+    qint64 trainingTargetTiles = 0;
+    qint64 trainingPossibleTiles = 0;
+    qint64 uniqueTrainingPixels = 0;
+    int sampledSliceCount = 0;
+    int processedSampleCount = 0;
+    int trainingTileSize = 0;
+
+    {
+        const bool oldPartialTileLogging =
+            data->IsPartialFeatureTileLoggingEnabled();
+        data->SetPartialFeatureTileLoggingEnabled(false);
+        const auto restorePartialTileLogging = qScopeGuard(
+            [&]()
+            {
+                data->SetPartialFeatureTileLoggingEnabled(
+                    oldPartialTileLogging);
+            });
+
+        for (int sliceID = 0;
+             sliceID < sampleRowsBySlice.size();
+             sliceID++)
+        {
+            const QVector<int> &sampleRows =
+                sampleRowsBySlice.at(sliceID);
+            if (sampleRows.isEmpty())
+                continue;
+
+            QByteArray excludedPixels(
+                static_cast<qsizetype>(fwidth) * fheight,
+                static_cast<char>(1));
+            for (int sampleRow : sampleRows)
+            {
+                const LabelledPoint &point =
+                    labels.at(sampleRow);
+                excludedPixels[
+                    static_cast<qsizetype>(point.y) * fwidth
+                    + point.x] = 0;
+            }
+
+            const MLROISlice roi(
+                fwidth,
+                fheight,
+                excludedPixels);
+            if (!roi.isValid())
+            {
+                MLUpdateBlockingDialog::hideDialog();
+                if (!noMessages)
+                {
+                    Message(
+                        QString(
+                            "Could not create training ROI for "
+                            "slice %1")
+                            .arg(sliceID + 1));
+                }
+                return false;
+            }
+
+            sampledSliceCount++;
+            uniqueTrainingPixels += roi.activePixelCount();
+            trainingTargetTiles += roi.targetTileCount();
+            trainingPossibleTiles += roi.totalTileCount();
+            trainingTileSize = roi.tileSize();
+
+            MLUpdateBlockingDialog::updateHighLevelText(
+                QString("Fetching features for training %1%")
+                    .arg(
+                        (processedSampleCount * 100)
+                        / labels.count()));
+            MLUpdateBlockingDialog::updateDetailText(
+                QString(
+                    "Slice %1: %2 samples in %3 feature tiles")
+                    .arg(sliceID + 1)
+                    .arg(sampleRows.count())
+                    .arg(roi.targetTileCount()));
+
+            QVector<cv::Mat> featureSlices;
+            featureSlices.reserve(featureCount);
+            for (int featureID : featureIDs)
+            {
+                featureSlices.append(
+                    data->GetROISliceFeature(
+                        sliceID,
+                        featureID,
+                        roi));
+            }
+
+            for (int sampleRow : sampleRows)
+            {
+                const LabelledPoint &point =
+                    labels.at(sampleRow);
+                for (int feature = 0;
+                     feature < featureCount;
+                     feature++)
+                {
+                    trainingDataMat.at<float>(
+                        sampleRow,
+                        feature) =
+                        featureSlices.at(feature)
+                            .at<float>(point.y, point.x);
+                }
+            }
+
+            processedSampleCount += sampleRows.count();
+        }
+    }
+
+    qDebug() << "ML training feature ROIs:"
+             << labels.count() << "samples at"
+             << uniqueTrainingPixels << "unique pixels"
+             << "- target tiles:" << trainingTargetTiles
+             << "of" << trainingPossibleTiles
+             << "across" << sampledSliceCount << "slices"
+             << "- tile size:" << trainingTileSize;
 
     MLUpdateBlockingDialog::updateHighLevelText(QString("Training..."));
     MLUpdateBlockingDialog::updateDetailText(QString(""));

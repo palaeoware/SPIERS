@@ -276,11 +276,16 @@ void MLCachedSlice::FetchFeatureData(
             else
             {
                 SetFeatureTilesValid(feature, *roi);
-                qDebug() << "ML partial feature tiles:"
-                         << cache->GetFeature(feature)->GetPrettyFullName()
-                         << "- slice" << sliceIndex
-                         << "-" << roi->requiredTileCount()
-                         << "of" << roi->totalTileCount();
+                if (cache->IsPartialFeatureTileLoggingEnabled())
+                {
+                    qDebug()
+                        << "ML partial feature tiles:"
+                        << cache->GetFeature(feature)
+                               ->GetPrettyFullName()
+                        << "- slice" << sliceIndex
+                        << "-" << roi->requiredTileCount()
+                        << "of" << roi->totalTileCount();
+                }
                 if (featuresValid.at(feature))
                 {
                     MLFileIO::SaveMatBinary(

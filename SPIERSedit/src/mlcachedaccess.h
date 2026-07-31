@@ -60,6 +60,8 @@ public:
     void SetFeatureInUse(int featureID, bool inUse);
     QList<int> GetFeaturesInUse();
     int GetRequiredXYHalo();
+    bool IsPartialFeatureTileLoggingEnabled() const;
+    void SetPartialFeatureTileLoggingEnabled(bool enabled);
     uint64 timeStamp;
     void DumpFeatures();
     int GetIndexForFeature(MLFeature *feature);
@@ -81,6 +83,7 @@ private:
     QList<int> cacheIndicesBySlice;
     QList<MLFeature*> features;
     QList<int> featureIDsInUse;
+    bool partialFeatureTileLoggingEnabled = true;
     void RebuildFeatureIDsInUse();
 
     int xyBin, zBin, xSize, ySize, zSize;

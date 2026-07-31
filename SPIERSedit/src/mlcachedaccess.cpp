@@ -165,6 +165,17 @@ QList<int> MLCachedAccess::GetFeaturesInUse()
     return featureIDsInUse;
 }
 
+bool MLCachedAccess::IsPartialFeatureTileLoggingEnabled() const
+{
+    return partialFeatureTileLoggingEnabled;
+}
+
+void MLCachedAccess::SetPartialFeatureTileLoggingEnabled(
+    bool enabled)
+{
+    partialFeatureTileLoggingEnabled = enabled;
+}
+
 int MLCachedAccess::GetRequiredXYHalo()
 {
     QHash<int, int> cachedRadii;
