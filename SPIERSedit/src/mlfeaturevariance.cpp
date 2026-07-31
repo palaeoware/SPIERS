@@ -19,6 +19,7 @@
 #include "mlupdateblockingdialog.h"
 #include "mlfeatureintensity.h"
 #include "mlfeaturesquareintensity.h"
+#include "mlroislice.h"
 
 #include <cmath>
 
@@ -32,6 +33,134 @@ void MLFeatureVariance::CalculateFeature(cv::Mat &mat, int sliceID, MLCachedAcce
         CalcFeatureVariance3D(mat, sliceID, data);
     else
         CalcFeatureVariance2D(mat, sliceID, data);
+}
+
+bool MLFeatureVariance::CalculateFeatureROI(
+    cv::Mat &mat,
+    int sliceID,
+    MLCachedAccess *data,
+    const MLROISlice &roi)
+{
+    Q_ASSERT(mat.type() == CV_32F);
+    Q_ASSERT(mat.cols == fwidth);
+    Q_ASSERT(mat.rows == fheight);
+    Q_ASSERT(sliceID >= 0 && sliceID < FileCount);
+
+    const int radius =
+        static_cast<int>(std::pow(2.0f, _arg1));
+    const MLROISlice sourceROI =
+        roi.expandedByPixels(radius);
+    const int intensityIndex = data->GetIndexForFeature(
+        MLFeature::FeatureType::Intensity,
+        _channel,
+        false,
+        0,
+        0);
+    const int squareIndex = data->GetIndexForFeature(
+        MLFeature::FeatureType::Square,
+        _channel,
+        false,
+        0,
+        0);
+    const int firstZOffset = _is3D ? -radius : 0;
+    const int lastZOffset = _is3D ? radius : 0;
+
+    QVector<cv::Mat> intensitySlices;
+    QVector<cv::Mat> squareSlices;
+    intensitySlices.reserve(lastZOffset - firstZOffset + 1);
+    squareSlices.reserve(lastZOffset - firstZOffset + 1);
+    for (int zOffset = firstZOffset;
+         zOffset <= lastZOffset;
+         zOffset++)
+    {
+        const int z = qBound(
+            0,
+            sliceID + zOffset,
+            FileCount - 1);
+        intensitySlices.append(data->GetROISliceFeature(
+            z,
+            intensityIndex,
+            sourceROI));
+        squareSlices.append(data->GetROISliceFeature(
+            z,
+            squareIndex,
+            sourceROI));
+    }
+
+    for (int tileY = 0; tileY < roi.tileRows(); tileY++)
+    {
+        for (int tileX = 0; tileX < roi.tileColumns(); tileX++)
+        {
+            if (roi.tileState(tileX, tileY)
+                == MLROISlice::TileState::Inactive)
+            {
+                continue;
+            }
+
+            const QRect tile = roi.tileRect(tileX, tileY);
+            for (int y = tile.top(); y <= tile.bottom(); y++)
+            {
+                const int firstY = qMax(0, y - radius);
+                const int lastY = qMin(fheight - 1, y + radius);
+                float *outputRow = mat.ptr<float>(y);
+
+                for (int x = tile.left(); x <= tile.right(); x++)
+                {
+                    const int firstX = qMax(0, x - radius);
+                    const int lastX = qMin(fwidth - 1, x + radius);
+                    const int xySampleCount =
+                        (lastX - firstX + 1)
+                        * (lastY - firstY + 1);
+                    double intensityMeanSum = 0.0;
+                    double squareMeanSum = 0.0;
+
+                    for (int z = 0;
+                         z < intensitySlices.size();
+                         z++)
+                    {
+                        double intensitySum = 0.0;
+                        double squareSum = 0.0;
+                        for (int sourceY = firstY;
+                             sourceY <= lastY;
+                             sourceY++)
+                        {
+                            const float *intensityRow =
+                                intensitySlices[z].ptr<float>(
+                                    sourceY);
+                            const float *squareRow =
+                                squareSlices[z].ptr<float>(
+                                    sourceY);
+                            for (int sourceX = firstX;
+                                 sourceX <= lastX;
+                                 sourceX++)
+                            {
+                                intensitySum +=
+                                    intensityRow[sourceX];
+                                squareSum += squareRow[sourceX];
+                            }
+                        }
+
+                        // Preserve the full calculation's intermediate
+                        // per-slice float means before averaging in Z.
+                        intensityMeanSum += static_cast<float>(
+                            intensitySum / xySampleCount);
+                        squareMeanSum += static_cast<float>(
+                            squareSum / xySampleCount);
+                    }
+
+                    const float mean = static_cast<float>(
+                        intensityMeanSum
+                        / intensitySlices.size());
+                    const float squareMean = static_cast<float>(
+                        squareMeanSum / squareSlices.size());
+                    outputRow[x] =
+                        qMax(0.0f, squareMean - mean * mean);
+                }
+            }
+        }
+    }
+
+    return false;
 }
 
 QList<MLFeature *> MLFeatureVariance::GetDependencies()
