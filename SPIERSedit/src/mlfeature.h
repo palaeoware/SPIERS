@@ -159,6 +159,31 @@ protected:
     void CalcFirstDerivativeZ(cv::Mat &out, const QVector<cv::Mat> &slicesIn, int centralSliceIndex, float scaleFactor = 1.0f);
     void CalcFeatureProductOfFeatures(cv::Mat &mat, int sliceID,
                                       MLCachedAccess *data, int featureIndex1, int featureIndex2);
+    void CalcTensorComponentROI(
+        cv::Mat &mat,
+        int sliceID,
+        MLCachedAccess *data,
+        int component,
+        int radiusLog2,
+        const MLROISlice &roi);
+    void CalcTensorTraceROI(
+        cv::Mat &mat,
+        int sliceID,
+        MLCachedAccess *data,
+        FeatureType componentType,
+        const MLROISlice &roi);
+    void CalcTensorDeterminantROI(
+        cv::Mat &mat,
+        int sliceID,
+        MLCachedAccess *data,
+        FeatureType componentType,
+        const MLROISlice &roi);
+    void CalcTensorCoherenceROI(
+        cv::Mat &mat,
+        int sliceID,
+        MLCachedAccess *data,
+        FeatureType componentType,
+        const MLROISlice &roi);
 
     void CalcMatrixProduct(cv::Mat &out, const cv::Mat &in1, const cv::Mat &in2);
 

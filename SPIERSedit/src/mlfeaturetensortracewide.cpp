@@ -66,6 +66,21 @@ void MLFeatureTensorTraceWide::CalculateFeature(cv::Mat &mat, int sliceID, MLCac
     }
 }
 
+bool MLFeatureTensorTraceWide::CalculateFeatureROI(
+    cv::Mat &mat,
+    int sliceID,
+    MLCachedAccess *data,
+    const MLROISlice &roi)
+{
+    CalcTensorTraceROI(
+        mat,
+        sliceID,
+        data,
+        FeatureType::Tensor_component_wide,
+        roi);
+    return false;
+}
+
 QList<MLFeature *> MLFeatureTensorTraceWide::GetDependencies()
 {
     using TC = MLFeatureTensorComponentWide::TensorComponent;

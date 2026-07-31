@@ -383,6 +383,339 @@ void MLFeature::CalcFeatureDifferenceOfFeaturesROI(
     }
 }
 
+void MLFeature::CalcTensorComponentROI(
+    cv::Mat &mat,
+    int sliceID,
+    MLCachedAccess *data,
+    int component,
+    int radiusLog2,
+    const MLROISlice &roi)
+{
+    static constexpr int X = 0;
+    static constexpr int Y = 1;
+    static constexpr int Z = 2;
+    int direction1 = -1;
+    int direction2 = -1;
+    switch (component)
+    {
+    case 0:
+        direction1 = X;
+        direction2 = X;
+        break;
+    case 1:
+        direction1 = Y;
+        direction2 = Y;
+        break;
+    case 2:
+        direction1 = Z;
+        direction2 = Z;
+        break;
+    case 3:
+        direction1 = X;
+        direction2 = Y;
+        break;
+    case 4:
+        direction1 = X;
+        direction2 = Z;
+        break;
+    case 5:
+        direction1 = Y;
+        direction2 = Z;
+        break;
+    default:
+        Q_UNREACHABLE();
+        break;
+    }
+
+    const int featureIndex1 = data->GetIndexForFeature(
+        FeatureType::Gradient_component,
+        _channel,
+        false,
+        _arg1,
+        direction1);
+    const int featureIndex2 = data->GetIndexForFeature(
+        FeatureType::Gradient_component,
+        _channel,
+        false,
+        _arg1,
+        direction2);
+    const int radius =
+        static_cast<int>(std::pow(2.0f, radiusLog2));
+    const MLROISlice sourceROI =
+        roi.expandedByPixels(radius);
+    const cv::Mat feature1 = data->GetROISliceFeature(
+        sliceID,
+        featureIndex1,
+        sourceROI);
+    const cv::Mat feature2 = data->GetROISliceFeature(
+        sliceID,
+        featureIndex2,
+        sourceROI);
+
+    for (int tileY = 0; tileY < roi.tileRows(); tileY++)
+    {
+        for (int tileX = 0; tileX < roi.tileColumns(); tileX++)
+        {
+            if (roi.tileState(tileX, tileY)
+                == MLROISlice::TileState::Inactive)
+            {
+                continue;
+            }
+
+            const QRect tile = roi.tileRect(tileX, tileY);
+            for (int y = tile.top(); y <= tile.bottom(); y++)
+            {
+                const int firstY = qMax(0, y - radius);
+                const int lastY = qMin(fheight - 1, y + radius);
+                float *outputRow = mat.ptr<float>(y);
+
+                for (int x = tile.left(); x <= tile.right(); x++)
+                {
+                    const int firstX = qMax(0, x - radius);
+                    const int lastX = qMin(fwidth - 1, x + radius);
+                    double sum = 0.0;
+                    int sampleCount = 0;
+
+                    for (int sourceY = firstY;
+                         sourceY <= lastY;
+                         sourceY++)
+                    {
+                        const float *feature1Row =
+                            feature1.ptr<float>(sourceY);
+                        const float *feature2Row =
+                            feature2.ptr<float>(sourceY);
+                        for (int sourceX = firstX;
+                             sourceX <= lastX;
+                             sourceX++)
+                        {
+                            sum +=
+                                feature1Row[sourceX]
+                                * feature2Row[sourceX];
+                            sampleCount++;
+                        }
+                    }
+
+                    outputRow[x] =
+                        sampleCount > 0
+                            ? static_cast<float>(sum / sampleCount)
+                            : 0.0f;
+                }
+            }
+        }
+    }
+}
+
+void MLFeature::CalcTensorTraceROI(
+    cv::Mat &mat,
+    int sliceID,
+    MLCachedAccess *data,
+    FeatureType componentType,
+    const MLROISlice &roi)
+{
+    const int xxIndex = data->GetIndexForFeature(
+        componentType, _channel, false, _arg1, 0);
+    const int yyIndex = data->GetIndexForFeature(
+        componentType, _channel, false, _arg1, 1);
+    const cv::Mat xx = data->GetROISliceFeature(
+        sliceID, xxIndex, roi);
+    const cv::Mat yy = data->GetROISliceFeature(
+        sliceID, yyIndex, roi);
+    cv::Mat zz;
+    if (_is3D)
+    {
+        const int zzIndex = data->GetIndexForFeature(
+            componentType, _channel, false, _arg1, 2);
+        zz = data->GetROISliceFeature(
+            sliceID, zzIndex, roi);
+    }
+
+    for (int tileY = 0; tileY < roi.tileRows(); tileY++)
+    {
+        for (int tileX = 0; tileX < roi.tileColumns(); tileX++)
+        {
+            if (roi.tileState(tileX, tileY)
+                == MLROISlice::TileState::Inactive)
+            {
+                continue;
+            }
+
+            const QRect tile = roi.tileRect(tileX, tileY);
+            for (int y = tile.top(); y <= tile.bottom(); y++)
+            {
+                const float *xxRow = xx.ptr<float>(y);
+                const float *yyRow = yy.ptr<float>(y);
+                const float *zzRow =
+                    _is3D ? zz.ptr<float>(y) : nullptr;
+                float *outputRow = mat.ptr<float>(y);
+                for (int x = tile.left(); x <= tile.right(); x++)
+                {
+                    outputRow[x] =
+                        _is3D
+                            ? xxRow[x] + yyRow[x] + zzRow[x]
+                            : xxRow[x] + yyRow[x];
+                }
+            }
+        }
+    }
+}
+
+void MLFeature::CalcTensorDeterminantROI(
+    cv::Mat &mat,
+    int sliceID,
+    MLCachedAccess *data,
+    FeatureType componentType,
+    const MLROISlice &roi)
+{
+    const auto componentIndex =
+        [&](int component)
+    {
+        return data->GetIndexForFeature(
+            componentType,
+            _channel,
+            false,
+            _arg1,
+            component);
+    };
+
+    const cv::Mat xx = data->GetROISliceFeature(
+        sliceID, componentIndex(0), roi);
+    const cv::Mat yy = data->GetROISliceFeature(
+        sliceID, componentIndex(1), roi);
+    const cv::Mat xy = data->GetROISliceFeature(
+        sliceID, componentIndex(3), roi);
+    cv::Mat zz;
+    cv::Mat xz;
+    cv::Mat yz;
+    if (_is3D)
+    {
+        zz = data->GetROISliceFeature(
+            sliceID, componentIndex(2), roi);
+        xz = data->GetROISliceFeature(
+            sliceID, componentIndex(4), roi);
+        yz = data->GetROISliceFeature(
+            sliceID, componentIndex(5), roi);
+    }
+
+    for (int tileY = 0; tileY < roi.tileRows(); tileY++)
+    {
+        for (int tileX = 0; tileX < roi.tileColumns(); tileX++)
+        {
+            if (roi.tileState(tileX, tileY)
+                == MLROISlice::TileState::Inactive)
+            {
+                continue;
+            }
+
+            const QRect tile = roi.tileRect(tileX, tileY);
+            for (int y = tile.top(); y <= tile.bottom(); y++)
+            {
+                const float *xxRow = xx.ptr<float>(y);
+                const float *yyRow = yy.ptr<float>(y);
+                const float *xyRow = xy.ptr<float>(y);
+                const float *zzRow =
+                    _is3D ? zz.ptr<float>(y) : nullptr;
+                const float *xzRow =
+                    _is3D ? xz.ptr<float>(y) : nullptr;
+                const float *yzRow =
+                    _is3D ? yz.ptr<float>(y) : nullptr;
+                float *outputRow = mat.ptr<float>(y);
+
+                for (int x = tile.left(); x <= tile.right(); x++)
+                {
+                    if (!_is3D)
+                    {
+                        outputRow[x] =
+                            xxRow[x] * yyRow[x]
+                            - xyRow[x] * xyRow[x];
+                        continue;
+                    }
+
+                    const float valueXX = xxRow[x];
+                    const float valueYY = yyRow[x];
+                    const float valueZZ = zzRow[x];
+                    const float valueXY = xyRow[x];
+                    const float valueXZ = xzRow[x];
+                    const float valueYZ = yzRow[x];
+                    outputRow[x] =
+                        valueXX * valueYY * valueZZ
+                        + 2.0f * valueXY * valueXZ * valueYZ
+                        - valueXX * valueYZ * valueYZ
+                        - valueYY * valueXZ * valueXZ
+                        - valueZZ * valueXY * valueXY;
+                }
+            }
+        }
+    }
+}
+
+void MLFeature::CalcTensorCoherenceROI(
+    cv::Mat &mat,
+    int sliceID,
+    MLCachedAccess *data,
+    FeatureType componentType,
+    const MLROISlice &roi)
+{
+    const cv::Mat xx = data->GetROISliceFeature(
+        sliceID,
+        data->GetIndexForFeature(
+            componentType, _channel, false, _arg1, 0),
+        roi);
+    const cv::Mat yy = data->GetROISliceFeature(
+        sliceID,
+        data->GetIndexForFeature(
+            componentType, _channel, false, _arg1, 1),
+        roi);
+    const cv::Mat xy = data->GetROISliceFeature(
+        sliceID,
+        data->GetIndexForFeature(
+            componentType, _channel, false, _arg1, 3),
+        roi);
+
+    for (int tileY = 0; tileY < roi.tileRows(); tileY++)
+    {
+        for (int tileX = 0; tileX < roi.tileColumns(); tileX++)
+        {
+            if (roi.tileState(tileX, tileY)
+                == MLROISlice::TileState::Inactive)
+            {
+                continue;
+            }
+
+            const QRect tile = roi.tileRect(tileX, tileY);
+            for (int y = tile.top(); y <= tile.bottom(); y++)
+            {
+                const float *xxRow = xx.ptr<float>(y);
+                const float *yyRow = yy.ptr<float>(y);
+                const float *xyRow = xy.ptr<float>(y);
+                float *outputRow = mat.ptr<float>(y);
+
+                for (int x = tile.left(); x <= tile.right(); x++)
+                {
+                    const float xxValue = xxRow[x];
+                    const float yyValue = yyRow[x];
+                    const float xyValue = xyRow[x];
+                    const float denominator =
+                        xxValue + yyValue;
+                    if (denominator < 1e-6f)
+                    {
+                        outputRow[x] = 0.0f;
+                        continue;
+                    }
+
+                    const float difference =
+                        xxValue - yyValue;
+                    const float numerator = std::sqrt(
+                        difference * difference
+                        + 4.0f * xyValue * xyValue);
+                    outputRow[x] = std::min(
+                        1.0f,
+                        numerator / denominator);
+                }
+            }
+        }
+    }
+}
+
 void MLFeature::CalcLocalMean2D(cv::Mat &out, const cv::Mat &in, int radiusLog2)
 {
     int r = pow(2.0f,radiusLog2);

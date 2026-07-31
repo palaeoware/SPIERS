@@ -157,6 +157,22 @@ void MLFeatureTensorComponentWide::CalculateFeature(cv::Mat &mat, int sliceID, M
     }
 }
 
+bool MLFeatureTensorComponentWide::CalculateFeatureROI(
+    cv::Mat &mat,
+    int sliceID,
+    MLCachedAccess *data,
+    const MLROISlice &roi)
+{
+    CalcTensorComponentROI(
+        mat,
+        sliceID,
+        data,
+        static_cast<int>(GetComponent()),
+        GetIntegrationRadiusLog2(),
+        roi);
+    return false;
+}
+
 QList<MLFeature *> MLFeatureTensorComponentWide::GetDependencies()
 {
     QList<MLFeature *> deps;

@@ -87,6 +87,21 @@ void MLFeatureTensorDeterminantWide::CalculateFeature(cv::Mat &mat, int sliceID,
     }
 }
 
+bool MLFeatureTensorDeterminantWide::CalculateFeatureROI(
+    cv::Mat &mat,
+    int sliceID,
+    MLCachedAccess *data,
+    const MLROISlice &roi)
+{
+    CalcTensorDeterminantROI(
+        mat,
+        sliceID,
+        data,
+        FeatureType::Tensor_component_wide,
+        roi);
+    return false;
+}
+
 QList<MLFeature *> MLFeatureTensorDeterminantWide::GetDependencies()
 {
     using TC = MLFeatureTensorComponentWide::TensorComponent;

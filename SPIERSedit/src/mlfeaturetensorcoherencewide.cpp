@@ -73,6 +73,21 @@ void MLFeatureTensorCoherenceWide::CalculateFeature(cv::Mat &mat, int sliceID, M
     }
 }
 
+bool MLFeatureTensorCoherenceWide::CalculateFeatureROI(
+    cv::Mat &mat,
+    int sliceID,
+    MLCachedAccess *data,
+    const MLROISlice &roi)
+{
+    CalcTensorCoherenceROI(
+        mat,
+        sliceID,
+        data,
+        FeatureType::Tensor_component_wide,
+        roi);
+    return false;
+}
+
 QList<MLFeature *> MLFeatureTensorCoherenceWide::GetDependencies()
 {
     using TC = MLFeatureTensorComponentWide::TensorComponent;

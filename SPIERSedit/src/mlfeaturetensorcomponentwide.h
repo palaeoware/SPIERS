@@ -38,6 +38,11 @@ public:
 
 public:
     void CalculateFeature(cv::Mat &mat, int sliceID, MLCachedAccess *data) override;
+    bool CalculateFeatureROI(
+        cv::Mat &mat,
+        int sliceID,
+        MLCachedAccess *data,
+        const MLROISlice &roi) override;
     QList<MLFeature *> GetDependencies() override;
     QString GetPrettyName() override;
     QString GetPrettyArgs() override;
