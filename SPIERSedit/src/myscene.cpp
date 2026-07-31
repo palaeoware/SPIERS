@@ -41,6 +41,10 @@ myscene::myscene() : QGraphicsScene()
     mousetimer.start();
     setBackgroundBrush(QColor(35, 35, 35));
     CurrentClosestNode = -1;
+    automaticCurveDrag = false;
+    automaticCurveDragCurve = -1;
+    automaticCurveDragNode = -1;
+    automaticCurveDragWholeCurve = false;
     maskFloodFillStroke = false;
 }
 
@@ -220,6 +224,30 @@ void myscene::DoAction(int x, int y)
                 if (CurrentClosestNode == -1) CurrentClosestNode = FindClosestNode((double)x, (double)y);
                 if (CurrentClosestNode >= 0) //selected curve must be 0 or more for this
                 {
+                    if (!automaticCurveDrag
+                        && Curves[SelectedCurve]
+                               ->AutomaticallyInterpolated)
+                    {
+                        const int storedSlice =
+                            CurrentFile * zsparsity;
+                        Curve *curve = Curves[SelectedCurve];
+                        if (storedSlice
+                                < curve->AutomaticStartSlice
+                            || storedSlice
+                                   > curve->AutomaticEndSlice)
+                        {
+                            break;
+                        }
+                        mainwin->MakeUndo(
+                            "automatic curve node edit");
+                        automaticCurveDrag = true;
+                        automaticCurveDragCurve =
+                            SelectedCurve;
+                        automaticCurveDragNode =
+                            CurrentClosestNode;
+                        automaticCurveDragWholeCurve =
+                            CurveShapeLocked;
+                    }
                     FilesDirty[CurrentFile] = true;
                     CurvesDirty = true;
                     CurvesUndoDirty = true;
@@ -289,6 +317,25 @@ void myscene::MouseUp()
 //Handle mouse release - mainly resetting of dirty array
 {
     int n;
+    if (automaticCurveDrag)
+    {
+        if (!FixAndInterpolateCurveNode(
+                automaticCurveDragCurve,
+                CurrentFile,
+                automaticCurveDragNode,
+                automaticCurveDragWholeCurve))
+        {
+            Message(
+                "Automatic curve interpolation failed because "
+                "the curve data is inconsistent.");
+        }
+        mainwin->RefreshCurves();
+        ShowImage(mainwin->graphicsView);
+    }
+    automaticCurveDrag = false;
+    automaticCurveDragCurve = -1;
+    automaticCurveDragNode = -1;
+    automaticCurveDragWholeCurve = false;
     CurrentClosestNode = -1;
     button = 0;
     mouse_down=false;

@@ -282,6 +282,16 @@ void MainWindow::on_actionExport_Curves_as_CSV_triggered()
 
 void MainWindow::on_actionImport_Curves_as_CSV_triggered()
 {
+    for (Curve *curve : Curves)
+    {
+        if (curve->AutomaticallyInterpolated)
+        {
+            Message(
+                "CSV curve import is disabled while any curve "
+                "uses automatic interpolation");
+            return;
+        }
+    }
     Message("This is an experimental bodge. Only use if the curves dataset you are importing has the same number of curves and the same number of tomograms");
     QString filen = QFileDialog::getOpenFileName(
                         this,
@@ -311,6 +321,7 @@ void MainWindow::on_actionImport_Curves_as_CSV_triggered()
             Curves[i]->SplinePoints[j]->Count = items[0].toInt();
             Curves[i]->SplinePoints[j]->X.clear();
             Curves[i]->SplinePoints[j]->Y.clear();
+            Curves[i]->SplinePoints[j]->Fixed.clear();
             int pos = 1;
 
             for (int k = 0; k < Curves[i]->SplinePoints[j]->Count; k++)

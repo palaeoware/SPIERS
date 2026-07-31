@@ -31,6 +31,9 @@
 
 QList <Cache *> Caches;
 
+static constexpr quint32 kCurveAutomationMagic =
+    0x43415554; // "CAUT"
+
 CacheGreyData::CacheGreyData()
 {
     Data = nullptr;
@@ -2244,6 +2247,21 @@ void WriteSettings()
 
     out << Menu3DPreviewChecked;
 
+    // Appended in SPE version 4 so older readers can still consume all
+    // traditional curve geometry before ignoring this extension.
+    out << kCurveAutomationMagic;
+    out << static_cast<quint32>(Curves.size());
+    for (const Curve *curve : Curves)
+    {
+        out << curve->AutomaticallyInterpolated;
+        out << curve->AutomaticStartSlice;
+        out << curve->AutomaticEndSlice;
+        out << static_cast<quint32>(
+            curve->SplinePoints.size());
+        for (const PointList *points : curve->SplinePoints)
+            out << points->Fixed;
+    }
+
     file.close();
 }
 
@@ -2615,6 +2633,132 @@ void ReadSettings()
 
     // Added after FeaturesByteArray so old .spe files default to visible
     if (!in.atEnd()) in >> Menu3DPreviewChecked; else Menu3DPreviewChecked = true;
+
+    if (version >= 4 && !in.atEnd())
+    {
+        quint32 magic = 0;
+        quint32 storedCurveCount = 0;
+        in >> magic;
+        in >> storedCurveCount;
+        if (magic == kCurveAutomationMagic
+            && storedCurveCount
+                   == static_cast<quint32>(Curves.size()))
+        {
+            bool metadataValid = true;
+            for (Curve *curve : Curves)
+            {
+                quint32 storedSliceCount = 0;
+                in >> curve->AutomaticallyInterpolated;
+                in >> curve->AutomaticStartSlice;
+                in >> curve->AutomaticEndSlice;
+                in >> storedSliceCount;
+
+                if (in.status() != QDataStream::Ok
+                    || storedSliceCount
+                           != static_cast<quint32>(
+                               curve->SplinePoints.size()))
+                {
+                    metadataValid = false;
+                    break;
+                }
+
+                for (quint32 slice = 0;
+                     slice < storedSliceCount;
+                     slice++)
+                {
+                    QByteArray fixed;
+                    in >> fixed;
+                    curve->SplinePoints[
+                        static_cast<int>(slice)]
+                        ->Fixed = fixed;
+                }
+
+                bool valid = in.status() == QDataStream::Ok;
+                if (curve->AutomaticallyInterpolated)
+                {
+                    valid = valid
+                            && curve->AutomaticStartSlice >= 0
+                            && curve->AutomaticStartSlice
+                                   < curve->AutomaticEndSlice
+                            && curve->AutomaticEndSlice
+                                   < curve->SplinePoints.size();
+                    if (valid)
+                    {
+                        const int nodeCount =
+                            curve->SplinePoints[
+                                curve->AutomaticStartSlice]
+                                ->Count;
+                        valid = nodeCount > 0;
+                        for (int slice =
+                                 curve->AutomaticStartSlice;
+                             valid
+                             && slice
+                                    <= curve
+                                           ->AutomaticEndSlice;
+                             slice++)
+                        {
+                            const PointList *points =
+                                curve->SplinePoints[slice];
+                            valid =
+                                points->Count == nodeCount
+                                && points->Fixed.size()
+                                       == nodeCount;
+                        }
+                        if (valid)
+                        {
+                            valid =
+                                !curve
+                                     ->SplinePoints[
+                                         curve
+                                             ->AutomaticStartSlice]
+                                     ->Fixed.contains(char(0))
+                                && !curve
+                                     ->SplinePoints[
+                                         curve
+                                             ->AutomaticEndSlice]
+                                     ->Fixed.contains(char(0));
+                        }
+                    }
+                }
+
+                if (!valid)
+                {
+                    qWarning()
+                        << "Ignoring invalid automatic curve "
+                           "metadata for"
+                        << curve->Name;
+                    curve->AutomaticallyInterpolated = false;
+                    curve->AutomaticStartSlice = -1;
+                    curve->AutomaticEndSlice = -1;
+                    for (PointList *points :
+                         curve->SplinePoints)
+                    {
+                        points->Fixed.clear();
+                    }
+                }
+            }
+
+            if (!metadataValid)
+            {
+                qWarning()
+                    << "Ignoring truncated or incompatible automatic "
+                       "curve metadata";
+                for (Curve *curve : Curves)
+                {
+                    curve->AutomaticallyInterpolated = false;
+                    curve->AutomaticStartSlice = -1;
+                    curve->AutomaticEndSlice = -1;
+                    for (PointList *points : curve->SplinePoints)
+                        points->Fixed.clear();
+                }
+            }
+        }
+        else
+        {
+            qWarning()
+                << "Ignoring incompatible automatic curve metadata";
+        }
+    }
 
     file.close();
     Active = true;

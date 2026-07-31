@@ -401,6 +401,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags f)
     CurvesTreeWidget->headerItem()->setText(3, "Segment");
     CurvesTreeWidget->headerItem()->setText(4, "Start");
     CurvesTreeWidget->headerItem()->setText(5, "End");
+    CurvesTreeWidget->headerItem()->setText(6, "Auto");
 
     MasksTreeWidget->header()->setSectionsMovable(false);
     CurvesTreeWidget->header()->setSectionsMovable(false);

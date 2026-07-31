@@ -35,13 +35,20 @@ extern int TotalUndoSize;
 class UndoDataObject
 {
 public:
-    UndoDataObject(int type, const int curve_index);
+    UndoDataObject(
+        int type,
+        const int curve_index = -1,
+        int storedCurveSlice = -1);
     int Type; //-3=masks, -2=locks, -1=curves, 0+ = segments (seg number)
     QByteArray StoredData;
     QImage StoredImage;
     PointList CurvePoints;
     int CurveNumber;
     int FileNumber;
+    bool CurveFileNumberIsStoredIndex;
+    bool CurveAutomaticallyInterpolated;
+    int CurveAutomaticStartSlice;
+    int CurveAutomaticEndSlice;
     int undosize;
 
 };
