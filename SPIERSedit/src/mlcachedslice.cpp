@@ -29,12 +29,14 @@ MLCachedSlice::MLCachedSlice(int featureCount, int zIndex, MLCachedAccess *paren
     featureData.clear();
     featuresValid.clear();
     featureValidTiles.clear();
+    featureTileCacheLoaded.clear();
     for (int i=0;i< featureCount; i++)
     {
         featureData.append(cv::Mat()); //an empty Mat
         featuresValid.append(false);
         featureValidTiles.append(
             QByteArray(parent->GetFeatureTileCount(), 0));
+        featureTileCacheLoaded.append(false);
     }
     sliceIndex = zIndex;
     lastUsed = parent->timeStamp;
@@ -58,6 +60,7 @@ void MLCachedSlice::AddFeature()
     featureData.append(cv::Mat()); //an empty Mat
     featureValidTiles.append(
         QByteArray(cache->GetFeatureTileCount(), 0));
+    featureTileCacheLoaded.append(false);
 }
 
 void MLCachedSlice::RemoveFeature(int index)
@@ -65,6 +68,7 @@ void MLCachedSlice::RemoveFeature(int index)
     featuresValid.removeAt(index);
     featureData.removeAt(index);
     featureValidTiles.removeAt(index);
+    featureTileCacheLoaded.removeAt(index);
 }
 
 void MLCachedSlice::Clear()
@@ -78,6 +82,7 @@ void MLCachedSlice::Clear()
         featureData[i].release(); //probably done automatically, but just in case!
         featuresValid[i] = false;
         featureValidTiles[i].fill(0);
+        featureTileCacheLoaded[i] = false;
     }
 }
 
@@ -90,6 +95,7 @@ void MLCachedSlice::RemoveAllFeatures()
     featureData.clear();
     featuresValid.clear();
     featureValidTiles.clear();
+    featureTileCacheLoaded.clear();
 }
 
 float MLCachedSlice::GetFeatureData(int x, int y, int feature)
@@ -212,87 +218,206 @@ void MLCachedSlice::FetchFeatureData(
     {
         cache->IncrementTimestamp();
         lastUsed = cache->timeStamp;
-        bool ok;
-        cv::Mat loadedMat = MLFileIO::LoadMatBinary(cache->GetFeature(feature)->GetEncodedNameForFile(),
-                                                    cache->GetXSize(), cache->GetYSize(),
-                                                    sliceIndex, ok);
+        const QString featureName =
+            cache->GetFeature(feature)
+                ->GetEncodedNameForFile();
 
-        if (ok)
+        if (!featureTileCacheLoaded.at(feature))
         {
-            //file loading worked OK
-            featureData[feature] = loadedMat;
-            SetFeatureFullyValid(feature);
-            MLUpdateBlockingDialog::updateDetailText(
-                QString("Loaded feature %1 for slice %2 from file cache")
-                    .arg(cache->GetFeature(feature)->GetPrettyFullName())
-                    .arg(sliceIndex));
+            bool wholeCacheLoaded = false;
+            cv::Mat loadedMat = MLFileIO::LoadMatBinary(
+                featureName,
+                cache->GetXSize(),
+                cache->GetYSize(),
+                sliceIndex,
+                wholeCacheLoaded);
+            featureTileCacheLoaded[feature] = true;
+
+            if (wholeCacheLoaded)
+            {
+                featureData[feature] = loadedMat;
+                SetFeatureFullyValid(feature);
+                MLFileIO::RemoveMatTiles(
+                    featureName,
+                    sliceIndex);
+                MLUpdateBlockingDialog::updateDetailText(
+                    QString(
+                        "Loaded feature %1 for slice %2 "
+                        "from file cache")
+                        .arg(
+                            cache->GetFeature(feature)
+                                ->GetPrettyFullName())
+                        .arg(sliceIndex));
+            }
+            else
+            {
+                cv::Mat tiledMat;
+                QByteArray tiledValidTiles(
+                    cache->GetFeatureTileCount(),
+                    0);
+                if (MLFileIO::LoadMatTiles(
+                        featureName,
+                        cache->GetXSize(),
+                        cache->GetYSize(),
+                        sliceIndex,
+                        MLROISlice::adaptiveTileSize(
+                            cache->GetXSize(),
+                            cache->GetYSize(),
+                            MLROISlice::TARGET_TILE_COUNT),
+                        tiledMat,
+                        tiledValidTiles))
+                {
+                    featureData[feature] = tiledMat;
+                    featureValidTiles[feature] =
+                        tiledValidTiles;
+                    featuresValid[feature] =
+                        !tiledValidTiles.contains(
+                            static_cast<char>(0));
+
+                    int loadedTileCount = 0;
+                    for (char valid : tiledValidTiles)
+                    {
+                        if (valid != 0)
+                            loadedTileCount++;
+                    }
+                    if (loadedTileCount > 0
+                        && cache
+                               ->IsPartialFeatureTileLoggingEnabled())
+                    {
+                        qDebug()
+                            << "ML loaded feature tiles:"
+                            << cache->GetFeature(feature)
+                                   ->GetPrettyFullName()
+                            << "- slice" << sliceIndex
+                            << "-" << loadedTileCount
+                            << "of"
+                            << tiledValidTiles.size();
+                    }
+
+                    if (featuresValid.at(feature))
+                    {
+                        MLFileIO::SaveMatBinary(
+                            featureName,
+                            featureData[feature],
+                            sliceIndex);
+                        MLFileIO::RemoveMatTiles(
+                            featureName,
+                            sliceIndex);
+                    }
+                }
+            }
+        }
+
+        if (featuresValid.at(feature))
+        {
+            activeFetchCount--;
+            return;
+        }
+
+        MLROISlice missingROI;
+        const MLROISlice *calculationROI = roi;
+        if (roi != nullptr)
+        {
+            missingROI = roi->requiringInvalidTiles(
+                featureValidTiles.at(feature));
+            if (missingROI.isValid()
+                && missingROI.requiredTileCount() > 0)
+            {
+                calculationROI = &missingROI;
+            }
+            else
+            {
+                activeFetchCount--;
+                return;
+            }
+        }
+
+        cv::Mat mat = featureData[feature];
+        if (mat.empty())
+        {
+            mat = cv::Mat::zeros(
+                cache->GetYSize(),
+                cache->GetXSize(),
+                CV_32F);
+        }
+        MLUpdateBlockingDialog::updateDetailText(
+            QString("Calculating feature %1 for slice %2")
+                .arg(
+                    cache->GetFeature(feature)
+                        ->GetPrettyFullName())
+                .arg(sliceIndex));
+
+        bool calculatedWholeSlice = true;
+        if (calculationROI == nullptr)
+        {
+            cache->CalculateFeature(
+                mat,
+                sliceIndex,
+                feature);
         }
         else
         {
-            cv::Mat mat = featureData[feature];
-            if (mat.empty())
-            {
-                mat = cv::Mat::zeros(
-                    cache->GetYSize(),
-                    cache->GetXSize(),
-                    CV_32F);
-            }
-            MLUpdateBlockingDialog::updateDetailText(
-                QString("Calculating feature %1 for slice %2")
-                    .arg(cache->GetFeature(feature)->GetPrettyFullName())
-                    .arg(sliceIndex));
-
-            bool calculatedWholeSlice = true;
-            if (roi == nullptr)
-            {
-                cache->CalculateFeature(mat, sliceIndex, feature);
-            }
-            else
-            {
-                calculatedWholeSlice = cache->CalculateFeatureROI(
+            calculatedWholeSlice =
+                cache->CalculateFeatureROI(
                     mat,
                     sliceIndex,
                     feature,
-                    *roi);
-            }
+                    *calculationROI);
+        }
 
-            if (!featureData[feature].empty()
-                && calculatedWholeSlice)
+        if (!featureData[feature].empty()
+            && calculatedWholeSlice)
+        {
+            qDebug() << "Replacing a feature matrix of size"
+                     << featureData[feature].total()
+                            * featureData[feature].elemSize();
+        }
+        featureData[feature] = mat;
+
+        if (calculatedWholeSlice)
+        {
+            MLFileIO::SaveMatBinary(
+                featureName,
+                featureData[feature],
+                sliceIndex);
+            MLFileIO::RemoveMatTiles(
+                featureName,
+                sliceIndex);
+            SetFeatureFullyValid(feature);
+        }
+        else
+        {
+            MLFileIO::SaveMatTiles(
+                featureName,
+                featureData[feature],
+                sliceIndex,
+                *calculationROI);
+            SetFeatureTilesValid(
+                feature,
+                *calculationROI);
+            if (cache
+                    ->IsPartialFeatureTileLoggingEnabled())
             {
-                qDebug() << "Replacing a feature matrix of size"
-                         << featureData[feature].total()
-                                * featureData[feature].elemSize();
+                qDebug()
+                    << "ML partial feature tiles:"
+                    << cache->GetFeature(feature)
+                           ->GetPrettyFullName()
+                    << "- slice" << sliceIndex
+                    << "-"
+                    << calculationROI
+                           ->requiredTileCount()
+                    << "of"
+                    << calculationROI->totalTileCount();
             }
-            featureData[feature] = mat;
-
-            if (calculatedWholeSlice)
+            if (featuresValid.at(feature))
             {
                 MLFileIO::SaveMatBinary(
-                    cache->GetFeature(feature)->GetEncodedNameForFile(),
+                    featureName,
                     featureData[feature],
                     sliceIndex);
-                SetFeatureFullyValid(feature);
-            }
-            else
-            {
-                SetFeatureTilesValid(feature, *roi);
-                if (cache->IsPartialFeatureTileLoggingEnabled())
-                {
-                    qDebug()
-                        << "ML partial feature tiles:"
-                        << cache->GetFeature(feature)
-                               ->GetPrettyFullName()
-                        << "- slice" << sliceIndex
-                        << "-" << roi->requiredTileCount()
-                        << "of" << roi->totalTileCount();
-                }
-                if (featuresValid.at(feature))
-                {
-                    MLFileIO::SaveMatBinary(
-                        cache->GetFeature(feature)->GetEncodedNameForFile(),
-                        featureData[feature],
-                        sliceIndex);
-                }
+                MLFileIO::RemoveMatTiles(
+                    featureName,
+                    sliceIndex);
             }
         }
     }

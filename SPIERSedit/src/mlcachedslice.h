@@ -42,6 +42,7 @@ public:
     MLCachedAccess *cache;
     QList<bool> featuresValid;
     QList<QByteArray> featureValidTiles;
+    QList<bool> featureTileCacheLoaded;
     void AddFeature();
     void RemoveFeature(int index);
     void Clear();
