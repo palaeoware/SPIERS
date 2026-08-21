@@ -2183,6 +2183,11 @@ void WriteSettings()
     sfname.append("/" + SettingsFileName + ".spe");
     QString dummy;
 
+    if (QFile::exists(sfname))
+    {
+        createTieredSpeBackup(sfname, SettingsFileName);
+    }
+
     QFile file(sfname);
     if (!file.open(QIODevice::WriteOnly))
     {
