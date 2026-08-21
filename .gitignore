@@ -40,6 +40,9 @@ SPIERS.pro.user.*
 /docs/_build/*
 /docs/_templates
 /docs/_templates/*
+SPIERSalign/docs_build/
+SPIERSedit/docs_build/
+SPIERSview/docs_build/
 
 # Misc 
 make.bat

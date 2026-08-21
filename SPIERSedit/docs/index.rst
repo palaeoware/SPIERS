@@ -43,6 +43,7 @@ Table of Contents
    introduction
    requirements
    basicconcepts
+   3dpreview
    masks
    segments
    rangegeneration

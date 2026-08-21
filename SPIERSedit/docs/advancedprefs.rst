@@ -4,9 +4,10 @@ Advanced Prefs
 ==============
 
 The *Advanced Prefs* option on the *File* menu give access to a dialog
-with some of SPIERS' more esoteric settings. These are global (rather
-than per-dataset) settings; some only take effect when datasets are
-opened (e.g. maximum memory for undo and cache).
+(titled *Global Settings*) with some of SPIERS' more esoteric settings.
+These are global (rather than per-dataset) settings; some only take
+effect when datasets are opened (e.g. maximum memory for undo and
+cache).
 
 *Maximum memory for undo*: Controls the maximum size of the undo stack.
 As the stack is wiped every time a multi-slice operation is executed,
@@ -85,3 +86,16 @@ provide an instant performance increase!
 
 *Clear Recent Files List*: This button removes everything from the *Open
 Recent* list on the *File* menu.
+
+*Theme*: The *Appearance* group at the bottom of the *Global Settings*
+dialog selects the application colour theme - *Follow system*, *Dark* or
+*Light*. Unlike the other settings on this dialog, the theme setting is
+shared across all four SPIERS applications (SPIERSedit, SPIERSview,
+SPIERSalign and SPIERSversion): changing it here also changes it for the
+others, so all the SPIERS applications on a machine can be kept in a
+consistent, matching theme. The change takes effect in SPIERSedit
+immediately on clicking *OK* - no restart required; other SPIERS
+applications will pick up the new theme the next time they are started.
+Each of the other three applications also provides the same Theme option
+in its own preferences dialog if you would prefer to set it from there
+instead.

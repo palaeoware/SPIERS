@@ -90,12 +90,10 @@ this type. This setting can be changed later on (using the *Output*
 panel), but if you get it the wrong way round your model will be
 mirrored!
 
-.. figure:: _static/figure_2.png
+.. figure:: _static/figure_2_new.png
     :align: center
 
-    Figure 2. The SPIERSedit default window layout. Note that the GUI and layout shown corresponds
-    to SPIERS 2.X.X. The GUI for 3.X.X employs a dark theme, and has a slightly modified layout, but
-    all instructions in the documentation apply to 3.X.X.
+    Figure 2. The SPIERSedit default window layout.
 
 Window Layout, Zoom, and Navigation
 -----------------------------------
@@ -112,8 +110,19 @@ shown/hidden using commands in the *Window* Menu, or by using the
 keyboard shortcuts, which are: *F1* - *Main* Toolbox; *F2* - *Slice*
 *selector* panel; *F3* - *Generation* panel; *F4* - *Masks* panel; *F5*
 - *Segments* panel; *F6* - *Curves* panel; *F7* - *Output* panel; *F8* -
-*Histogram* panel; *F9* - *Info* panel. An alternative shortcut - shift + control/
-command + the numbers 1-9 - is also available for these panels.
+*Histogram* panel; *F9* - *Info* panel; *F10* - *3D Preview* panel. An
+alternative shortcut - shift + control/command + the numbers 1-9 - is
+also available for panels *F1* to *F9*.
+
+One of these, the *3D Preview* panel, is worth introducing here as it is
+useful from very early in a project. Rather than requiring an export to
+SPIERSview, it renders a live, low-fidelity 3D view of the dataset
+directly within SPIERSedit, updating automatically as segments are
+painted or generation settings are changed. It is a quick-look tool only
+- the definitive model is still the one produced by exporting to
+SPIERSview - but it is a convenient way to get an early sense of a
+reconstruction's shape while working. See the *3D Preview* section later
+in this manual for full details.
 
 The large initially black box in the centre of the screen is the
 *Threshold image* (see below); this may or may not incorporate scroll
@@ -423,6 +432,10 @@ this is done by using the *View in SPIERSview* command on the *Output*
 menu - *F12* is the keyboard shortcut. This command initiates an export
 (which may take an appreciable amount of time), then launches SPIERSview
 on the exported file. SPIERSview has a separate manual.
+
+For a much faster, in-editor check of a reconstruction's shape - without
+performing a full export - see the *3D Preview* panel (*F10*), introduced
+above and covered in full in its own section later in this manual.
 
 In most cases however you will want to review output settings before
 using the *View in SPIERSview* command to ensure the model is displayed
