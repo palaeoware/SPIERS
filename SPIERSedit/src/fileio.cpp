@@ -19,6 +19,9 @@
 #include "globals.h"
 #include "mlinterface.h"
 #include "sourceimagenormalizer.h"
+#include <QDateTime>
+#include <QDir>
+#include <QFileInfo>
 #include "undo.h"
 #include <QImage>
 #include <QRgb>
@@ -30,6 +33,109 @@
 #include <QBuffer>
 
 QList <Cache *> Caches;
+
+namespace
+{
+QString speBackupDirectoryFor(const QString &fullSettingsFileName, const QString &settingsFileName)
+{
+    const QFileInfo fileInfo(fullSettingsFileName);
+    return fileInfo.absolutePath() + "/" + settingsFileName + "_spe_backups";
+}
+
+void retainLatestPerBucket(
+    const QList<QFileInfo> &files,
+    QSet<QString> &keepPaths,
+    QSet<QString> &claimedBuckets,
+    const char *formatString,
+    int maxCount)
+{
+    int kept = 0;
+    for (const QFileInfo &fi : files)
+    {
+        const QDateTime ts = fi.lastModified();
+        const QString bucket = ts.toString(QString::fromLatin1(formatString));
+        if (bucket.isEmpty() || claimedBuckets.contains(bucket))
+        {
+            continue;
+        }
+        claimedBuckets.insert(bucket);
+        keepPaths.insert(fi.absoluteFilePath());
+        kept++;
+        if (kept >= maxCount)
+        {
+            break;
+        }
+    }
+}
+
+void createTieredSpeBackup(const QString &fullSettingsFileName, const QString &settingsFileName)
+{
+    const QFileInfo sourceInfo(fullSettingsFileName);
+    if (!sourceInfo.exists())
+    {
+        return;
+    }
+
+    const QString backupDirectoryPath =
+        speBackupDirectoryFor(fullSettingsFileName, settingsFileName);
+    QDir backupDir(backupDirectoryPath);
+    if (!backupDir.exists() && !QDir().mkpath(backupDirectoryPath))
+    {
+        Message("Warning - unable to create SPE backup directory " + backupDirectoryPath);
+        return;
+    }
+
+    const QDateTime now = QDateTime::currentDateTime();
+    const QString stamp = now.toString("yyyyMMdd-HHmmss-zzz");
+    const QString backupFileName = settingsFileName + "_" + stamp + ".spe";
+    const QString backupFilePath = backupDir.filePath(backupFileName);
+    if (!QFile::copy(fullSettingsFileName, backupFilePath))
+    {
+        Message("Warning - unable to create SPE backup file " + backupFilePath);
+        return;
+    }
+
+    QList<QFileInfo> backups;
+    const QFileInfoList entries = backupDir.entryInfoList(
+        QStringList() << "*.spe",
+        QDir::Files,
+        QDir::Time);
+    for (const QFileInfo &fi : entries)
+    {
+        if (fi.fileName().startsWith(settingsFileName + "_"))
+        {
+            backups.append(fi);
+        }
+    }
+
+    QSet<QString> keepPaths;
+    QSet<QString> claimedBuckets;
+
+    // 1) Keep most recent 20 snapshots
+    for (int i = 0; i < backups.count() && i < 20; i++)
+    {
+        keepPaths.insert(backups.at(i).absoluteFilePath());
+    }
+
+    // 2) Keep one snapshot per hour for up to 48 unique hours
+    retainLatestPerBucket(backups, keepPaths, claimedBuckets, "yyyyMMddHH", 48);
+
+    // 3) Keep one snapshot per day for up to 30 unique days
+    retainLatestPerBucket(backups, keepPaths, claimedBuckets, "yyyyMMdd", 30);
+
+    // 4) Keep one snapshot per ISO week for up to 12 unique weeks
+    retainLatestPerBucket(backups, keepPaths, claimedBuckets, "yyyyWW", 12);
+
+    for (const QFileInfo &fi : backups)
+    {
+        const QString filePath = fi.absoluteFilePath();
+        if (!keepPaths.contains(filePath))
+        {
+            QFile::remove(filePath);
+        }
+    }
+}
+}
 
 static constexpr quint32 kCurveAutomationMagic =
     0x43415554; // "CAUT"
@@ -2298,22 +2404,25 @@ void ReadSettings()
     }
 
     in >> version;
-    if (version > SPEFILEVERSION) Message("Warning - settings file " + SettingsFileName + " is too recent for this version of SPIERSedit. Will try to read anyway...");
+    if (version > SPEFILEVERSION)
+    {
+        Message(
+            "Error - settings file "
+            + SettingsFileName
+            + ".spe was created by a newer SPIERSedit version ("
+            + QString::number(version)
+            + ") than this build supports ("
+            + QString::number(static_cast<int>(SPEFILEVERSION))
+            + "). Refusing to open this file.");
+        return;
+    }
 
     in >> dummy;
     if (dummy != SettingsFileName) Message("Warning - settings file name has been changed (from " + dummy + ") - it will be reset to " + SettingsFileName + ".spe when next saved");
 
 
-    // At this point we assume the file is valid, so we make a backupcopy (xxxxx.spe_backup) before going anyfuther.
-    // This is to give an option to recover back to a last known working .spe - and hopefull allow the recovery of the curves etc...
-    // this does not protect the mask and segment files from being damaged
-    QString temp = FullSettingsFileName;
-    QString backupFilePath = temp.replace(QString("%1.spe").arg(SettingsFileName), QString("%1.spe_backup").arg(SettingsFileName));
-    if (QFile(backupFilePath).exists())
-    {
-        QFile(backupFilePath).remove();
-    }
-    QFile::copy(FullSettingsFileName, backupFilePath);
+    // At this point we assume the file is valid, so create a timestamped backup.
+    createTieredSpeBackup(FullSettingsFileName, SettingsFileName);
 
     //Do all the simple stuff first
     in >> FileNotes;
@@ -2759,4 +2868,3 @@ void ReadSettings()
     Active = true;
 
 }
-
