@@ -218,6 +218,23 @@ Releases follow **Semantic Versioning** (semver.org) and **PEP 440**:
 
 ---
 
+## SPE File Format Compatibility Policy (SPIERSedit)
+
+When changing SPIERSedit `.spe` serialization, preserve cross-version safety with this rule:
+
+1. **Append-only layout:** add new serialized fields at end-of-file only.
+2. **Never reorder existing fields:** keep all historic read/write ordering intact.
+3. **Old-reader safety:** old builds should stop reading before new appended data and still parse their known prefix correctly.
+4. **Version bumps are last resort:** bump `SPEFILEVERSION` only when append-only cannot express the change safely.
+
+Practical guidance for implementation:
+
+- Keep `WriteSettings()` existing field order unchanged; append new sections after current tail.
+- Keep `ReadSettings()` backwards-friendly by guarding extra trailing reads with `!in.atEnd()`.
+- For incompatible future files (`version > SPEFILEVERSION`), fail closed (do not attempt partial/best-effort load).
+
+---
+
 ## OpenGL Notes (SPIERSedit / SPIERSview)
 
 - Uses Qt's `QOpenGLWidget` / `QOpenGLFunctions` wrappers.
