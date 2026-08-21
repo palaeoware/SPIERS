@@ -66,11 +66,7 @@ void MLFeatureUIManager::Rebuild()
         MLFeature *feature = _data->GetFeature(i);
 
         _tableWidget->setItem(i,1,new QTableWidgetItem(feature->GetPrettyName()));
-        const QString channelText =
-            feature->GetType() == MLFeature::FeatureType::Distance_to_mask
-                ? QStringLiteral("-")
-                : feature->GetPrettyChannel();
-        _tableWidget->setItem(i,2,new QTableWidgetItem(channelText));
+        _tableWidget->setItem(i,2,new QTableWidgetItem(feature->GetPrettyChannel()));
         _tableWidget->setItem(i,3,new QTableWidgetItem(feature->GetPretty3D()));
         _tableWidget->setItem(i,4,new QTableWidgetItem(feature->GetPrettyArgs()));
 

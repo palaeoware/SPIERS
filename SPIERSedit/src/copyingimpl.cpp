@@ -16,7 +16,6 @@
  */
 
 #include "globals.h"
-#include "mlinterface.h"
 #include "copyingimpl.h"
 #include "fileio.h"
 #include "display.h"
@@ -597,7 +596,6 @@ void CopyingImpl::GenerateAllBlank()
 void CopyingImpl::MaskCopy(int fromfile, MainWindow *mw)
 {
     bool IsShow = false;
-    bool masksChanged = false;
     int count = 0;
     if (mw->SliceSelectorList->selectedItems().count() > 1) IsShow = true;
     QList <QTreeWidgetItem *> selitems = mw->MasksTreeWidget->selectedItems();
@@ -642,11 +640,7 @@ void CopyingImpl::MaskCopy(int fromfile, MainWindow *mw)
                                 }
                         }
                     }
-                if (dflag)
-                {
-                    SaveMasks(k);
-                    masksChanged = true;
-                }
+                if (dflag) SaveMasks(k);
             }
         }
         if (IsShow)
@@ -655,10 +649,6 @@ void CopyingImpl::MaskCopy(int fromfile, MainWindow *mw)
             hide();
         }
         LoadMasks(CurrentFile);
-        if (masksChanged)
-        {
-            mlInterface->MaskDataChanged();
-        }
         ShowImage(mw->graphicsView);
     }
 }
@@ -691,7 +681,6 @@ void CopyingImpl::MaskCopy2(int fromfile, MainWindow *mw) //this is copy from se
             }
         Masks = ToMasks;
         SaveMasks(CurrentFile);
-        mlInterface->MaskDataChanged();
         ShowImage(mw->graphicsView);
     }
 }
@@ -759,7 +748,6 @@ void CopyingImpl::CurvesToMasks(MainWindow *mw) //create a mask from a curve
                 SaveMasks(i);
             }
         LoadMasks(CurrentFile);
-        mlInterface->MaskDataChanged();
         if (IsShow)
         {
             copying = false;

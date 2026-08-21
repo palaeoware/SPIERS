@@ -5,7 +5,6 @@
 #include <QList>
 #include "mlfeaturecontrast.h"
 #include "mlfeaturedifferenceofgaussians.h"
-#include "mlfeaturedistancetomask.h"
 #include "mlfeatureintensity.h"
 #include "mlfeaturegaussian.h"
 #include "mlfeaturegradient.h"
@@ -85,7 +84,6 @@ void MLAddFeature::PopulateCombos()
     dummyFeatures.append(new MLFeatureTensorDeterminantWide(MLFeature::Channel::Intensity, false, 2));
     dummyFeatures.append(new MLFeatureTensorCoherenceLocal(MLFeature::Channel::Intensity, 2));
     dummyFeatures.append(new MLFeatureTensorCoherenceWide(MLFeature::Channel::Intensity, 2));
-    dummyFeatures.append(new MLFeatureDistanceToMask(0));
 
     for (int i=0; i<dummyFeatures.count(); i++)
     {
@@ -106,12 +104,8 @@ void MLAddFeature::Refresh() //changed type
 {
     int dummyIndex = ui->cmbType->currentData().toInt();
     MLFeature *feature = dummyFeatures[dummyIndex];
-    const bool isDistanceToMask = feature->GetType() == MLFeature::FeatureType::Distance_to_mask;
 
-    ui->label->setText(isDistanceToMask ? QStringLiteral("Mask:") : QStringLiteral("Channel:"));
-    ui->cmbChannel->setVisible(!isDistanceToMask);
-
-    if (isDistanceToMask || feature->GetPretty3D()=="") //means no 2D/3D
+    if (feature->GetPretty3D()=="") //means no 2D/3D
         ui->chk3D->hide();
     else
         ui->chk3D->show();

@@ -23,7 +23,6 @@
 #include "opencv2/imgproc.hpp"
 #include "mlfeaturecontrast.h"
 #include "mlfeaturedifferenceofgaussians.h"
-#include "mlfeaturedistancetomask.h"
 #include "mlfeatureintensity.h"
 #include "mlfeaturegaussian.h"
 #include "mlfeaturegradient.h"
@@ -184,10 +183,6 @@ int MLFeature::GetXYSupportRadius() const
         // X and Y derivatives use adjacent pixels. The Z derivative does not.
         return _arg2 == 2 ? 0 : 1;
 
-    case FeatureType::Distance_to_mask:
-        // An exact distance transform has unbounded spatial support.
-        return -1;
-
     default:
         return 0;
     }
@@ -227,9 +222,6 @@ MLFeature *MLFeature::CreateFromData(FeatureType type, Channel channel, bool is3
     case MLFeature::FeatureType::Gradient_component:
         return new MLFeatureGradientComponent(channel, arg1, arg2);
 
-    case MLFeature::FeatureType::Distance_to_mask:
-        return new MLFeatureDistanceToMask(arg1);
-
     case MLFeature::FeatureType::Tensor_component_local:
         return new MLFeatureTensorComponentLocal(channel, arg1, arg2);
 
@@ -265,15 +257,6 @@ int MLFeature::GetMinMaxForArgs(int arg, bool max)
     if (arg==1 && max) return 6;
     if (arg==2) return 0;
     return 0;
-}
-
-bool MLFeature::ReferencesMask(int) const
-{
-    return false;
-}
-
-void MLFeature::RemapMasks(const QVector<int> &)
-{
 }
 
 QString MLFeature::GetChannelCodeForFile()

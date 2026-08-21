@@ -253,88 +253,6 @@ void MLInterface::ResetCachedData()
     InvalidateProbabilityCache();
 }
 
-void MLInterface::RemoveDistanceToMaskCacheFiles()
-{
-    QDir directory(MLFileIO::GetWorkingPath());
-    const QStringList files = directory.entryList(
-        {
-            QStringLiteral("ml_*_md1*.bin"),
-            QStringLiteral("ml_*_md1*.png"),
-            QStringLiteral("ml_*_md2*.bin"),
-            QStringLiteral("ml_*_md2*.png")
-        },
-        QDir::Files);
-    for (const QString &file : files)
-    {
-        directory.remove(file);
-    }
-}
-
-void MLInterface::MaskDataChanged()
-{
-    if (data == nullptr)
-    {
-        return;
-    }
-
-    bool hasDistanceFeature = false;
-    for (int featureIndex = 0; featureIndex < data->GetFeatureCount(); featureIndex++)
-    {
-        if (data->GetFeature(featureIndex)->GetType() == MLFeature::FeatureType::Distance_to_mask)
-        {
-            hasDistanceFeature = true;
-            break;
-        }
-    }
-    if (!hasDistanceFeature)
-    {
-        return;
-    }
-
-    RemoveDistanceToMaskCacheFiles();
-    data->Reset();
-    ResetRFAndSample();
-}
-
-int MLInterface::RetargetMaskFeatures(const QVector<int> &maskMap, const QList<int> &deletedMaskIds)
-{
-    if (data == nullptr)
-    {
-        return 0;
-    }
-
-    int retargetedCount = 0;
-    bool hasDistanceFeature = false;
-    for (int featureIndex = 0; featureIndex < data->GetFeatureCount(); featureIndex++)
-    {
-        MLFeature *feature = data->GetFeature(featureIndex);
-        if (feature->GetType() != MLFeature::FeatureType::Distance_to_mask)
-        {
-            continue;
-        }
-
-        hasDistanceFeature = true;
-        for (int deletedMaskId : deletedMaskIds)
-        {
-            if (feature->ReferencesMask(deletedMaskId))
-            {
-                retargetedCount++;
-                break;
-            }
-        }
-        feature->RemapMasks(maskMap);
-    }
-
-    if (hasDistanceFeature)
-    {
-        RemoveDistanceToMaskCacheFiles();
-        data->Reset();
-        ResetRFAndSample();
-        uiManager->Rebuild();
-    }
-    return retargetedCount;
-}
-
 
 //static test method - run by main on startup.
 bool MLInterface::TestML()
@@ -1433,9 +1351,5 @@ bool MLInterface::FloodFillMask(
         }
     }
 
-    if (changed)
-    {
-        MaskDataChanged();
-    }
     return changed;
 }

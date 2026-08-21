@@ -59,8 +59,6 @@ public:
     void LoadFeaturesFromFile();
     void ResetRFAndSample();
     void ResetCachedData();
-    void MaskDataChanged();
-    int RetargetMaskFeatures(const QVector<int> &maskMap, const QList<int> &deletedMaskIds);
     void AutoSampleTrainAndGenerate();
     void ResizeCache();
     void DoPreset(int presetCode);
@@ -102,7 +100,6 @@ private:
     bool cachedProbabilityRestricted = false;
 
     void InvalidateProbabilityCache();
-    void RemoveDistanceToMaskCacheFiles();
     bool BuildSliceSampleMatrix(
         int sliceID,
         cv::Mat &samples,

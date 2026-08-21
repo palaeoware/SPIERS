@@ -664,11 +664,6 @@ void WriteAllData(int fnum)
     MasksDirty = false;
     LocksDirty = false;
 
-    if (masksWereDirty && mlInterface != nullptr)
-    {
-        mlInterface->MaskDataChanged();
-    }
-
 //  for (int i=0; i<Caches.count(); i++)
 //       CacheDebug(i,"");
 }

@@ -76,7 +76,6 @@ HEADERS += src/display.h \
     src/mlfeature.h \
     src/mlfeaturecontrast.h \
     src/mlfeaturedifferenceofgaussians.h \
-    src/mlfeaturedistancetomask.h \
     src/mlfeaturegaussian.h \
     src/mlfeaturegradient.h \
     src/mlfeaturegradientcomponent.h \
@@ -156,7 +155,6 @@ SOURCES += src/display.cpp \
     src/mlfeature.cpp \
     src/mlfeaturecontrast.cpp \
     src/mlfeaturedifferenceofgaussians.cpp \
-    src/mlfeaturedistancetomask.cpp \
     src/mlfeaturegaussian.cpp \
     src/mlfeaturegradient.cpp \
     src/mlfeaturegradientcomponent.cpp \
