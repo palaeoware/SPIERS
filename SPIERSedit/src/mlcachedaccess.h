@@ -24,6 +24,7 @@
 #include "mlfeature.h"
 
 class MLCachedSlice;
+class MLROISlice;
 
 class MLCachedAccess
 {
@@ -42,18 +43,32 @@ public:
     int GetFeatureCount();
     int GetXSize();
     int GetYSize();
+    int GetFeatureTileCount();
     bool GetSourceColour();
     void CalculateFeature(cv::Mat &mat, int sliceIndex, int featureID);
-    cv::Mat GetWholeSliceIntensity(int sliceIndex);
+    bool CalculateFeatureROI(
+        cv::Mat &mat,
+        int sliceIndex,
+        int featureID,
+        const MLROISlice &roi);
+
     cv::Mat GetWholeSliceFeature(int z, int featureIndex);
+    cv::Mat GetROISliceFeature(
+        int z,
+        int featureIndex,
+        const MLROISlice &roi);
     void SetFeatureInUse(int featureID, bool inUse);
     QList<int> GetFeaturesInUse();
+    int GetRequiredXYHalo();
+    bool IsPartialFeatureTileLoggingEnabled() const;
+    void SetPartialFeatureTileLoggingEnabled(bool enabled);
     uint64 timeStamp;
     void DumpFeatures();
     int GetIndexForFeature(MLFeature *feature);
     void ClearFeatures();
     void SetFeatures(QList<MLFeature *> newFeatures);
     void Reset();
+    void ReleaseCacheMemoryForExclusiveOperation();
     void IncrementTimestamp();
     void ResizeCache();
 private:
@@ -68,6 +83,7 @@ private:
     QList<int> cacheIndicesBySlice;
     QList<MLFeature*> features;
     QList<int> featureIDsInUse;
+    bool partialFeatureTileLoggingEnabled = true;
     void RebuildFeatureIDsInUse();
 
     int xyBin, zBin, xSize, ySize, zSize;

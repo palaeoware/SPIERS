@@ -27,6 +27,7 @@ class MLFeatureUIManager;
 class MLAddFeature;
 class LabelledPoint;
 class MLParallelForest;
+class MLROISlice;
 
 class MLInterface
 {
@@ -61,6 +62,15 @@ public:
     void AutoSampleTrainAndGenerate();
     void ResizeCache();
     void DoPreset(int presetCode);
+    bool FloodFillMask(
+        int x,
+        int y,
+        int maskId,
+        int seedRadius,
+        int segmentationInfluencePercent,
+        int grabCutIterations,
+        bool fillHoles,
+        QString *errorMessage);
 private:
     bool dataComputed;
     int currentSlice;
@@ -84,12 +94,19 @@ private:
 
     //Probabity cache system for recalc brush
     cv::Mat cachedSliceProbabilities;
+    QByteArray cachedProbabilityExcludedPixels;
     int cachedProbabilitySliceID = -1;
     bool cachedProbabilitySliceValid = false;
+    bool cachedProbabilityRestricted = false;
 
     void InvalidateProbabilityCache();
-    bool BuildSliceSampleMatrix(int sliceID, cv::Mat &samples);
-    bool EnsureSliceProbabilityCache(int sliceID);
+    bool BuildSliceSampleMatrix(
+        int sliceID,
+        cv::Mat &samples,
+        const MLROISlice *roi = nullptr);
+    bool EnsureSliceProbabilityCache(
+        int sliceID,
+        const MLROISlice *roi = nullptr);
 };
 
 #endif // MLINTERFACE_H

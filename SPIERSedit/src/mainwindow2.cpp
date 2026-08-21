@@ -594,6 +594,11 @@ void MainWindow::RefreshOneCurveItem(QTreeWidgetItem *item, int i)
     //Now do first and last curve items
     item->setText(4, "n/a");
     item->setText(5, "n/a");
+    item->setText(
+        6,
+        Curves[i]->AutomaticallyInterpolated
+            ? QStringLiteral("\u2713")
+            : QString());
     QString str;
     QTextStream s(&str);
     int temp = -1;
@@ -631,9 +636,16 @@ void MainWindow::RefreshOneCurveItem(QTreeWidgetItem *item, int i)
  */
 void MainWindow::RefreshCurves()
 {
-    /// Guard against calls with no active dataset
+    /// An empty curve model must also empty the view.  In particular, this
+    /// removes the stale final row after the last curve is deleted.
     if (CurveCount <= 0 || Curves.empty())
+    {
+        bodgeflag = true;
+        CurvesTreeWidget->clear();
+        SelectedCurve = -1;
+        bodgeflag = false;
         return;
+    }
 
     bodgeflag = true;
 
@@ -937,6 +949,7 @@ void MainWindow::SetUpGUIFromSettings()
     CurvesTreeWidget->setColumnWidth(2, 20);
     CurvesTreeWidget->setUniformRowHeights(true);
     CurvesTreeWidget->setColumnWidth(4, 30);
+    CurvesTreeWidget->setColumnWidth(5, 30);
 
 
     RefreshOO();
@@ -1402,6 +1415,203 @@ void MainWindow::on_actionRemove_node_under_cursor_triggered()
     RefreshCurves();
 }
 
+void MainWindow::on_actionAutomate_curve_over_selected_slices_triggered()
+{
+    const QList<QTreeWidgetItem *> selectedCurves =
+        CurvesTreeWidget->selectedItems();
+    if (selectedCurves.size() != 1)
+    {
+        Message("Select a single curve to automate");
+        return;
+    }
+
+    int curveIndex = -1;
+    for (int i = 0; i < Curves.size(); i++)
+    {
+        if (Curves[i]->widgetitem == selectedCurves.first())
+        {
+            curveIndex = i;
+            break;
+        }
+    }
+    if (curveIndex < 0)
+    {
+        Message("Could not find the selected curve");
+        return;
+    }
+    if (Curves[curveIndex]->AutomaticallyInterpolated)
+    {
+        Message("The selected curve is already automated");
+        return;
+    }
+
+    int firstSlice = -1;
+    int lastSlice = -1;
+    int sourceSlice = -1;
+    int sourceCount = 0;
+    int selectedSliceCount = 0;
+    for (int slice = 0; slice < Files.size(); slice++)
+    {
+        if (!SliceSelectorList->item(slice)->isSelected())
+            continue;
+        selectedSliceCount++;
+        if (firstSlice < 0)
+            firstSlice = slice;
+        lastSlice = slice;
+        if (Curves[curveIndex]
+                ->SplinePoints[slice * zsparsity]
+                ->Count > 0)
+        {
+            sourceSlice = slice;
+            sourceCount++;
+        }
+    }
+    if (selectedSliceCount < 2)
+    {
+        Message("Select at least two slices for the automatic range");
+        return;
+    }
+    if (sourceCount != 1)
+    {
+        Message(
+            "The curve must contain data on precisely one "
+            "selected slice");
+        return;
+    }
+
+    const int sourceStoredSlice = sourceSlice * zsparsity;
+    for (int slice = 0;
+         slice < Curves[curveIndex]->SplinePoints.size();
+         slice++)
+    {
+        if (slice != sourceStoredSlice
+            && Curves[curveIndex]->SplinePoints[slice]->Count > 0)
+        {
+            Message(
+                "The curve already contains data outside its "
+                "single selected source slice");
+            return;
+        }
+    }
+
+    MakeUndo("automate curve");
+    QString errorMessage;
+    if (!AutomateCurve(
+            curveIndex,
+            firstSlice,
+            lastSlice,
+            sourceSlice,
+            &errorMessage))
+    {
+        Message(errorMessage);
+        return;
+    }
+    RefreshCurves();
+    ShowImage(graphicsView);
+}
+
+void MainWindow::on_actionStop_automatic_curve_interpolation_triggered()
+{
+    const QList<QTreeWidgetItem *> selectedItems =
+        CurvesTreeWidget->selectedItems();
+    QList<int> curveIndices;
+    for (int curve = 0; curve < Curves.size(); curve++)
+    {
+        if (selectedItems.contains(Curves[curve]->widgetitem)
+            && Curves[curve]->AutomaticallyInterpolated)
+        {
+            curveIndices.append(curve);
+        }
+    }
+    if (curveIndices.isEmpty())
+    {
+        Message("No automated curves are selected");
+        return;
+    }
+
+    MakeUndo("stop automatic curve interpolation");
+    for (int curveIndex : curveIndices)
+        DeautomateCurve(curveIndex);
+    RefreshCurves();
+    ShowImage(graphicsView);
+}
+
+void MainWindow::on_actionMake_node_under_cursor_calculated_triggered()
+{
+    if (SelectedCurve < 0
+        || !Curves[SelectedCurve]->AutomaticallyInterpolated)
+    {
+        Message("Select an automated curve");
+        return;
+    }
+    const int storedSlice = CurrentFile * zsparsity;
+    const Curve *curve = Curves[SelectedCurve];
+    if (storedSlice <= curve->AutomaticStartSlice
+        || storedSlice >= curve->AutomaticEndSlice)
+    {
+        Message(
+            "Nodes on the first and last automatic slices "
+            "must remain fixed");
+        return;
+    }
+    const int node = FindClosestNode(LastMouseX, LastMouseY);
+    if (node < 0)
+    {
+        Message("There is no curve node under the cursor");
+        return;
+    }
+
+    MakeUndo("release automatic curve node");
+    QString errorMessage;
+    if (!ReleaseAutomatedCurveNode(
+            SelectedCurve,
+            CurrentFile,
+            node,
+            false,
+            &errorMessage))
+    {
+        Message(errorMessage);
+        return;
+    }
+    RefreshCurves();
+    ShowImage(graphicsView);
+}
+
+void MainWindow::on_actionMake_current_slice_nodes_calculated_triggered()
+{
+    if (SelectedCurve < 0
+        || !Curves[SelectedCurve]->AutomaticallyInterpolated)
+    {
+        Message("Select an automated curve");
+        return;
+    }
+    const int storedSlice = CurrentFile * zsparsity;
+    const Curve *curve = Curves[SelectedCurve];
+    if (storedSlice <= curve->AutomaticStartSlice
+        || storedSlice >= curve->AutomaticEndSlice)
+    {
+        Message(
+            "Nodes on the first and last automatic slices "
+            "must remain fixed");
+        return;
+    }
+
+    MakeUndo("release automatic curve slice");
+    QString errorMessage;
+    if (!ReleaseAutomatedCurveNode(
+            SelectedCurve,
+            CurrentFile,
+            -1,
+            true,
+            &errorMessage))
+    {
+        Message(errorMessage);
+        return;
+    }
+    RefreshCurves();
+    ShowImage(graphicsView);
+}
+
 
 void MainWindow::on_Curve_Add_pressed()
 {
@@ -1629,6 +1839,45 @@ void MainWindow::CurveCopy(int fromfile)
     if (selitems.count() == 0) Message("No curves selected to copy");
     else
     {
+        QList<int> destinationSlices;
+        for (int slice = 0; slice < Files.count(); slice++)
+        {
+            if (SliceSelectorList->item(slice)->isSelected()
+                && slice != fromfile)
+            {
+                destinationSlices.append(slice);
+            }
+        }
+
+        for (Curve *curve : Curves)
+        {
+            if (selitems.contains(curve->widgetitem)
+                && curve->AutomaticallyInterpolated)
+            {
+                if (destinationSlices.count() != 1)
+                {
+                    Message(
+                        "An automatically interpolated curve can "
+                        "only be copied to one slice at a time");
+                    return;
+                }
+                const int sourceStored = fromfile * zsparsity;
+                const int destinationStored =
+                    destinationSlices.first() * zsparsity;
+                if (sourceStored < curve->AutomaticStartSlice
+                    || sourceStored > curve->AutomaticEndSlice
+                    || destinationStored
+                           < curve->AutomaticStartSlice
+                    || destinationStored
+                           > curve->AutomaticEndSlice)
+                {
+                    Message(
+                        "Automatic curve copying must remain "
+                        "inside the automatic slice range");
+                    return;
+                }
+            }
+        }
         MakeUndo("copy curves");
         for (int i = 0; i < selitems.count(); i++)
         {
@@ -1642,12 +1891,30 @@ void MainWindow::CurveCopy(int fromfile)
                             //k is slice, c is curve
                             Curves[j]->SplinePoints[k * zsparsity]->X.clear();
                             Curves[j]->SplinePoints[k * zsparsity]->Y.clear();
+                            Curves[j]->SplinePoints[k * zsparsity]->Fixed.clear();
                             for (int l = 0; l < Curves[j]->SplinePoints[fromfile * zsparsity]->Count; l++)
                             {
                                 Curves[j]->SplinePoints[k * zsparsity]->X.append(Curves[j]->SplinePoints[fromfile * zsparsity]->X[l]);
                                 Curves[j]->SplinePoints[k * zsparsity]->Y.append(Curves[j]->SplinePoints[fromfile * zsparsity]->Y[l]);
                             }
                             Curves[j]->SplinePoints[k * zsparsity]->Count = Curves[j]->SplinePoints[k * zsparsity]->X.count();
+                            if (Curves[j]->AutomaticallyInterpolated)
+                            {
+                                Curves[j]
+                                    ->SplinePoints[k * zsparsity]
+                                    ->Fixed.fill(
+                                        char(1),
+                                        Curves[j]
+                                            ->SplinePoints[k * zsparsity]
+                                            ->Count);
+                                if (!RecalculateAutomatedCurve(j))
+                                {
+                                    Message(
+                                        "Could not recalculate the "
+                                        "automatic curve after copying");
+                                    return;
+                                }
+                            }
                             if (Curves[j]->Segment != 0) FilesDirty[k] = true;
 
                         }
@@ -1684,7 +1951,46 @@ void MainWindow::on_actionCopyCurvesToCurrent_triggered()
     if (selslices.count() != 1) Message("Select a single slice to copy curves from");
     else
     {
-        //MakeUndo("copy curves");
+        int sourceSlice = -1;
+        for (int slice = 0; slice < Files.count(); slice++)
+        {
+            if (SliceSelectorList->item(slice)->isSelected())
+            {
+                sourceSlice = slice;
+                break;
+            }
+        }
+
+        bool copiesAutomaticCurve = false;
+        for (Curve *curve : Curves)
+        {
+            if (!selitems.contains(curve->widgetitem)
+                || !curve->AutomaticallyInterpolated)
+            {
+                continue;
+            }
+            copiesAutomaticCurve = true;
+            const int sourceStored = sourceSlice * zsparsity;
+            const int destinationStored = CurrentFile * zsparsity;
+            if (sourceSlice == CurrentFile)
+            {
+                Message("The curve source and destination are the same slice");
+                return;
+            }
+            if (sourceStored < curve->AutomaticStartSlice
+                || sourceStored > curve->AutomaticEndSlice
+                || destinationStored < curve->AutomaticStartSlice
+                || destinationStored > curve->AutomaticEndSlice)
+            {
+                Message(
+                    "Automatic curve copying must remain inside "
+                    "the automatic slice range");
+                return;
+            }
+        }
+
+        if (copiesAutomaticCurve)
+            MakeUndo("copy curves");
         for (int i = 0; i < selitems.count(); i++)
         {
             for (int j = 0;  j < CurveCount; j++)
@@ -1697,12 +2003,30 @@ void MainWindow::on_actionCopyCurvesToCurrent_triggered()
                             //k is slice, c is curve
                             Curves[j]->SplinePoints[CurrentFile * zsparsity]->X.clear();
                             Curves[j]->SplinePoints[CurrentFile * zsparsity]->Y.clear();
+                            Curves[j]->SplinePoints[CurrentFile * zsparsity]->Fixed.clear();
                             for (int l = 0; l < Curves[j]->SplinePoints[k * zsparsity]->Count; l++)
                             {
                                 Curves[j]->SplinePoints[CurrentFile * zsparsity]->X.append(Curves[j]->SplinePoints[k * zsparsity]->X[l]);
                                 Curves[j]->SplinePoints[CurrentFile * zsparsity]->Y.append(Curves[j]->SplinePoints[k * zsparsity]->Y[l]);
                             }
                             Curves[j]->SplinePoints[CurrentFile * zsparsity]->Count = Curves[j]->SplinePoints[CurrentFile * zsparsity]->X.count();
+                            if (Curves[j]->AutomaticallyInterpolated)
+                            {
+                                Curves[j]
+                                    ->SplinePoints[CurrentFile * zsparsity]
+                                    ->Fixed.fill(
+                                        char(1),
+                                        Curves[j]
+                                            ->SplinePoints[CurrentFile * zsparsity]
+                                            ->Count);
+                                if (!RecalculateAutomatedCurve(j))
+                                {
+                                    Message(
+                                        "Could not recalculate the "
+                                        "automatic curve after copying");
+                                    return;
+                                }
+                            }
                         }
                 }
             }
@@ -1726,6 +2050,17 @@ void MainWindow::on_actionCopy_from_current_slice_to_selected_triggered()
 void MainWindow::on_actionRemove_selected_curves_from_selected_slices_triggered()
 {
     QList <QTreeWidgetItem *> selitems = CurvesTreeWidget->selectedItems();
+    for (Curve *curve : Curves)
+    {
+        if (selitems.contains(curve->widgetitem)
+            && curve->AutomaticallyInterpolated)
+        {
+            Message(
+                "Slice removal is disabled for automatically "
+                "interpolated curves");
+            return;
+        }
+    }
     QList <QListWidgetItem *> selslices = SliceSelectorList->selectedItems();
     MakeUndo("delete curves");
     for (int i = 0; i < selitems.count(); i++)
@@ -1740,6 +2075,7 @@ void MainWindow::on_actionRemove_selected_curves_from_selected_slices_triggered(
                         //k is slice, j is curve
                         Curves[j]->SplinePoints[k * zsparsity]->X.clear();
                         Curves[j]->SplinePoints[k * zsparsity]->Y.clear();
+                        Curves[j]->SplinePoints[k * zsparsity]->Fixed.clear();
                         Curves[j]->SplinePoints[k * zsparsity]->Count = 0;
                         if (Curves[j]->Segment != 0) FilesDirty[k] = true;
                     }
@@ -1758,6 +2094,17 @@ void MainWindow::on_actionResize_keeping_curve_shape_triggered()
     if (selitems.count() == 0) Message ("No curves selected");
     else
     {
+        for (Curve *curve : Curves)
+        {
+            if (selitems.contains(curve->widgetitem)
+                && curve->AutomaticallyInterpolated)
+            {
+                Message(
+                    "Curve resizing is disabled for automatically "
+                    "interpolated curves");
+                return;
+            }
+        }
         ResizeDialogImpl dialog;
         dialog.exec();
         if (dialog.Cancelled == false)
@@ -3134,6 +3481,13 @@ void MainWindow::on_actionInterpolate_over_selected_slices_triggered()
 
         qDebug() << "0";
         if (c == -1) Error("Oops, didn't find the selected curve!");
+        if (Curves[c]->AutomaticallyInterpolated)
+        {
+            Message(
+                "Manual interpolation is disabled for an "
+                "automatically interpolated curve");
+            return;
+        }
         QList <QListWidgetItem *> selitems2 = SliceSelectorList->selectedItems();
         if (selitems2.count() < 2) Message ("Select at least two slices to interpolate between");
         else
@@ -3176,6 +3530,7 @@ void MainWindow::on_actionInterpolate_over_selected_slices_triggered()
                         Curves[c]->SplinePoints[i]->Count = Curves[c]->SplinePoints[FirstFile]->Count;
                         Curves[c]->SplinePoints[i]->X.clear();
                         Curves[c]->SplinePoints[i]->Y.clear();
+                        Curves[c]->SplinePoints[i]->Fixed.clear();
                         //qDebug()<<"Dirtying "<<i<<" Files(i) is "<<Files[i];
                         if (Curves[c]->Segment != 0) FilesDirty[i / zsparsity] = true;
                     }

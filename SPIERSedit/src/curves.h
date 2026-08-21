@@ -30,6 +30,25 @@ extern void AddNode();
 extern void KillNode(MainWindow *th);
 extern QList <QGraphicsItem *> MarkerList;
 extern int FindClosestNode(double X, double Y);
+extern bool AutomateCurve(
+    int curveIndex,
+    int firstSlice,
+    int lastSlice,
+    int sourceSlice,
+    QString *errorMessage = nullptr);
+extern void DeautomateCurve(int curveIndex);
+extern bool FixAndInterpolateCurveNode(
+    int curveIndex,
+    int sliceIndex,
+    int nodeIndex,
+    bool wholeCurve);
+extern bool ReleaseAutomatedCurveNode(
+    int curveIndex,
+    int sliceIndex,
+    int nodeIndex,
+    bool wholeSlice,
+    QString *errorMessage = nullptr);
+extern bool RecalculateAutomatedCurve(int curveIndex);
 extern void DrawCurve(int c, int mycol, int file, QImage *Thresh);
 extern void DrawCurveOutput(int c, int file, uchar *fullarray, QList <bool> *UseMasks, bool remove);
 extern void DrawCurveMarkers(QGraphicsScene *scene);

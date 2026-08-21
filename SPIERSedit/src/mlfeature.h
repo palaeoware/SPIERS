@@ -20,11 +20,17 @@
 #include "opencv2/core.hpp"
 
 class MLCachedAccess;
+class MLROISlice;
 class MLFeature
 {
 public:
     virtual ~MLFeature() = default;
     virtual void CalculateFeature(cv::Mat &mat, int sliceID, MLCachedAccess *data) = 0; //makes class abstract
+    virtual bool CalculateFeatureROI(
+        cv::Mat &mat,
+        int sliceID,
+        MLCachedAccess *data,
+        const MLROISlice &roi);
     enum class FeatureType
     {
         Gaussian,
@@ -83,6 +89,7 @@ public:
     QString Dump();
     void SetImportance(int percent);
     int GetImportance();
+    int GetXYSupportRadius() const;
     static MLFeature *CreateFromData(FeatureType type, Channel channel, bool is3D, int arg1, int arg2);
     virtual int GetMinMaxForArgs(int arg, bool max);
 protected:
@@ -100,6 +107,13 @@ protected:
 
     void CalcFeatureDifferenceOfFeatures(cv::Mat &mat, int sliceID,
                                          MLCachedAccess *data, int featureIndex1, int featureIndex2);
+    void CalcFeatureDifferenceOfFeaturesROI(
+        cv::Mat &mat,
+        int sliceID,
+        MLCachedAccess *data,
+        int featureIndex1,
+        int featureIndex2,
+        const MLROISlice &roi);
     void CalcLocalMean2D(cv::Mat &out, const cv::Mat &in, int radiusLog2);
     void CalcZMean(cv::Mat &out, const QVector<cv::Mat> &slicesIn, int centralSliceIndex, int radiusLog2);
 
@@ -131,6 +145,31 @@ protected:
     void CalcFirstDerivativeZ(cv::Mat &out, const QVector<cv::Mat> &slicesIn, int centralSliceIndex, float scaleFactor = 1.0f);
     void CalcFeatureProductOfFeatures(cv::Mat &mat, int sliceID,
                                       MLCachedAccess *data, int featureIndex1, int featureIndex2);
+    void CalcTensorComponentROI(
+        cv::Mat &mat,
+        int sliceID,
+        MLCachedAccess *data,
+        int component,
+        int radiusLog2,
+        const MLROISlice &roi);
+    void CalcTensorTraceROI(
+        cv::Mat &mat,
+        int sliceID,
+        MLCachedAccess *data,
+        FeatureType componentType,
+        const MLROISlice &roi);
+    void CalcTensorDeterminantROI(
+        cv::Mat &mat,
+        int sliceID,
+        MLCachedAccess *data,
+        FeatureType componentType,
+        const MLROISlice &roi);
+    void CalcTensorCoherenceROI(
+        cv::Mat &mat,
+        int sliceID,
+        MLCachedAccess *data,
+        FeatureType componentType,
+        const MLROISlice &roi);
 
     void CalcMatrixProduct(cv::Mat &out, const cv::Mat &in1, const cv::Mat &in2);
 

@@ -17,19 +17,43 @@
 #ifndef MLFILEIO_H
 #define MLFILEIO_H
 
+#include <QByteArray>
 #include <QString>
 #include <opencv2/opencv.hpp>
+
+class MLROISlice;
+
 class MLFileIO
 {
 public:
     MLFileIO();
 
     static cv::Mat LoadMatBinary(const QString &featureName, int x, int y, int fileIndex, bool &ok);
+    static bool LoadMatTiles(
+        const QString &featureName,
+        int x,
+        int y,
+        int fileIndex,
+        int tileSize,
+        cv::Mat &mat,
+        QByteArray &validTiles);
+    static void RemoveMatTiles(
+        const QString &featureName,
+        int fileIndex);
     static void SaveMatBinary(const QString &featurename, const cv::Mat &mat, int fileIndex);
+    static void SaveMatTiles(
+        const QString &featureName,
+        const cv::Mat &mat,
+        int fileIndex,
+        const MLROISlice &roi);
+    static void SaveSignedVisualisation(const QString &featureName, const cv::Mat &mat, int fileIndex, float maximumAbsoluteValue);
     static cv::Mat LoadMatFromImageFile(int sliceIndex, bool expectColour);
     static QString GetWorkingPath();
 private:
     static QString GetFileName(const QString &fname, int index);
+    static QString GetTiledFileName(
+        const QString &featureName,
+        int fileIndex);
 
 };
 

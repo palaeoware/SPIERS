@@ -94,7 +94,7 @@ int main(int argc, char **argv)
     QImageReader::setAllocationLimit(2048);
 
     /// Install crash handlers early
-    CrashDetector::installCrashHandlers(QStringLiteral("SPIERSedit"));
+    //CrashDetector::installCrashHandlers(QStringLiteral("SPIERSedit"));
 
     // Set OpenGL surface format as global
     surfaceFormat.setMajorVersion(GL_MAJOR);

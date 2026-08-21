@@ -21,6 +21,7 @@
 #include <QString>
 #include <QStringList>
 #include <QList>
+#include <QByteArray>
 #include <QDir>
 #include <QImage>
 #include <QMessageBox>
@@ -41,7 +42,7 @@
 // ============================================================================
 
 // Internal versions for input/output file purposes
-#define SPEFILEVERSION 3
+#define SPEFILEVERSION 4
 #define SPVFILEVERSION 1010
 
 // Legal Stuff
@@ -151,6 +152,7 @@ public:
 
     QList<double> X;                        /// X coordinates
     QList<double> Y;                        /// Y coordinates
+    QByteArray Fixed;                       /// Per-node automatic-interpolation keyframes
     int Count;                              /// Number of points
 };
 
@@ -168,6 +170,9 @@ public:
     bool Closed;                            /// Closed curve
     bool Filled;                            /// Filled region
     int Segment;                            /// Associated segment (segment+1; 0 = none)
+    bool AutomaticallyInterpolated;         /// Uses per-node interpolation keyframes
+    int AutomaticStartSlice;                /// First managed SplinePoints index
+    int AutomaticEndSlice;                  /// Last managed SplinePoints index
     QList<PointList *> SplinePoints;        /// Points on each file/slice
     int ListOrder;                          /// Display list position
     QTreeWidgetItem *widgetitem;            /// Tree widget item pointer

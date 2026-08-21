@@ -15,30 +15,54 @@
  * hope that it will be useful, but WITHOUT ANY WARRANTY.
  */
 #include "mlinterface.h"
-#include <QDebug>
-#include <QImage>
 
+#include "display.h"
 #include "globals.h"
-#include "display.h"
-#include "src/fileio.h"
-#include "display.h"
-#include <opencv2/imgproc.hpp>
 #include "labelledpoint.h"
 #include "mainwindow.h"
-#include "mlupdateblockingdialog.h"
-#include "mlfeatureintensity.h"
-#include "mlfeaturegaussian.h"
+#include "mladdfeature.h"
 #include "mlfeaturecontrast.h"
 #include "mlfeaturedifferenceofgaussians.h"
-#include "mlfeatureuimanager.h"
-#include "mladdfeature.h"
-#include <QMessageBox>
-#include "mlfileio.h"
-#include <QFileDialog>
-#include <QThread>
-#include "mlparallelforest.h"
+#include "mlfeaturegaussian.h"
+#include "mlfeatureintensity.h"
 #include "mlfeaturepresets.h"
+#include "mlfeatureuimanager.h"
+#include "mlfileio.h"
+#include "mlparallelforest.h"
+#include "mlroislice.h"
+#include "mlupdateblockingdialog.h"
+#include "src/fileio.h"
+
+#include <QDebug>
+#include <QComboBox>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QFile>
+#include <QFileDialog>
+#include <QFormLayout>
+#include <QGraphicsPixmapItem>
+#include <QGraphicsScene>
+#include <QGraphicsView>
+#include <QHBoxLayout>
+#include <QImage>
+#include <QLabel>
 #include <QMessageBox>
+#include <QMutexLocker>
+#include <QPixmap>
+#include <QPushButton>
+#include <QResizeEvent>
+#include <QScopeGuard>
+#include <QSpinBox>
+#include <QTemporaryDir>
+#include <QThread>
+#include <QToolButton>
+#include <QVBoxLayout>
+#include <QWheelEvent>
+
+#include <opencv2/imgproc.hpp>
+
+#include <cstring>
+#include <vector>
 
 bool MLInterface::enabled;
 
@@ -253,14 +277,13 @@ bool MLInterface::TestML()
 void MLInterface::Generate(QListWidget *SliceSelectorList)
 {
     CreateSingletonsIfNeeded();
+    WriteAllData(CurrentFile);
 
     if (!rf->IsValid())
     {
         Message("ML model is not trained");
         return;
     }
-
-    WriteAllData(CurrentFile);
 
     MLUpdateBlockingDialog::showDialog(mainwin, "", "", "Creating segments using ML data");
 
@@ -372,13 +395,20 @@ void MLInterface::ComputeSliceProbabilitiesFromVotes(int sliceID)
 
     MLUpdateBlockingDialog::updateDetailText(QString("Running ML model"));
 
-    if (!EnsureSliceProbabilityCache(sliceID))
+    MLROISlice roi(fwidth, fheight, DoMaskLocking());
+    if (!roi.isValid())
+    {
+        qWarning() << "Could not create ML ROI for slice" << sliceID;
+        return;
+    }
+    const QByteArray &newLocks = roi.excludedPixels();
+
+    if (!EnsureSliceProbabilityCache(sliceID, &roi))
         return;
 
     MLUpdateBlockingDialog::updateDetailText(QString("Calculating segments from model outputs"));
 
-    QByteArray newLocks = DoMaskLocking();
-
+    int sampleRow = 0;
     for (int y = 0; y < fheight; ++y)
     {
         QVector<uchar *> outRows(SegmentCount);
@@ -387,11 +417,10 @@ void MLInterface::ComputeSliceProbabilitiesFromVotes(int sliceID)
 
         for (int x = 0; x < fwidth; ++x)
         {
-            const int sampleRow = y * fwidth + x;
-            const float *probRow = cachedSliceProbabilities.ptr<float>(sampleRow);
-
             if (!newLocks[fwidth * y + x])
             {
+                const float *probRow = cachedSliceProbabilities.ptr<float>(sampleRow);
+
                 int high = -1;
                 int highSeg = -1;
                 for (int c = 0; c < SegmentCount; ++c)
@@ -412,9 +441,11 @@ void MLInterface::ComputeSliceProbabilitiesFromVotes(int sliceID)
                 {
                     outRows[highSeg][x] = static_cast<uchar>(128);
                 }
+                sampleRow++;
             }
         }
     }
+    Q_ASSERT(sampleRow == cachedSliceProbabilities.rows);
 }
 
 QString MLInterface::DescribeSample()
@@ -503,6 +534,7 @@ void MLInterface::CreateSingletonsIfNeeded()
 void MLInterface::CalculateFeatureData()
 {
     CreateSingletonsIfNeeded();
+    WriteAllData(CurrentFile);
 
     MLUpdateBlockingDialog::showDialog(mainWin, "Initialising", "", "Calculating Feature Data");
     int featureCount = data->GetFeatureCount();
@@ -626,21 +658,130 @@ bool MLInterface::Train(bool noMessages)
     cv::Mat trainingDataMat(labels.count(), featureCount, CV_32F);
     cv::Mat labelsMat(labels.count(), 1, CV_32S);
 
+    QVector<QVector<int>> sampleRowsBySlice(FileCount);
     for (int i = 0; i < labels.count(); i++)
     {
-        if (i % 100 == 0)
-        {
-            MLUpdateBlockingDialog::updateHighLevelText(
-                QString("Fetching features for training %1%").arg((i * 100) / labels.count()));
-            MLUpdateBlockingDialog::updateDetailText(QString(""));
-        }
-
-        LabelledPoint point = labels[i];
+        const LabelledPoint &point = labels.at(i);
+        Q_ASSERT(point.x >= 0 && point.x < fwidth);
+        Q_ASSERT(point.y >= 0 && point.y < fheight);
+        Q_ASSERT(point.z >= 0 && point.z < FileCount);
         labelsMat.at<int>(i, 0) = point.segment;
-
-        for (int j = 0; j < featureCount; j++)
-            trainingDataMat.at<float>(i, j) = data->GetFeatureValueAt(point.x, point.y, point.z, featureIDs[j]);
+        sampleRowsBySlice[point.z].append(i);
     }
+
+    qint64 trainingTargetTiles = 0;
+    qint64 trainingPossibleTiles = 0;
+    qint64 uniqueTrainingPixels = 0;
+    int sampledSliceCount = 0;
+    int processedSampleCount = 0;
+    int trainingTileSize = 0;
+
+    {
+        const bool oldPartialTileLogging =
+            data->IsPartialFeatureTileLoggingEnabled();
+        data->SetPartialFeatureTileLoggingEnabled(false);
+        const auto restorePartialTileLogging = qScopeGuard(
+            [&]()
+            {
+                data->SetPartialFeatureTileLoggingEnabled(
+                    oldPartialTileLogging);
+            });
+
+        for (int sliceID = 0;
+             sliceID < sampleRowsBySlice.size();
+             sliceID++)
+        {
+            const QVector<int> &sampleRows =
+                sampleRowsBySlice.at(sliceID);
+            if (sampleRows.isEmpty())
+                continue;
+
+            QByteArray excludedPixels(
+                static_cast<qsizetype>(fwidth) * fheight,
+                static_cast<char>(1));
+            for (int sampleRow : sampleRows)
+            {
+                const LabelledPoint &point =
+                    labels.at(sampleRow);
+                excludedPixels[
+                    static_cast<qsizetype>(point.y) * fwidth
+                    + point.x] = 0;
+            }
+
+            const MLROISlice roi(
+                fwidth,
+                fheight,
+                excludedPixels);
+            if (!roi.isValid())
+            {
+                MLUpdateBlockingDialog::hideDialog();
+                if (!noMessages)
+                {
+                    Message(
+                        QString(
+                            "Could not create training ROI for "
+                            "slice %1")
+                            .arg(sliceID + 1));
+                }
+                return false;
+            }
+
+            sampledSliceCount++;
+            uniqueTrainingPixels += roi.activePixelCount();
+            trainingTargetTiles += roi.targetTileCount();
+            trainingPossibleTiles += roi.totalTileCount();
+            trainingTileSize = roi.tileSize();
+
+            MLUpdateBlockingDialog::updateHighLevelText(
+                QString("Fetching features for training %1%")
+                    .arg(
+                        (processedSampleCount * 100)
+                        / labels.count()));
+            MLUpdateBlockingDialog::updateDetailText(
+                QString(
+                    "Slice %1: %2 samples in %3 feature tiles")
+                    .arg(sliceID + 1)
+                    .arg(sampleRows.count())
+                    .arg(roi.targetTileCount()));
+
+            QVector<cv::Mat> featureSlices;
+            featureSlices.reserve(featureCount);
+            for (int featureID : featureIDs)
+            {
+                featureSlices.append(
+                    data->GetROISliceFeature(
+                        sliceID,
+                        featureID,
+                        roi));
+            }
+
+            for (int sampleRow : sampleRows)
+            {
+                const LabelledPoint &point =
+                    labels.at(sampleRow);
+                for (int feature = 0;
+                     feature < featureCount;
+                     feature++)
+                {
+                    trainingDataMat.at<float>(
+                        sampleRow,
+                        feature) =
+                        featureSlices.at(feature)
+                            .at<float>(point.y, point.x);
+                }
+            }
+
+            processedSampleCount += sampleRows.count();
+        }
+    }
+
+    qDebug() << "ML training feature ROIs:"
+             << labels.count() << "samples at"
+             << uniqueTrainingPixels << "unique pixels"
+             << "- target tiles:" << trainingTargetTiles
+             << "of" << trainingPossibleTiles
+             << "across" << sampledSliceCount << "slices"
+             << "- tile size:" << trainingTileSize;
 
     MLUpdateBlockingDialog::updateHighLevelText(QString("Training..."));
     MLUpdateBlockingDialog::updateDetailText(QString(""));
@@ -703,14 +844,15 @@ void MLInterface::DoImportances()
 
 void MLInterface::SampleAndTrain(bool autoGen)
 {
+    CreateSingletonsIfNeeded();
+    WriteAllData(CurrentFile);
+
     if (autoGen)
     {
         AutoSampleTrainAndGenerate();
     }
     else
     {
-        CreateSingletonsIfNeeded();
-
         if (!Sample(mainWin->actionIncremental_sampling->isChecked(), false))
             return;
 
@@ -770,11 +912,16 @@ void MLInterface::DoPreset(int presetCode)
 void MLInterface::InvalidateProbabilityCache()
 {
     cachedSliceProbabilities.release();
+    cachedProbabilityExcludedPixels.clear();
     cachedProbabilitySliceID = -1;
     cachedProbabilitySliceValid = false;
+    cachedProbabilityRestricted = false;
 }
 
-bool MLInterface::BuildSliceSampleMatrix(int sliceID, cv::Mat &samples)
+bool MLInterface::BuildSliceSampleMatrix(
+    int sliceID,
+    cv::Mat &samples,
+    const MLROISlice *roi)
 {
     if (data == nullptr)
         return false;
@@ -786,33 +933,68 @@ bool MLInterface::BuildSliceSampleMatrix(int sliceID, cv::Mat &samples)
     if (numFeatures < 1 || numPixels < 1)
         return false;
 
+    if (roi != nullptr
+        && (!roi->isValid()
+            || roi->width() != fwidth
+            || roi->height() != fheight))
+    {
+        return false;
+    }
+
+    const int numSamples =
+        roi != nullptr ? roi->activePixelCount() : numPixels;
+    const QByteArray *excludedPixels =
+        roi != nullptr ? &roi->excludedPixels() : nullptr;
+
     QVector<cv::Mat> featureSlices;
     featureSlices.reserve(numFeatures);
 
     for (int f = 0; f < numFeatures; ++f)
-        featureSlices.append(data->GetWholeSliceFeature(sliceID, featureIndices[f]));
+    {
+        if (roi != nullptr)
+        {
+            featureSlices.append(
+                data->GetROISliceFeature(
+                    sliceID,
+                    featureIndices[f],
+                    *roi));
+        }
+        else
+        {
+            featureSlices.append(
+                data->GetWholeSliceFeature(sliceID, featureIndices[f]));
+        }
+    }
 
-    samples.create(numPixels, numFeatures, CV_32F);
+    samples.create(numSamples, numFeatures, CV_32F);
 
+    int sampleRow = 0;
     for (int y = 0; y < fheight; ++y)
     {
         for (int x = 0; x < fwidth; ++x)
         {
-            const int row = y * fwidth + x;
-            float *sampleRow = samples.ptr<float>(row);
+            const int pixel = y * fwidth + x;
+            if (excludedPixels != nullptr && excludedPixels->at(pixel) != 0)
+                continue;
+
+            float *sample = samples.ptr<float>(sampleRow);
 
             for (int f = 0; f < numFeatures; ++f)
             {
                 const float *srcRow = featureSlices[f].ptr<float>(y);
-                sampleRow[f] = srcRow[x];
+                sample[f] = srcRow[x];
             }
+            sampleRow++;
         }
     }
+    Q_ASSERT(sampleRow == samples.rows);
 
     return true;
 }
 
-bool MLInterface::EnsureSliceProbabilityCache(int sliceID)
+bool MLInterface::EnsureSliceProbabilityCache(
+    int sliceID,
+    const MLROISlice *roi)
 {
     if (data == nullptr)
         return false;
@@ -820,20 +1002,61 @@ bool MLInterface::EnsureSliceProbabilityCache(int sliceID)
     if (!rf || !rf->IsValid())
         return false;
 
-    if (cachedProbabilitySliceValid && cachedProbabilitySliceID == sliceID)
-        return true;
+    const bool restricted = roi != nullptr;
+    if (cachedProbabilitySliceValid
+        && cachedProbabilitySliceID == sliceID
+        && cachedProbabilityRestricted == restricted)
+    {
+        if (!restricted
+            || cachedProbabilityExcludedPixels == roi->excludedPixels())
+        {
+            return true;
+        }
+    }
 
     cv::Mat samples;
-    if (!BuildSliceSampleMatrix(sliceID, samples))
+    if (!BuildSliceSampleMatrix(sliceID, samples, roi))
         return false;
+
+    if (restricted)
+    {
+        MLROISlice featureROI = *roi;
+        const int xyHalo = data->GetRequiredXYHalo();
+        featureROI.addHaloPixels(xyHalo);
+
+        qDebug() << "ML prediction pixels:" << samples.rows
+                 << "of" << roi->totalPixelCount()
+                 << "- target tiles:" << roi->targetTileCount()
+                 << "of" << roi->totalTileCount()
+                 << "- tile size:" << roi->tileSize()
+                 << "- feature halo:" << featureROI.haloTileCount()
+                 << "tiles for"
+                 << (xyHalo < 0 ? QStringLiteral("global support")
+                               : QStringLiteral("%1 px").arg(xyHalo));
+    }
 
     cv::Mat probabilities;
-    if (!rf->PredictProbabilities(samples, probabilities))
-        return false;
+    if (samples.rows > 0)
+    {
+        MLUpdateBlockingDialog::updateDetailText(
+            QStringLiteral("Running ML model on %1 of %2 pixels")
+                .arg(samples.rows)
+                .arg(fwidth * fheight));
+
+        if (!rf->PredictProbabilities(samples, probabilities))
+            return false;
+    }
+    else
+    {
+        probabilities.create(0, SegmentCount, CV_32F);
+    }
 
     cachedSliceProbabilities = probabilities;
+    cachedProbabilityExcludedPixels =
+        restricted ? roi->excludedPixels() : QByteArray();
     cachedProbabilitySliceID = sliceID;
     cachedProbabilitySliceValid = true;
+    cachedProbabilityRestricted = restricted;
 
     return true;
 }
@@ -880,3 +1103,253 @@ void MLInterface::GetProbabilitiesAllSegments(int x, int y, int z, int *segBuffe
     }
 }
 
+bool MLInterface::FloodFillMask(
+    int x,
+    int y,
+    int maskId,
+    int seedRadius,
+    int segmentationInfluencePercent,
+    int grabCutIterations,
+    bool fillHoles,
+    QString *errorMessage)
+{
+    if (errorMessage != nullptr)
+    {
+        errorMessage->clear();
+    }
+
+    if (x < 0 || x >= fwidth || y < 0 || y >= fheight)
+    {
+        return false;
+    }
+    if (maskId < 0 || maskId > MaxUsedMask || maskId >= MasksSettings.count())
+    {
+        if (errorMessage != nullptr)
+        {
+            *errorMessage = QStringLiteral("The destination mask is invalid");
+        }
+        return false;
+    }
+    if (Masks.size() != fwidth * fheight
+        || GA.count() != SegmentCount
+        || ColArray.isNull())
+    {
+        if (errorMessage != nullptr)
+        {
+            *errorMessage = QStringLiteral("The current slice data is unavailable");
+        }
+        return false;
+    }
+
+    cv::Mat sourceProbability = cv::Mat::zeros(fheight, fwidth, CV_8UC1);
+    QImage ctImage;
+    int sourceSegment = -1;
+    {
+        QMutexLocker<QRecursiveMutex> locker(&mutex);
+        const QVector<int> segmentAssignments = GetSegmentMap();
+        sourceSegment = segmentAssignments.at(y * fwidth + x);
+        if (sourceSegment < 0 || sourceSegment >= SegmentCount)
+        {
+            if (errorMessage != nullptr)
+            {
+                *errorMessage = QStringLiteral("The clicked pixel is not assigned to an active segment");
+            }
+            return false;
+        }
+
+        for (int rowIndex = 0; rowIndex < fheight; rowIndex++)
+        {
+            const uchar *sourceRow = GA[sourceSegment]->constScanLine(rowIndex);
+            memcpy(
+                sourceProbability.ptr<uchar>(rowIndex),
+                sourceRow,
+                static_cast<size_t>(fwidth));
+        }
+
+        ctImage = ColArray.convertToFormat(QImage::Format_Grayscale8).scaled(
+            fwidth,
+            fheight,
+            Qt::IgnoreAspectRatio,
+            Qt::SmoothTransformation);
+    }
+
+    if (ctImage.isNull())
+    {
+        if (errorMessage != nullptr)
+        {
+            *errorMessage = QStringLiteral("The current CT image could not be prepared");
+        }
+        return false;
+    }
+
+    cv::Mat ctIntensity = cv::Mat::zeros(fheight, fwidth, CV_8UC1);
+    for (int rowIndex = 0; rowIndex < fheight; rowIndex++)
+    {
+        memcpy(
+            ctIntensity.ptr<uchar>(rowIndex),
+            ctImage.constScanLine(rowIndex),
+            static_cast<size_t>(fwidth));
+    }
+
+    const int influence = qBound(0, segmentationInfluencePercent, 100);
+    cv::Mat weightedProbability = cv::Mat::zeros(fheight, fwidth, CV_8UC1);
+    for (int rowIndex = 0; rowIndex < fheight; rowIndex++)
+    {
+        const uchar *sourceRow = sourceProbability.ptr<uchar>(rowIndex);
+        uchar *weightedRow = weightedProbability.ptr<uchar>(rowIndex);
+        for (int columnIndex = 0; columnIndex < fwidth; columnIndex++)
+        {
+            const int centredValue = static_cast<int>(sourceRow[columnIndex]) - 128;
+            weightedRow[columnIndex] = static_cast<uchar>(
+                qBound(0, 128 + qRound(centredValue * influence / 100.0), 255));
+        }
+    }
+
+    cv::Mat smoothedProbability;
+    cv::GaussianBlur(
+        weightedProbability,
+        smoothedProbability,
+        cv::Size(),
+        1.2,
+        1.2,
+        cv::BORDER_REPLICATE);
+
+    std::vector<cv::Mat> grabCutChannels {
+        ctIntensity,
+        weightedProbability,
+        smoothedProbability
+    };
+    cv::Mat grabCutImage;
+    cv::merge(grabCutChannels, grabCutImage);
+
+    cv::Mat grabCutMask(
+        fheight,
+        fwidth,
+        CV_8UC1,
+        cv::Scalar(cv::GC_PR_BGD));
+    cv::circle(
+        grabCutMask,
+        cv::Point(x, y),
+        qMax(2, seedRadius * 3),
+        cv::Scalar(cv::GC_PR_FGD),
+        cv::FILLED);
+    for (int rowIndex = 0; rowIndex < fheight; rowIndex++)
+    {
+        const uchar *sourceRow = sourceProbability.ptr<uchar>(rowIndex);
+        uchar *maskRow = grabCutMask.ptr<uchar>(rowIndex);
+        for (int columnIndex = 0; columnIndex < fwidth; columnIndex++)
+        {
+            if (sourceRow[columnIndex] <= 25)
+            {
+                maskRow[columnIndex] = cv::GC_BGD;
+            }
+        }
+    }
+
+    grabCutMask.row(0).setTo(cv::GC_BGD);
+    grabCutMask.row(fheight - 1).setTo(cv::GC_BGD);
+    grabCutMask.col(0).setTo(cv::GC_BGD);
+    grabCutMask.col(fwidth - 1).setTo(cv::GC_BGD);
+    cv::circle(
+        grabCutMask,
+        cv::Point(x, y),
+        qMax(1, seedRadius),
+        cv::Scalar(cv::GC_FGD),
+        cv::FILLED);
+
+    cv::Mat backgroundModel;
+    cv::Mat foregroundModel;
+    try
+    {
+        cv::grabCut(
+            grabCutImage,
+            grabCutMask,
+            cv::Rect(),
+            backgroundModel,
+            foregroundModel,
+            qMax(1, grabCutIterations),
+            cv::GC_INIT_WITH_MASK);
+    }
+    catch (const cv::Exception &exception)
+    {
+        if (errorMessage != nullptr)
+        {
+            *errorMessage = QStringLiteral("GrabCut failed: %1")
+                                .arg(QString::fromUtf8(exception.what()));
+        }
+        return false;
+    }
+
+    cv::Mat foregroundPixels;
+    cv::compare(grabCutMask, cv::GC_FGD, foregroundPixels, cv::CMP_EQ);
+    cv::Mat probableForeground;
+    cv::compare(grabCutMask, cv::GC_PR_FGD, probableForeground, cv::CMP_EQ);
+    cv::bitwise_or(foregroundPixels, probableForeground, foregroundPixels);
+
+    cv::Mat componentLabels;
+    cv::connectedComponents(foregroundPixels, componentLabels, 8, CV_32S);
+    const int componentLabel = componentLabels.at<int>(y, x);
+    if (componentLabel == 0)
+    {
+        if (errorMessage != nullptr)
+        {
+            *errorMessage = QStringLiteral("GrabCut did not retain the clicked position");
+        }
+        return false;
+    }
+
+    cv::Mat selectedComponent;
+    cv::compare(componentLabels, componentLabel, selectedComponent, cv::CMP_EQ);
+    if (fillHoles)
+    {
+        std::vector<std::vector<cv::Point>> contours;
+        cv::findContours(
+            selectedComponent.clone(),
+            contours,
+            cv::RETR_EXTERNAL,
+            cv::CHAIN_APPROX_SIMPLE);
+        selectedComponent.setTo(0);
+        cv::drawContours(
+            selectedComponent,
+            contours,
+            -1,
+            cv::Scalar(255),
+            cv::FILLED);
+    }
+
+    bool changed = false;
+    {
+        QMutexLocker<QRecursiveMutex> locker(&mutex);
+        uchar *maskData = reinterpret_cast<uchar *>(Masks.data());
+        for (int rowIndex = 0; rowIndex < fheight; rowIndex++)
+        {
+            const uchar *componentRow = selectedComponent.ptr<uchar>(rowIndex);
+            const int maskRow = fheight - rowIndex - 1;
+            for (int columnIndex = 0; columnIndex < fwidth; columnIndex++)
+            {
+                if (componentRow[columnIndex] == 0)
+                {
+                    continue;
+                }
+
+                const int maskPosition = maskRow * fwidth + columnIndex;
+                const int oldMaskId = maskData[maskPosition];
+                if (oldMaskId <= MaxUsedMask
+                    && !MasksSettings[oldMaskId]->Lock
+                    && oldMaskId != maskId)
+                {
+                    maskData[maskPosition] = static_cast<uchar>(maskId);
+                    changed = true;
+                }
+            }
+        }
+
+        if (changed)
+        {
+            MasksDirty = true;
+            MasksUndoDirty = true;
+        }
+    }
+
+    return changed;
+}

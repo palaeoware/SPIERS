@@ -42,6 +42,11 @@ private:
     void DoMouse(int x, int y, int PressedButton);
     QElapsedTimer mousetimer;
     int CurrentClosestNode;
+    bool automaticCurveDrag;
+    int automaticCurveDragCurve;
+    int automaticCurveDragNode;
+    bool automaticCurveDragWholeCurve;
+    bool maskFloodFillStroke;
     bool mouse_down;
     bool got_LCE_sample;
     QVector<uchar> LCE_sample;

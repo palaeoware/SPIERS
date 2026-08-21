@@ -18,6 +18,7 @@
 #include "globals.h"
 #include "mlupdateblockingdialog.h"
 #include "mlfeatureintensity.h"
+#include "mlroislice.h"
 
 MLFeatureGaussian::MLFeatureGaussian(Channel channel, bool is3D, int arg1)
     : MLFeature(FeatureType::Gaussian, channel, is3D, arg1, 0)
@@ -29,6 +30,20 @@ void MLFeatureGaussian::CalculateFeature(cv::Mat &mat, int sliceID, MLCachedAcce
         CalcFeatureGaussian3D(mat, sliceID, data);
     else
         CalcFeatureGaussian2D(mat, sliceID, data);
+}
+
+bool MLFeatureGaussian::CalculateFeatureROI(
+    cv::Mat &mat,
+    int sliceID,
+    MLCachedAccess *data,
+    const MLROISlice &roi)
+{
+    if (_is3D)
+        CalcFeatureGaussian3DROI(mat, sliceID, data, roi);
+    else
+        CalcFeatureGaussian2DROI(mat, sliceID, data, roi);
+
+    return false;
 }
 
 QList<MLFeature *> MLFeatureGaussian::GetDependencies()
@@ -237,6 +252,185 @@ void MLFeatureGaussian::CalcFeatureGaussian3D(cv::Mat &mat, int sliceID, MLCache
             }
 
             outRow[x] = (wsum > 0.0) ? static_cast<float>(acc / wsum) : 0.0f;
+        }
+    }
+}
+
+void MLFeatureGaussian::CalcFeatureGaussian2DROI(
+    cv::Mat &mat,
+    int sliceID,
+    MLCachedAccess *data,
+    const MLROISlice &roi)
+{
+    const float sigma = std::pow(2.0f, _arg1);
+    const int radius = static_cast<int>(std::ceil(3.0 * sigma));
+    const int kernelSize = 2 * radius + 1;
+
+    std::vector<float> kernel(kernelSize);
+    double kernelSum = 0.0;
+    for (int k = -radius; k <= radius; k++)
+    {
+        const double value =
+            std::exp(-(k * k) / (2.0 * sigma * sigma));
+        kernel[k + radius] = static_cast<float>(value);
+        kernelSum += value;
+    }
+    for (float &value : kernel)
+        value /= kernelSum;
+
+    const MLROISlice sourceROI = roi.expandedByPixels(radius);
+    const int intensityIndex = data->GetIndexForFeature(
+        MLFeature::FeatureType::Intensity,
+        _channel,
+        false,
+        0,
+        0);
+    const cv::Mat source =
+        data->GetROISliceFeature(sliceID, intensityIndex, sourceROI);
+    cv::Mat horizontal = cv::Mat::zeros(
+        data->GetYSize(),
+        data->GetXSize(),
+        CV_32F);
+
+    for (int tileY = 0; tileY < sourceROI.tileRows(); tileY++)
+    {
+        for (int tileX = 0; tileX < sourceROI.tileColumns(); tileX++)
+        {
+            if (sourceROI.tileState(tileX, tileY)
+                == MLROISlice::TileState::Inactive)
+            {
+                continue;
+            }
+
+            const QRect tile = sourceROI.tileRect(tileX, tileY);
+            for (int y = tile.top(); y <= tile.bottom(); y++)
+            {
+                const float *sourceRow = source.ptr<float>(y);
+                float *horizontalRow = horizontal.ptr<float>(y);
+                for (int x = tile.left(); x <= tile.right(); x++)
+                {
+                    double value = 0.0;
+                    for (int k = -radius; k <= radius; k++)
+                    {
+                        const int sourceX =
+                            qBound(0, x + k, data->GetXSize() - 1);
+                        value +=
+                            kernel[k + radius] * sourceRow[sourceX];
+                    }
+                    horizontalRow[x] = static_cast<float>(value);
+                }
+            }
+        }
+    }
+
+    for (int tileY = 0; tileY < roi.tileRows(); tileY++)
+    {
+        for (int tileX = 0; tileX < roi.tileColumns(); tileX++)
+        {
+            if (roi.tileState(tileX, tileY)
+                == MLROISlice::TileState::Inactive)
+            {
+                continue;
+            }
+
+            const QRect tile = roi.tileRect(tileX, tileY);
+            for (int y = tile.top(); y <= tile.bottom(); y++)
+            {
+                float *outputRow = mat.ptr<float>(y);
+                for (int x = tile.left(); x <= tile.right(); x++)
+                {
+                    double value = 0.0;
+                    for (int k = -radius; k <= radius; k++)
+                    {
+                        const int sourceY =
+                            qBound(0, y + k, data->GetYSize() - 1);
+                        value += kernel[k + radius]
+                                 * horizontal.at<float>(sourceY, x);
+                    }
+                    outputRow[x] = static_cast<float>(value);
+                }
+            }
+        }
+    }
+}
+
+void MLFeatureGaussian::CalcFeatureGaussian3DROI(
+    cv::Mat &mat,
+    int sliceID,
+    MLCachedAccess *data,
+    const MLROISlice &roi)
+{
+    const float sigma = std::pow(2.0f, _arg1);
+    const int radius = static_cast<int>(std::ceil(3.0 * sigma));
+    const int kernelSize = 2 * radius + 1;
+
+    std::vector<float> kernel(kernelSize);
+    double kernelSum = 0.0;
+    for (int k = -radius; k <= radius; k++)
+    {
+        const double value =
+            std::exp(-(k * k) / (2.0 * sigma * sigma));
+        kernel[k + radius] = static_cast<float>(value);
+        kernelSum += value;
+    }
+    for (float &value : kernel)
+        value /= kernelSum;
+
+    const int gaussian2DIndex = data->GetIndexForFeature(
+        MLFeature::FeatureType::Gaussian,
+        _channel,
+        false,
+        _arg1,
+        0);
+    const int firstSlice = qMax(0, sliceID - radius);
+    const int lastSlice = qMin(FileCount - 1, sliceID + radius);
+
+    QVector<cv::Mat> slices;
+    QVector<float> weights;
+    double weightSum = 0.0;
+    for (int sourceSlice = firstSlice;
+         sourceSlice <= lastSlice;
+         sourceSlice++)
+    {
+        slices.append(
+            data->GetROISliceFeature(
+                sourceSlice,
+                gaussian2DIndex,
+                roi));
+        const float weight =
+            kernel[sourceSlice - sliceID + radius];
+        weights.append(weight);
+        weightSum += weight;
+    }
+
+    for (int tileY = 0; tileY < roi.tileRows(); tileY++)
+    {
+        for (int tileX = 0; tileX < roi.tileColumns(); tileX++)
+        {
+            if (roi.tileState(tileX, tileY)
+                == MLROISlice::TileState::Inactive)
+            {
+                continue;
+            }
+
+            const QRect tile = roi.tileRect(tileX, tileY);
+            for (int y = tile.top(); y <= tile.bottom(); y++)
+            {
+                float *outputRow = mat.ptr<float>(y);
+                for (int x = tile.left(); x <= tile.right(); x++)
+                {
+                    double value = 0.0;
+                    for (int slice = 0; slice < slices.size(); slice++)
+                    {
+                        value += weights.at(slice)
+                                 * slices.at(slice).at<float>(y, x);
+                    }
+                    outputRow[x] =
+                        weightSum > 0.0
+                            ? static_cast<float>(value / weightSum)
+                            : 0.0f;
+                }
+            }
         }
     }
 }

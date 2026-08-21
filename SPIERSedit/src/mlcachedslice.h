@@ -21,10 +21,12 @@
 #include <QHash>
 #include <QDateTime>
 #include <QColor>
+#include <QByteArray>
 #include "opencv2/core.hpp"
 #include "mlfeature.h"
 
 class MLCachedAccess;
+class MLROISlice;
 
 class MLCachedSlice
 {
@@ -34,10 +36,13 @@ public:
     cv::Mat sourceImage;
     QList<cv::Mat> featureData;
     uint64 lastUsed;
+    int activeFetchCount;
     bool sourceValid;
     int sliceIndex;
     MLCachedAccess *cache;
     QList<bool> featuresValid;
+    QList<QByteArray> featureValidTiles;
+    QList<bool> featureTileCacheLoaded;
     void AddFeature();
     void RemoveFeature(int index);
     void Clear();
@@ -46,11 +51,23 @@ public:
     QColor GetColor(int x, int y);
     void FetchSourceDataIfNeeded();
     void FetchFeatureIfNeeded(int featureIndex);
+    void FetchFeatureTilesIfNeeded(
+        int featureIndex,
+        const MLROISlice &roi);
 
     void RemoveAllFeatures();
 private:
     void FetchSourceData();
-    void FetchFeatureData(int feature);
+    void FetchFeatureData(
+        int feature,
+        const MLROISlice *roi = nullptr);
+    bool FeatureTilesAreValid(
+        int feature,
+        const MLROISlice &roi) const;
+    void SetFeatureFullyValid(int feature);
+    void SetFeatureTilesValid(
+        int feature,
+        const MLROISlice &roi);
 
 
 };

@@ -260,7 +260,7 @@
      <x>0</x>
      <y>0</y>
      <width>1071</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -385,7 +385,7 @@
    </widget>
    <widget class="QMenu" name="menuMasks">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="title">
      <string>Masks</string>
@@ -430,6 +430,11 @@
     <addaction name="actionRemove_selected_curves_from_selected_slices"/>
     <addaction name="separator"/>
     <addaction name="actionInterpolate_over_selected_slices"/>
+    <addaction name="separator"/>
+    <addaction name="actionAutomate_curve_over_selected_slices"/>
+    <addaction name="actionStop_automatic_curve_interpolation"/>
+    <addaction name="actionMake_node_under_cursor_calculated"/>
+    <addaction name="actionMake_current_slice_nodes_calculated"/>
     <addaction name="separator"/>
     <addaction name="actionGrey_out_curves_not_no_current_slice"/>
     <addaction name="separator"/>
@@ -3595,6 +3600,11 @@ Interpreted Images:</string>
          <string>End Slice</string>
         </property>
        </column>
+       <column>
+        <property name="text">
+         <string>Auto</string>
+        </property>
+       </column>
       </widget>
      </item>
      <item>
@@ -5134,6 +5144,29 @@ Interpreted Images:</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+I</string>
+   </property>
+  </action>
+  <action name="actionAutomate_curve_over_selected_slices">
+   <property name="text">
+    <string>Automate curve over selected slices</string>
+   </property>
+  </action>
+  <action name="actionStop_automatic_curve_interpolation">
+   <property name="text">
+    <string>Stop automatic interpolation</string>
+   </property>
+  </action>
+  <action name="actionMake_node_under_cursor_calculated">
+   <property name="text">
+    <string>Make node under cursor calculated</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+X</string>
+   </property>
+  </action>
+  <action name="actionMake_current_slice_nodes_calculated">
+   <property name="text">
+    <string>Make all nodes on current slice calculated</string>
    </property>
   </action>
   <action name="action3D_Brush">

@@ -17,6 +17,11 @@
 
 #include "fileio.h"
 #include "globals.h"
+#include "mlinterface.h"
+#include "sourceimagenormalizer.h"
+#include <QDateTime>
+#include <QDir>
+#include <QFileInfo>
 #include "undo.h"
 #include <QImage>
 #include <QRgb>
@@ -28,6 +33,112 @@
 #include <QBuffer>
 
 QList <Cache *> Caches;
+
+namespace
+{
+QString speBackupDirectoryFor(const QString &fullSettingsFileName, const QString &settingsFileName)
+{
+    const QFileInfo fileInfo(fullSettingsFileName);
+    return fileInfo.absolutePath() + "/" + settingsFileName + "_spe_backups";
+}
+
+void retainLatestPerBucket(
+    const QList<QFileInfo> &files,
+    QSet<QString> &keepPaths,
+    QSet<QString> &claimedBuckets,
+    const char *formatString,
+    int maxCount)
+{
+    int kept = 0;
+    for (const QFileInfo &fi : files)
+    {
+        const QDateTime ts = fi.lastModified();
+        const QString bucket = ts.toString(QString::fromLatin1(formatString));
+        if (bucket.isEmpty() || claimedBuckets.contains(bucket))
+        {
+            continue;
+        }
+        claimedBuckets.insert(bucket);
+        keepPaths.insert(fi.absoluteFilePath());
+        kept++;
+        if (kept >= maxCount)
+        {
+            break;
+        }
+    }
+}
+
+void createTieredSpeBackup(const QString &fullSettingsFileName, const QString &settingsFileName)
+{
+    const QFileInfo sourceInfo(fullSettingsFileName);
+    if (!sourceInfo.exists())
+    {
+        return;
+    }
+
+    const QString backupDirectoryPath =
+        speBackupDirectoryFor(fullSettingsFileName, settingsFileName);
+    QDir backupDir(backupDirectoryPath);
+    if (!backupDir.exists() && !QDir().mkpath(backupDirectoryPath))
+    {
+        Message("Warning - unable to create SPE backup directory " + backupDirectoryPath);
+        return;
+    }
+
+    const QDateTime now = QDateTime::currentDateTime();
+    const QString stamp = now.toString("yyyyMMdd-HHmmss-zzz");
+    const QString backupFileName = settingsFileName + "_" + stamp + ".spe";
+    const QString backupFilePath = backupDir.filePath(backupFileName);
+    if (!QFile::copy(fullSettingsFileName, backupFilePath))
+    {
+        Message("Warning - unable to create SPE backup file " + backupFilePath);
+        return;
+    }
+
+    QList<QFileInfo> backups;
+    const QFileInfoList entries = backupDir.entryInfoList(
+        QStringList() << "*.spe",
+        QDir::Files,
+        QDir::Time);
+    for (const QFileInfo &fi : entries)
+    {
+        if (fi.fileName().startsWith(settingsFileName + "_"))
+        {
+            backups.append(fi);
+        }
+    }
+
+    QSet<QString> keepPaths;
+    QSet<QString> claimedBuckets;
+
+    // 1) Keep most recent 20 snapshots
+    for (int i = 0; i < backups.count() && i < 20; i++)
+    {
+        keepPaths.insert(backups.at(i).absoluteFilePath());
+    }
+
+    // 2) Keep one snapshot per hour for up to 48 unique hours
+    retainLatestPerBucket(backups, keepPaths, claimedBuckets, "yyyyMMddHH", 48);
+
+    // 3) Keep one snapshot per day for up to 30 unique days
+    retainLatestPerBucket(backups, keepPaths, claimedBuckets, "yyyyMMdd", 30);
+
+    // 4) Keep one snapshot per ISO week for up to 12 unique weeks
+    retainLatestPerBucket(backups, keepPaths, claimedBuckets, "yyyyWW", 12);
+
+    for (const QFileInfo &fi : backups)
+    {
+        const QString filePath = fi.absoluteFilePath();
+        if (!keepPaths.contains(filePath))
+        {
+            QFile::remove(filePath);
+        }
+    }
+}
+}
+
+static constexpr quint32 kCurveAutomationMagic =
+    0x43415554; // "CAUT"
 
 CacheGreyData::CacheGreyData()
 {
@@ -251,11 +362,8 @@ bool SimpleLoadColourData(QString fname)
         Error("File is not in a valid format");
     else
     {
-        //bodge - everything is expected to be in indexed 8 if greyscale, so fix anything that isn't!
-        if (d == QImage::Format_Grayscale8)
-            ColArray = Data.convertToFormat(QImage::Format_Indexed8);
-        else
-            ColArray = Data;
+        normalizeIndexedSourceImage(Data);
+        ColArray = Data;
     }
     return true;
 }
@@ -310,9 +418,8 @@ past:  //so can get here with a valid cache entry but no colour file
         }
         else
         {
-            //bodge - everything is expected to be in indexed 8 if greyscale, so fix anything that isn't!
-            if (d == QImage::Format_Grayscale8) ColArray = Data.convertToFormat(QImage::Format_Indexed8);
-            else ColArray = Data;
+            normalizeIndexedSourceImage(Data);
+            ColArray = Data;
         }
 
         if (!RenderCache)
@@ -344,6 +451,8 @@ past:  //so can get here with a valid cache entry but no colour file
         }
     }
 
+    // Cached data created by older code may still contain palette indices.
+    normalizeIndexedSourceImage(ColArray);
     if (ColArray.format() == QImage::Format_Indexed8 || ColArray.format() == QImage::Format_Grayscale8) GreyImage = true;
     else GreyImage = false;
     cwidth4 = cwidth;
@@ -354,9 +463,13 @@ past:  //so can get here with a valid cache entry but no colour file
 
 bool SimpleLoadGreyData(int fnum, int seg, QImage *greydata)
 {
+    return SimpleLoadGreyDataForFile(FullFiles.at(fnum), seg, greydata);
+}
 
+bool SimpleLoadGreyDataForFile(const QString &fileName, int seg, QImage *greydata)
+{
     int lastsep, lastdot;
-    QString Fname = FullFiles.at(fnum);
+    QString Fname = fileName;
     lastsep = qMax(Fname.lastIndexOf("\\"), Fname.lastIndexOf("/")); //this is last separator in path
     lastdot = Fname.lastIndexOf(".");
     QString sfname = Fname.left(lastsep);
@@ -651,7 +764,8 @@ void WriteAllData(int fnum)
         if (Segments[i]->Dirty) SaveGreyData(fnum, i);
         Segments[i]->Dirty = false;
     }
-    if (MasksDirty) SaveMasks(fnum);
+    const bool masksWereDirty = MasksDirty;
+    if (masksWereDirty) SaveMasks(fnum);
     if (LocksDirty) SaveLocks(fnum);
     MasksDirty = false;
     LocksDirty = false;
@@ -999,9 +1113,14 @@ bool SimpleLoadLocks(int fnum, int expectedsize, QByteArray *array)
 
 bool SimpleLoadMasks(int fnum, int expectedsize, QByteArray *array)
 {
+    return SimpleLoadMasksForFile(FullFiles.at(fnum), expectedsize, array);
+}
+
+bool SimpleLoadMasksForFile(const QString &fileName, int expectedsize, QByteArray *array)
+{
     int lastsep, lastdot;
 
-    QString Fname = FullFiles.at(fnum);
+    QString Fname = fileName;
     lastsep = qMax(Fname.lastIndexOf("\\"), Fname.lastIndexOf("/")); //this is last separator in path
     lastdot = Fname.lastIndexOf(".");
     QString sfname = Fname.left(lastsep);
@@ -2064,6 +2183,11 @@ void WriteSettings()
     sfname.append("/" + SettingsFileName + ".spe");
     QString dummy;
 
+    if (QFile::exists(sfname))
+    {
+        createTieredSpeBackup(sfname, SettingsFileName);
+    }
+
     QFile file(sfname);
     if (!file.open(QIODevice::WriteOnly))
     {
@@ -2229,6 +2353,21 @@ void WriteSettings()
 
     out << Menu3DPreviewChecked;
 
+    // Appended in SPE version 4 so older readers can still consume all
+    // traditional curve geometry before ignoring this extension.
+    out << kCurveAutomationMagic;
+    out << static_cast<quint32>(Curves.size());
+    for (const Curve *curve : Curves)
+    {
+        out << curve->AutomaticallyInterpolated;
+        out << curve->AutomaticStartSlice;
+        out << curve->AutomaticEndSlice;
+        out << static_cast<quint32>(
+            curve->SplinePoints.size());
+        for (const PointList *points : curve->SplinePoints)
+            out << points->Fixed;
+    }
+
     file.close();
 }
 
@@ -2270,22 +2409,25 @@ void ReadSettings()
     }
 
     in >> version;
-    if (version > SPEFILEVERSION) Message("Warning - settings file " + SettingsFileName + " is too recent for this version of SPIERSedit. Will try to read anyway...");
+    if (version > SPEFILEVERSION)
+    {
+        Message(
+            "Error - settings file "
+            + SettingsFileName
+            + ".spe was created by a newer SPIERSedit version ("
+            + QString::number(version)
+            + ") than this build supports ("
+            + QString::number(static_cast<int>(SPEFILEVERSION))
+            + "). Refusing to open this file.");
+        return;
+    }
 
     in >> dummy;
     if (dummy != SettingsFileName) Message("Warning - settings file name has been changed (from " + dummy + ") - it will be reset to " + SettingsFileName + ".spe when next saved");
 
 
-    // At this point we assume the file is valid, so we make a backupcopy (xxxxx.spe_backup) before going anyfuther.
-    // This is to give an option to recover back to a last known working .spe - and hopefull allow the recovery of the curves etc...
-    // this does not protect the mask and segment files from being damaged
-    QString temp = FullSettingsFileName;
-    QString backupFilePath = temp.replace(QString("%1.spe").arg(SettingsFileName), QString("%1.spe_backup").arg(SettingsFileName));
-    if (QFile(backupFilePath).exists())
-    {
-        QFile(backupFilePath).remove();
-    }
-    QFile::copy(FullSettingsFileName, backupFilePath);
+    // At this point we assume the file is valid, so create a timestamped backup.
+    createTieredSpeBackup(FullSettingsFileName, SettingsFileName);
 
     //Do all the simple stuff first
     in >> FileNotes;
@@ -2601,8 +2743,133 @@ void ReadSettings()
     // Added after FeaturesByteArray so old .spe files default to visible
     if (!in.atEnd()) in >> Menu3DPreviewChecked; else Menu3DPreviewChecked = true;
 
+    if (version >= 4 && !in.atEnd())
+    {
+        quint32 magic = 0;
+        quint32 storedCurveCount = 0;
+        in >> magic;
+        in >> storedCurveCount;
+        if (magic == kCurveAutomationMagic
+            && storedCurveCount
+                   == static_cast<quint32>(Curves.size()))
+        {
+            bool metadataValid = true;
+            for (Curve *curve : Curves)
+            {
+                quint32 storedSliceCount = 0;
+                in >> curve->AutomaticallyInterpolated;
+                in >> curve->AutomaticStartSlice;
+                in >> curve->AutomaticEndSlice;
+                in >> storedSliceCount;
+
+                if (in.status() != QDataStream::Ok
+                    || storedSliceCount
+                           != static_cast<quint32>(
+                               curve->SplinePoints.size()))
+                {
+                    metadataValid = false;
+                    break;
+                }
+
+                for (quint32 slice = 0;
+                     slice < storedSliceCount;
+                     slice++)
+                {
+                    QByteArray fixed;
+                    in >> fixed;
+                    curve->SplinePoints[
+                        static_cast<int>(slice)]
+                        ->Fixed = fixed;
+                }
+
+                bool valid = in.status() == QDataStream::Ok;
+                if (curve->AutomaticallyInterpolated)
+                {
+                    valid = valid
+                            && curve->AutomaticStartSlice >= 0
+                            && curve->AutomaticStartSlice
+                                   < curve->AutomaticEndSlice
+                            && curve->AutomaticEndSlice
+                                   < curve->SplinePoints.size();
+                    if (valid)
+                    {
+                        const int nodeCount =
+                            curve->SplinePoints[
+                                curve->AutomaticStartSlice]
+                                ->Count;
+                        valid = nodeCount > 0;
+                        for (int slice =
+                                 curve->AutomaticStartSlice;
+                             valid
+                             && slice
+                                    <= curve
+                                           ->AutomaticEndSlice;
+                             slice++)
+                        {
+                            const PointList *points =
+                                curve->SplinePoints[slice];
+                            valid =
+                                points->Count == nodeCount
+                                && points->Fixed.size()
+                                       == nodeCount;
+                        }
+                        if (valid)
+                        {
+                            valid =
+                                !curve
+                                     ->SplinePoints[
+                                         curve
+                                             ->AutomaticStartSlice]
+                                     ->Fixed.contains(char(0))
+                                && !curve
+                                     ->SplinePoints[
+                                         curve
+                                             ->AutomaticEndSlice]
+                                     ->Fixed.contains(char(0));
+                        }
+                    }
+                }
+
+                if (!valid)
+                {
+                    qWarning()
+                        << "Ignoring invalid automatic curve "
+                           "metadata for"
+                        << curve->Name;
+                    curve->AutomaticallyInterpolated = false;
+                    curve->AutomaticStartSlice = -1;
+                    curve->AutomaticEndSlice = -1;
+                    for (PointList *points :
+                         curve->SplinePoints)
+                    {
+                        points->Fixed.clear();
+                    }
+                }
+            }
+
+            if (!metadataValid)
+            {
+                qWarning()
+                    << "Ignoring truncated or incompatible automatic "
+                       "curve metadata";
+                for (Curve *curve : Curves)
+                {
+                    curve->AutomaticallyInterpolated = false;
+                    curve->AutomaticStartSlice = -1;
+                    curve->AutomaticEndSlice = -1;
+                    for (PointList *points : curve->SplinePoints)
+                        points->Fixed.clear();
+                }
+            }
+        }
+        else
+        {
+            qWarning()
+                << "Ignoring incompatible automatic curve metadata";
+        }
+    }
+
     file.close();
     Active = true;
 
 }
-

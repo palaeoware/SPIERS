@@ -401,6 +401,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags f)
     CurvesTreeWidget->headerItem()->setText(3, "Segment");
     CurvesTreeWidget->headerItem()->setText(4, "Start");
     CurvesTreeWidget->headerItem()->setText(5, "End");
+    CurvesTreeWidget->headerItem()->setText(6, "Auto");
 
     MasksTreeWidget->header()->setSectionsMovable(false);
     CurvesTreeWidget->header()->setSectionsMovable(false);
@@ -686,6 +687,39 @@ void MainWindow::RightMaskChanged(int index)
         RefreshOneMaskItem(MasksSettings[SelectedRMask]->widgetitem,  SelectedRMask);
         return;
     }
+}
+
+bool MainWindow::ApplyMLFloodFill(int x, int y, int maskId)
+{
+    if (mlInterface == nullptr)
+    {
+        Message(QStringLiteral("ML flood fill is unavailable"));
+        return false;
+    }
+
+    MakeUndo(QString());
+
+    QString errorMessage;
+    const bool changed = mlInterface->FloodFillMask(
+        x,
+        y,
+        maskId,
+        maskFloodFillSeedRadiusSpinBox->value(),
+        maskFloodFillSegmentationInfluenceSpinBox->value(),
+        maskFloodFillGrabCutIterationsSpinBox->value(),
+        maskFloodFillFillHolesCheckBox->isChecked(),
+        &errorMessage);
+    if (!changed && !errorMessage.isEmpty())
+    {
+        Message(errorMessage);
+    }
+    return changed;
+}
+
+bool MainWindow::MaskFloodFillForAllClicks() const
+{
+    return maskFloodFillAllClicksAction != nullptr
+           && maskFloodFillAllClicksAction->isChecked();
 }
 
 
@@ -1162,6 +1196,8 @@ void MainWindow::SetWindowMenuState(bool enabled)
     actionHistorgram->setEnabled(enabled);
     actionInfo->setEnabled(enabled);
     action3DPreview->setEnabled(enabled);
+    maskFloodFillDockAction->setEnabled(enabled && mlInterface != nullptr);
+    maskFloodFillAllClicksAction->setEnabled(enabled && mlInterface != nullptr);
     // actionGenerateTestData is always enabled
 }
 
@@ -2661,4 +2697,5 @@ void MainWindow::on_actionMLAuto_Update_triggered()
 {
     mlInterface->SampleAndTrain(true);
 }
+
 

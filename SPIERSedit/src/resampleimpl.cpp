@@ -80,6 +80,20 @@ int resampleImpl::ClosestTo(QString NewFileString)
 }
 void resampleImpl::on_buttonBox_accepted()
 {
+    if (zsparsity != SpinBoxZ->value())
+    {
+        for (const Curve *curve : Curves)
+        {
+            if (curve->AutomaticallyInterpolated)
+            {
+                Message(
+                    "Stop automatic curve interpolation before "
+                    "changing Z resampling");
+                return;
+            }
+        }
+    }
+
     pausetimers = true;
     QMutexLocker locker(&mutex);
     QString mess;

@@ -16,10 +16,17 @@
  */
 #include "mlcachedaccess.h"
 #include "mlcachedslice.h"
+#include "mlroislice.h"
 
 #include "mlfileio.h"
 
 #include "globals.h"
+
+#include <functional>
+#include <limits>
+#include <QSet>
+#include <stdexcept>
+
 //Public API
 
 MLCachedAccess::MLCachedAccess(int sliceCount, bool colourImages, int fwidth, int fheight, int _xyBin, int _zBin)
@@ -104,15 +111,34 @@ void MLCachedAccess::SetFeatures(QList<MLFeature *> newFeatures)
         ResizeCache();
     }
     RebuildFeatureIDsInUse();
-    //qDebug()<<"Done Set Features "<<features.count();
+    qDebug()<<"Done Set Features "<<features.count();
 }
 
 void MLCachedAccess::Reset()
 {
     qDebug()<<"RESET";
     //Called after a resample change
+    ReleaseCacheMemoryForExclusiveOperation();
+}
+
+void MLCachedAccess::ReleaseCacheMemoryForExclusiveOperation()
+{
+    /**
+     *
+     * Release all resident matrices while retaining the feature configuration
+     * and disk cache, so that only one cache consumes the user-configured
+     * CacheMemMLGb allowance at a time.
+     *
+     * WARNING: This is an exclusive, modal handover of the ML RAM budget. A
+     * background operation must not use this mechanism. Supporting
+     * concurrent cache users requires a shared global budget manager first.
+     *
+     **/
+
     qDeleteAll(cachedSlices);
     cachedSlices.clear();
+    slicesByCacheIndex.clear();
+    cacheIndicesBySlice.fill(-1, zSize);
     ResizeCache();
     timeStamp = 0;
 }
@@ -136,6 +162,81 @@ void MLCachedAccess::SetFeatureInUse(int featureID, bool inUse)
 QList<int> MLCachedAccess::GetFeaturesInUse()
 {
     return featureIDsInUse;
+}
+
+bool MLCachedAccess::IsPartialFeatureTileLoggingEnabled() const
+{
+    return partialFeatureTileLoggingEnabled;
+}
+
+void MLCachedAccess::SetPartialFeatureTileLoggingEnabled(
+    bool enabled)
+{
+    partialFeatureTileLoggingEnabled = enabled;
+}
+
+int MLCachedAccess::GetRequiredXYHalo()
+{
+    QHash<int, int> cachedRadii;
+    QSet<int> visiting;
+
+    std::function<int(int)> calculateRadius = [&](int featureID) -> int
+    {
+        if (cachedRadii.contains(featureID))
+            return cachedRadii.value(featureID);
+
+        if (featureID < 0 || featureID >= features.count()
+            || visiting.contains(featureID))
+        {
+            return -1;
+        }
+
+        visiting.insert(featureID);
+        MLFeature *feature = features.at(featureID);
+        const int localRadius = feature->GetXYSupportRadius();
+        if (localRadius < 0)
+        {
+            visiting.remove(featureID);
+            cachedRadii.insert(featureID, -1);
+            return -1;
+        }
+
+        int dependencyRadius = 0;
+        QList<MLFeature *> dependencies = feature->GetDependencies();
+        for (MLFeature *dependency : dependencies)
+        {
+            const int dependencyID = GetIndexForFeature(dependency);
+            const int radius = calculateRadius(dependencyID);
+            if (radius < 0)
+            {
+                dependencyRadius = -1;
+                break;
+            }
+            dependencyRadius = qMax(dependencyRadius, radius);
+        }
+        qDeleteAll(dependencies);
+
+        int totalRadius = -1;
+        if (dependencyRadius >= 0
+            && localRadius <= std::numeric_limits<int>::max() - dependencyRadius)
+        {
+            totalRadius = localRadius + dependencyRadius;
+        }
+
+        visiting.remove(featureID);
+        cachedRadii.insert(featureID, totalRadius);
+        return totalRadius;
+    };
+
+    int requiredRadius = 0;
+    for (int featureID : featureIDsInUse)
+    {
+        const int radius = calculateRadius(featureID);
+        if (radius < 0)
+            return -1;
+        requiredRadius = qMax(requiredRadius, radius);
+    }
+    return requiredRadius;
 }
 
 void MLCachedAccess::DumpFeatures()
@@ -170,28 +271,23 @@ int MLCachedAccess::GetYSize()
     return ySize;
 }
 
+int MLCachedAccess::GetFeatureTileCount()
+{
+    const int tileSize = MLROISlice::adaptiveTileSize(
+        xSize,
+        ySize,
+        MLROISlice::TARGET_TILE_COUNT);
+    if (tileSize <= 0)
+        return 0;
+
+    const int tileColumns = ((xSize - 1) / tileSize) + 1;
+    const int tileRows = ((ySize - 1) / tileSize) + 1;
+    return tileColumns * tileRows;
+}
+
 bool MLCachedAccess::GetSourceColour()
 {
     return sourceImageRGB;
-}
-
-cv::Mat MLCachedAccess::GetWholeSliceIntensity(int z)
-{
-    MLCachedSlice *slice = GetSlice(z);
-    slice->FetchSourceDataIfNeeded();
-
-    if (sourceImageRGB)
-    {
-        cv::Mat mat32;
-        cv::cvtColor(sourceImageRGB, mat32, cv::COLOR_BGR2GRAY);
-        mat32.convertTo(mat32, CV_32F, 1.0 / 255.0);
-        return mat32;
-    }
-    else
-    {
-        //qDebug()<<"Inside: "<<slice->sourceImage.rows;
-        return slice->sourceImage;
-    }
 }
 
 cv::Mat MLCachedAccess::GetWholeSliceFeature(int z, int featureIndex)
@@ -201,9 +297,32 @@ cv::Mat MLCachedAccess::GetWholeSliceFeature(int z, int featureIndex)
     return slice->featureData[featureIndex];
 }
 
+cv::Mat MLCachedAccess::GetROISliceFeature(
+    int z,
+    int featureIndex,
+    const MLROISlice &roi)
+{
+    MLCachedSlice *slice = GetSlice(z);
+    slice->FetchFeatureTilesIfNeeded(featureIndex, roi);
+    return slice->featureData[featureIndex];
+}
+
 void MLCachedAccess::CalculateFeature(cv::Mat &mat, int sliceIndex, int featureID)
 {
     features[featureID]->CalculateFeature(mat, sliceIndex, this);
+}
+
+bool MLCachedAccess::CalculateFeatureROI(
+    cv::Mat &mat,
+    int sliceIndex,
+    int featureID,
+    const MLROISlice &roi)
+{
+    return features[featureID]->CalculateFeatureROI(
+        mat,
+        sliceIndex,
+        this,
+        roi);
 }
 
 int MLCachedAccess::AddFeature(MLFeature *feature)
@@ -339,6 +458,7 @@ void MLCachedAccess::ResizeCache()
     int newCacheLength = (int)(((uint64_t) CacheMemMLGb * 1024ull * 1024ull * 1024ull)/ GetMemorySizeOfSlice());
 
     if (newCacheLength > zSize) newCacheLength = zSize; //no need for more!
+    if (newCacheLength < 1 && zSize > 0) newCacheLength = 1;
     int oldCacheLength= cachedSlices.count();
 
     if (newCacheLength == oldCacheLength) //nothing to do
@@ -411,6 +531,11 @@ int MLCachedAccess::FindReusableCacheSlot()
 
     for (int i=0; i<cachedSlices.count();i++)
     {
+        if (cachedSlices[i]->activeFetchCount > 0)
+        {
+            continue;
+        }
+
         if (slicesByCacheIndex[i]==-1)
         {
             useCacheIndex= i; //can stop - found an empty one
@@ -432,6 +557,13 @@ int MLCachedAccess::FindReusableCacheSlot()
                 oldest = cachedSlices[i]->lastUsed;
             }
         }
+    }
+
+    if (useCacheIndex < 0)
+    {
+        throw std::runtime_error(
+            "The ML cache is too small for the active feature dependency chain. "
+            "Increase the ML cache size or reduce the feature radii.");
     }
 
     if (slicesByCacheIndex[useCacheIndex]!=-1)

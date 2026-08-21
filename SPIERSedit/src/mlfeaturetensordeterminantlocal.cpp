@@ -87,6 +87,21 @@ void MLFeatureTensorDeterminantLocal::CalculateFeature(cv::Mat &mat, int sliceID
     }
 }
 
+bool MLFeatureTensorDeterminantLocal::CalculateFeatureROI(
+    cv::Mat &mat,
+    int sliceID,
+    MLCachedAccess *data,
+    const MLROISlice &roi)
+{
+    CalcTensorDeterminantROI(
+        mat,
+        sliceID,
+        data,
+        FeatureType::Tensor_component_local,
+        roi);
+    return false;
+}
+
 QList<MLFeature *> MLFeatureTensorDeterminantLocal::GetDependencies()
 {
     using TC = MLFeatureTensorComponentLocal::TensorComponent;

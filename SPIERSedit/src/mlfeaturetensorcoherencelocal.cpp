@@ -73,6 +73,21 @@ void MLFeatureTensorCoherenceLocal::CalculateFeature(cv::Mat &mat, int sliceID, 
     }
 }
 
+bool MLFeatureTensorCoherenceLocal::CalculateFeatureROI(
+    cv::Mat &mat,
+    int sliceID,
+    MLCachedAccess *data,
+    const MLROISlice &roi)
+{
+    CalcTensorCoherenceROI(
+        mat,
+        sliceID,
+        data,
+        FeatureType::Tensor_component_local,
+        roi);
+    return false;
+}
+
 QList<MLFeature *> MLFeatureTensorCoherenceLocal::GetDependencies()
 {
     using TC = MLFeatureTensorComponentLocal::TensorComponent;

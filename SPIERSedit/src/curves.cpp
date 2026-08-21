@@ -109,6 +109,14 @@ void AddNode()
     double sm2, mx, my;
 
     if (SelectedCurve == -1 || CurrentMode != 2) return; //Not appropriate
+    if (Curves[SelectedCurve]->AutomaticallyInterpolated)
+    {
+        Message(
+            "Nodes cannot be added to an automatically "
+            "interpolated curve. Stop automatic interpolation "
+            "first.");
+        return;
+    }
 
     FilesDirty[CurrentFile] = true;
     mx = static_cast<double>(LastMouseX) / static_cast<double>(ColMonoScale);
@@ -190,6 +198,16 @@ void AddNode()
 
 void KillNode(MainWindow *th)
 {
+    if (SelectedCurve >= 0
+        && Curves[SelectedCurve]->AutomaticallyInterpolated)
+    {
+        Message(
+            "Nodes cannot be removed from an automatically "
+            "interpolated curve. Stop automatic interpolation "
+            "first.");
+        return;
+    }
+
     //find node
     int node = FindClosestNode(static_cast<double>(LastMouseX), static_cast<double>(LastMouseY));
     FilesDirty[CurrentFile] = true;
@@ -246,6 +264,403 @@ int FindClosestNode(double X, double Y)
         }
     }
     return which;
+}
+
+namespace
+{
+
+void SetCurveAutomationError(
+    QString *errorMessage,
+    const QString &message)
+{
+    if (errorMessage != nullptr)
+        *errorMessage = message;
+}
+
+void MarkCurveRangeDirty(
+    const Curve *curve,
+    int firstStoredSlice,
+    int lastStoredSlice)
+{
+    CurvesDirty = true;
+    CurvesUndoDirty = true;
+    if (curve->Segment == 0 || FilesDirty.isEmpty())
+        return;
+
+    const int firstFile = qMax(0, firstStoredSlice / zsparsity);
+    const int lastFile = qMin(
+        FilesDirty.size() - 1,
+        lastStoredSlice / zsparsity);
+    for (int file = firstFile; file <= lastFile; file++)
+        FilesDirty[file] = true;
+}
+
+bool AutomatedCurveIsConsistent(
+    const Curve *curve,
+    QString *errorMessage = nullptr)
+{
+    if (curve == nullptr
+        || !curve->AutomaticallyInterpolated
+        || curve->AutomaticStartSlice < 0
+        || curve->AutomaticEndSlice
+               >= curve->SplinePoints.size()
+        || curve->AutomaticStartSlice
+               >= curve->AutomaticEndSlice)
+    {
+        SetCurveAutomationError(
+            errorMessage,
+            QStringLiteral(
+                "The automatic curve range is invalid."));
+        return false;
+    }
+
+    const int nodeCount =
+        curve->SplinePoints[curve->AutomaticStartSlice]
+            ->Count;
+    if (nodeCount <= 0)
+    {
+        SetCurveAutomationError(
+            errorMessage,
+            QStringLiteral(
+                "The automatic curve has no nodes."));
+        return false;
+    }
+
+    for (int slice = curve->AutomaticStartSlice;
+         slice <= curve->AutomaticEndSlice;
+         slice++)
+    {
+        const PointList *points = curve->SplinePoints[slice];
+        if (points->Count != nodeCount
+            || points->X.size() != nodeCount
+            || points->Y.size() != nodeCount
+            || points->Fixed.size() != nodeCount)
+        {
+            SetCurveAutomationError(
+                errorMessage,
+                QStringLiteral(
+                    "The automatic curve has inconsistent "
+                    "node data."));
+            return false;
+        }
+    }
+
+    const PointList *first =
+        curve->SplinePoints[curve->AutomaticStartSlice];
+    const PointList *last =
+        curve->SplinePoints[curve->AutomaticEndSlice];
+    if (first->Fixed.contains(char(0))
+        || last->Fixed.contains(char(0)))
+    {
+        SetCurveAutomationError(
+            errorMessage,
+            QStringLiteral(
+                "Every node on the first and last slices "
+                "must be fixed."));
+        return false;
+    }
+    return true;
+}
+
+bool InterpolateAutomatedCurveNode(
+    Curve *curve,
+    int nodeIndex)
+{
+    if (!AutomatedCurveIsConsistent(curve)
+        || nodeIndex < 0
+        || nodeIndex
+               >= curve->SplinePoints[
+                      curve->AutomaticStartSlice]
+                      ->Count)
+    {
+        return false;
+    }
+
+    int previousFixed = curve->AutomaticStartSlice;
+    for (int slice = curve->AutomaticStartSlice + 1;
+         slice <= curve->AutomaticEndSlice;
+         slice++)
+    {
+        PointList *points = curve->SplinePoints[slice];
+        if (points->Fixed.at(nodeIndex) == 0)
+            continue;
+
+        const int nextFixed = slice;
+        const PointList *first =
+            curve->SplinePoints[previousFixed];
+        const PointList *last =
+            curve->SplinePoints[nextFixed];
+        const double span = nextFixed - previousFixed;
+        for (int calculatedSlice = previousFixed + 1;
+             calculatedSlice < nextFixed;
+             calculatedSlice++)
+        {
+            const double ratio =
+                (calculatedSlice - previousFixed) / span;
+            PointList *calculated =
+                curve->SplinePoints[calculatedSlice];
+            calculated->X[nodeIndex] =
+                first->X[nodeIndex]
+                + (last->X[nodeIndex] - first->X[nodeIndex])
+                      * ratio;
+            calculated->Y[nodeIndex] =
+                first->Y[nodeIndex]
+                + (last->Y[nodeIndex] - first->Y[nodeIndex])
+                      * ratio;
+        }
+        previousFixed = nextFixed;
+    }
+    return previousFixed == curve->AutomaticEndSlice;
+}
+
+}
+
+bool AutomateCurve(
+    int curveIndex,
+    int firstSlice,
+    int lastSlice,
+    int sourceSlice,
+    QString *errorMessage)
+{
+    if (curveIndex < 0 || curveIndex >= Curves.size())
+    {
+        SetCurveAutomationError(
+            errorMessage,
+            QStringLiteral("No curve is selected."));
+        return false;
+    }
+    if (firstSlice < 0
+        || lastSlice >= Files.size()
+        || firstSlice >= lastSlice
+        || sourceSlice < firstSlice
+        || sourceSlice > lastSlice)
+    {
+        SetCurveAutomationError(
+            errorMessage,
+            QStringLiteral(
+                "Select at least two slices containing the "
+                "curve source slice."));
+        return false;
+    }
+
+    Curve *curve = Curves[curveIndex];
+    if (curve->AutomaticallyInterpolated)
+    {
+        SetCurveAutomationError(
+            errorMessage,
+            QStringLiteral(
+                "This curve is already automatically "
+                "interpolated."));
+        return false;
+    }
+
+    const int firstStoredSlice = firstSlice * zsparsity;
+    const int lastStoredSlice = lastSlice * zsparsity;
+    const int sourceStoredSlice = sourceSlice * zsparsity;
+    if (lastStoredSlice >= curve->SplinePoints.size())
+    {
+        SetCurveAutomationError(
+            errorMessage,
+            QStringLiteral(
+                "The selected range is outside the curve "
+                "data."));
+        return false;
+    }
+
+    const PointList *source =
+        curve->SplinePoints[sourceStoredSlice];
+    if (source->Count <= 0
+        || source->X.size() != source->Count
+        || source->Y.size() != source->Count)
+    {
+        SetCurveAutomationError(
+            errorMessage,
+            QStringLiteral(
+                "The source slice has no valid curve data."));
+        return false;
+    }
+
+    for (int slice = 0;
+         slice < curve->SplinePoints.size();
+         slice++)
+    {
+        if (slice != sourceStoredSlice
+            && curve->SplinePoints[slice]->Count > 0)
+        {
+            SetCurveAutomationError(
+                errorMessage,
+                QStringLiteral(
+                    "The curve already has data outside its "
+                    "single source slice. Remove that data "
+                    "before automating it."));
+            return false;
+        }
+    }
+
+    const QList<double> sourceX = source->X;
+    const QList<double> sourceY = source->Y;
+    const int nodeCount = source->Count;
+    for (int slice = firstStoredSlice;
+         slice <= lastStoredSlice;
+         slice++)
+    {
+        PointList *points = curve->SplinePoints[slice];
+        points->X = sourceX;
+        points->Y = sourceY;
+        points->Count = nodeCount;
+        points->Fixed.fill(
+            slice == firstStoredSlice
+                    || slice == lastStoredSlice
+                ? char(1)
+                : char(0),
+            nodeCount);
+    }
+
+    curve->AutomaticallyInterpolated = true;
+    curve->AutomaticStartSlice = firstStoredSlice;
+    curve->AutomaticEndSlice = lastStoredSlice;
+    MarkCurveRangeDirty(
+        curve,
+        firstStoredSlice,
+        lastStoredSlice);
+    return true;
+}
+
+void DeautomateCurve(int curveIndex)
+{
+    if (curveIndex < 0 || curveIndex >= Curves.size())
+        return;
+
+    Curve *curve = Curves[curveIndex];
+    for (PointList *points : curve->SplinePoints)
+        points->Fixed.clear();
+    curve->AutomaticallyInterpolated = false;
+    curve->AutomaticStartSlice = -1;
+    curve->AutomaticEndSlice = -1;
+    CurvesDirty = true;
+    CurvesUndoDirty = true;
+}
+
+bool RecalculateAutomatedCurve(int curveIndex)
+{
+    if (curveIndex < 0 || curveIndex >= Curves.size())
+        return false;
+    Curve *curve = Curves[curveIndex];
+    if (!AutomatedCurveIsConsistent(curve))
+        return false;
+
+    const int nodeCount =
+        curve->SplinePoints[curve->AutomaticStartSlice]
+            ->Count;
+    for (int node = 0; node < nodeCount; node++)
+    {
+        if (!InterpolateAutomatedCurveNode(curve, node))
+            return false;
+    }
+    MarkCurveRangeDirty(
+        curve,
+        curve->AutomaticStartSlice,
+        curve->AutomaticEndSlice);
+    return true;
+}
+
+bool FixAndInterpolateCurveNode(
+    int curveIndex,
+    int sliceIndex,
+    int nodeIndex,
+    bool wholeCurve)
+{
+    if (curveIndex < 0 || curveIndex >= Curves.size())
+        return false;
+    Curve *curve = Curves[curveIndex];
+    const int storedSlice = sliceIndex * zsparsity;
+    if (!AutomatedCurveIsConsistent(curve)
+        || storedSlice < curve->AutomaticStartSlice
+        || storedSlice > curve->AutomaticEndSlice)
+    {
+        return false;
+    }
+
+    PointList *points = curve->SplinePoints[storedSlice];
+    if (nodeIndex < 0 || nodeIndex >= points->Count)
+        return false;
+
+    if (wholeCurve)
+    {
+        points->Fixed.fill(char(1), points->Count);
+        return RecalculateAutomatedCurve(curveIndex);
+    }
+
+    points->Fixed[nodeIndex] = 1;
+    const bool result =
+        InterpolateAutomatedCurveNode(curve, nodeIndex);
+    if (result)
+    {
+        MarkCurveRangeDirty(
+            curve,
+            curve->AutomaticStartSlice,
+            curve->AutomaticEndSlice);
+    }
+    return result;
+}
+
+bool ReleaseAutomatedCurveNode(
+    int curveIndex,
+    int sliceIndex,
+    int nodeIndex,
+    bool wholeSlice,
+    QString *errorMessage)
+{
+    if (curveIndex < 0 || curveIndex >= Curves.size())
+    {
+        SetCurveAutomationError(
+            errorMessage,
+            QStringLiteral("No curve is selected."));
+        return false;
+    }
+    Curve *curve = Curves[curveIndex];
+    const int storedSlice = sliceIndex * zsparsity;
+    if (!AutomatedCurveIsConsistent(curve, errorMessage))
+        return false;
+    if (storedSlice <= curve->AutomaticStartSlice
+        || storedSlice >= curve->AutomaticEndSlice)
+    {
+        SetCurveAutomationError(
+            errorMessage,
+            QStringLiteral(
+                "Nodes on the first and last automatic "
+                "slices must remain fixed."));
+        return false;
+    }
+
+    PointList *points = curve->SplinePoints[storedSlice];
+    if (!wholeSlice
+        && (nodeIndex < 0 || nodeIndex >= points->Count))
+    {
+        SetCurveAutomationError(
+            errorMessage,
+            QStringLiteral(
+                "There is no curve node under the cursor."));
+        return false;
+    }
+
+    if (wholeSlice)
+    {
+        points->Fixed.fill(char(0), points->Count);
+        return RecalculateAutomatedCurve(curveIndex);
+    }
+
+    points->Fixed[nodeIndex] = 0;
+    const bool result =
+        InterpolateAutomatedCurveNode(curve, nodeIndex);
+    if (result)
+    {
+        MarkCurveRangeDirty(
+            curve,
+            curve->AutomaticStartSlice,
+            curve->AutomaticEndSlice);
+    }
+    return result;
 }
 
 
@@ -748,6 +1163,79 @@ void DrawCurveMarkers(QGraphicsScene *scene)
     mypen.setCosmetic(true);
     QPen redpen = QPen(QBrush(QColor(0, 100, 255)), 1);
     redpen.setCosmetic(true);
+
+    Curve *selectedCurve = Curves[SelectedCurve];
+    const int storedSlice = CurrentFile * zsparsity;
+    if (selectedCurve->AutomaticallyInterpolated
+        && storedSlice >= selectedCurve->AutomaticStartSlice
+        && storedSlice <= selectedCurve->AutomaticEndSlice
+        && p->Fixed.size() == p->Count)
+    {
+        const double calculatedSize = size * 0.58;
+        const double calculatedHalf = calculatedSize / 2.0;
+        QPen calculatedPen(
+            QBrush(QColor(190, 190, 190)),
+            1);
+        calculatedPen.setCosmetic(true);
+
+        for (int i = 0; i < p->Count; i++)
+        {
+            const bool fixed = p->Fixed.at(i) != 0;
+            const QColor fixedColour =
+                i >= p->Count - 2
+                    ? QColor(0, 100, 255)
+                    : QColor(0, 255, 0);
+            QPen fixedPen(QBrush(fixedColour), 1.5);
+            fixedPen.setCosmetic(true);
+            const double markerSize =
+                fixed ? size : calculatedSize;
+            const double markerHalf =
+                fixed ? size2 : calculatedHalf;
+
+            if (CurveMarkersAsCrosses)
+            {
+                QGraphicsLineItem *horizontal =
+                    new QGraphicsLineItem(
+                        p->X[i] * ColMonoScale - markerHalf,
+                        p->Y[i] * ColMonoScale,
+                        p->X[i] * ColMonoScale + markerHalf,
+                        p->Y[i] * ColMonoScale);
+                QGraphicsLineItem *vertical =
+                    new QGraphicsLineItem(
+                        p->X[i] * ColMonoScale,
+                        p->Y[i] * ColMonoScale - markerHalf,
+                        p->X[i] * ColMonoScale,
+                        p->Y[i] * ColMonoScale + markerHalf);
+                horizontal->setPen(
+                    fixed ? fixedPen : calculatedPen);
+                vertical->setPen(
+                    fixed ? fixedPen : calculatedPen);
+                horizontal->setZValue(2);
+                vertical->setZValue(2);
+                MarkerList.append(horizontal);
+                MarkerList.append(vertical);
+                scene->addItem(horizontal);
+                scene->addItem(vertical);
+            }
+            else
+            {
+                QGraphicsEllipseItem *marker =
+                    new QGraphicsEllipseItem(
+                        p->X[i] * ColMonoScale - markerHalf,
+                        p->Y[i] * ColMonoScale - markerHalf,
+                        markerSize,
+                        markerSize);
+                marker->setPen(
+                    fixed ? fixedPen : calculatedPen);
+                if (fixed)
+                    marker->setBrush(QBrush(fixedColour));
+                marker->setZValue(2);
+                MarkerList.append(marker);
+                scene->addItem(marker);
+            }
+        }
+        return;
+    }
 
 
     //First job - delete all existing markers

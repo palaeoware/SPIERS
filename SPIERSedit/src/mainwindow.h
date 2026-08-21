@@ -54,6 +54,7 @@
 class MainWindow : public QMainWindow, public Ui::MainWindow
 {
     Q_OBJECT
+    friend class myscene;
 
 public:
     /**
@@ -72,6 +73,9 @@ public:
     ~MainWindow();
 
     QTimer *timer2; /// Secondary timer used for autosave and deferred UI updates
+
+    bool ApplyMLFloodFill(int x, int y, int maskId);
+    bool MaskFloodFillForAllClicks() const;
 
     /**
      *
@@ -360,6 +364,10 @@ private slots:
     void on_actionRemove_node_under_cursor_triggered();                        /// Removes the curve node nearest to the cursor.
     void on_actionCurve_markers_as_crosses_triggered();                        /// Toggles curve node display between circles and crosses.
     void on_actionRemove_selected_curves_from_selected_slices_triggered();     /// Removes selected curves from all selected slices.
+    void on_actionAutomate_curve_over_selected_slices_triggered();             /// Initializes per-node automatic interpolation over the selected slice range.
+    void on_actionStop_automatic_curve_interpolation_triggered();              /// Converts the selected automatic curve back to a conventional curve.
+    void on_actionMake_node_under_cursor_calculated_triggered();               /// Releases one automatic curve keyframe.
+    void on_actionMake_current_slice_nodes_calculated_triggered();             /// Releases all automatic curve keyframes on the current slice.
     void on_actionCopy_from_current_slice_to_selected_triggered();             /// Copies curves from the current slice to all selected slices.
     void on_actionCopyCurvesFromPrevious_triggered();                          /// Copies curves from the previous slice to the current slice.
     void on_actionCopyCurvesFromNext_triggered();                              /// Copies curves from the next slice to the current slice.
@@ -438,6 +446,8 @@ private slots:
 
     // ── Developer/test ────────────────────────────────────────────────────
     void on_actionTEST_triggered(); /// Developer test action — not exposed in release builds.
+
+
 
 private:
     /**
@@ -626,6 +636,14 @@ private:
     QAction *shortcutright2;  /// Secondary keyboard shortcut action for moving one slice forward.
     QAction *shortcutleft2;   /// Secondary keyboard shortcut action for moving one slice backward.
     QAction *shortcutspace;   /// Keyboard shortcut action for the spacebar paint toggle.
+
+    QAction *maskFloodFillAllClicksAction;
+    QAction *maskFloodFillDockAction;
+    QCheckBox *maskFloodFillFillHolesCheckBox;
+    QDockWidget *maskFloodFillDock;
+    QSpinBox *maskFloodFillGrabCutIterationsSpinBox;
+    QSpinBox *maskFloodFillSeedRadiusSpinBox;
+    QSpinBox *maskFloodFillSegmentationInfluenceSpinBox;
 
     QSpinBox *ZoomBox;           /// Spin box embedded in the toolbar for direct zoom entry.
     QSpinBox *BrushSize;         /// Spin box embedded in the toolbar for direct brush-size entry.

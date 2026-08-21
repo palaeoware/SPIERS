@@ -65,6 +65,7 @@ HEADERS += src/display.h \
     src/bytearray2d.h \
     src/curves.h \
     src/fileio.h \
+    src/sourceimagenormalizer.h \
     src/generatetestdata.h \
     src/globals.h \
     src/newprojectdialog.h \
@@ -96,6 +97,7 @@ HEADERS += src/display.h \
     src/mlfileio.h \
     src/mlinterface.h \
     src/mlparallelforest.h \
+    src/mlroislice.h \
     src/mlupdateblockingdialog.h \
     src/myscene.h \
     src/copyingimpl.h \
@@ -174,6 +176,7 @@ SOURCES += src/display.cpp \
     src/mlfileio.cpp \
     src/mlinterface.cpp \
     src/mlparallelforest.cpp \
+    src/mlroislice.cpp \
     src/mlupdateblockingdialog.cpp \
     src/myscene.cpp \
     src/copyingimpl.cpp \

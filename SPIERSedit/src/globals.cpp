@@ -344,6 +344,9 @@ Curve::Curve(QString name)
     Closed = false;
     Filled = false;
     Segment = 0;
+    AutomaticallyInterpolated = false;
+    AutomaticStartSlice = -1;
+    AutomaticEndSlice = -1;
 
     for (int i = 0; i < FullFiles.count(); i++)
     {
@@ -372,6 +375,7 @@ PointList::PointList()
 {
     X.clear();
     Y.clear();
+    Fixed.clear();
     Count = 0;
 }
 

@@ -143,6 +143,7 @@ void MLAddFeature::Refresh() //changed type
 void MLAddFeature::Show()
 {
     resultValid=false;
+    Refresh();
     exec();
 }
 

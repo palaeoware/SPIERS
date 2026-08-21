@@ -66,6 +66,21 @@ void MLFeatureTensorTraceLocal::CalculateFeature(cv::Mat &mat, int sliceID, MLCa
     }
 }
 
+bool MLFeatureTensorTraceLocal::CalculateFeatureROI(
+    cv::Mat &mat,
+    int sliceID,
+    MLCachedAccess *data,
+    const MLROISlice &roi)
+{
+    CalcTensorTraceROI(
+        mat,
+        sliceID,
+        data,
+        FeatureType::Tensor_component_local,
+        roi);
+    return false;
+}
+
 QList<MLFeature *> MLFeatureTensorTraceLocal::GetDependencies()
 {
     using TC = MLFeatureTensorComponentLocal::TensorComponent;
