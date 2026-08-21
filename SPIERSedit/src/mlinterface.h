@@ -64,7 +64,6 @@ public:
     void AutoSampleTrainAndGenerate();
     void ResizeCache();
     void DoPreset(int presetCode);
-    void MaskFromSegment();
     bool FloodFillMask(
         int x,
         int y,
@@ -84,10 +83,6 @@ private:
     MLFeatureUIManager *uiManager;
     MLAddFeature *addFeatureDialog;
     int samplePercent, minSampleCount, treeCount, treeDepth;
-    int m_envelopeClosingRadius;
-    int m_envelopeExpansionRadius;
-    int m_envelopeSensitivity;
-    int m_envelopeSmoothingRadius;
     void UpdateStatusLabel();
 
     QLabel *lblStatus;

@@ -126,12 +126,11 @@ void MLCachedAccess::ReleaseCacheMemoryForExclusiveOperation()
     /**
      *
      * Release all resident matrices while retaining the feature configuration
-     * and disk cache. Envelope generation uses this immediately before creating
-     * its private MLCachedAccess instance, so that only one cache consumes the
-     * user-configured CacheMemMLGb allowance at a time.
+     * and disk cache, so that only one cache consumes the user-configured
+     * CacheMemMLGb allowance at a time.
      *
      * WARNING: This is an exclusive, modal handover of the ML RAM budget. A
-     * background envelope operation must not use this mechanism. Supporting
+     * background operation must not use this mechanism. Supporting
      * concurrent cache users requires a shared global budget manager first.
      *
      **/
@@ -564,7 +563,7 @@ int MLCachedAccess::FindReusableCacheSlot()
     {
         throw std::runtime_error(
             "The ML cache is too small for the active feature dependency chain. "
-            "Increase the ML cache size or reduce the envelope smoothing and closing radii.");
+            "Increase the ML cache size or reduce the feature radii.");
     }
 
     if (slicesByCacheIndex[useCacheIndex]!=-1)

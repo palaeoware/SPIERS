@@ -2699,8 +2699,3 @@ void MainWindow::on_actionMLAuto_Update_triggered()
 }
 
 
-void MainWindow::on_actionMask_from_segment_triggered()
-{
-    mlInterface->MaskFromSegment();
-}
-

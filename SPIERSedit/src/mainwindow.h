@@ -431,9 +431,6 @@ private slots:
     void on_actionColour_complex_triggered();                /// Loads the complex colour feature preset.
     void on_actionMLAuto_Update_triggered();                 /// Toggles automatic ML classification update on brush strokes.
 
-    //Bundled with ML as it used OpenCV
-    void on_actionMask_from_segment_triggered();
-
     // ── Settings and help ─────────────────────────────────────────────────
     void on_actionSettings_triggered();                  /// Opens the global settings dialog.
     void on_actionAb_out_triggered();                    /// Opens the About dialog.

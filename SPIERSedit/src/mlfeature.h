@@ -52,18 +52,7 @@ public:
         Hessian,
         Square,
         Gradient_component,
-        Distance_to_mask,
-
-        // Internal, transient stages used only by MLEnvelopeMaskGenerator.
-        // Append new persisted feature types above these entries, never between
-        // existing persisted values, because FeatureType is serialized as an integer.
-        Envelope_segment_membership,
-        Envelope_xy_smoothing,
-        Envelope_z_smoothing,
-        Envelope_xy_dilation,
-        Envelope_z_dilation,
-        Envelope_xy_erosion,
-        Envelope_z_erosion
+        Distance_to_mask
     };
 
     enum class Channel
