@@ -51,7 +51,8 @@ public:
 
         Hessian,
         Square,
-        Gradient_component
+        Gradient_component,
+        Distance_to_mask
     };
 
     enum class Channel
@@ -92,6 +93,8 @@ public:
     int GetXYSupportRadius() const;
     static MLFeature *CreateFromData(FeatureType type, Channel channel, bool is3D, int arg1, int arg2);
     virtual int GetMinMaxForArgs(int arg, bool max);
+    virtual bool ReferencesMask(int maskId) const;
+    virtual void RemapMasks(const QVector<int> &maskMap);
 protected:
     FeatureType _type;
     Channel _channel;
