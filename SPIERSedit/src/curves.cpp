@@ -20,8 +20,11 @@
 #include <math.h>
 
 #include <QGraphicsEllipseItem>
+#include <QGraphicsLineItem>
+#include <QGraphicsRectItem>
 #include <QImage>
 #include <QMessageBox>
+#include <QPen>
 
 
 #define M11 0
@@ -1140,6 +1143,93 @@ void DrawCurve(int c, int mycol, int file, QImage *Thresh)
 
 QList <QGraphicsItem *> MarkerList;
 
+namespace
+{
+
+constexpr double MARKER_OUTLINE_EXTRA_WIDTH = 2.0; /// Added to the marker pen width to form the outline
+constexpr double MARKER_OUTLINE_Z = 1.9; /// Outlines sit just below the markers they outline
+constexpr double MARKER_Z = 2.0; /// Z value used by all curve node markers
+
+/**
+ *
+ * Builds the black outline pen used behind a curve node marker. Markers are
+ * drawn with thin cosmetic pens in green or blue, which can be very hard to
+ * make out against light or busy datasets. Each marker is therefore drawn
+ * twice - once in black at a greater pen width, and once in its own colour on
+ * top - leaving a black margin visible around the marker.
+ *
+ **/
+QPen markerOutlinePen(const QPen &markerPen)
+{
+    QPen outlinePen(QBrush(QColor(0, 0, 0)), markerPen.widthF() + MARKER_OUTLINE_EXTRA_WIDTH);
+    outlinePen.setCosmetic(true);
+    return outlinePen;
+}
+
+/**
+ *
+ * Adds an outlined ellipse marker to the scene and to the marker list.
+ *
+ **/
+void addMarkerEllipse(QGraphicsScene *scene, double x, double y, double width, double height, const QPen &markerPen, const QBrush &fillBrush = QBrush(Qt::NoBrush))
+{
+    QGraphicsEllipseItem *outline = new QGraphicsEllipseItem(x, y, width, height);
+    outline->setPen(markerOutlinePen(markerPen));
+    outline->setZValue(MARKER_OUTLINE_Z);
+    MarkerList.append(static_cast<QGraphicsItem *>(outline));
+    scene->addItem(outline);
+
+    QGraphicsEllipseItem *marker = new QGraphicsEllipseItem(x, y, width, height);
+    marker->setPen(markerPen);
+    marker->setBrush(fillBrush);
+    marker->setZValue(MARKER_Z);
+    MarkerList.append(static_cast<QGraphicsItem *>(marker));
+    scene->addItem(marker);
+}
+
+/**
+ *
+ * Adds an outlined rectangle marker to the scene and to the marker list.
+ *
+ **/
+void addMarkerRect(QGraphicsScene *scene, double x, double y, double width, double height, const QPen &markerPen)
+{
+    QGraphicsRectItem *outline = new QGraphicsRectItem(x, y, width, height);
+    outline->setPen(markerOutlinePen(markerPen));
+    outline->setZValue(MARKER_OUTLINE_Z);
+    MarkerList.append(static_cast<QGraphicsItem *>(outline));
+    scene->addItem(outline);
+
+    QGraphicsRectItem *marker = new QGraphicsRectItem(x, y, width, height);
+    marker->setPen(markerPen);
+    marker->setZValue(MARKER_Z);
+    MarkerList.append(static_cast<QGraphicsItem *>(marker));
+    scene->addItem(marker);
+}
+
+/**
+ *
+ * Adds an outlined line marker to the scene and to the marker list. Used for
+ * the arms of cross-style node markers.
+ *
+ **/
+void addMarkerLine(QGraphicsScene *scene, double x1, double y1, double x2, double y2, const QPen &markerPen)
+{
+    QGraphicsLineItem *outline = new QGraphicsLineItem(x1, y1, x2, y2);
+    outline->setPen(markerOutlinePen(markerPen));
+    outline->setZValue(MARKER_OUTLINE_Z);
+    MarkerList.append(static_cast<QGraphicsItem *>(outline));
+    scene->addItem(outline);
+
+    QGraphicsLineItem *marker = new QGraphicsLineItem(x1, y1, x2, y2);
+    marker->setPen(markerPen);
+    marker->setZValue(MARKER_Z);
+    MarkerList.append(static_cast<QGraphicsItem *>(marker));
+    scene->addItem(marker);
+}
+
+}
+
 void DrawCurveMarkers(QGraphicsScene *scene)
 {
     if (MarkerList.count() > 0)
@@ -1194,44 +1284,32 @@ void DrawCurveMarkers(QGraphicsScene *scene)
 
             if (CurveMarkersAsCrosses)
             {
-                QGraphicsLineItem *horizontal =
-                    new QGraphicsLineItem(
-                        p->X[i] * ColMonoScale - markerHalf,
-                        p->Y[i] * ColMonoScale,
-                        p->X[i] * ColMonoScale + markerHalf,
-                        p->Y[i] * ColMonoScale);
-                QGraphicsLineItem *vertical =
-                    new QGraphicsLineItem(
-                        p->X[i] * ColMonoScale,
-                        p->Y[i] * ColMonoScale - markerHalf,
-                        p->X[i] * ColMonoScale,
-                        p->Y[i] * ColMonoScale + markerHalf);
-                horizontal->setPen(
-                    fixed ? fixedPen : calculatedPen);
-                vertical->setPen(
-                    fixed ? fixedPen : calculatedPen);
-                horizontal->setZValue(2);
-                vertical->setZValue(2);
-                MarkerList.append(horizontal);
-                MarkerList.append(vertical);
-                scene->addItem(horizontal);
-                scene->addItem(vertical);
+                const QPen markerPen = fixed ? fixedPen : calculatedPen;
+                addMarkerLine(
+                    scene,
+                    p->X[i] * ColMonoScale - markerHalf,
+                    p->Y[i] * ColMonoScale,
+                    p->X[i] * ColMonoScale + markerHalf,
+                    p->Y[i] * ColMonoScale,
+                    markerPen);
+                addMarkerLine(
+                    scene,
+                    p->X[i] * ColMonoScale,
+                    p->Y[i] * ColMonoScale - markerHalf,
+                    p->X[i] * ColMonoScale,
+                    p->Y[i] * ColMonoScale + markerHalf,
+                    markerPen);
             }
             else
             {
-                QGraphicsEllipseItem *marker =
-                    new QGraphicsEllipseItem(
-                        p->X[i] * ColMonoScale - markerHalf,
-                        p->Y[i] * ColMonoScale - markerHalf,
-                        markerSize,
-                        markerSize);
-                marker->setPen(
-                    fixed ? fixedPen : calculatedPen);
-                if (fixed)
-                    marker->setBrush(QBrush(fixedColour));
-                marker->setZValue(2);
-                MarkerList.append(marker);
-                scene->addItem(marker);
+                addMarkerEllipse(
+                    scene,
+                    p->X[i] * ColMonoScale - markerHalf,
+                    p->Y[i] * ColMonoScale - markerHalf,
+                    markerSize,
+                    markerSize,
+                    fixed ? fixedPen : calculatedPen,
+                    fixed ? QBrush(fixedColour) : QBrush(Qt::NoBrush));
             }
         }
         return;
@@ -1255,71 +1333,34 @@ void DrawCurveMarkers(QGraphicsScene *scene)
             if (i == 0)
             {
                 //first - green box AND cross
-                QGraphicsRectItem *newitem = new QGraphicsRectItem((p->X[i])*ColMonoScale - size2, (p->Y[i])*ColMonoScale - size2, size, size);
-                newitem->setPen(mypen);
-                newitem->setZValue(2);
-                MarkerList.append(static_cast<QGraphicsItem *>(newitem));
-                scene->addItem(newitem);
+                addMarkerRect(scene, (p->X[i])*ColMonoScale - size2, (p->Y[i])*ColMonoScale - size2, size, size, mypen);
             }
             else if (i == p->Count - 1)
             {
                 //last - red box
-                QGraphicsRectItem *newitem = new QGraphicsRectItem((p->X[i])*ColMonoScale - size2, (p->Y[i])*ColMonoScale - size2, size, size);
-                newitem->setPen(redpen);
-                newitem->setZValue(2);
-                MarkerList.append(static_cast<QGraphicsItem *>(newitem));
-                scene->addItem(newitem);
+                addMarkerRect(scene, (p->X[i])*ColMonoScale - size2, (p->Y[i])*ColMonoScale - size2, size, size, redpen);
             }
             //always do a cross
-            QGraphicsLineItem *newitem1 = new QGraphicsLineItem((p->X[i])*ColMonoScale - size2, (p->Y[i])*ColMonoScale, (p->X[i])*ColMonoScale + size2, (p->Y[i])*ColMonoScale);
-            QGraphicsLineItem *newitem3 = new QGraphicsLineItem((p->X[i])*ColMonoScale, (p->Y[i])*ColMonoScale - size2, (p->X[i])*ColMonoScale, (p->Y[i])*ColMonoScale + size2);
-            if (i >= p->Count - 2)
-            {
-                newitem1->setPen(redpen);
-                newitem3->setPen(redpen);
-            }
-            else
-            {
-                newitem1->setPen(mypen);
-                newitem3->setPen(mypen);
-            }
-            newitem1->setZValue(2);
-            newitem3->setZValue(2);
-
-            MarkerList.append(static_cast<QGraphicsItem *>(newitem1));
-            MarkerList.append(static_cast<QGraphicsItem *>(newitem3));
-            scene->addItem(newitem1);
-            scene->addItem(newitem3);
+            const QPen crosspen = (i >= p->Count - 2) ? redpen : mypen;
+            addMarkerLine(scene, (p->X[i])*ColMonoScale - size2, (p->Y[i])*ColMonoScale, (p->X[i])*ColMonoScale + size2, (p->Y[i])*ColMonoScale, crosspen);
+            addMarkerLine(scene, (p->X[i])*ColMonoScale, (p->Y[i])*ColMonoScale - size2, (p->X[i])*ColMonoScale, (p->Y[i])*ColMonoScale + size2, crosspen);
         }
         else     //plain circle markers
         {
             if (i == 0)
             {
                 //first - green box
-                QGraphicsRectItem *newitem = new QGraphicsRectItem((p->X[i])*ColMonoScale - size2, (p->Y[i])*ColMonoScale - size2, size, size);
-                newitem->setPen(mypen);
-                newitem->setZValue(2);
-                MarkerList.append(static_cast<QGraphicsItem *>(newitem));
-                scene->addItem(newitem);
+                addMarkerRect(scene, (p->X[i])*ColMonoScale - size2, (p->Y[i])*ColMonoScale - size2, size, size, mypen);
             }
             else if (i == p->Count - 1)
             {
                 //last - red box
-                QGraphicsRectItem *newitem = new QGraphicsRectItem((p->X[i])*ColMonoScale - size2, (p->Y[i])*ColMonoScale - size2, size, size);
-                newitem->setPen(redpen);
-                newitem->setZValue(2);
-                MarkerList.append(static_cast<QGraphicsItem *>(newitem));
-                scene->addItem(newitem);
+                addMarkerRect(scene, (p->X[i])*ColMonoScale - size2, (p->Y[i])*ColMonoScale - size2, size, size, redpen);
             }
             else
             {
                 //otherwise - plain old marker
-                QGraphicsEllipseItem *newitem = new QGraphicsEllipseItem((p->X[i])*ColMonoScale - size2, (p->Y[i])*ColMonoScale - size2, size, size);
-                if (i == p->Count - 2) newitem->setPen(redpen);
-                else newitem->setPen(mypen);
-                newitem->setZValue(2);
-                MarkerList.append(static_cast<QGraphicsItem *>(newitem));
-                scene->addItem(newitem);
+                addMarkerEllipse(scene, (p->X[i])*ColMonoScale - size2, (p->Y[i])*ColMonoScale - size2, size, size, (i == p->Count - 2) ? redpen : mypen);
             }
         }
     }
