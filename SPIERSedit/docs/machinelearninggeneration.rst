@@ -132,6 +132,8 @@ Segmentation may work better where your segment plan matches real material types
 *Spatial restriction*
 You may not need to carefully segment regions away from the fossil that you can simply mask off in output. Restrict training samples and judgement of quality to the genuine region of interest. Remember as well that, if you are struggling to generate a single trained model that works over all your slices, you can train and use different models for a subset of slices if that works better.
 
+From version 4.0.5, spatial restriction also has a direct effect on speed. Feature calculation is performed in tiles rather than over whole slices, and only those tiles that are actually needed are calculated: when training, this means the tiles containing sample pixels, and when generating, it excludes regions locked off by hidden masks or locked segments. Concentrating your sample, and locking off material you do not care about, will therefore make training and generation faster as well as improving segmentation. Note that features need to see the pixels surrounding those they are calculated for, so a margin of neighbouring tiles is calculated as well; the saving is real but less than the proportion of the slice you have excluded, and high-sigma features widen that margin.
+
 *Deactivating features*
 If processing is slow, consider disabling features (rather than removing them entirely). Removal may not be possible if the feature is a dependency of another, and reinstatement of removed features is more work. Disabling them retains files on disk for later use, but keeps them out of training and generation calculations.
 

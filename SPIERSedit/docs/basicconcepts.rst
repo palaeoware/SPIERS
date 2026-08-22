@@ -490,6 +490,66 @@ working dataset folder within the source dataset directory.
 The *Import SPIERSedit 1.1* command on the *File* menu is not documented
 in this manual.
 
+Settings File Backups
+---------------------
+
+Because the '.spe' settings file holds all curve data, mask and segment
+definitions, and output object definitions, its loss or corruption can
+represent a substantial amount of lost work. SPIERSedit therefore keeps
+a rolling set of timestamped backup copies of this file.
+
+The backups live in a folder alongside the settings file, named after it
+with a '_spe_backups' suffix - so a dataset called *fossil.spe* keeps
+its backups in a folder called *fossil_spe_backups*. Within that folder
+each backup is named after the dataset and the date and time it was
+taken, for example *fossil_20260815-142233-071.spe* was taken on 15th
+August 2026, at 14:22.
+
+A backup is taken whenever the settings file is written - on a manual
+*Save*, on each autosave, and when SPIERSedit exits - and also when a
+dataset is opened. Old backups are thinned out automatically rather than
+being kept indefinitely: SPIERSedit retains the twenty most recent
+backups, then roughly one per hour for the last two days, one per day
+for the last month, and one per week for the last three months.
+Settings files are small, so the total space used is normally
+negligible. Deleting the backup folder to recover disk space is not
+recommended.
+
+Recovery is a manual process. To roll back to an earlier state, close
+SPIERSedit, copy the chosen backup out of the backup folder to sit
+alongside the original, and rename it to match the dataset
+(*fossil.spe* in the example above), replacing the existing settings
+file. It is worth checking the timestamp carefully before doing this, as
+any work done after that point will be lost.
+
+These backups protect only the settings file. They do not duplicate
+working images, mask files, or lock files, all of which are written
+directly to disk as you edit. For protection against loss of those, use
+*Save As*, or back up the dataset folder by normal means.
+
+Settings File Versions
+----------------------
+
+SPE files written by SPIERSedit 4.0.4 and later use a different internal
+format to that understood by older versions of SPIERSedit.
+
+A **newer** SPIERSedit will always open a settings file written by an
+older one, quietly upgrading it to the current format when the dataset
+is next saved. However, **an older SPIERSedit cannot reliably read a
+file written by a newer one**, because it has no knowledge of the newer
+data and no way to preserve it.
+
+From version 4.0.5 onwards, SPIERSedit refuses outright to open a
+settings file whose format is too new for it to understand.
+
+Older versions of SPIERSedit may offer to read files they cannot
+properly handle - this is dangerous and can corrupt data. It is not
+possible for us to retrofit a fix for this onto these older versions.
+For this reason, we strongly recommend that you remove older versions of
+SPIERSedit when installing 4.0.5 or higher. Note that 4.0.5 and higher
+create many backups of the SPE file, which may enable recovery from
+corruption caused by inadvertent loading into older versions.
+
 Advancing Beyond Basic Concepts
 -------------------------------
 

@@ -82,7 +82,11 @@ memory. Note that changing this setting empties the cache, so will not
 provide an instant performance increase!
 
 *Autosave frequency*: Controls how often the SPIERSedit settings file
-(.spe) is written out.
+(.spe) is saved. Each autosave also generates a backup copy of the
+settings file (see *Settings File Backups*), so a short autosave
+interval gives both more frequent saves and a finer-grained set of
+recovery points. The default of 5 minutes is normally more than
+sufficient.
 
 *Clear Recent Files List*: This button removes everything from the *Open
 Recent* list on the *File* menu.

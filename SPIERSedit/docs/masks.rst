@@ -100,6 +100,81 @@ Masks can also be applied using the *Masks from Curves* and *Copy*
 commands (see below); these provide mechanisms for rapidly masking large
 numbers of slices.
 
+Mask Flood Fill
+---------------
+
+Painting masks by hand is reliable but slow, particularly where a
+structure is large or has a complicated outline. Once generation has
+been performed, SPIERSedit can use its results to mask a structure
+(within one slice) in a single click. This is referred to as mask flood
+fill.
+
+The operation works from the generated data for the segment concerned,
+combined with the underlying original image. The user clicks somewhere
+inside the structure of interest; SPIERSedit takes the segment that the
+clicked pixel belongs to, treats the area inside the brush as definitely
+part of the structure, and then determines how far that region should
+extend, following the boundaries suggested by the generated data and by
+the image itself. The resulting area is written into a mask.
+
+Flood fill works with data from any form of generation (linear, range,
+ML etc). It does, however, depend on the quality of the generation:
+where a structure is cleanly picked out, the fill will follow it
+closely, and where it is not, the fill will struggle in the same way the
+generation does.
+
+*Requirements*: generation must have been performed for the current
+slice, since without generated data there is nothing for the fill to
+work from. SPIERSedit must be in *Mask* mode, and the clicked pixel must
+lie within an active segment. If any of these conditions is not met, the
+operation reports the problem and does nothing.
+
+*Performing a flood fill*: hold Ctrl and click. As with ordinary mask
+painting, the left mouse button applies the L mask and the right button
+applies the R mask. If flood filling is being used heavily, the *All
+mask clicks are flood fills* item on the *Masks* menu removes the need
+to hold Ctrl; every mask click becomes a flood fill until the setting is
+switched off again.
+
+The result of a flood fill can be undone in the usual way, and can be
+tidied up afterwards with the ordinary mask brush - it is a normal mask
+edit once performed, with no permanent link to the generated data.
+
+*Controlling the fill*: the behaviour is governed by the *Mask Flood
+Fill* panel, which is hidden by default and can be shown from the
+*Window* menu or with F11. It offers:
+
+*Segmentation influence*: how strongly the generated data guides the
+fill, as against the image itself. At high values the fill follows the
+generated data closely, which works well where generation is good. At
+lower values it pays more attention to the image, which can be more
+useful where generation is unreliable. The default is 60%.
+
+*Iterations*: how many times the fill refines its estimate of the
+boundary. Higher values can give a better result on difficult structures
+at the cost of speed. The default is 3, and there is often little to be
+gained from increasing it.
+
+*Fill enclosed holes*: when ticked, any isolated unfilled areas entirely
+surrounded by the filled region are filled in as well. This is usually
+what is wanted, and it is on by default.
+
+Remember that the brush size also matters. Larger brushes give the fill
+more to work from and make it less likely to stop early, but be careful
+not to accidentally include pixels assigned to another segment.
+
+In practice, mask flood fill is at its most useful for large, reasonably
+well generated structures, where it can replace a great deal of brush
+work. It is less helpful for thin or poorly resolved structures, where
+the boundaries it finds may need substantial correction. It is worth
+experimenting on a few slices before committing to it for a whole
+dataset.
+
+.. figure:: _static/figure_FLOOD1.png
+    :align: center
+	
+    Figure FLOOD1. Mask flood fill in operation. This dataset has two segments set up; the fill is being performed in the green segment, and the blue outline shows the brush. Left; before the operation, with the structure picked out by generation but not yet masked. Right; the result of a single Ctrl-click at the brush position, the connected structure having been written into the mask and so drawn in the mask colour.
+
 Advice on use of masks
 ----------------------
 

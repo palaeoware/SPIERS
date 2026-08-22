@@ -170,6 +170,73 @@ then interpolating them is a fast way to rather precisely specify
 regions to be masked, and is a technique the authors make extensive use
 of.
 
+Automatic Curve Interpolation
+-----------------------------
+
+SPIERSedit versions 4.0.4 and higher feature an improved 'automatic'
+interpolation mode which streamlines the workflow described above, by
+automating the interpolation step.
+
+An automated curve divides its nodes into two kinds. *Fixed* nodes are
+those the user has positioned explicitly; they behave exactly like nodes
+on an ordinary curve. *Calculated* nodes are those SPIERSedit works out
+for itself, by interpolating between the nearest fixed nodes above and
+below. The two are distinguished on screen: fixed nodes are drawn at
+normal size in the usual colours, while calculated nodes are drawn
+smaller and in grey. Importantly, this distinction applies to each node
+individually rather than to whole slices. A single slice can hold a
+mixture of fixed and calculated nodes, so one part of a curve can be
+pinned down precisely while the rest is left to follow the
+interpolation. This is what makes the system useful in practice: a
+structure can be tracked through a stack by correcting only the parts
+that need correcting, slice by slice, rather than redefining entire
+curves.
+
+.. figure:: _static/figure_AUTO1.png
+    :align: center
+	
+    Figure AUTO1. An automated curve, shown on a slice partway through its automated range. The large filled markers are fixed nodes, positioned explicitly by the user; the small outlined markers are calculated nodes, interpolated by SPIERSedit from the nearest fixed nodes above and below. Note that both kinds occur together on this single slice.
+
+*Setting up an automated curve*: select a single curve in the *Curves*
+panel which has nodes on precisely one slice and no others, select the
+range of slices to be automated in the *Slice Selector* panel (at least
+two slices, including the slice the curve is defined on), and use the
+*Automate curve over selected slices* command on the *Curves* menu. The
+curve is copied to every slice in the range; the nodes on the first and
+last slices of the range are made fixed, and all the nodes in between
+are made calculated. Curves which are automated are marked with a tick
+in the *Auto* column of the *Curves* panel. Note that nodes cannot be
+added to or removed from a curve while it is automated, so you should
+ensure that the initial curve used when setting up automation has enough
+nodes for your purposes.
+
+*Editing an automated curve*: drag any node in the usual way. If the
+node was calculated it becomes fixed at the position it is dropped, and
+the curve is immediately re-interpolated in slices before and after it.
+In effect, editing a slice pins that part of the curve there and lets
+the rest flow around it. As with normal curve editing, ticking *Lock
+curve shape* enables dragging of the whole curve; all nodes then become
+fixed on that slice. Note that the *Interpolate over selected slices*
+command is disabled for automated curves, as the automation performs
+this task itself.
+
+*Un-fixing nodes*: a fixed node can be 'un-fixed' - handed back to the
+interpolation, i.e. turned back into a calculated node. *Make node under
+cursor calculated* (Ctrl+Shift+X) un-fixes a single node, and *Make all
+nodes on current slice calculated* un-fixes the whole slice. Both
+commands are on the *Curves* menu, although note that you will need to
+use the keyboard shortcut for *Make node under cursor calculated*
+(Ctrl+Shift+X), as moving the mouse to the menu means your cursor is no
+longer over the node! The nodes on the first and last slices of the
+automated range cannot be un-fixed.
+
+*Ending automation*: the *Stop automatic interpolation* command on the
+*Curves* menu turns off automation for a selected curve. The curve keeps
+whatever shape it currently has on every slice - nothing is lost - but
+it will no longer update in response to later edits. There is no need to
+end automation of a curve before using the Mask from Curve command -
+ending automation is optional.
+
 Creating Masks from Curves
 --------------------------
 
