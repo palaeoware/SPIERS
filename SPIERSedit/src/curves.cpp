@@ -1146,9 +1146,9 @@ QList <QGraphicsItem *> MarkerList;
 namespace
 {
 
-constexpr double MARKER_BASE_SIZE = 17.0; /// On-screen size of an ordinary curve node marker, in pixels before zoom scaling
-constexpr double AUTOMATED_MARKER_BASE_SIZE = 10.0; /// On-screen size of an automated curve node marker, in pixels before zoom scaling
-constexpr double MARKER_PEN_WIDTH = 2.0; /// Pen width used to draw ordinary curve node markers
+constexpr double MARKER_BASE_SIZE = 10.0; /// On-screen size of an ordinary curve node marker, in pixels before zoom scaling
+constexpr double AUTOMATED_MARKER_BASE_SIZE = 13.0; /// On-screen size of an automated curve node marker, in pixels before zoom scaling
+constexpr double MARKER_PEN_WIDTH = 3.0; /// Pen width used to draw ordinary curve node markers
 constexpr double AUTOMATED_MARKER_PEN_WIDTH = 2.0; /// Pen width used to draw automated curve node markers
 constexpr double MARKER_OUTLINE_EXTRA_WIDTH = 4.0; /// Added to the marker pen width to form the outline
 constexpr double MARKER_OUTLINE_Z = 1.9; /// Outlines sit just below the markers they outline
