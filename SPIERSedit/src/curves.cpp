@@ -1146,6 +1146,7 @@ QList <QGraphicsItem *> MarkerList;
 namespace
 {
 
+constexpr double MARKER_BASE_SIZE = 17.0; /// On-screen size of a curve node marker, in pixels before zoom scaling
 constexpr double MARKER_OUTLINE_EXTRA_WIDTH = 4.0; /// Added to the marker pen width to form the outline
 constexpr double MARKER_OUTLINE_Z = 1.9; /// Outlines sit just below the markers they outline
 constexpr double MARKER_Z = 2.0; /// Z value used by all curve node markers
@@ -1245,7 +1246,7 @@ void DrawCurveMarkers(QGraphicsScene *scene)
     if (SelectedCurve < 0) return; //need a selected curve
 
 
-    double size = 10. / (CurrentZoom);
+    double size = MARKER_BASE_SIZE / (CurrentZoom);
     double size2 = size / 2.0;
 
     PointList *p = Curves[SelectedCurve]->SplinePoints[CurrentFile * zsparsity];
