@@ -704,7 +704,7 @@ bool MainWindow::ApplyMaskFloodFill(int x, int y, int maskId)
         x,
         y,
         maskId,
-        maskFloodFillSeedRadiusSpinBox->value(),
+        Brush_Size,
         maskFloodFillSegmentationInfluenceSpinBox->value(),
         maskFloodFillGrabCutIterationsSpinBox->value(),
         maskFloodFillFillHolesCheckBox->isChecked(),

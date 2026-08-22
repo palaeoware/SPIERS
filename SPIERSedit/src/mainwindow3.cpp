@@ -69,14 +69,6 @@ void MainWindow::SetUpDocks()
     QWidget *maskFloodFillWidget = new QWidget(maskFloodFillDock);
     QFormLayout *maskFloodFillLayout = new QFormLayout(maskFloodFillWidget);
 
-    maskFloodFillSeedRadiusSpinBox = new KeysafeSpinBox(maskFloodFillWidget);
-    maskFloodFillSeedRadiusSpinBox->setRange(1, 50);
-    maskFloodFillSeedRadiusSpinBox->setSuffix(QStringLiteral(" px"));
-    maskFloodFillSeedRadiusSpinBox->setValue(5);
-    maskFloodFillSeedRadiusSpinBox->setToolTip(
-        QStringLiteral("Radius of the area around the click which is treated as definitely part of the structure"));
-    maskFloodFillLayout->addRow(QStringLiteral("Seed radius"), maskFloodFillSeedRadiusSpinBox);
-
     maskFloodFillSegmentationInfluenceSpinBox = new KeysafeSpinBox(maskFloodFillWidget);
     maskFloodFillSegmentationInfluenceSpinBox->setRange(0, 100);
     maskFloodFillSegmentationInfluenceSpinBox->setSuffix(QStringLiteral("%"));

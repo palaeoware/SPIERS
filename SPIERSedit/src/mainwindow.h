@@ -642,7 +642,6 @@ private:
     QCheckBox *maskFloodFillFillHolesCheckBox;
     QDockWidget *maskFloodFillDock;
     QSpinBox *maskFloodFillGrabCutIterationsSpinBox;
-    QSpinBox *maskFloodFillSeedRadiusSpinBox;
     QSpinBox *maskFloodFillSegmentationInfluenceSpinBox;
 
     QSpinBox *ZoomBox;           /// Spin box embedded in the toolbar for direct zoom entry.
