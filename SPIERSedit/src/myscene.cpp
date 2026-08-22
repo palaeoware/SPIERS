@@ -203,7 +203,7 @@ void myscene::DoAction(int x, int y)
             {
                 if (Counter2 == 0)
                 {
-                    mainwin->ApplyMLFloodFill(
+                    mainwin->ApplyMaskFloodFill(
                         LastMouseX,
                         LastMouseY,
                         button == 1 ? SelectedMask : SelectedRMask);

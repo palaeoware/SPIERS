@@ -58,7 +58,7 @@ void MainWindow::SetUpDocks()
     addDockWidget (Qt::RightDockWidgetArea, DockHist);
     addDockWidget (Qt::RightDockWidgetArea, DockGenerateTestData);
 
-    maskFloodFillDock = new QDockWidget(QStringLiteral("ML Flood Fill (F11)"), this);
+    maskFloodFillDock = new QDockWidget(QStringLiteral("Mask Flood Fill (F11)"), this);
     maskFloodFillDock->setObjectName(QStringLiteral("DockMLFloodFill"));
     maskFloodFillDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     maskFloodFillDock->setFeatures(
@@ -82,7 +82,7 @@ void MainWindow::SetUpDocks()
     maskFloodFillSegmentationInfluenceSpinBox->setSuffix(QStringLiteral("%"));
     maskFloodFillSegmentationInfluenceSpinBox->setValue(60);
     maskFloodFillSegmentationInfluenceSpinBox->setToolTip(
-        QStringLiteral("Relative strength of the ML segment probability in the GrabCut image"));
+        QStringLiteral("Relative strength of the generated segment data, as against the source image"));
     maskFloodFillLayout->addRow(
         QStringLiteral("Segmentation influence"),
         maskFloodFillSegmentationInfluenceSpinBox);
@@ -104,12 +104,12 @@ void MainWindow::SetUpDocks()
     addDockWidget(Qt::RightDockWidgetArea, maskFloodFillDock);
 
     maskFloodFillDockAction = maskFloodFillDock->toggleViewAction();
-    maskFloodFillDockAction->setText(QStringLiteral("ML Flood Fill"));
+    maskFloodFillDockAction->setText(QStringLiteral("Mask Flood Fill"));
     maskFloodFillDockAction->setShortcut(QKeySequence(Qt::Key_F11));
     menuWindow->addAction(maskFloodFillDockAction);
 
     maskFloodFillAllClicksAction = new QAction(
-        QStringLiteral("All mask clicks are ML flood fills"),
+        QStringLiteral("All mask clicks are flood fills"),
         this);
     maskFloodFillAllClicksAction->setCheckable(true);
     maskFloodFillAllClicksAction->setChecked(false);

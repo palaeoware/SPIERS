@@ -74,7 +74,7 @@ public:
 
     QTimer *timer2; /// Secondary timer used for autosave and deferred UI updates
 
-    bool ApplyMLFloodFill(int x, int y, int maskId);
+    bool ApplyMaskFloodFill(int x, int y, int maskId);
     bool MaskFloodFillForAllClicks() const;
 
     /**

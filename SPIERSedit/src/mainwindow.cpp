@@ -689,11 +689,11 @@ void MainWindow::RightMaskChanged(int index)
     }
 }
 
-bool MainWindow::ApplyMLFloodFill(int x, int y, int maskId)
+bool MainWindow::ApplyMaskFloodFill(int x, int y, int maskId)
 {
     if (mlInterface == nullptr)
     {
-        Message(QStringLiteral("ML flood fill is unavailable"));
+        Message(QStringLiteral("Mask flood fill is unavailable"));
         return false;
     }
 
