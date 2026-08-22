@@ -1274,7 +1274,7 @@ bool MLInterface::FloodFillMask(
     {
         if (errorMessage != nullptr)
         {
-            *errorMessage = QStringLiteral("GrabCut failed: %1")
+            *errorMessage = QStringLiteral("The flood fill failed: %1")
                                 .arg(QString::fromUtf8(exception.what()));
         }
         return false;
@@ -1293,7 +1293,7 @@ bool MLInterface::FloodFillMask(
     {
         if (errorMessage != nullptr)
         {
-            *errorMessage = QStringLiteral("GrabCut did not retain the clicked position");
+            *errorMessage = QStringLiteral("The flood fill did not retain the clicked position");
         }
         return false;
     }

@@ -74,7 +74,7 @@ void MainWindow::SetUpDocks()
     maskFloodFillSeedRadiusSpinBox->setSuffix(QStringLiteral(" px"));
     maskFloodFillSeedRadiusSpinBox->setValue(5);
     maskFloodFillSeedRadiusSpinBox->setToolTip(
-        QStringLiteral("Radius of the definite-foreground area placed around the click"));
+        QStringLiteral("Radius of the area around the click which is treated as definitely part of the structure"));
     maskFloodFillLayout->addRow(QStringLiteral("Seed radius"), maskFloodFillSeedRadiusSpinBox);
 
     maskFloodFillSegmentationInfluenceSpinBox = new KeysafeSpinBox(maskFloodFillWidget);
@@ -91,7 +91,7 @@ void MainWindow::SetUpDocks()
     maskFloodFillGrabCutIterationsSpinBox->setRange(1, 10);
     maskFloodFillGrabCutIterationsSpinBox->setValue(3);
     maskFloodFillGrabCutIterationsSpinBox->setToolTip(
-        QStringLiteral("Number of GrabCut refinement iterations"));
+        QStringLiteral("Number of refinement passes used to settle the fill boundary"));
     maskFloodFillLayout->addRow(
         QStringLiteral("Iterations"),
         maskFloodFillGrabCutIterationsSpinBox);
