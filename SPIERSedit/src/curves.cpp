@@ -1149,6 +1149,7 @@ namespace
 constexpr double MARKER_BASE_SIZE = 17.0; /// On-screen size of an ordinary curve node marker, in pixels before zoom scaling
 constexpr double AUTOMATED_MARKER_BASE_SIZE = 10.0; /// On-screen size of an automated curve node marker, in pixels before zoom scaling
 constexpr double MARKER_PEN_WIDTH = 2.0; /// Pen width used to draw ordinary curve node markers
+constexpr double AUTOMATED_MARKER_PEN_WIDTH = 2.0; /// Pen width used to draw automated curve node markers
 constexpr double MARKER_OUTLINE_EXTRA_WIDTH = 4.0; /// Added to the marker pen width to form the outline
 constexpr double MARKER_OUTLINE_Z = 1.9; /// Outlines sit just below the markers they outline
 constexpr double MARKER_Z = 2.0; /// Z value used by all curve node markers
@@ -1270,7 +1271,7 @@ void DrawCurveMarkers(QGraphicsScene *scene)
         const double calculatedHalf = calculatedSize / 2.0;
         QPen calculatedPen(
             QBrush(QColor(190, 190, 190)),
-            1);
+            AUTOMATED_MARKER_PEN_WIDTH);
         calculatedPen.setCosmetic(true);
 
         for (int i = 0; i < p->Count; i++)
@@ -1280,7 +1281,7 @@ void DrawCurveMarkers(QGraphicsScene *scene)
                 i >= p->Count - 2
                     ? QColor(0, 100, 255)
                     : QColor(0, 255, 0);
-            QPen fixedPen(QBrush(fixedColour), 1.5);
+            QPen fixedPen(QBrush(fixedColour), AUTOMATED_MARKER_PEN_WIDTH);
             fixedPen.setCosmetic(true);
             const double markerSize =
                 fixed ? automatedSize : calculatedSize;
