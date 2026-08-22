@@ -1146,7 +1146,9 @@ QList <QGraphicsItem *> MarkerList;
 namespace
 {
 
-constexpr double MARKER_BASE_SIZE = 17.0; /// On-screen size of a curve node marker, in pixels before zoom scaling
+constexpr double MARKER_BASE_SIZE = 17.0; /// On-screen size of an ordinary curve node marker, in pixels before zoom scaling
+constexpr double AUTOMATED_MARKER_BASE_SIZE = 10.0; /// On-screen size of an automated curve node marker, in pixels before zoom scaling
+constexpr double MARKER_PEN_WIDTH = 2.0; /// Pen width used to draw ordinary curve node markers
 constexpr double MARKER_OUTLINE_EXTRA_WIDTH = 4.0; /// Added to the marker pen width to form the outline
 constexpr double MARKER_OUTLINE_Z = 1.9; /// Outlines sit just below the markers they outline
 constexpr double MARKER_Z = 2.0; /// Z value used by all curve node markers
@@ -1250,9 +1252,9 @@ void DrawCurveMarkers(QGraphicsScene *scene)
     double size2 = size / 2.0;
 
     PointList *p = Curves[SelectedCurve]->SplinePoints[CurrentFile * zsparsity];
-    QPen mypen = QPen(QBrush(QColor(0, 255, 0)), 1);
+    QPen mypen = QPen(QBrush(QColor(0, 255, 0)), MARKER_PEN_WIDTH);
     mypen.setCosmetic(true);
-    QPen redpen = QPen(QBrush(QColor(0, 100, 255)), 1);
+    QPen redpen = QPen(QBrush(QColor(0, 100, 255)), MARKER_PEN_WIDTH);
     redpen.setCosmetic(true);
 
     Curve *selectedCurve = Curves[SelectedCurve];
@@ -1262,7 +1264,9 @@ void DrawCurveMarkers(QGraphicsScene *scene)
         && storedSlice <= selectedCurve->AutomaticEndSlice
         && p->Fixed.size() == p->Count)
     {
-        const double calculatedSize = size * 0.58;
+        const double automatedSize = AUTOMATED_MARKER_BASE_SIZE / (CurrentZoom);
+        const double automatedHalf = automatedSize / 2.0;
+        const double calculatedSize = automatedSize * 0.58;
         const double calculatedHalf = calculatedSize / 2.0;
         QPen calculatedPen(
             QBrush(QColor(190, 190, 190)),
@@ -1279,9 +1283,9 @@ void DrawCurveMarkers(QGraphicsScene *scene)
             QPen fixedPen(QBrush(fixedColour), 1.5);
             fixedPen.setCosmetic(true);
             const double markerSize =
-                fixed ? size : calculatedSize;
+                fixed ? automatedSize : calculatedSize;
             const double markerHalf =
-                fixed ? size2 : calculatedHalf;
+                fixed ? automatedHalf : calculatedHalf;
 
             if (CurveMarkersAsCrosses)
             {
