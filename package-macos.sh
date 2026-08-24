@@ -60,18 +60,21 @@ else
 fi
 
 # Find macdeployqt
+# NOTE: deliberately checked before `which macdeployqt` -- a Qt5 macdeployqt
+# earlier on PATH (e.g. bundled with Anaconda) silently bundles a mismatched
+# Qt5 cocoa platform plugin into this Qt6 app, which aborts on launch.
 echo -e "${YELLOW}Locating macdeployqt...${NC}"
-MACDEPLOYQT=$(which macdeployqt 2>/dev/null || echo "")
+MACDEPLOYQT=""
+for QT_PATH in "/Users/alanspencer/Qt/6.11.0/macos/bin/macdeployqt" \
+               "/usr/local/opt/qt6/libexec/macdeployqt" \
+               "/opt/homebrew/opt/qt6/libexec/macdeployqt"; do
+    if [ -f "$QT_PATH" ]; then
+        MACDEPLOYQT="$QT_PATH"
+        break
+    fi
+done
 if [ -z "$MACDEPLOYQT" ]; then
-    # Try common Qt installation paths
-    for QT_PATH in "/Users/alanspencer/Qt/6.11.0/macos/bin/macdeployqt" \
-                   "/usr/local/opt/qt6/libexec/macdeployqt" \
-                   "/opt/homebrew/opt/qt6/libexec/macdeployqt"; do
-        if [ -f "$QT_PATH" ]; then
-            MACDEPLOYQT="$QT_PATH"
-            break
-        fi
-    done
+    MACDEPLOYQT=$(which macdeployqt 2>/dev/null || echo "")
 fi
 if [ -z "$MACDEPLOYQT" ] || [ ! -f "$MACDEPLOYQT" ]; then
     echo -e "${RED}Error: macdeployqt not found${NC}"

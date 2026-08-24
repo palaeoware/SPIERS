@@ -953,7 +953,7 @@ void MainWindow::RefreshOneItem(QTreeWidgetItem *item, int i)
     rs << SVObjects[i]->Resample << "%";
 
     // This forces models with blank or missing object names to have something
-    if (SVObjects[i]->Name.isEmpty() | SVObjects[i]->Name.isNull())
+    if (SVObjects[i]->Name.isEmpty() || SVObjects[i]->Name.isNull())
     {
         item->setText(0, QString ("Unknown %1").arg(i));
     }
@@ -2393,7 +2393,7 @@ void MainWindow::on_actionDXF_triggered()
             if (!(SVObjects[i]->IsGroup) && (SVObjects[i]->Visible || ui->actionExport_Hidden_Objects->isChecked()))
             {
                 QString status;
-                status = QString::asprintf("Exporting object %d of %d", i + 1, SVObjects.count());
+                status = QString::asprintf("Exporting object %d of %f", i + 1, SVObjects.count());
                 ui->OutputLabelOverall->setText(status);
                 ui->ProgBarOverall->setValue((i * 100) / SVObjects.count());
                 //find name

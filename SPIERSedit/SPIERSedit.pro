@@ -264,16 +264,14 @@ win32 {
 # MacOS common build here
 macx {
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 26.0
+    QMAKE_APPLE_DEVICE_ARCHS = arm64 x86_64
 
-    OPENCV_DIR = /opt/homebrew/opt/opencv
+    OPENCV_DIR = /Users/alanspencer/Documents/Programing/OpenCV
 
     INCLUDEPATH += $$OPENCV_DIR/include/opencv4
     LIBS += -L$$OPENCV_DIR/lib \
-            -lopencv_core \
-            -lopencv_imgproc \
-            -lopencv_imgcodecs \
-            -lopencv_highgui \
-            -lopencv_ml
+            -lopencv_world
+    QMAKE_RPATHDIR += $$OPENCV_DIR/lib
 
     # Mac icon
     ICON = resources/SPIERSeditIcon.icns
