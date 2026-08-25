@@ -40,6 +40,9 @@ SPIERS.pro.user.*
 /docs/_build/*
 /docs/_templates
 /docs/_templates/*
+SPIERSalign/docs_build/
+SPIERSedit/docs_build/
+SPIERSview/docs_build/
 
 # Misc 
 make.bat
@@ -50,4 +53,10 @@ SPIERS.pro.user
 */.DS_Store
 SPIERSview/.DS_Store
 SPIERSview/.DS_Store
-build-SPIERSalign-*/*
+
+build*/
+bin*/
+
+.DS_Store
+CLAUDE.local.md
+.claude/settings.local.json

@@ -2,10 +2,10 @@
  * @file
  * Header: Export DXF
  *
- * All SPIERSedit code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSview code is Copyright 2008-2023 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERS code is Copyright 2008-2026 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,8 +20,8 @@
 
 #include <QDialog>
 
-#include "ui_Copying.h"
-#include "mainwindowimpl.h"
+#include "ui_copying.h"
+#include "mainwindow.h"
 
 /**
  * @brief The ExportDXF class
@@ -30,8 +30,8 @@ class ExportDXF : public QDialog, public Ui::Copying
 {
     Q_OBJECT
 public:
-    ExportDXF( MainWindowImpl *mwp, QWidget *parent = nullptr, Qt::WindowFlags f = nullptr );
-    MainWindowImpl *mw;
+    ExportDXF( MainWindow *mwp, QWidget *parent = nullptr, Qt::WindowFlags f = {} );
+    MainWindow *mw;
 };
 
 #endif

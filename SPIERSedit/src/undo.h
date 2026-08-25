@@ -2,10 +2,10 @@
  * @file
  * Header: Undo
  *
- * All SPIERSedit code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSview code is Copyright 2008-2023 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERS code is Copyright 2008-2026 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 #include <QByteArray>
 #include <QList>
 
-#include "mainwindowimpl.h"
+#include "mainwindow.h"
 #include "globals.h"
 #include "curves.h"
 
@@ -35,13 +35,20 @@ extern int TotalUndoSize;
 class UndoDataObject
 {
 public:
-    UndoDataObject(int type, const int curve_index);
+    UndoDataObject(
+        int type,
+        const int curve_index = -1,
+        int storedCurveSlice = -1);
     int Type; //-3=masks, -2=locks, -1=curves, 0+ = segments (seg number)
     QByteArray StoredData;
     QImage StoredImage;
     PointList CurvePoints;
     int CurveNumber;
     int FileNumber;
+    bool CurveFileNumberIsStoredIndex;
+    bool CurveAutomaticallyInterpolated;
+    int CurveAutomaticStartSlice;
+    int CurveAutomaticEndSlice;
     int undosize;
 
 };
@@ -54,8 +61,8 @@ class UndoEvent
 public:
     UndoEvent(int Dfrom, int Dto);
     ~UndoEvent();
-    void Undo(MainWindowImpl *m);
-    void Redo(MainWindowImpl *m);
+    void Undo(MainWindow *m);
+    void Redo(MainWindow *m);
     QString Type;
     int FileNumber; //if this ISN'T -1 then it's index of file moved to - a move event in fact
     int FileTo; //move To this (for redo)

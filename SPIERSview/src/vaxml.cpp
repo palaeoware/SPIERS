@@ -1,3 +1,19 @@
+/**
+ * @file
+ * Source: Vaxml
+ *
+ * All SPIERS code is released under the GNU General Public License.
+ * See LICENSE.md files in the programme directory.
+ *
+ * All SPIERS code is Copyright 2008-2026 by Russell J. Garwood, Mark D. Sutton,
+ * and Alan R.T. Spencer.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version. This program is distributed in the
+ * hope that it will be useful, but WITHOUT ANY WARRANTY.
+ */
 #include <QXmlStreamReader>
 #include <QString>
 #include <QMessageBox>
@@ -12,11 +28,186 @@
 #include "vaxml.h"
 #include "svobject.h"
 #include "spv.h"
-#include "vtkSTLReader.h"
-#include "vtkPLYReader.h"
 #include "globals.h"
 #include "ui_mainwindow.h"
 #include "../SPIERScommon/src/netmodule.h"
+
+
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// STL mesh loader — supports binary and ASCII formats
+// ---------------------------------------------------------------------------
+
+/**
+ * @brief weldVertices
+ * Converts a triangle soup (duplicated vertices, one set per triangle) into
+ * a proper indexed mesh by merging coincident vertices.
+ *
+ * STL stores each triangle independently with its own 3 vertices, so a
+ * shared edge between two triangles appears as 2 pairs of duplicate vertices.
+ * Welding merges these using exact float equality — safe here because STL
+ * vertices from marching cubes are bit-for-bit identical at shared positions.
+ *
+ * @param soup   Flat array of xyz triples, 3 consecutive vertices per triangle
+ * @param nTris  Number of triangles
+ * @return       Welded MeshData
+ */
+static MeshData weldVertices(const QVector<float> &soup, int nTris)
+{
+    MeshData mesh;
+    if (nTris == 0) return mesh;
+
+    // Hash map: encoded vertex -> new index
+    // Encode 3 floats as a QByteArray key for use in QHash
+    auto encodeVertex = [](float x, float y, float z) -> QByteArray {
+        QByteArray key(12, Qt::Uninitialized);
+        memcpy(key.data(),     &x, 4);
+        memcpy(key.data() + 4, &y, 4);
+        memcpy(key.data() + 8, &z, 4);
+        return key;
+    };
+
+    QHash<QByteArray, int> vertexMap;
+    vertexMap.reserve(nTris * 2); // estimate ~half the soup vertices are unique
+
+    mesh.triangles.resize(nTris * 3);
+
+    for (int t = 0; t < nTris; t++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            int soupIdx = (t * 3 + j) * 3;
+            float x = soup[soupIdx];
+            float y = soup[soupIdx + 1];
+            float z = soup[soupIdx + 2];
+
+            QByteArray key = encodeVertex(x, y, z);
+            auto it = vertexMap.find(key);
+            int vertIdx;
+            if (it == vertexMap.end())
+            {
+                vertIdx = mesh.vertices.size() / 3;
+                mesh.vertices.append(x);
+                mesh.vertices.append(y);
+                mesh.vertices.append(z);
+                vertexMap.insert(key, vertIdx);
+            }
+            else
+            {
+                vertIdx = it.value();
+            }
+            mesh.triangles[t * 3 + j] = vertIdx;
+        }
+    }
+
+    return mesh;
+}
+
+/**
+ * @brief loadSTL
+ * Loads a binary or ASCII STL file into a MeshData.
+ *
+ * Detection: binary STL has a fixed record size so we can verify
+ * filesize == 80 + 4 + triCount * 50. If this matches, treat as binary.
+ * Otherwise parse as ASCII. (Binary files can start with "solid" too,
+ * so we never rely solely on that string for detection.)
+ *
+ * Per-face normals in the STL are ignored — normals are recalculated
+ * from geometry in GetFinalPolyData().
+ *
+ * Returns empty MeshData on any read error.
+ */
+static MeshData loadSTL(const QString &filepath)
+{
+    MeshData mesh;
+    QFile file(filepath);
+    if (!file.open(QIODevice::ReadOnly))
+        return mesh;
+
+    qint64 fileSize = file.size();
+
+    // -----------------------------------------------------------------------
+    // Detect binary vs ASCII
+    // -----------------------------------------------------------------------
+    bool isBinary = false;
+    quint32 binaryTriCount = 0;
+
+    if (fileSize >= 84)
+    {
+        // Read triangle count from bytes 80-83
+        file.seek(80);
+        file.read(reinterpret_cast<char *>(&binaryTriCount), 4);
+        qint64 expectedSize = 80 + 4 + static_cast<qint64>(binaryTriCount) * 50;
+        isBinary = (expectedSize == fileSize);
+    }
+
+    // -----------------------------------------------------------------------
+    // Binary STL
+    // -----------------------------------------------------------------------
+    if (isBinary)
+    {
+        file.seek(84); // skip header (80) + triangle count (4)
+
+        QVector<float> soup;
+        soup.reserve(static_cast<int>(binaryTriCount) * 9);
+
+        for (quint32 t = 0; t < binaryTriCount; t++)
+        {
+            float buf[12]; // normal(3) + v0(3) + v1(3) + v2(3)
+            if (file.read(reinterpret_cast<char *>(buf), 48) != 48) break;
+            file.seek(file.pos() + 2); // skip 2-byte attribute
+
+            // buf[0..2] = normal (ignored)
+            // buf[3..5] = v0, buf[6..8] = v1, buf[9..11] = v2
+            for (int j = 0; j < 3; j++)
+            {
+                soup.append(buf[3 + j*3]);
+                soup.append(buf[3 + j*3 + 1]);
+                soup.append(buf[3 + j*3 + 2]);
+            }
+        }
+
+        mesh = weldVertices(soup, static_cast<int>(binaryTriCount));
+    }
+    // -----------------------------------------------------------------------
+    // ASCII STL
+    // -----------------------------------------------------------------------
+    else
+    {
+        file.seek(0);
+        QTextStream in(&file);
+
+        QVector<float> soup;
+        int triCount = 0;
+        QString token;
+
+        while (!in.atEnd())
+        {
+            in >> token;
+            if (token.compare("vertex", Qt::CaseInsensitive) == 0)
+            {
+                float x, y, z;
+                in >> x >> y >> z;
+                soup.append(x);
+                soup.append(y);
+                soup.append(z);
+
+                // Every 3 vertices completes a triangle
+                if (soup.size() % 9 == 0)
+                    triCount++;
+            }
+        }
+
+        // Discard any incomplete trailing triangle
+        triCount = soup.size() / 9;
+        soup.resize(triCount * 9);
+
+        mesh = weldVertices(soup, triCount);
+    }
+
+    return mesh;
+}
+
 
 /**
  * @brief VAXML::VAXML
@@ -82,7 +273,7 @@ bool VAXML::readSPVF(QString fname)
     //Set up string as a buffer so same code can read it!
     in >> xmlstring; //read the XML
     QByteArray xmlbytearray;
-    xmlbytearray.append(xmlstring);
+    xmlbytearray.append(xmlstring.toUtf8());
     QBuffer buffer(&xmlbytearray);
 
     //setup XML reader
@@ -94,17 +285,17 @@ bool VAXML::readSPVF(QString fname)
 
     if (xml.readNextStartElement())
     {
-        if (xml.name() == "vaxml")
+        if (xml.name() == QLatin1String("vaxml"))
         {
             while (xml.readNextStartElement())
             {
-                if (xml.name() == "header")
+                if (xml.name() == QLatin1String("header"))
                 {
                     while (xml.readNextStartElement())
                     {
 
                         //qDebug()<<xml.name();
-                        if (xml.name() == "version")
+                        if (xml.name() == QLatin1String("version"))
                         {
                             QString text = xml.readElementText();
                             int i = text.toInt(&flag);
@@ -113,7 +304,7 @@ bool VAXML::readSPVF(QString fname)
                             version = i;
                         }
 
-                        if (xml.name() == "title")
+                        if (xml.name() == QLatin1String("title"))
                         {
                             QString text = xml.readElementText();
                             if (text.length() == 0) xmlError("invalid (empty) title");
@@ -123,7 +314,7 @@ bool VAXML::readSPVF(QString fname)
                             infoTitle.append(title);
                         }
 
-                        if (xml.name() == "scale")
+                        if (xml.name() == QLatin1String("scale"))
                         {
                             QString text = xml.readElementText();
                             float i = text.toFloat(&flag);
@@ -131,25 +322,25 @@ bool VAXML::readSPVF(QString fname)
                             scale = i;
                         }
 
-                        if (xml.name() == "comments")
+                        if (xml.name() == QLatin1String("comments"))
                         {
                             QString text = xml.readElementText(QXmlStreamReader::IncludeChildElements);
                             if (text.length() > 0) comments << text; //append comments if not empty
                         }
 
-                        if (xml.name() == "specimen")
+                        if (xml.name() == QLatin1String("specimen"))
                         {
                             QString text = xml.readElementText(QXmlStreamReader::IncludeChildElements);
                             if (text.length() > 0) specimen << text; //append comments if not empty
                         }
 
-                        if (xml.name() == "provenance")
+                        if (xml.name() == QLatin1String("provenance"))
                         {
                             QString text = xml.readElementText(QXmlStreamReader::IncludeChildElements);
                             if (text.length() > 0) provenance << text; //append comments if not empty
                         }
 
-                        if (version == 1 && xml.name() == "classification")
+                        if (version == 1 && xml.name() == QLatin1String("classification"))
                         {
                             //OLD BEHAVIOUR - single block for classification
                             QString text = xml.readElementText(QXmlStreamReader::IncludeChildElements);
@@ -160,18 +351,18 @@ bool VAXML::readSPVF(QString fname)
                             }
                         }
 
-                        if (version > 1 && xml.name() == "classification")
+                        if (version > 1 && xml.name() == QLatin1String("classification"))
                         {
                             QString rank = "";
                             QString nam = "";
                             while (xml.readNextStartElement())
                             {
-                                if (xml.name() == "rank")
+                                if (xml.name() == QLatin1String("rank"))
                                 {
                                     rank = xml.readElementText(QXmlStreamReader::IncludeChildElements);
                                 }
 
-                                if (xml.name() == "name")
+                                if (xml.name() == QLatin1String("name"))
                                 {
                                     nam = xml.readElementText(QXmlStreamReader::IncludeChildElements);
                                 }
@@ -183,12 +374,12 @@ bool VAXML::readSPVF(QString fname)
                             classification_name.append(nam);
                         }
 
-                        if (xml.name() == "author")
+                        if (xml.name() == QLatin1String("author"))
                         {
                             QString text = xml.readElementText(QXmlStreamReader::IncludeChildElements);
                             if (text.length() > 0) author << text; //append comments if not empty
                         }
-                        if (xml.name() == "reference")
+                        if (xml.name() == QLatin1String("reference"))
                         {
                             QString text = xml.readElementText(QXmlStreamReader::IncludeChildElements);
                             if (text.length() > 0) reference << text; //append comments if not empty
@@ -196,11 +387,11 @@ bool VAXML::readSPVF(QString fname)
 
                     };
                 }
-                else if (xml.name() == "groups")
+                else if (xml.name() == QLatin1String("groups"))
                 {
                     while (xml.readNextStartElement())
                     {
-                        if (xml.name() == "group")
+                        if (xml.name() == QLatin1String("group"))
                         {
                             //create the group
                             VAXMLGroup *new_group = new (VAXMLGroup);
@@ -208,7 +399,7 @@ bool VAXML::readSPVF(QString fname)
 
                             while (xml.readNextStartElement())
                             {
-                                if (xml.name() == "name")
+                                if (xml.name() == QLatin1String("name"))
                                 {
                                     QString text = xml.readElementText();
                                     if (text.length() == 0) xmlError("invalid (empty) group name");
@@ -217,7 +408,7 @@ bool VAXML::readSPVF(QString fname)
                                 }
 
 
-                                if (xml.name() == "key")
+                                if (xml.name() == QLatin1String("key"))
                                 {
                                     QString text = xml.readElementText();
                                     if (text.length() > 1) xmlError("invalid key for group");
@@ -226,7 +417,7 @@ bool VAXML::readSPVF(QString fname)
                                     new_group->key = QChar(b.at(0));
                                 }
 
-                                if (xml.name() == "visible")
+                                if (xml.name() == QLatin1String("visible"))
                                 {
                                     QString text = xml.readElementText();
                                     int i = text.toInt(&flag);
@@ -234,14 +425,14 @@ bool VAXML::readSPVF(QString fname)
                                     new_group->visible = i;
                                 }
 
-                                if (xml.name() == "ingroup")
+                                if (xml.name() == QLatin1String("ingroup"))
                                 {
                                     QString text = xml.readElementText();
                                     if (text.length() == 0) xmlError("invalid (empty) group name");
                                     if (new_group->ingroup.length() > 0) return xmlError("multiple ingroup entries for a group");
                                     new_group->ingroup = text;
                                 }
-                                if (xml.name() == "position")
+                                if (xml.name() == QLatin1String("position"))
                                 {
                                     QString text = xml.readElementText();
                                     int t = text.toInt(&flag);
@@ -255,11 +446,11 @@ bool VAXML::readSPVF(QString fname)
 
                     };
                 }
-                else if (xml.name() == "objects")
+                else if (xml.name() == QLatin1String("objects"))
                 {
                     while (xml.readNextStartElement())
                     {
-                        if (xml.name() == "object")
+                        if (xml.name() == QLatin1String("object"))
                         {
                             //create the object
                             VAXMLObject *new_obj = new (VAXMLObject);
@@ -268,11 +459,11 @@ bool VAXML::readSPVF(QString fname)
                             while (xml.readNextStartElement())
                             {
 
-                                if (xml.name() == "material")
+                                if (xml.name() == QLatin1String("material"))
                                 {
                                     while (xml.readNextStartElement())
                                     {
-                                        if (xml.name() == "transparency")
+                                        if (xml.name() == QLatin1String("transparency"))
                                         {
                                             QString text = xml.readElementText();
                                             float i = text.toFloat(&flag);
@@ -281,11 +472,11 @@ bool VAXML::readSPVF(QString fname)
                                             new_obj->transparency = i;
                                         }
 
-                                        if (xml.name() == "colour")
+                                        if (xml.name() == QLatin1String("colour"))
                                         {
                                             while (xml.readNextStartElement())
                                             {
-                                                if (xml.name() == "red")
+                                                if (xml.name() == QLatin1String("red"))
                                                 {
                                                     QString text = xml.readElementText();
                                                     int i = text.toInt(&flag);
@@ -294,7 +485,7 @@ bool VAXML::readSPVF(QString fname)
                                                     new_obj->red = i;
                                                 }
 
-                                                if (xml.name() == "green")
+                                                if (xml.name() == QLatin1String("green"))
                                                 {
                                                     QString text = xml.readElementText();
                                                     int i = text.toInt(&flag);
@@ -303,7 +494,7 @@ bool VAXML::readSPVF(QString fname)
                                                     new_obj->green = i;
                                                 }
 
-                                                if (xml.name() == "blue")
+                                                if (xml.name() == QLatin1String("blue"))
                                                 {
                                                     QString text = xml.readElementText();
                                                     int i = text.toInt(&flag);
@@ -316,7 +507,7 @@ bool VAXML::readSPVF(QString fname)
                                     };
                                 }
 
-                                if (xml.name() == "file")
+                                if (xml.name() == QLatin1String("file"))
                                 {
                                     QString text = xml.readElementText();
                                     if (text.length() == 0) xmlError("invalid (empty) object file");
@@ -324,7 +515,7 @@ bool VAXML::readSPVF(QString fname)
                                     new_obj->file = text;
                                 }
 
-                                if (xml.name() == "url") //will ignore in practice
+                                if (xml.name() == QLatin1String("url")) //will ignore in practice
                                 {
                                     QString text = xml.readElementText();
                                     if (text.length() == 0) xmlError("invalid (empty) object URL");
@@ -332,16 +523,16 @@ bool VAXML::readSPVF(QString fname)
                                     new_obj->url = text;
                                 }
 
-                                if (xml.name() == "name")
+                                if (xml.name() == QLatin1String("name"))
                                 {
                                     QString text = xml.readElementText();
                                     if (text.length() == 0) xmlError("invalid (empty) object name");
-                                    if (new_obj->name != "[Unnamed object]") return xmlError("multiple names for an object");
+                                    if (new_obj->name != QLatin1String("[Unnamed object]")) return xmlError("multiple names for an object");
                                     new_obj->name = text;
 
                                 }
 
-                                if (xml.name() == "key")
+                                if (xml.name() == QLatin1String("key"))
                                 {
                                     QString text = xml.readElementText();
                                     if (text.length() > 1) xmlError("invalid key for object");
@@ -350,7 +541,7 @@ bool VAXML::readSPVF(QString fname)
                                     new_obj->key = QChar(b.at(0));
                                 }
 
-                                if (xml.name() == "visible")
+                                if (xml.name() == QLatin1String("visible"))
                                 {
                                     QString text = xml.readElementText();
                                     int i = text.toInt(&flag);
@@ -358,7 +549,7 @@ bool VAXML::readSPVF(QString fname)
                                     new_obj->visible = i;
                                 }
 
-                                if (xml.name() == "ingroup")
+                                if (xml.name() == QLatin1String("ingroup"))
                                 {
                                     QString text = xml.readElementText();
                                     if (text.length() == 0) xmlError("invalid (empty) group name");
@@ -366,7 +557,7 @@ bool VAXML::readSPVF(QString fname)
                                     new_obj->ingroup = text;
                                 }
 
-                                if (xml.name() == "position")
+                                if (xml.name() == QLatin1String("position"))
                                 {
                                     QString text = xml.readElementText();
                                     int t = text.toInt(&flag);
@@ -374,7 +565,7 @@ bool VAXML::readSPVF(QString fname)
                                     new_obj->position = t;
                                 }
 
-                                if (xml.name() == "matrix")
+                                if (xml.name() == QLatin1String("matrix"))
                                 {
                                     for (int i = 0; i < 16; i++)
                                     {
@@ -400,7 +591,7 @@ bool VAXML::readSPVF(QString fname)
     }
 
     //Now attempt to read all the STLs.
-    QList <vtkPolyData *> localPolyData;
+    QList<MeshData> localPolyData;
 
     mainWindow->setSpecificLabel("Setting up objects");
     qApp->processEvents();
@@ -419,58 +610,42 @@ bool VAXML::readSPVF(QString fname)
 
         QDataStream stl_in(&stlbuffer);
 
-
-        vtkPolyData *polydata;
-        vtkPoints *verts;
-        vtkCellArray *cellarray;
-        vtkIdTypeArray *actualarray;
-
-        verts = vtkPoints::New();
-        actualarray = vtkIdTypeArray::New();
-        cellarray = vtkCellArray::New();
-        polydata = vtkPolyData::New();
-        polydata->Initialize();
-        verts->Initialize();
-        cellarray->Initialize();
-        actualarray->Initialize();
+        MeshData mesh;
 
         int vcount, tcount;
         stl_in >> vcount;
-        verts->SetNumberOfPoints(vcount);
-        for (int i = 0; i < vcount; i++)
+        mesh.vertices.resize(vcount * 3);
+        for (int j = 0; j < vcount; j++)
         {
             double x, y, z;
-
             stl_in >> x;
             stl_in >> y;
             stl_in >> z;
-            verts->InsertPoint(i, x, y, z);
+            mesh.vertices[j * 3]     = static_cast<float>(x);
+            mesh.vertices[j * 3 + 1] = static_cast<float>(y);
+            mesh.vertices[j * 3 + 2] = static_cast<float>(z);
         }
 
         stl_in >> tcount;
-        actualarray->SetNumberOfValues(tcount * 4);
-        int pos = 0;
-        for (int i = 0; i < tcount; i++)
+        mesh.triangles.resize(tcount * 3);
+        for (int j = 0; j < tcount; j++)
         {
             int t1, t2, t3;
             stl_in >> t1;
             stl_in >> t2;
             stl_in >> t3;
-            actualarray->SetValue(pos++, 3);
-            actualarray->SetValue(pos++, t1);
-            actualarray->SetValue(pos++, t2);
-            actualarray->SetValue(pos++, t3);
+            mesh.triangles[j * 3]     = t1;
+            mesh.triangles[j * 3 + 1] = t2;
+            mesh.triangles[j * 3 + 2] = t3;
         }
 
-        cellarray->SetCells(tcount, actualarray);
-        polydata->SetPolys(cellarray);
-        polydata->SetPoints(verts);
-
-        localPolyData.append(polydata);
+        localPolyData.append(mesh);
         f += (100.0 / objects.count());
         mainWindow->setSpecificProgress(static_cast<int>(f / static_cast<double>(2.0)));
         qApp->processEvents();
     }
+
+
     isVaxmlMode = true;
 
     //All OK - create the local objects
@@ -529,7 +704,7 @@ bool VAXML::readSPVF(QString fname)
         svo->Transparency = convTrans(objects[i]->transparency);
         for (int j = 0; j < 16; j++) svo->matrix[j] = objects[i]->matrix[j];
         svo->spv = spv;
-        svo->polydata = localPolyData[i];
+        svo->setMesh(localPolyData[i]);
     }
 
     //surface them. Two loops needed as matrices must be in place before I start buggering with this!
@@ -576,15 +751,15 @@ bool VAXML::readVAXML(QString fname)
 
     if (xml.readNextStartElement())
     {
-        if (xml.name() == "vaxml")
+        if (xml.name() == QLatin1String("vaxml"))
         {
             while (xml.readNextStartElement())
             {
-                if (xml.name() == "header")
+                if (xml.name() == QLatin1String("header"))
                 {
                     while (xml.readNextStartElement())
                     {
-                        if (xml.name() == "version")
+                        if (xml.name() == QLatin1String("version"))
                         {
                             QString text = xml.readElementText();
                             int i = text.toInt(&flag);
@@ -593,7 +768,7 @@ bool VAXML::readVAXML(QString fname)
                             version = i;
                         }
 
-                        if (xml.name() == "title")
+                        if (xml.name() == QLatin1String("title"))
                         {
                             QString text = xml.readElementText();
                             if (text.length() == 0) xmlError("invalid (empty) title");
@@ -603,7 +778,7 @@ bool VAXML::readVAXML(QString fname)
                             infoTitle.append(title);
                         }
 
-                        if (xml.name() == "scale")
+                        if (xml.name() == QLatin1String("scale"))
                         {
                             QString text = xml.readElementText();
                             float i = text.toFloat(&flag);
@@ -611,25 +786,25 @@ bool VAXML::readVAXML(QString fname)
                             scale = i;
                         }
 
-                        if (xml.name() == "comments")
+                        if (xml.name() == QLatin1String("comments"))
                         {
                             QString text = xml.readElementText(QXmlStreamReader::IncludeChildElements);
                             if (text.length() > 0) comments << text; //append comments if not empty
                         }
 
-                        if (xml.name() == "specimen")
+                        if (xml.name() == QLatin1String("specimen"))
                         {
                             QString text = xml.readElementText(QXmlStreamReader::IncludeChildElements);
                             if (text.length() > 0) specimen << text; //append comments if not empty
                         }
 
-                        if (xml.name() == "provenance")
+                        if (xml.name() == QLatin1String("provenance"))
                         {
                             QString text = xml.readElementText(QXmlStreamReader::IncludeChildElements);
                             if (text.length() > 0) provenance << text; //append comments if not empty
                         }
 
-                        if (version == 1 && xml.name() == "classification")
+                        if (version == 1 && xml.name() == QLatin1String("classification"))
                         {
                             //OLD BEHAVIOUR - single block for classification
                             QString text = xml.readElementText(QXmlStreamReader::IncludeChildElements);
@@ -640,18 +815,18 @@ bool VAXML::readVAXML(QString fname)
                             }
                         }
 
-                        if (version > 1 && xml.name() == "classification")
+                        if (version > 1 && xml.name() == QLatin1String("classification"))
                         {
                             QString rank = "";
                             QString nam = "";
                             while (xml.readNextStartElement())
                             {
-                                if (xml.name() == "rank")
+                                if (xml.name() == QLatin1String("rank"))
                                 {
                                     rank = xml.readElementText(QXmlStreamReader::IncludeChildElements);
                                 }
 
-                                if (xml.name() == "name")
+                                if (xml.name() == QLatin1String("name"))
                                 {
                                     nam = xml.readElementText(QXmlStreamReader::IncludeChildElements);
                                 }
@@ -663,12 +838,12 @@ bool VAXML::readVAXML(QString fname)
                             classification_name.append(nam);
                         }
 
-                        if (xml.name() == "author")
+                        if (xml.name() == QLatin1String("author"))
                         {
                             QString text = xml.readElementText(QXmlStreamReader::IncludeChildElements);
                             if (text.length() > 0) author << text; //append comments if not empty
                         }
-                        if (xml.name() == "reference")
+                        if (xml.name() == QLatin1String("reference"))
                         {
                             QString text = xml.readElementText(QXmlStreamReader::IncludeChildElements);
                             if (text.length() > 0) reference << text; //append comments if not empty
@@ -676,11 +851,11 @@ bool VAXML::readVAXML(QString fname)
 
                     };
                 }
-                else if (xml.name() == "groups")
+                else if (xml.name() == QLatin1String("groups"))
                 {
                     while (xml.readNextStartElement())
                     {
-                        if (xml.name() == "group")
+                        if (xml.name() == QLatin1String("group"))
                         {
                             //create the group
                             VAXMLGroup *new_group = new (VAXMLGroup);
@@ -688,7 +863,7 @@ bool VAXML::readVAXML(QString fname)
 
                             while (xml.readNextStartElement())
                             {
-                                if (xml.name() == "name")
+                                if (xml.name() == QLatin1String("name"))
                                 {
                                     QString text = xml.readElementText();
                                     if (text.length() == 0)
@@ -703,7 +878,7 @@ bool VAXML::readVAXML(QString fname)
                                 }
 
 
-                                if (xml.name() == "key")
+                                if (xml.name() == QLatin1String("key"))
                                 {
                                     QString text = xml.readElementText();
                                     if (text.length() > 1)
@@ -718,7 +893,7 @@ bool VAXML::readVAXML(QString fname)
                                     new_group->key = QChar(b.at(0));
                                 }
 
-                                if (xml.name() == "visible")
+                                if (xml.name() == QLatin1String("visible"))
                                 {
                                     QString text = xml.readElementText();
                                     int i = text.toInt(&flag);
@@ -726,14 +901,14 @@ bool VAXML::readVAXML(QString fname)
                                     new_group->visible = i;
                                 }
 
-                                if (xml.name() == "ingroup")
+                                if (xml.name() == QLatin1String("ingroup"))
                                 {
                                     QString text = xml.readElementText();
                                     if (text.length() == 0) xmlError("invalid (empty) group name");
                                     if (new_group->ingroup.length() > 0) return xmlError("multiple ingroup entries for a group");
                                     new_group->ingroup = text;
                                 }
-                                if (xml.name() == "position")
+                                if (xml.name() == QLatin1String("position"))
                                 {
                                     QString text = xml.readElementText();
                                     int t = text.toInt(&flag);
@@ -747,11 +922,11 @@ bool VAXML::readVAXML(QString fname)
 
                     };
                 }
-                else if (xml.name() == "objects")
+                else if (xml.name() == QLatin1String("objects"))
                 {
                     while (xml.readNextStartElement())
                     {
-                        if (xml.name() == "object")
+                        if (xml.name() == QLatin1String("object"))
                         {
                             //create the object
                             VAXMLObject *new_obj = new (VAXMLObject);
@@ -760,11 +935,11 @@ bool VAXML::readVAXML(QString fname)
                             while (xml.readNextStartElement())
                             {
 
-                                if (xml.name() == "material")
+                                if (xml.name() == QLatin1String("material"))
                                 {
                                     while (xml.readNextStartElement())
                                     {
-                                        if (xml.name() == "transparency")
+                                        if (xml.name() == QLatin1String("transparency"))
                                         {
                                             QString text = xml.readElementText();
                                             float i = text.toFloat(&flag);
@@ -773,11 +948,11 @@ bool VAXML::readVAXML(QString fname)
                                             new_obj->transparency = i;
                                         }
 
-                                        if (xml.name() == "colour")
+                                        if (xml.name() == QLatin1String("colour"))
                                         {
                                             while (xml.readNextStartElement())
                                             {
-                                                if (xml.name() == "red")
+                                                if (xml.name() == QLatin1String("red"))
                                                 {
                                                     QString text = xml.readElementText();
                                                     int i = text.toInt(&flag);
@@ -786,7 +961,7 @@ bool VAXML::readVAXML(QString fname)
                                                     new_obj->red = i;
                                                 }
 
-                                                if (xml.name() == "green")
+                                                if (xml.name() == QLatin1String("green"))
                                                 {
                                                     QString text = xml.readElementText();
                                                     int i = text.toInt(&flag);
@@ -795,7 +970,7 @@ bool VAXML::readVAXML(QString fname)
                                                     new_obj->green = i;
                                                 }
 
-                                                if (xml.name() == "blue")
+                                                if (xml.name() == QLatin1String("blue"))
                                                 {
                                                     QString text = xml.readElementText();
                                                     int i = text.toInt(&flag);
@@ -808,7 +983,7 @@ bool VAXML::readVAXML(QString fname)
                                     };
                                 }
 
-                                if (xml.name() == "file")
+                                if (xml.name() == QLatin1String("file"))
                                 {
                                     QString text = xml.readElementText();
                                     if (text.length() == 0) xmlError("invalid (empty) object file");
@@ -816,7 +991,7 @@ bool VAXML::readVAXML(QString fname)
                                     new_obj->file = text;
                                 }
 
-                                if (xml.name() == "url")
+                                if (xml.name() == QLatin1String("url"))
                                 {
                                     QString text = xml.readElementText();
                                     if (text.length() == 0) xmlError("invalid (empty) object URL");
@@ -824,16 +999,16 @@ bool VAXML::readVAXML(QString fname)
                                     new_obj->url = text;
                                 }
 
-                                if (xml.name() == "name")
+                                if (xml.name() == QLatin1String("name"))
                                 {
                                     QString text = xml.readElementText();
                                     if (text.length() == 0) xmlError("invalid (empty) object name");
-                                    if (new_obj->name != "[Unnamed object]") return xmlError("multiple names for an object");
+                                    if (new_obj->name != QLatin1String("[Unnamed object]")) return xmlError("multiple names for an object");
                                     new_obj->name = text;
 
                                 }
 
-                                if (xml.name() == "key")
+                                if (xml.name() == QLatin1String("key"))
                                 {
                                     QString text = xml.readElementText();
                                     if (text.length() > 1) xmlError("invalid key for object");
@@ -842,7 +1017,7 @@ bool VAXML::readVAXML(QString fname)
                                     new_obj->key = QChar(b.at(0));
                                 }
 
-                                if (xml.name() == "visible")
+                                if (xml.name() == QLatin1String("visible"))
                                 {
                                     QString text = xml.readElementText();
                                     int i = text.toInt(&flag);
@@ -850,7 +1025,7 @@ bool VAXML::readVAXML(QString fname)
                                     new_obj->visible = i;
                                 }
 
-                                if (xml.name() == "ingroup")
+                                if (xml.name() == QLatin1String("ingroup"))
                                 {
                                     QString text = xml.readElementText();
                                     if (text.length() == 0) xmlError("invalid (empty) group name");
@@ -858,7 +1033,7 @@ bool VAXML::readVAXML(QString fname)
                                     new_obj->ingroup = text;
                                 }
 
-                                if (xml.name() == "position")
+                                if (xml.name() == QLatin1String("position"))
                                 {
                                     QString text = xml.readElementText();
                                     int t = text.toInt(&flag);
@@ -866,7 +1041,7 @@ bool VAXML::readVAXML(QString fname)
                                     new_obj->position = t;
                                 }
 
-                                if (xml.name() == "matrix")
+                                if (xml.name() == QLatin1String("matrix"))
                                 {
                                     for (int i = 0; i < 16; i++)
                                     {
@@ -938,7 +1113,8 @@ bool VAXML::readVAXML(QString fname)
     //Got and checked VAXML stuff - now try and load the STL/PLYs and set everything up!
 
     //Now attempt to read all the STL/PLYs.
-    QList <vtkPolyData *> localPolyData;
+    //Now attempt to read all the STL/PLYs.
+    QList<MeshData> localPolyData;
 
     mainWindow->ui->OutputLabelOverall->setText("Importing objects");
     qApp->processEvents();
@@ -946,7 +1122,6 @@ bool VAXML::readVAXML(QString fname)
     double f = 0.0;
     foreach (VAXMLObject *o, objects)
     {
-
         QFile file(fpath + "/" + o->file);
         if (!(file.exists()))
         {
@@ -962,7 +1137,6 @@ bool VAXML::readVAXML(QString fname)
                 QFileInfo fi(fpath + "/" + o->file);
                 d.mkpath(fi.absolutePath());
 
-
                 NetModule netModule;
                 netModule.doDownload(o->url, fpath + "/" + o->file, mainWindow->ui->ProgBarSpecific);
                 do
@@ -972,7 +1146,6 @@ bool VAXML::readVAXML(QString fname)
                 while (netModule.downloadDone == false && netModule.downloadError == false);
                 if (netModule.downloadError) return xmlError("Problem downloading referenced file '" + file.fileName() + "' from URL " + o->url);
             }
-
         }
 
         // File is available now
@@ -982,13 +1155,11 @@ bool VAXML::readVAXML(QString fname)
         //Is this stl or ply?
         if (QString(o->file.right(4)).toUpper() == QString(".stl").toUpper())
         {
-            vtkSTLReader *reader = vtkSTLReader::New();
-            reader->SetFileName(QString(fpath + "/" + o->file).toLatin1());
-            reader->Update();
-            vtkPolyData *polydata;
-            polydata = vtkPolyData::New();
-            polydata = reader->GetOutput();
-            localPolyData.append(polydata);
+            qDebug() << "Loading STL:" << (fpath + "/" + o->file);
+            MeshData mesh = loadSTL(fpath + "/" + o->file);
+            qDebug() << "Loaded" << mesh.triangleCount() << "triangles";
+            //MeshData mesh = loadSTL(fpath + "/" + o->file);
+            localPolyData.append(mesh);
             f += (100.0 / objects.count());
             mainWindow->ui->ProgBarOverall->setValue(static_cast<int>(f / static_cast<double>(2.0)));
             qApp->processEvents();
@@ -996,7 +1167,7 @@ bool VAXML::readVAXML(QString fname)
             //now add some bytes from the STL to the hash - pick 50 bytes scattered through file.
             QFile stlfile((fpath + "/" + o->file).toLatin1());
             QFileInfo stlfi((fpath + "/" + o->file).toLatin1());
-            stlfile.open(QIODevice::ReadOnly);
+            if (!stlfile.open(QIODevice::ReadOnly)) continue;
             int inc = static_cast<int>(stlfi.size()) / 50;
             for (int i = 1; i < 50; i++)
             {
@@ -1005,34 +1176,15 @@ bool VAXML::readVAXML(QString fname)
                 stlfile.read(&buffer, 1);
                 shasharray.append(buffer);
             }
-
         }
         else if (QString(o->file.right(4)).toUpper() == QString(".ply").toUpper())
         {
-            vtkPLYReader *reader = vtkPLYReader::New();
-            reader->SetFileName(QString(fpath + "/" + o->file).toLatin1());
-            reader->Update();
-            vtkPolyData *polydata;
-            polydata = vtkPolyData::New();
-            polydata = reader->GetOutput();
-            localPolyData.append(polydata);
+            // PLY format is no longer supported — log error and append empty mesh
+            xmlError("File '" + o->file + "' is PLY format, which is no longer supported. Please convert to STL.");
+            localPolyData.append(MeshData());
             f += (100.0 / objects.count());
             mainWindow->ui->ProgBarOverall->setValue(static_cast<int>(f / static_cast<double>(2.0)));
             qApp->processEvents();
-
-            //now add some bytes from the PLY to the hash - pick 50 bytes scattered through file.
-            QFile plyfile((fpath + "/" + o->file).toLatin1());
-            QFileInfo plyfi((fpath + "/" + o->file).toLatin1());
-            plyfile.open(QIODevice::ReadOnly);
-            int inc = static_cast<int>(plyfi.size()) / 50;
-            for (int i = 1; i < 50; i++)
-            {
-                plyfile.seek(i * inc);
-                char buffer;
-                plyfile.read(&buffer, 1);
-                shasharray.append(buffer);
-            }
-
         }
         else xmlError("File '" + file.fileName() + "' is not STL or PLY format");
     }
@@ -1104,7 +1256,8 @@ bool VAXML::readVAXML(QString fname)
         svo->Transparency = convTrans(objects[i]->transparency);
         for (int j = 0; j < 16; j++) svo->matrix[j] = objects[i]->matrix[j];
         svo->spv = spv;
-        svo->polydata = localPolyData[i];
+
+        svo->setMesh(localPolyData[i]);
     }
 
     //surface them. Two loops needed as matrices must be in place before I start buggering with this!
@@ -1173,13 +1326,13 @@ bool VAXML::writeVAXML(QString fname, bool mode) //mode true means this is part 
                 if (o->Name == o2->Name && o2 != o && o2->IsGroup)
                 {
                     if (mode == true) QMessageBox::critical(nullptr,
-                                                                "SPV save",
-                                                                "Finalised mode requires that all groups have unique names: please fix your group names before saving",
-                                                                QMessageBox::Ok);
+                                              "SPV save",
+                                              "Finalised mode requires that all groups have unique names: please fix your group names before saving",
+                                              QMessageBox::Ok);
                     else QMessageBox::critical(nullptr,
-                                                   "VAXML writer",
-                                                   "VAXML requires that all groups have unique names: please fix your group names before exporting",
-                                                   QMessageBox::Ok);
+                                              "VAXML writer",
+                                              "VAXML requires that all groups have unique names: please fix your group names before exporting",
+                                              QMessageBox::Ok);
                     return false;
                 }
             }
@@ -1192,13 +1345,13 @@ bool VAXML::writeVAXML(QString fname, bool mode) //mode true means this is part 
         if (o->Name.length() < 1)
         {
             if (mode == true) QMessageBox::critical(nullptr,
-                                                        "SPV save",
-                                                        "Finalised mode requires that all objects and groups have names: please name all items before saving",
-                                                        QMessageBox::Ok);
+                                      "SPV save",
+                                      "Finalised mode requires that all objects and groups have names: please name all items before saving",
+                                      QMessageBox::Ok);
             else QMessageBox::critical(nullptr,
-                                           "VAXML writer",
-                                           "VAXML requires that all objects and groups have names: please name all items before exporting",
-                                           QMessageBox::Ok);
+                                      "VAXML writer",
+                                      "VAXML requires that all objects and groups have names: please name all items before exporting",
+                                      QMessageBox::Ok);
             return false;
         }
     }

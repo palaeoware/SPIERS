@@ -2,10 +2,10 @@
  * @file
  * Header: SV (SPEIRSview) Object
  *
- * All SPIERSview code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSview code is Copyright 2008-2023 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERS code is Copyright 2008-2026 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -25,31 +25,31 @@
 #include <QVector>
 #include <QOpenGLBuffer>
 #include <QOpenGLVertexArrayObject>
-#include <QGLShaderProgram>
+#include <QOpenGLShaderProgram>
 #include <QObject>
 #include <QFile>
 #include <QTreeWidgetItem>
 
 #include "isosurface.h"
-#include "dataconnectivityfilter.h"
 #include "spv.h"
 #include "compressedslice.h"
+#include "meshfilters.h"
 
-#include "vtkPolyData.h"
-#include "vtkPoints.h"
-#include "vtkPolyDataNormals.h"
-#include "vtkSmoothPolyDataFilter.h"
-#include "vtkWindowedSincPolyDataFilter.h"
-#include "vtkDecimatePro.h"
-#include "vtkIdTypeArray.h"
-#include "vtkPointData.h"
-#include "vtkTriangle.h"
-#include "vtkDataArray.h"
-#include "vtkQuadricDecimation.h"
-#include "vtkDecimatePro.h"
-#include "vtkCallbackCommand.h"
-#include "vtkCellArray.h"
-#include "vtkIdTypeArray.h"
+/**
+ * @brief Plain C++ replacement for vtkPolyData.
+ * Holds triangle mesh geometry as flat arrays of vertices and triangle indices,
+ * plus per-vertex normals computed without VTK.
+ */
+struct MeshData
+{
+    QVector<float> vertices;   // x,y,z per vertex (3 floats each)
+    QVector<float> normals;    // nx,ny,nz per vertex (3 floats each)
+    QVector<int>   triangles;  // 3 vertex indices per triangle
+
+    void clear() { vertices.clear(); normals.clear(); triangles.clear(); }
+    int vertexCount()   const { return vertices.size()  / 3; }
+    int triangleCount() const { return triangles.size() / 3; }
+};
 
 /**
  * @brief The SVObject class
@@ -73,6 +73,7 @@ public:
     void MakeDlists();
     int AppendCompressedFaces(QString mainfile, QString internalfile, QDataStream *out);
     void MakeVBOs();
+    void setMesh(const MeshData &mesh); // used by vaxml.cpp to inject imported geometry
     void ResetMatrix();
 
     int Index;
@@ -96,14 +97,12 @@ public:
     int Triangles;
     int voxels;
     int Shininess;  //codes 0-3
-    bool colour; //does it have colour data?
     QTreeWidgetItem *widgetitem;
     bool Expanded;
     QList <int> displaylists;
 
     //Newer VBO stuff
     QList <QOpenGLBuffer *> VertexBuffers;
-    QList <QOpenGLBuffer *> ColourBuffers;
     QList <int> VBOVertexCounts;
 
     double objectxmin, objectymin, objectzmin, objectxmax, objectymax, objectzmax;
@@ -123,34 +122,28 @@ public:
     bool killme;
     double scale;
     bool buggedData;
-    vtkPolyData *polydata;
+    bool isSurfacing;
+
+    // Mesh data - made public for export operations
+    MeshData localMesh;   // input mesh (built from Isosurfaces)
+    MeshData finalMesh;   // output mesh (after processing - currently a direct copy)
+
+    /**
+     * Prepare final polygon data for rendering/export.
+     * Applies filters (decimation, smoothing, island removal) and computes normals.
+     */
+    void GetFinalPolyData();
 
 private:
-    void DeleteVTKObjects();
-    void GetFinalPolyData();
     void MakePolyVerts(int slice, int VertexBase);
     QString DoMatrixDXFoutput(int v, float x, float y, float z);
-    int NextVertex;
-    vtkPolyData *localPolyData; //Currently one object for whole thing
-    vtkPoints *verts;
-    vtkCellArray *cellarray;
-    vtkIdTypeArray *actualarray;
 
     int object_ktr;
-
-    vtkPolyDataNormals *normals;
-    vtkWindowedSincPolyDataFilter *smoother;
-    vtkDecimatePro *decimator;
-    vtkQuadricDecimation *qdecimator;
-    vtkCallbackCommand *cb;
-    vtkCallbackCommand *cberror;
-    vtkPolyData *pdislands;
-
-    DataConnectivityFilter *islandfinder;
 
     QVector <float> normalx;
     QVector <float> normaly;
     QVector <float> normalz;
+
 };
 
 extern QList <SVObject *> SVObjects;

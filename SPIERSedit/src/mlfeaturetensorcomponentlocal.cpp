@@ -1,0 +1,294 @@
+/**
+ * @file
+ * Source: Mlfeaturetensorcomponentlocal
+ *
+ * All SPIERS code is released under the GNU General Public License.
+ * See LICENSE.md files in the programme directory.
+ *
+ * All SPIERS code is Copyright 2008-2026 by Russell J. Garwood, Mark D. Sutton,
+ * and Alan R.T. Spencer.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version. This program is distributed in the
+ * hope that it will be useful, but WITHOUT ANY WARRANTY.
+ */
+#include "mlfeaturetensorcomponentlocal.h"
+
+#include "globals.h"
+#include "mlfeaturegradientcomponent.h"
+#include "mlupdateblockingdialog.h"
+
+#include <cmath>
+
+MLFeatureTensorComponentLocal::MLFeatureTensorComponentLocal(Channel channel,  int arg1, TensorComponent component)
+    : MLFeature(FeatureType::Tensor_component_local, channel, false, arg1, static_cast<int>(component))
+{
+}
+
+MLFeatureTensorComponentLocal::MLFeatureTensorComponentLocal(Channel channel, int arg1, int arg2)
+    : MLFeature(FeatureType::Tensor_component_local, channel, false, arg1, arg2)
+{
+}
+
+MLFeatureTensorComponentLocal::TensorComponent MLFeatureTensorComponentLocal::GetComponent() const
+{
+    return static_cast<TensorComponent>(_arg2);
+}
+
+QString MLFeatureTensorComponentLocal::GetComponentString() const
+{
+    switch (GetComponent())
+    {
+    case TensorComponent::XX:
+        return "xx";
+    case TensorComponent::YY:
+        return "yy";
+    case TensorComponent::ZZ:
+        return "zz";
+    case TensorComponent::XY:
+        return "xy";
+    case TensorComponent::XZ:
+        return "xz";
+    case TensorComponent::YZ:
+        return "yz";
+    default:
+        return "?";
+    }
+}
+
+int MLFeatureTensorComponentLocal::GetIntegrationRadiusLog2() const
+{
+    return _arg1;   // local flavour: rho = sigma
+}
+
+void MLFeatureTensorComponentLocal::CalculateFeature(cv::Mat &mat, int sliceID, MLCachedAccess *data)
+{
+    Q_ASSERT(mat.type() == CV_32F);
+    Q_ASSERT(mat.cols == fwidth);
+    Q_ASSERT(mat.rows == fheight);
+    Q_ASSERT(sliceID >= 0 && sliceID < FileCount);
+
+    MLUpdateBlockingDialog::updateDetailText(
+        QString("Calculating %1")
+            .arg(GetPrettyFullName())
+        );
+
+    using GD = MLFeatureGradientComponent::GradientDirection;
+
+    switch (GetComponent())
+    {
+    case TensorComponent::XX:
+    {
+        int gxIndex = data->GetIndexForFeature(MLFeature::FeatureType::Gradient_component, _channel, false, _arg1,
+                                               static_cast<int>(GD::X));
+
+        cv::Mat prod(fheight, fwidth, CV_32F);
+        CalcFeatureProductOfFeatures(prod, sliceID, data, gxIndex, gxIndex);
+        CalcLocalMean2D(mat, prod, GetIntegrationRadiusLog2());
+        break;
+    }
+
+    case TensorComponent::YY:
+    {
+        int gyIndex = data->GetIndexForFeature(MLFeature::FeatureType::Gradient_component, _channel, false, _arg1,
+                                               static_cast<int>(GD::Y));
+
+        cv::Mat prod(fheight, fwidth, CV_32F);
+        CalcFeatureProductOfFeatures(prod, sliceID, data, gyIndex, gyIndex);
+        CalcLocalMean2D(mat, prod, GetIntegrationRadiusLog2());
+        break;
+    }
+
+    case TensorComponent::ZZ:
+    {
+        int gzIndex = data->GetIndexForFeature(MLFeature::FeatureType::Gradient_component, _channel, false, _arg1,
+                                               static_cast<int>(GD::Z));
+
+        cv::Mat prod(fheight, fwidth, CV_32F);
+        CalcFeatureProductOfFeatures(prod, sliceID, data, gzIndex, gzIndex);
+        CalcLocalMean2D(mat, prod, GetIntegrationRadiusLog2());
+        break;
+    }
+
+    case TensorComponent::XY:
+    {
+        int gxIndex = data->GetIndexForFeature(MLFeature::FeatureType::Gradient_component, _channel, false, _arg1,
+                                               static_cast<int>(GD::X));
+        int gyIndex = data->GetIndexForFeature(MLFeature::FeatureType::Gradient_component, _channel, false, _arg1,
+                                               static_cast<int>(GD::Y));
+
+        cv::Mat prod(fheight, fwidth, CV_32F);
+        CalcFeatureProductOfFeatures(prod, sliceID, data, gxIndex, gyIndex);
+        CalcLocalMean2D(mat, prod, GetIntegrationRadiusLog2());
+        break;
+    }
+
+    case TensorComponent::XZ:
+    {
+        int gxIndex = data->GetIndexForFeature(MLFeature::FeatureType::Gradient_component, _channel, false, _arg1,
+                                               static_cast<int>(GD::X));
+        int gzIndex = data->GetIndexForFeature(MLFeature::FeatureType::Gradient_component, _channel, false, _arg1,
+                                               static_cast<int>(GD::Z));
+
+        cv::Mat prod(fheight, fwidth, CV_32F);
+        CalcFeatureProductOfFeatures(prod, sliceID, data, gxIndex, gzIndex);
+        CalcLocalMean2D(mat, prod, GetIntegrationRadiusLog2());
+        break;
+    }
+
+    case TensorComponent::YZ:
+    {
+        int gyIndex = data->GetIndexForFeature(MLFeature::FeatureType::Gradient_component, _channel, false, _arg1,
+                                               static_cast<int>(GD::Y));
+        int gzIndex = data->GetIndexForFeature(MLFeature::FeatureType::Gradient_component, _channel, false, _arg1,
+                                               static_cast<int>(GD::Z));
+
+        cv::Mat prod(fheight, fwidth, CV_32F);
+        CalcFeatureProductOfFeatures(prod, sliceID, data, gyIndex, gzIndex);
+        CalcLocalMean2D(mat, prod, GetIntegrationRadiusLog2());
+        break;
+    }
+
+    default:
+        Q_ASSERT(false);
+        break;
+    }
+}
+
+bool MLFeatureTensorComponentLocal::CalculateFeatureROI(
+    cv::Mat &mat,
+    int sliceID,
+    MLCachedAccess *data,
+    const MLROISlice &roi)
+{
+    CalcTensorComponentROI(
+        mat,
+        sliceID,
+        data,
+        static_cast<int>(GetComponent()),
+        GetIntegrationRadiusLog2(),
+        roi);
+    return false;
+}
+
+QList<MLFeature *> MLFeatureTensorComponentLocal::GetDependencies()
+{
+    QList<MLFeature *> deps;
+
+    using GD = MLFeatureGradientComponent::GradientDirection;
+
+    switch (GetComponent())
+    {
+    case TensorComponent::XX:
+        deps.append(new MLFeatureGradientComponent(_channel, _arg1, GD::X));
+        break;
+
+    case TensorComponent::YY:
+        deps.append(new MLFeatureGradientComponent(_channel, _arg1, GD::Y));
+        break;
+
+    case TensorComponent::ZZ:
+        deps.append(new MLFeatureGradientComponent(_channel, _arg1, GD::Z));
+        break;
+
+    case TensorComponent::XY:
+        deps.append(new MLFeatureGradientComponent(_channel, _arg1, GD::X));
+        deps.append(new MLFeatureGradientComponent(_channel, _arg1, GD::Y));
+        break;
+
+    case TensorComponent::XZ:
+        deps.append(new MLFeatureGradientComponent(_channel, _arg1, GD::X));
+        deps.append(new MLFeatureGradientComponent(_channel, _arg1, GD::Z));
+        break;
+
+    case TensorComponent::YZ:
+        deps.append(new MLFeatureGradientComponent(_channel, _arg1, GD::Y));
+        deps.append(new MLFeatureGradientComponent(_channel, _arg1, GD::Z));
+        break;
+
+    default:
+        Q_ASSERT(false);
+        break;
+    }
+
+    return deps;
+}
+
+QString MLFeatureTensorComponentLocal::GetPrettyName()
+{
+    return "tensor local";
+}
+
+QString MLFeatureTensorComponentLocal::GetPrettyArgs()
+{
+    return QString("sigma=%1, %2")
+        .arg(std::pow(2.0f, static_cast<float>(_arg1)))
+        .arg(GetComponentString());
+}
+
+QString MLFeatureTensorComponentLocal::GetPretty3D()
+{
+    return "";
+}
+
+QString MLFeatureTensorComponentLocal::GetTypeCodeForFile()
+{
+    return "tcl";
+}
+
+QString MLFeatureTensorComponentLocal::GetArgsForFile()
+{
+    return QString("@%1@%2").arg(_arg1).arg(_arg2);
+}
+
+QString MLFeatureTensorComponentLocal::Get3DForFile()
+{
+    return "";
+}
+
+int MLFeatureTensorComponentLocal::GetDependencyDepth()
+{
+    return 4;
+}
+
+int MLFeatureTensorComponentLocal::GetMinMaxForArgs(int arg, bool max)
+{
+    if (arg == 1)
+        return max ? 6 : 0;
+
+    if (arg == 2)
+        return max ? 5 : 0;
+
+    return 0;
+}
+
+QString MLFeatureTensorComponentLocal::GetArg1SetupString(int v)
+{
+    return QString("sigma=%1")
+        .arg(std::pow(2.0f, static_cast<float>(v)));
+}
+
+QString MLFeatureTensorComponentLocal::GetArg2SetupString(int v)
+{
+    TensorComponent component = static_cast<TensorComponent>(v);
+
+    switch (component)
+    {
+    case TensorComponent::XX:
+        return "xx";
+    case TensorComponent::YY:
+        return "yy";
+    case TensorComponent::ZZ:
+        return "zz";
+    case TensorComponent::XY:
+        return "xy";
+    case TensorComponent::XZ:
+        return "xz";
+    case TensorComponent::YZ:
+        return "yz";
+    default:
+        return "";
+    }
+}

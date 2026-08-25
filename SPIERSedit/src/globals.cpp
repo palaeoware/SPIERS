@@ -2,10 +2,10 @@
  * @file
  * Source: Globals
  *
- * All SPIERSversion code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSversion code is Copyright 2008-2023 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERS code is Copyright 2008-2026 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,129 +16,270 @@
  */
 
 #include "globals.h"
-#include <stdio.h>
+
 #include <math.h>
+#include <QRandomGenerator>
 #include <QSettings>
+
 #include "myrangescene.h"
 
-bool ThreeDmode;
-int BrushY, BrushZ;
-double yaw, pitch, roll;
-bool ShowSlicePosition;
-QList<double> Stretches;
-QList<double> FullStretches;
-QVector<int> SegmentMap; //used for info control
+// ============================================================================
+// GLOBAL POINTERS & CORE SERVICES
+// ============================================================================
+
+MainWindow *mainwin;
+QTabWidget *tabwidget;
+MLInterface *mlInterface;
+QSurfaceFormat surfaceFormat;
+
+// ============================================================================
+// SYNCHRONIZATION & STATE
+// ============================================================================
+
+QRecursiveMutex mutex;
+bool Active = false;
+bool clearing = false;
+bool pausetimers = false;
+bool temptestflag = false;
 bool bodgeflag = false;
-int zsparsity;
-bool pausetimers;
-QString Notes;
+int Counter = 0;
 
-QList<bool> FilesDirty; //for re-rendering.
-
-MainWindowImpl *mainwin;
-int CacheCompressionLevel = 1; //this is default
-int FileCompressionLevel = 9; //this is default
-bool MasksMoveBack, MasksMoveForward;
-bool RenderCache;
-bool NoUpdateSelectionFlag;
-bool CurveShapeLocked;
-bool GreyImage;
-QMutex mutex(QMutex::Recursive);
-QStringList Files;
-QStringList FullFiles;
-int FileCount, CurrentFile;
-bool Active;
-bool clearing;
-int cwidth, cheight; //width/height of colour (source) files
-int cwidth4;
-int fwidth, fheight; //width/heigh of mono images (might not be col/scale exactly)
-int fwidth4;
-double CurrentZoom;
-int ColMonoScale; //This is the resample factor - i.e. the binning - name is historical!
-int Trans, CMin, CMax; //settings for colour (source) files
-bool HiddenMasksLockedForGeneration, SegmentBrushAppliesMasks;
-bool SegmentsLocked, CurveMarkersAsCrosses;
-QString FullSettingsFileName;
-
-int SegmentCount;
-QList <QImage *> GA; //this is the grey arrays
-QImage ColArray; //other data
-QByteArray Masks, Locks;
-QByteArray dirty;  //will hold flags for brighten mode - avoid doing same pixel twice in one stroke.
+// ============================================================================
+// PROJECT FILE MANAGEMENT
+// ============================================================================
 
 QString openfile;
 QString currentOpenFileName;
-bool MasksDirty, LocksDirty, CurvesDirty;
-bool MasksUndoDirty, LocksUndoDirty, CurvesUndoDirty;
-int CurrentMode; //0=bright, 1=masks, 2=curves, 3=lock, 4=segment, 5=recalc
-int CurrentSegment, CurrentRSegment;
-int Brush_Size;
-int BrightUp;
-int BrightDown;
-int BrightSoft;
-int LCE_Boost;
-int LCE_Radius;
-int LCE_Adjust;
-int LastTrans;
-bool ThreshFlag;
-bool MasksFlag;
-bool SegsFlag;
-int SampleArraySize;
-QByteArray SampleArray;
-int MaxUsedMask, SelectedMask, SelectedRMask, SelectedCurve, CurveCount, OutputObjectsCount;
-double PixPerMM, SlicePerMM, SkewDown, SkewLeft;
-int  FirstOutputFile, LastOutputFile;
-int MaxTriangles;
-bool RangeHardFill, RangeSelectedOnly, OutputMirroring;
-int PixSens, XYDownsample, ZDownsample;
-int LastMouseX, LastMouseY;
-bool MoveFlag, ChangeFlag;
-QList <class Segment *> Segments;
-QList <class Mask *> MasksSettings;
-QList <class Curve *> Curves;
-QList <class OutputObject *> OutputObjects;
-bool HorribleBodgeFlagDontStoreUndo;
-bool MenuHistSelectedOnly;
-bool SquareBrush;
-bool escapeFlag;
-
 QString SettingsFileName;
-QString FileNotes;
-QTabWidget *tabwidget;
+QString FullSettingsFileName;
+QString DefaultPath;
+QList<RecentFiles> RecentFileList;
 
-bool MenuHistChecked, MenuInfoChecked, MenuGenChecked, MenuMasksChecked, MenuSegsChecked, MenuCurvesChecked, MenuOutputChecked, MenuToolboxChecked, MenuSliceSelectorChecked;
+// ============================================================================
+// PROJECT-SPECIFIC: FILE & IMAGE DATA
+// ============================================================================
+
+QStringList Files;
+QStringList FullFiles;
+int FileCount = 0;
+int CurrentFile = 0;
+
+QList<QImage *> GA;
+QImage ColArray;
+QByteArray GradientArray;
+QByteArray FeaturesByteArray;
+QByteArray Masks;
+QByteArray Locks;
+QByteArray dirty;
+QByteArray SampleArray;
+int SampleArraySize = 0;
+
+int cwidth = 0;
+int cheight = 0;
+int fwidth = 0;
+int fheight = 0;
+int cwidth4 = 0;
+int fwidth4 = 0;
+int ColMonoScale = 0;
+
+QList<double> Stretches;
+QList<double> FullStretches;
+int zsparsity = 0;
+double SkewDown = 0.0;
+double SkewLeft = 0.0;
+double PixPerMM = 1.0;
+double SlicePerMM = 1.0;
+
+bool GreyImage = false;
+QString Notes;
+QString FileNotes;
+QVector<int> SegmentMap;
+
+// ============================================================================
+// PROJECT-SPECIFIC: DISPLAY & RENDERING STATE
+// ============================================================================
+
+double CurrentZoom = 1.0;
+int CurrentMode = 0;                        /// 0=bright, 1=masks, 2=curves, 3=lock, 4=segment, 5=recalc
+int CurrentSegment = -1;
+int CurrentRSegment = 0;
+int Trans = 255;
+int CMin = 0;
+int CMax = 255;
+int LastTrans = 255;
+double CurrentPolyContrast = 0.0;
+
+QList<bool> FilesDirty;
+
+// ============================================================================
+// PROJECT-SPECIFIC: SEGMENT/MASK/CURVE/OUTPUT DATA
+// ============================================================================
+
+int SegmentCount = 0;
+int MaxUsedMask = -1;
+int SelectedMask = 0;
+int SelectedRMask = 0;
+int SelectedCurve = 0;
+int CurveCount = 0;
+int OutputObjectsCount = 0;
+
+QList<Segment *> Segments;
+QList<Mask *> MasksSettings;
+QList<Curve *> Curves;
+QList<OutputObject *> OutputObjects;
+
+// ============================================================================
+// PROJECT-SPECIFIC: DIRTY/UNDO TRACKING
+// ============================================================================
+
+bool MasksDirty = false;
+bool LocksDirty = false;
+bool CurvesDirty = false;
+bool MasksUndoDirty = false;
+bool LocksUndoDirty = false;
+bool CurvesUndoDirty = false;
+bool HorribleBodgeFlagDontStoreUndo = false;
+
+// ============================================================================
+// PROJECT-SPECIFIC: OUTPUT GENERATION SETTINGS
+// ============================================================================
+
+bool RangeHardFill = false;
+bool RangeSelectedOnly = false;
+bool OutputMirroring = false;
+int FirstOutputFile = 0;
+int LastOutputFile = 0;
+int PixSens = 0;
+int XYDownsample = 0;
+int ZDownsample = 0;
+int MaxTriangles = 0;
+
+// ============================================================================
+// EDITOR TOOL STATE
+// ============================================================================
+
+int Brush_Size = 0;
+int BrushY = 0;
+int BrushZ = 0;
+bool SquareBrush = false;
+int BrightUp = 0;
+int BrightDown = 0;
+int BrightSoft = 0;
+int LCE_Boost = 0;
+int LCE_Radius = 0;
+int LCE_Adjust = 0;
+bool HiddenMasksLockedForGeneration = false;
+bool SegmentBrushAppliesMasks = false;
+bool SegmentBrushAppliesLocks = false;
+bool SegmentsLocked = false;
+bool CurveMarkersAsCrosses = false;
+bool CurveShapeLocked = false;
+bool MasksMoveBack = false;
+bool MasksMoveForward = false;
+
+// ============================================================================
+// UI INTERACTION STATE
+// ============================================================================
+
+int LastMouseX = 0;
+int LastMouseY = 0;
+bool ThreshFlag = false;
+bool MasksFlag = false;
+bool SegsFlag = false;
+bool MoveFlag = false;
+bool ChangeFlag = false;
+bool NoUpdateSelectionFlag = false;
+bool escapeFlag = false;
+bool previewGradient = false;
+int GradientDensity = 0;
+int GradientMinDist = 0;
+int GradientMinDistValue = 0;
+int GradientMaxDist = 0;
+int GradientMaxDistValue = 0;
+bool OutputRegroupMode = false;
+bool ShowSlicePosition = false;
+bool ThreeDmode = false;
+double yaw = 0.0;
+double pitch = 0.0;
+double roll = 0.0;
+double k = 0.0;
+double LastZoom = 1.0;
+
+QGraphicsPixmapItem *MainImage = nullptr;
+QTreeWidgetItem *LastItemClicked = nullptr;
+QTime LastTimeClicked;
+int LastColumnClicked = 0;
+
+double RedConsts[10] = {0};
+double GreenConsts[10] = {0};
+double BlueConsts[10] = {0};
+
+// ============================================================================
+// PROGRAM SETTINGS (Persisted via QSettings)
+// ============================================================================
+
+int CacheCompressionLevel = 1;
+int FileCompressionLevel = 9;
+int CacheMem = 512;
+int CacheMemMLGb = 2;
+int UndoMem = 512;
+int UndoTimerSetting = 4;
+int AutoSaveFrequency = 5;
+bool BackgroundCacheFilling = false;
+bool RenderCache = false;
+
+// ============================================================================
+// UI MENU STATE (Persisted via QSettings)
+// ============================================================================
+
+bool MenuHistSelectedOnly = false;
+bool MenuHistChecked = false;
+bool MenuInfoChecked = false;
+bool MenuGenChecked = false;
+bool MenuMasksChecked = false;
+bool MenuSegsChecked = false;
+bool MenuCurvesChecked = false;
+bool MenuOutputChecked = false;
+bool MenuToolboxChecked = false;
+bool MenuSliceSelectorChecked = false;
+bool Menu3DPreviewChecked = false;
+
+// ============================================================================
+// CLASS CONSTRUCTORS & DESTRUCTORS
+// ============================================================================
 
 Mask::Mask(QString name)
-//Constructor for a mask - set defaults
 {
-    quint64 n, m;
     Name = name;
 
-    n = static_cast<quint64>(50. * static_cast<double>(qrand()));
+    quint64 n = static_cast<quint64>(50.0 * static_cast<double>(QRandomGenerator::global()->generate()));
 
-    ForeColour[0] = 128 + static_cast<int>( static_cast<double>(126) * sin(static_cast<double>(n)));
-    ForeColour[1] = 128 + static_cast<int>( static_cast<double>(126) * cos(static_cast<double>(n)));
-    ForeColour[2] = 128 + static_cast<int>( static_cast<double>(127) * (qrand() / RAND_MAX));
+    ForeColour[0] = 128 + static_cast<int>(static_cast<double>(126) * sin(static_cast<double>(n)));
+    ForeColour[1] = 128 + static_cast<int>(static_cast<double>(126) * cos(static_cast<double>(n)));
+    ForeColour[2] = 128 + static_cast<int>(static_cast<double>(127) * (static_cast<double>(QRandomGenerator::global()->generate()) / static_cast<double>(UINT_MAX)));
 
     Contrast = 2;
 
-    for (m = 0; m < 3; m++) BackColour[m] = ForeColour[m] / 3;
+    for (int m = 0; m < 3; m++)
+    {
+        BackColour[m] = ForeColour[m] / 3;
+    }
 
     Show = true;
     Write = true;
     Lock = false;
-    widgetitem = nullptr; //no pointer
+    widgetitem = nullptr;
     ListOrder = MasksSettings.count();
 }
 
 Segment::Segment(QString name)
-//Constructor for a segment - set defaults
 {
     Name = name;
-    quint64 n = static_cast<quint64>(50. * static_cast<double>(qrand()));
-    Colour[0] = 128 + int( static_cast<double>(126) * sin(static_cast<double>(n)));
-    Colour[1] = 128 + int( static_cast<double>(126) * cos(static_cast<double>(n)));
-    Colour[2] = 128 + int( static_cast<double>(127) * (qrand() / RAND_MAX));
+    quint64 n = static_cast<quint64>(50.0 * static_cast<double>(QRandomGenerator::global()->generate()));
+    Colour[0] = 128 + int(static_cast<double>(126) * sin(static_cast<double>(n)));
+    Colour[1] = 128 + int(static_cast<double>(126) * cos(static_cast<double>(n)));
+    Colour[2] = 128 + int(static_cast<double>(127) * (static_cast<double>(QRandomGenerator::global()->generate()) / static_cast<double>(UINT_MAX)));
+
     LinPercent[0] = 100;
     LinPercent[1] = 100;
     LinPercent[2] = 100;
@@ -151,31 +292,22 @@ Segment::Segment(QString name)
     PolyConverge = 4;
     PolyContrast = 3;
 
-    NeighbourBright = 1;
+    NeighbourBright = 1.0;
     NeighbourSparse = 1;
     NeighbourSingle = false;
-    /*PolyRedConsts[10];
-    PolyGreenConsts[10];
-    PolyBlueConsts[10];
-    PolyKall;*/
-    PolyOrder = 4;
-    PolySparse = 1;
-    PolyRetries = 10;
-    PolyConverge = 3;
-    PolyScale = -1; //Calced not set apparently
-    PolyContrast = 3;
 
-    //these are probably wrong - deal with on re-implement
+    PolyScale = -1.0;
+
     RangeBase = 0;
     RangeTop = 255;
-    RangeGradient = 1;
-    RangeCenter = 1;
+    RangeGradient = 1.0;
+    RangeCenter = 1.0;
 
     Dirty = false;
     UndoDirty = false;
     ListOrder = Segments.count();
     Locked = false;
-    widgetitem = nullptr; //no pointer
+    widgetitem = nullptr;
     Activated = true;
 
     rectitem = new QGraphicsRectItem;
@@ -188,10 +320,15 @@ Segment::Segment(QString name)
 
 Segment::~Segment()
 {
-    //remove from list if necessary
-    QList <QGraphicsItem *> list = rangescene->items();
-    if (list.indexOf(rectitem) != -1) rangescene->removeItem(rectitem);
-    if (list.indexOf(textitem) != -1) rangescene->removeItem(textitem);
+    QList<QGraphicsItem *> list = rangescene->items();
+    if (list.indexOf(rectitem) != -1)
+    {
+        rangescene->removeItem(rectitem);
+    }
+    if (list.indexOf(textitem) != -1)
+    {
+        rangescene->removeItem(textitem);
+    }
     delete rectitem;
     delete textitem;
 }
@@ -199,26 +336,38 @@ Segment::~Segment()
 Curve::Curve(QString name)
 {
     Name = name;
-    quint64 n = static_cast<quint64>(50. * static_cast<double>(qrand()));
-    Colour[0] = 128 + int( static_cast<double>(126) * sin(static_cast<double>(n)));
-    Colour[1] = 128 + int( static_cast<double>(126) * cos(static_cast<double>(n)));
-    Colour[2] = 128 + int( static_cast<double>(127) * (qrand() / RAND_MAX));
+    quint64 n = static_cast<quint64>(50.0 * static_cast<double>(QRandomGenerator::global()->generate()));
+    Colour[0] = 128 + int(static_cast<double>(126) * sin(static_cast<double>(n)));
+    Colour[1] = 128 + int(static_cast<double>(126) * cos(static_cast<double>(n)));
+    Colour[2] = 128 + int(static_cast<double>(127) * (static_cast<double>(QRandomGenerator::global()->generate()) / static_cast<double>(UINT_MAX)));
+
     Closed = false;
     Filled = false;
     Segment = 0;
+    AutomaticallyInterpolated = false;
+    AutomaticStartSlice = -1;
+    AutomaticEndSlice = -1;
 
     for (int i = 0; i < FullFiles.count(); i++)
     {
-        //set up all the lists
         SplinePoints.append(new PointList());
     }
     ListOrder = Curves.count();
-    widgetitem = nullptr; //no pointer
+    widgetitem = nullptr;
 }
 
 Curve::~Curve()
 {
-    if (Segment != 0) for (int j = 0; j < Files.count(); j++) if (SplinePoints[j * zsparsity]->Count > 0) FilesDirty[j] = true;
+    if (Segment != 0)
+    {
+        for (int j = 0; j < Files.count(); j++)
+        {
+            if (SplinePoints[j * zsparsity]->Count > 0)
+            {
+                FilesDirty[j] = true;
+            }
+        }
+    }
     qDeleteAll(SplinePoints.begin(), SplinePoints.end());
 }
 
@@ -226,33 +375,32 @@ PointList::PointList()
 {
     X.clear();
     Y.clear();
+    Fixed.clear();
     Count = 0;
 }
 
-
 OutputObject::OutputObject(QString name)
 {
-    Name = name; //not implemented in VB - use for SView compatibility one day
+    Name = name;
     Resample = 100;
     Colour[0] = 255;
     Colour[1] = 255;
-    Colour[2] = 255; //r,g,b
+    Colour[2] = 255;
     ListOrder = OutputObjects.count();
     IsGroup = false;
-    Parent = -1; //root
+    Parent = -1;
     Show = true;
     Merge = false;
-    widgetitem = nullptr; //no pointer
+    widgetitem = nullptr;
     Expanded = false;
     ComponentMasks.clear();
     ComponentSegments.clear();
     CurveComponents.clear();
     MergeObjects.clear();
-};
+}
 
 OutputObject::~OutputObject()
 {
-    //clear memory
     qDeleteAll(CompressedSPVarrays.begin(), CompressedSPVarrays.end());
     qDeleteAll(GridArrays.begin(), GridArrays.end());
 }
@@ -261,28 +409,45 @@ void OutputObject::SetUpForRender()
 {
     temparray.clear();
 
-    if  (CompressedSPVarrays.isEmpty())
+    if (CompressedSPVarrays.isEmpty())
     {
-        //create an entry for file
         for (int i = 0; i < Files.count(); i++)
         {
             CompressedSPVarrays.append(new QByteArray);
             GridArrays.append(new QByteArray);
         }
     }
-    //qDeleteAll(CompressedSPVarrays.begin(), CompressedSPVarrays.end());
-    //qDeleteAll(GridArrays.begin(), GridArrays.end());
-    //CompressedSPVarrays.clear();
-    //GridArrays.clear();
 
     UseMasks.clear();
-    for (int i = 0; i <= MaxUsedMask; i++) if ((ComponentMasks.indexOf(i)) >= 0) UseMasks.append(true);
-        else UseMasks.append(false);
+    for (int i = 0; i <= MaxUsedMask; i++)
+    {
+        if (ComponentMasks.indexOf(i) >= 0)
+        {
+            UseMasks.append(true);
+        }
+        else
+        {
+            UseMasks.append(false);
+        }
+    }
 
     UseSegs.clear();
-    for (int i = 0; i < SegmentCount; i++) if ((ComponentSegments.indexOf(i)) >= 0) UseSegs.append(true);
-        else UseSegs.append(false);
+    for (int i = 0; i < SegmentCount; i++)
+    {
+        if (ComponentSegments.indexOf(i) >= 0)
+        {
+            UseSegs.append(true);
+        }
+        else
+        {
+            UseSegs.append(false);
+        }
+    }
 }
+
+// ============================================================================
+// UTILITY FUNCTIONS
+// ============================================================================
 
 void Message(QString message)
 {
@@ -291,11 +456,9 @@ void Message(QString message)
 
 void Message1(char *message, int x)
 {
-    QString temp;
-    temp.sprintf(message, x);
+    QString temp = QString::asprintf(message, x);
     QMessageBox::information(nullptr, "Message", message, QMessageBox::Ok);
 }
-
 
 void Error(QString message)
 {
@@ -303,69 +466,30 @@ void Error(QString message)
     exit(0);
 }
 
-bool OutputRegroupMode;
-
-//Now the 'superglobals - these are to be written into system settings, not .spe files
-QList<RecentFiles> RecentFileList;
-int CacheMem;
-int UndoMem;
-int UndoTimerSetting;
-bool BackgroundCacheFilling;
-int AutoSaveFrequency;
-QString DefaultPath;
-
-void WriteSuperGlobals()
+int randn(int n)
 {
-    QSettings settings("Palaeoware", "SPIERSedit");
-    settings.beginWriteArray("RecentFiles");
-    for (int i = 0; i < RecentFileList.size(); ++i)
-    {
-        settings.setArrayIndex(i);
-        settings.setValue("FileName", RecentFileList.at(i).File);
-        settings.setValue("FileNotes", RecentFileList.at(i).Notes);
-    }
-    settings.endArray();
-    settings.setValue("Cache Memory (Mb)", CacheMem);
-    settings.setValue("Undo Memory (Mb)", UndoMem);
-    settings.setValue("Undo Timer (Secs)", UndoTimerSetting);
-    settings.setValue("Background Cacheing", BackgroundCacheFilling);
-    settings.setValue("AutoSaveFrequency", AutoSaveFrequency);
-    settings.setValue("CacheCompressionLevel", CacheCompressionLevel);
-    settings.setValue("FileCompressionLevel", FileCompressionLevel);
-    settings.setValue("RenderCache", RenderCache);
-    settings.setValue("DefaultFilePath", DefaultPath);
+    long r = static_cast<long>(rand());
+    r *= static_cast<long>(n);
+    return static_cast<int>(r / RAND_MAX);
 }
 
-void ReadSuperGlobals()
+void ResetFilesDirty()
 {
-    RecentFileList.clear(); //just in case
-    QString t1;
-    QSettings settings("Palaeoware", "SPIERSedit");
-    int size = settings.beginReadArray("RecentFiles");
-    for (int i = 0; i < size; ++i)
+    FilesDirty.clear();
+    for (int i = 0; i < Files.count(); i++)
     {
-        settings.setArrayIndex(i);
-        RecentFiles rf;
-        rf.File = settings.value("FileName").toString();
-        rf.Notes = settings.value("FileNotes").toString();
-        RecentFileList.append(rf);
+        FilesDirty.append(true);
     }
-    settings.endArray();
-    CacheMem = settings.value("Cache Memory (Mb)", 512).toInt();
-    UndoMem = settings.value("Undo Memory (Mb)", 512).toInt();
-    UndoTimerSetting = settings.value("Undo Timer (Secs)", 4).toInt();
-    BackgroundCacheFilling = settings.value("Background Cacheing", false).toBool();
-    AutoSaveFrequency = settings.value("AutoSaveFrequency", 5).toInt();
-    CacheCompressionLevel = settings.value("CacheCompressionLevel", 0).toInt();
-    FileCompressionLevel = settings.value("FileCompressionLevel", 0).toInt();
-    RenderCache = settings.value("RenderCache", false).toBool();
-    DefaultPath = settings.value("DefaultFilePath", QDir::homePath()).toString();
+}
+
+bool IsDatasetLoaded()
+{
+    return Files.count() > 0;
 }
 
 void RecentFile(QString fname)
 {
     int n;
-    //move this file to the top of the list
     for (n = 0; n < RecentFileList.count(); n++)
     {
         if (RecentFileList[n].File == fname)
@@ -381,18 +505,62 @@ void RecentFile(QString fname)
     RecentFileList.prepend(rf);
 }
 
-int randn(int n)
-{
-    //random 0 - n-1
-    long r;
+// ============================================================================
+// QSETTINGS PERSISTENCE (Program-wide settings)
+// ============================================================================
 
-    r = static_cast<long>(rand());
-    r *= static_cast<long>(n);
-    return static_cast<int>(r / RAND_MAX);
+void WriteSuperGlobals()
+{
+    QSettings settings("Palaeoware", "SPIERSedit");
+
+    settings.beginWriteArray("RecentFiles");
+    for (int i = 0; i < RecentFileList.size(); ++i)
+    {
+        settings.setArrayIndex(i);
+        settings.setValue("FileName", RecentFileList.at(i).File);
+        settings.setValue("FileNotes", RecentFileList.at(i).Notes);
+    }
+    settings.endArray();
+
+    settings.setValue("Cache Memory (Mb)", CacheMem);
+    settings.setValue("Undo Memory (Mb)", UndoMem);
+    settings.setValue("Undo Timer (Secs)", UndoTimerSetting);
+    settings.setValue("Background Cacheing", BackgroundCacheFilling);
+    settings.setValue("AutoSaveFrequency", AutoSaveFrequency);
+    settings.setValue("CacheCompressionLevel", CacheCompressionLevel);
+    settings.setValue("FileCompressionLevel", FileCompressionLevel);
+    settings.setValue("RenderCache", RenderCache);
+    settings.setValue("DefaultFilePath", DefaultPath);
+    settings.setValue("CacheMemML(Gb)", CacheMemMLGb);
 }
 
-void ResetFilesDirty()
+void ReadSuperGlobals()
 {
-    FilesDirty.clear();
-    for (int i = 0; i < Files.count(); i++) FilesDirty.append(true);
+    RecentFileList.clear();
+
+    QSettings settings("Palaeoware", "SPIERSedit");
+
+    int size = settings.beginReadArray("RecentFiles");
+    for (int i = 0; i < size; ++i)
+    {
+        settings.setArrayIndex(i);
+        RecentFiles rf;
+        rf.File = settings.value("FileName").toString();
+        rf.Notes = settings.value("FileNotes").toString();
+        RecentFileList.append(rf);
+    }
+    settings.endArray();
+
+    CacheMem = settings.value("Cache Memory (Mb)", 512).toInt();
+    UndoMem = settings.value("Undo Memory (Mb)", 512).toInt();
+    UndoTimerSetting = settings.value("Undo Timer (Secs)", 4).toInt();
+    BackgroundCacheFilling = settings.value("Background Cacheing", false).toBool();
+    AutoSaveFrequency = settings.value("AutoSaveFrequency", 5).toInt();
+    CacheCompressionLevel = settings.value("CacheCompressionLevel", 0).toInt();
+    FileCompressionLevel = settings.value("FileCompressionLevel", 0).toInt();
+    RenderCache = settings.value("RenderCache", false).toBool();
+    DefaultPath = settings.value("DefaultFilePath", QDir::homePath()).toString();
+    CacheMemMLGb = settings.value("CacheMemML(Gb)", 2).toInt();
+
+    qDebug() << "Read CacheMemMLGb" << CacheMemMLGb;
 }

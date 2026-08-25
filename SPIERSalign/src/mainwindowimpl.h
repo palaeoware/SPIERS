@@ -2,10 +2,10 @@
  * @file
  * Header: Main Window
  *
- * All SPIERSalign code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSalign code is Copyright 2008-2023 by Russell J. Garwood, Mark D. Sutton,
+ * All SPIERS code is Copyright 2008-2026 by Russell J. Garwood, Mark D. Sutton,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,7 @@
 #include <QListWidget>
 #include <QPlainTextEdit>
 #include <QSpinBox>
-
+#include <QCheckBox>
 #include "scene.h"
 #include "ui_mainwindow.h"
 #include "about.h"
@@ -47,6 +47,9 @@ public:
     void buildRecentFiles();
     int width;
     int height;
+
+public slots:
+    void onConnectivityChanged(bool online);
 
 private slots:
     void on_actionLoad_Settings_File_triggered();
@@ -85,6 +88,8 @@ private slots:
     void on_actionShift_Down_Less_triggered();
     void on_actionCreate_Crop_Area_triggered(bool checked);
     void on_actionAbout_triggered();
+    void on_actionCheck_for_Updates_triggered();
+    void on_actionTestCrashHandler_triggered();
     void on_actionEnlarge_More_triggered();
     void on_actionShrink_More_triggered();
     void on_actionEnlarge_Less_triggered();
@@ -104,6 +109,7 @@ private slots:
     void on_actionFit_Window_triggered();
     void on_actionNext_Image_triggered();
     void on_actionPrevious_Image_triggered();
+    void on_actionOpen_triggered2();
     void on_actionOpen_triggered();
     void on_actionInfo_triggered(bool checked);
     void on_actionManual_triggered();
@@ -112,6 +118,7 @@ private slots:
     void on_horizontalSlider_valueChanged(int value);
     void on_actionCode_on_GitHub_triggered();
     void on_actionBugIssueFeatureRequest_triggered();
+    void on_actionAdvancedPrefs_triggered();
 
     void selectMarker();
     void changeRed(int value);
@@ -140,7 +147,8 @@ private slots:
     void resizeCropH(int value);
     void clearList();
     void pickMarkerColourSlot();
-
+    void getMinClicked();
+    void getMaxClicked();
 private:
     void rotate (qreal rotateAngle);
     void resize(qreal sizeChange);
@@ -157,7 +165,8 @@ private:
     QDockWidget *info, *cropDock, *aMOptions, *autoAlign;
     QSpinBox *red, *red2;
     QSpinBox *green, *green2;
-    QSpinBox *blue, *blue2;
+    QSpinBox *blue, *blue2, *startCropFile, *endCropFile;
+    QLineEdit *folderName;
     QGridLayout *aMGridLayout;
     QVBoxLayout *markerLayout, *infoLayout, *cropLayout, *aMVertLayout, *autoLayout;
     QHBoxLayout *horizontalLayout1, *horizontalLayout2, *horizontalLayout3, *horizontalLayout4, *horizontalLayout5, *horizontalLayout6, *horizontalLayout7, *horizontalLayout8, *horizontalLayout9,

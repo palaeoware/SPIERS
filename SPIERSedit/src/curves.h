@@ -2,10 +2,10 @@
  * @file
  * Header: Curves
  *
- * All SPIERSedit code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSview code is Copyright 2008-2023 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERS code is Copyright 2008-2026 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,18 +21,37 @@
 #include <QImage>
 #include <QGraphicsScene>
 
-#include "mainwindowimpl.h"
+#include "mainwindow.h"
 
 //maybe oneday make this modifyable?
 #define TRIANGLE_DENSITY 100
 
 extern void AddNode();
-extern void KillNode(MainWindowImpl *th);
+extern void KillNode(MainWindow *th);
 extern QList <QGraphicsItem *> MarkerList;
 extern int FindClosestNode(double X, double Y);
+extern bool AutomateCurve(
+    int curveIndex,
+    int firstSlice,
+    int lastSlice,
+    int sourceSlice,
+    QString *errorMessage = nullptr);
+extern void DeautomateCurve(int curveIndex);
+extern bool FixAndInterpolateCurveNode(
+    int curveIndex,
+    int sliceIndex,
+    int nodeIndex,
+    bool wholeCurve);
+extern bool ReleaseAutomatedCurveNode(
+    int curveIndex,
+    int sliceIndex,
+    int nodeIndex,
+    bool wholeSlice,
+    QString *errorMessage = nullptr);
+extern bool RecalculateAutomatedCurve(int curveIndex);
 extern void DrawCurve(int c, int mycol, int file, QImage *Thresh);
 extern void DrawCurveOutput(int c, int file, uchar *fullarray, QList <bool> *UseMasks, bool remove);
 extern void DrawCurveMarkers(QGraphicsScene *scene);
 extern void PopulateTriangleList(int OutObject, int firstfile, int lastfile, QList<double> *stretches, int resamps, QVector<double> *TrigArray, int *TrigCount);
-
+extern void GetPointsOnSpline(int curveIndex, QList<int> *xPos, QList<int> *yPos);
 #endif // __CURVES_H__

@@ -6,38 +6,41 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>962</width>
-    <height>1378</height>
+    <width>1071</width>
+    <height>1794</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
   <property name="minimumSize">
    <size>
-    <width>200</width>
-    <height>200</height>
+    <width>0</width>
+    <height>0</height>
    </size>
   </property>
   <property name="windowTitle">
-   <string>SPIERSEdit - Version 2.21 - No files loaded</string>
+   <string>SPIERSEdit - Version 4.0.0 - No files loaded</string>
   </property>
   <property name="windowIcon">
    <iconset resource="../SPIERSedit.qrc">
-    <normaloff>:/icons/resources/SPIERSeditIcon.svg</normaloff>:/icons/resources/SPIERSeditIcon.svg</iconset>
+    <normaloff>:/resources/SPIERSeditIcon.svg</normaloff>:/resources/SPIERSeditIcon.svg</iconset>
   </property>
   <property name="dockNestingEnabled">
-   <bool>true</bool>
+   <bool>false</bool>
   </property>
   <property name="dockOptions">
-   <set>QMainWindow::AllowNestedDocks|QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks</set>
+   <set>QMainWindow::DockOption::AllowTabbedDocks|QMainWindow::DockOption::AnimatedDocks</set>
+  </property>
+  <property name="unifiedTitleAndToolBarOnMac">
+   <bool>false</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="sizePolicy">
-    <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -72,7 +75,7 @@
          <string>Zoom</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignCenter</set>
+         <set>Qt::AlignmentFlag::AlignCenter</set>
         </property>
        </widget>
       </item>
@@ -99,7 +102,7 @@
          <bool>true</bool>
         </property>
         <property name="buttonSymbols">
-         <enum>QAbstractSpinBox::NoButtons</enum>
+         <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
         </property>
         <property name="keyboardTracking">
          <bool>false</bool>
@@ -154,13 +157,13 @@
          <bool>false</bool>
         </property>
         <property name="orientation">
-         <enum>Qt::Vertical</enum>
+         <enum>Qt::Orientation::Vertical</enum>
         </property>
         <property name="invertedAppearance">
          <bool>false</bool>
         </property>
         <property name="tickPosition">
-         <enum>QSlider::TicksBelow</enum>
+         <enum>QSlider::TickPosition::TicksBelow</enum>
         </property>
         <property name="tickInterval">
          <number>50</number>
@@ -180,7 +183,7 @@
          <bool>true</bool>
         </property>
         <property name="focusPolicy">
-         <enum>Qt::StrongFocus</enum>
+         <enum>Qt::FocusPolicy::StrongFocus</enum>
         </property>
         <property name="interactive">
          <bool>true</bool>
@@ -194,19 +197,19 @@
          </rectf>
         </property>
         <property name="alignment">
-         <set>Qt::AlignCenter</set>
+         <set>Qt::AlignmentFlag::AlignCenter</set>
         </property>
         <property name="transformationAnchor">
-         <enum>QGraphicsView::AnchorViewCenter</enum>
+         <enum>QGraphicsView::ViewportAnchor::AnchorViewCenter</enum>
         </property>
         <property name="resizeAnchor">
-         <enum>QGraphicsView::AnchorViewCenter</enum>
+         <enum>QGraphicsView::ViewportAnchor::AnchorViewCenter</enum>
         </property>
         <property name="viewportUpdateMode">
-         <enum>QGraphicsView::FullViewportUpdate</enum>
+         <enum>QGraphicsView::ViewportUpdateMode::FullViewportUpdate</enum>
         </property>
         <property name="optimizationFlags">
-         <set>QGraphicsView::DontSavePainterState</set>
+         <set>QGraphicsView::OptimizationFlag::DontSavePainterState</set>
         </property>
        </widget>
       </item>
@@ -218,10 +221,10 @@
            <bool>false</bool>
           </property>
           <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+           <enum>Qt::Orientation::Horizontal</enum>
           </property>
           <property name="tickPosition">
-           <enum>QSlider::TicksAbove</enum>
+           <enum>QSlider::TickPosition::TicksAbove</enum>
           </property>
           <property name="tickInterval">
            <number>10</number>
@@ -256,8 +259,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>962</width>
-     <height>17</height>
+     <width>1071</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -300,6 +303,7 @@
     <addaction name="actionCurve"/>
     <addaction name="actionLock"/>
     <addaction name="actionMask"/>
+    <addaction name="actionCycle_Bright_Segment_Mask"/>
     <addaction name="separator"/>
     <addaction name="actionToggle_Source"/>
     <addaction name="actionThreshold"/>
@@ -312,7 +316,7 @@
    </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="title">
      <string>Window</string>
@@ -327,6 +331,9 @@
     <addaction name="actionOutput"/>
     <addaction name="actionHistorgram"/>
     <addaction name="actionInfo"/>
+    <addaction name="actionGenerateTestData"/>
+    <addaction name="separator"/>
+    <addaction name="action3DPreview"/>
    </widget>
    <widget class="QMenu" name="menuBrush">
     <property name="enabled">
@@ -346,8 +353,14 @@
     <addaction name="action50_x_50"/>
     <addaction name="action200_x_200"/>
     <addaction name="separator"/>
+    <addaction name="actionIncrease_Size"/>
+    <addaction name="actionDecrease_Size"/>
+    <addaction name="separator"/>
     <addaction name="actionSquare"/>
     <addaction name="action3D_Brush"/>
+    <addaction name="separator"/>
+    <addaction name="actionSegment_brush_applies_masks"/>
+    <addaction name="actionSegment_brush_applies_locks"/>
    </widget>
    <widget class="QMenu" name="menuSegments">
     <property name="enabled">
@@ -372,7 +385,7 @@
    </widget>
    <widget class="QMenu" name="menuMasks">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="title">
      <string>Masks</string>
@@ -388,7 +401,6 @@
     <addaction name="actionMaskGo_back_one_slice_after_copy"/>
     <addaction name="separator"/>
     <addaction name="actionHidden_masks_locked_for_generation"/>
-    <addaction name="actionSegment_brush_applies_masks"/>
     <addaction name="separator"/>
     <addaction name="actionLock_Selected_Masks"/>
     <addaction name="actionUnlock_Selected_Masks"/>
@@ -419,6 +431,11 @@
     <addaction name="separator"/>
     <addaction name="actionInterpolate_over_selected_slices"/>
     <addaction name="separator"/>
+    <addaction name="actionAutomate_curve_over_selected_slices"/>
+    <addaction name="actionStop_automatic_curve_interpolation"/>
+    <addaction name="actionMake_node_under_cursor_calculated"/>
+    <addaction name="actionMake_current_slice_nodes_calculated"/>
+    <addaction name="separator"/>
     <addaction name="actionGrey_out_curves_not_no_current_slice"/>
     <addaction name="separator"/>
     <addaction name="actionExport_Curves_as_CSV"/>
@@ -432,7 +449,14 @@
     <addaction name="actionCode_on_GitHub"/>
     <addaction name="actionBugIssueFeatureRequest"/>
     <addaction name="separator"/>
+    <addaction name="actionCheck_for_Updates"/>
     <addaction name="actionAb_out"/>
+   </widget>
+   <widget class="QMenu" name="menuTest">
+    <property name="title">
+     <string>Test</string>
+    </property>
+    <addaction name="actionTestCrashHandler"/>
    </widget>
    <widget class="QMenu" name="menuUndo">
     <property name="enabled">
@@ -476,6 +500,34 @@
     <addaction name="actionChange_slice_spacing"/>
     <addaction name="actionSet_slice_position"/>
    </widget>
+   <widget class="QMenu" name="menuML">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="title">
+     <string>ML</string>
+    </property>
+    <widget class="QMenu" name="menuFeature_presets">
+     <property name="title">
+      <string>Feature presets</string>
+     </property>
+     <addaction name="actionCT_simpl"/>
+     <addaction name="actionCT_complex"/>
+     <addaction name="actionColour_simple"/>
+     <addaction name="actionColour_complex"/>
+    </widget>
+    <addaction name="actionCalculate_Features"/>
+    <addaction name="actionRemove_feature_files"/>
+    <addaction name="separator"/>
+    <addaction name="actionSave_feature_set"/>
+    <addaction name="actionLoad_feature_set"/>
+    <addaction name="menuFeature_presets"/>
+    <addaction name="separator"/>
+    <addaction name="actionIncremental_sampling"/>
+    <addaction name="actionClear_sample"/>
+    <addaction name="separator"/>
+    <addaction name="actionMLAuto_Update"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuUndo"/>
    <addaction name="menuMode"/>
@@ -486,6 +538,8 @@
    <addaction name="menuSlice_Spacing"/>
    <addaction name="menuOutput"/>
    <addaction name="menuWindow"/>
+   <addaction name="menuML"/>
+   <addaction name="menuTest"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar">
@@ -498,7 +552,7 @@
     <bool>true</bool>
    </property>
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -512,14 +566,14 @@
    <property name="maximumSize">
     <size>
      <width>180</width>
-     <height>100000</height>
+     <height>524287</height>
     </size>
    </property>
    <property name="features">
-    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+    <set>QDockWidget::DockWidgetFeature::DockWidgetFloatable|QDockWidget::DockWidgetFeature::DockWidgetMovable</set>
    </property>
    <property name="allowedAreas">
-    <set>Qt::LeftDockWidgetArea</set>
+    <set>Qt::DockWidgetArea::LeftDockWidgetArea</set>
    </property>
    <property name="windowTitle">
     <string>Main Toolbox (F1)</string>
@@ -594,7 +648,7 @@
           <string>Brightness Mode</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignmentFlag::AlignCenter</set>
          </property>
          <property name="flat">
           <bool>false</bool>
@@ -621,7 +675,7 @@
              <string>Up</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignCenter</set>
+             <set>Qt::AlignmentFlag::AlignCenter</set>
             </property>
            </widget>
           </item>
@@ -631,7 +685,7 @@
              <string>Down</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignCenter</set>
+             <set>Qt::AlignmentFlag::AlignCenter</set>
             </property>
            </widget>
           </item>
@@ -641,7 +695,7 @@
              <string>Soft</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignCenter</set>
+             <set>Qt::AlignmentFlag::AlignCenter</set>
             </property>
            </widget>
           </item>
@@ -654,7 +708,7 @@
              </sizepolicy>
             </property>
             <property name="layoutDirection">
-             <enum>Qt::RightToLeft</enum>
+             <enum>Qt::LayoutDirection::RightToLeft</enum>
             </property>
             <property name="minimum">
              <number>1</number>
@@ -663,7 +717,7 @@
              <number>10</number>
             </property>
             <property name="orientation">
-             <enum>Qt::Vertical</enum>
+             <enum>Qt::Orientation::Vertical</enum>
             </property>
             <property name="invertedAppearance">
              <bool>true</bool>
@@ -672,7 +726,7 @@
              <bool>false</bool>
             </property>
             <property name="tickPosition">
-             <enum>QSlider::TicksBothSides</enum>
+             <enum>QSlider::TickPosition::TicksBothSides</enum>
             </property>
            </widget>
           </item>
@@ -685,7 +739,7 @@
              </sizepolicy>
             </property>
             <property name="layoutDirection">
-             <enum>Qt::RightToLeft</enum>
+             <enum>Qt::LayoutDirection::RightToLeft</enum>
             </property>
             <property name="minimum">
              <number>1</number>
@@ -694,7 +748,7 @@
              <number>10</number>
             </property>
             <property name="orientation">
-             <enum>Qt::Vertical</enum>
+             <enum>Qt::Orientation::Vertical</enum>
             </property>
             <property name="invertedAppearance">
              <bool>true</bool>
@@ -703,7 +757,7 @@
              <bool>false</bool>
             </property>
             <property name="tickPosition">
-             <enum>QSlider::TicksBothSides</enum>
+             <enum>QSlider::TickPosition::TicksBothSides</enum>
             </property>
            </widget>
           </item>
@@ -716,7 +770,7 @@
              </sizepolicy>
             </property>
             <property name="layoutDirection">
-             <enum>Qt::RightToLeft</enum>
+             <enum>Qt::LayoutDirection::RightToLeft</enum>
             </property>
             <property name="minimum">
              <number>0</number>
@@ -731,7 +785,7 @@
              <number>0</number>
             </property>
             <property name="orientation">
-             <enum>Qt::Vertical</enum>
+             <enum>Qt::Orientation::Vertical</enum>
             </property>
             <property name="invertedAppearance">
              <bool>true</bool>
@@ -740,7 +794,7 @@
              <bool>false</bool>
             </property>
             <property name="tickPosition">
-             <enum>QSlider::TicksBothSides</enum>
+             <enum>QSlider::TickPosition::TicksBothSides</enum>
             </property>
            </widget>
           </item>
@@ -750,13 +804,13 @@
              <bool>true</bool>
             </property>
             <property name="focusPolicy">
-             <enum>Qt::WheelFocus</enum>
+             <enum>Qt::FocusPolicy::WheelFocus</enum>
             </property>
             <property name="readOnly">
              <bool>false</bool>
             </property>
             <property name="buttonSymbols">
-             <enum>QAbstractSpinBox::UpDownArrows</enum>
+             <enum>QAbstractSpinBox::ButtonSymbols::UpDownArrows</enum>
             </property>
             <property name="keyboardTracking">
              <bool>false</bool>
@@ -775,7 +829,7 @@
              <bool>true</bool>
             </property>
             <property name="focusPolicy">
-             <enum>Qt::WheelFocus</enum>
+             <enum>Qt::FocusPolicy::WheelFocus</enum>
             </property>
             <property name="keyboardTracking">
              <bool>false</bool>
@@ -794,7 +848,7 @@
              <bool>true</bool>
             </property>
             <property name="focusPolicy">
-             <enum>Qt::WheelFocus</enum>
+             <enum>Qt::FocusPolicy::WheelFocus</enum>
             </property>
             <property name="keyboardTracking">
              <bool>false</bool>
@@ -831,7 +885,7 @@
           <string>Masks</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignmentFlag::AlignCenter</set>
          </property>
          <layout class="QHBoxLayout">
           <property name="spacing">
@@ -901,7 +955,7 @@
           <string>Segments</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignmentFlag::AlignCenter</set>
          </property>
          <layout class="QHBoxLayout">
           <property name="spacing">
@@ -974,7 +1028,7 @@
           <string>Source Min/Max levels</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignmentFlag::AlignCenter</set>
          </property>
          <layout class="QVBoxLayout">
           <property name="spacing">
@@ -1004,7 +1058,7 @@
              <number>0</number>
             </property>
             <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+             <enum>Qt::Orientation::Horizontal</enum>
             </property>
            </widget>
           </item>
@@ -1020,7 +1074,7 @@
              <number>255</number>
             </property>
             <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+             <enum>Qt::Orientation::Horizontal</enum>
             </property>
            </widget>
           </item>
@@ -1045,7 +1099,7 @@
           <string>Source transparency</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignmentFlag::AlignCenter</set>
          </property>
          <layout class="QHBoxLayout">
           <property name="spacing">
@@ -1075,13 +1129,13 @@
              <number>4</number>
             </property>
             <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+             <enum>Qt::Orientation::Horizontal</enum>
             </property>
             <property name="invertedAppearance">
              <bool>false</bool>
             </property>
             <property name="tickPosition">
-             <enum>QSlider::TicksAbove</enum>
+             <enum>QSlider::TickPosition::TicksAbove</enum>
             </property>
            </widget>
           </item>
@@ -1098,7 +1152,7 @@
     <bool>true</bool>
    </property>
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -1119,10 +1173,10 @@
     <bool>false</bool>
    </property>
    <property name="features">
-    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+    <set>QDockWidget::DockWidgetFeature::DockWidgetFloatable|QDockWidget::DockWidgetFeature::DockWidgetMovable</set>
    </property>
    <property name="allowedAreas">
-    <set>Qt::RightDockWidgetArea</set>
+    <set>Qt::DockWidgetArea::RightDockWidgetArea</set>
    </property>
    <property name="windowTitle">
     <string>Generation (F3)</string>
@@ -1152,8 +1206,11 @@
     <layout class="QVBoxLayout">
      <item>
       <widget class="QTabWidget" name="tabWidget">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
        <property name="currentIndex">
-        <number>4</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="tabLinear">
         <attribute name="title">
@@ -1161,7 +1218,7 @@
         </attribute>
         <layout class="QHBoxLayout">
          <property name="sizeConstraint">
-          <enum>QLayout::SetDefaultConstraint</enum>
+          <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
          </property>
          <property name="leftMargin">
           <number>2</number>
@@ -1262,10 +1319,10 @@
                 <number>30</number>
                </property>
                <property name="orientation">
-                <enum>Qt::Horizontal</enum>
+                <enum>Qt::Orientation::Horizontal</enum>
                </property>
                <property name="tickPosition">
-                <enum>QSlider::TicksBothSides</enum>
+                <enum>QSlider::TickPosition::TicksBothSides</enum>
                </property>
                <property name="tickInterval">
                 <number>50</number>
@@ -1297,306 +1354,185 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="tabPolynomial">
+       <widget class="QWidget" name="tabML">
         <attribute name="title">
-         <string>Poly</string>
+         <string>ML</string>
         </attribute>
-        <layout class="QVBoxLayout">
+        <layout class="QVBoxLayout" name="verticalLayout_11">
          <item>
-          <layout class="QHBoxLayout">
+          <layout class="QVBoxLayout" name="verticalLayout_12">
            <item>
-            <widget class="QLabel" name="label_24">
-             <property name="text">
-              <string>Sparsity</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
+            <widget class="QTableWidget" name="tblMLFeatureList">
+             <property name="font">
+              <font>
+               <pointsize>8</pointsize>
+               <bold>false</bold>
+              </font>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QSlider" name="SliderSparsity">
+            <layout class="QHBoxLayout" name="horizontalLayout_17">
+             <item>
+              <widget class="QPushButton" name="btnMLAddFeature">
+               <property name="text">
+                <string>New</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="btnMLRemoveFeature">
+               <property name="text">
+                <string>Delete</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="btnMLActivateFeature">
+               <property name="text">
+                <string>Active</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="btnMLDeactivateFeature">
+               <property name="text">
+                <string>Inactive</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_15">
+           <item>
+            <widget class="QSpinBox" name="spinBoxMinSampleCount">
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+              </font>
+             </property>
+             <property name="prefix">
+              <string>min sample count: </string>
+             </property>
              <property name="minimum">
-              <number>1</number>
+              <number>2</number>
              </property>
              <property name="maximum">
-              <number>10</number>
-             </property>
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="tickPosition">
-              <enum>QSlider::TicksBothSides</enum>
-             </property>
-             <property name="tickInterval">
-              <number>1</number>
+              <number>22</number>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="KeysafeSpinBox" name="SpinBoxSparsity">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
+            <widget class="QSpinBox" name="spinBoxMLTrees">
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+              </font>
              </property>
-             <property name="focusPolicy">
-              <enum>Qt::NoFocus</enum>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-             <property name="keyboardTracking">
-              <bool>false</bool>
+             <property name="prefix">
+              <string>Trees: </string>
              </property>
              <property name="minimum">
-              <number>1</number>
+              <number>50</number>
              </property>
              <property name="maximum">
+              <number>500</number>
+             </property>
+             <property name="singleStep">
               <number>10</number>
              </property>
-             <property name="value">
+            </widget>
+           </item>
+           <item>
+            <widget class="QSpinBox" name="spinBoxMLDepth">
+             <property name="font">
+              <font>
+               <pointsize>9</pointsize>
+              </font>
+             </property>
+             <property name="prefix">
+              <string>Depth: </string>
+             </property>
+             <property name="minimum">
               <number>10</number>
+             </property>
+             <property name="maximum">
+              <number>40</number>
              </property>
             </widget>
            </item>
           </layout>
          </item>
          <item>
-          <layout class="QHBoxLayout">
-           <item>
-            <widget class="QLabel" name="label_25">
-             <property name="text">
-              <string>Order</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QSlider" name="SliderOrder">
-             <property name="minimum">
-              <number>1</number>
-             </property>
-             <property name="maximum">
-              <number>9</number>
-             </property>
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="tickPosition">
-              <enum>QSlider::TicksBothSides</enum>
-             </property>
-             <property name="tickInterval">
-              <number>1</number>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="KeysafeSpinBox" name="SpinBoxOrder">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="focusPolicy">
-              <enum>Qt::NoFocus</enum>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-             <property name="keyboardTracking">
-              <bool>false</bool>
-             </property>
-             <property name="minimum">
-              <number>1</number>
-             </property>
-             <property name="maximum">
-              <number>100</number>
-             </property>
-             <property name="value">
-              <number>9</number>
-             </property>
-            </widget>
-           </item>
-          </layout>
+          <layout class="QHBoxLayout" name="horizontalLayout_18"/>
          </item>
          <item>
-          <layout class="QHBoxLayout">
+          <layout class="QHBoxLayout" name="horizontalLayout_16">
            <item>
-            <widget class="QLabel" name="label_26">
-             <property name="text">
-              <string>Retries</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QSlider" name="SliderRetries">
-             <property name="minimum">
-              <number>1</number>
-             </property>
-             <property name="maximum">
-              <number>100</number>
-             </property>
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="tickPosition">
-              <enum>QSlider::TicksBothSides</enum>
-             </property>
-             <property name="tickInterval">
-              <number>10</number>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="KeysafeSpinBox" name="SpinBoxRetries">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="focusPolicy">
-              <enum>Qt::NoFocus</enum>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-             <property name="keyboardTracking">
-              <bool>false</bool>
-             </property>
-             <property name="minimum">
-              <number>1</number>
-             </property>
-             <property name="maximum">
-              <number>100</number>
-             </property>
-             <property name="value">
-              <number>9</number>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QHBoxLayout">
-           <item>
-            <widget class="QLabel" name="label_27">
-             <property name="text">
-              <string>Converge</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QSpinBox" name="SpinBoxConverge">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="focusPolicy">
-              <enum>Qt::NoFocus</enum>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-             <property name="keyboardTracking">
-              <bool>false</bool>
+            <widget class="QSpinBox" name="spinBoxMLSampling">
+             <property name="font">
+              <font>
+               <pointsize>8</pointsize>
+              </font>
              </property>
              <property name="suffix">
-              <string> (250)</string>
+              <string>%</string>
+             </property>
+             <property name="prefix">
+              <string/>
              </property>
              <property name="minimum">
               <number>1</number>
              </property>
              <property name="maximum">
-              <number>10</number>
+              <number>100</number>
+             </property>
+             <property name="singleStep">
+              <number>5</number>
              </property>
              <property name="value">
-              <number>1</number>
+              <number>100</number>
              </property>
             </widget>
            </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QHBoxLayout">
            <item>
-            <widget class="QLabel" name="label_28">
+            <widget class="QPushButton" name="trainML">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
              <property name="text">
-              <string>Contrast</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <string>Sample/Train</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QSlider" name="SliderContrast">
-             <property name="minimum">
-              <number>1</number>
-             </property>
-             <property name="maximum">
-              <number>10</number>
-             </property>
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="tickPosition">
-              <enum>QSlider::TicksBothSides</enum>
-             </property>
-             <property name="tickInterval">
-              <number>1</number>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="KeysafeSpinBox" name="SpinBoxContrast">
+            <widget class="QLabel" name="lblMLStatus">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
-             <property name="focusPolicy">
-              <enum>Qt::NoFocus</enum>
+             <property name="font">
+              <font>
+               <pointsize>7</pointsize>
+              </font>
              </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
+             <property name="text">
+              <string>Trained on xxx samples</string>
              </property>
-             <property name="keyboardTracking">
-              <bool>false</bool>
-             </property>
-             <property name="minimum">
-              <number>1</number>
-             </property>
-             <property name="maximum">
-              <number>10</number>
-             </property>
-             <property name="value">
-              <number>9</number>
+             <property name="wordWrap">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
           </layout>
-         </item>
-         <item>
-          <widget class="QPushButton" name="FindPolynomial">
-           <property name="text">
-            <string>Find Polynomial</string>
-           </property>
-          </widget>
          </item>
         </layout>
        </widget>
@@ -1669,7 +1605,7 @@
             <string>Boost:</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
            </property>
           </widget>
          </item>
@@ -1707,10 +1643,10 @@
             <number>5</number>
            </property>
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
            <property name="tickPosition">
-            <enum>QSlider::TicksBothSides</enum>
+            <enum>QSlider::TickPosition::TicksBothSides</enum>
            </property>
            <property name="tickInterval">
             <number>10</number>
@@ -1751,10 +1687,10 @@
             <number>10</number>
            </property>
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
            <property name="tickPosition">
-            <enum>QSlider::TicksBothSides</enum>
+            <enum>QSlider::TickPosition::TicksBothSides</enum>
            </property>
            <property name="tickInterval">
             <number>5</number>
@@ -1767,7 +1703,7 @@
             <string>Radius</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
            </property>
           </widget>
          </item>
@@ -1783,10 +1719,10 @@
             <number>0</number>
            </property>
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
            <property name="tickPosition">
-            <enum>QSlider::TicksBothSides</enum>
+            <enum>QSlider::TickPosition::TicksBothSides</enum>
            </property>
            <property name="tickInterval">
             <number>10</number>
@@ -1799,7 +1735,7 @@
             <string>Adjust</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
            </property>
           </widget>
          </item>
@@ -1901,7 +1837,7 @@
          <item>
           <spacer name="verticalSpacer_4">
            <property name="orientation">
-            <enum>Qt::Vertical</enum>
+            <enum>Qt::Orientation::Vertical</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
@@ -1919,7 +1855,7 @@
               <string>Min Radius</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -1935,10 +1871,10 @@
               <number>5</number>
              </property>
              <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+              <enum>Qt::Orientation::Horizontal</enum>
              </property>
              <property name="tickPosition">
-              <enum>QSlider::TicksBothSides</enum>
+              <enum>QSlider::TickPosition::TicksBothSides</enum>
              </property>
              <property name="tickInterval">
               <number>10</number>
@@ -1977,7 +1913,7 @@
               <string>Adjust</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -1993,10 +1929,10 @@
               <number>0</number>
              </property>
              <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+              <enum>Qt::Orientation::Horizontal</enum>
              </property>
              <property name="tickPosition">
-              <enum>QSlider::TicksBothSides</enum>
+              <enum>QSlider::TickPosition::TicksBothSides</enum>
              </property>
              <property name="tickInterval">
               <number>10</number>
@@ -2024,6 +1960,382 @@
               <number>0</number>
              </property>
             </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tabGradients">
+        <attribute name="title">
+         <string>Gradients</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_10">
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_9">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_7">
+             <item>
+              <widget class="QLabel" name="label_36">
+               <property name="text">
+                <string>Effect (dist min)</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="SliderBoost_4">
+               <property name="minimum">
+                <number>-100</number>
+               </property>
+               <property name="maximum">
+                <number>100</number>
+               </property>
+               <property name="value">
+                <number>10</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="tickPosition">
+                <enum>QSlider::TickPosition::TicksBothSides</enum>
+               </property>
+               <property name="tickInterval">
+                <number>5</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="KeysafeSpinBox" name="spinGradientsDistMinEffect">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="keyboardTracking">
+                <bool>false</bool>
+               </property>
+               <property name="minimum">
+                <number>-100</number>
+               </property>
+               <property name="maximum">
+                <number>100</number>
+               </property>
+               <property name="value">
+                <number>0</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_10">
+             <item>
+              <widget class="QLabel" name="label_37">
+               <property name="text">
+                <string>Effect (dist max)</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="SliderBoost_5">
+               <property name="minimum">
+                <number>-100</number>
+               </property>
+               <property name="maximum">
+                <number>100</number>
+               </property>
+               <property name="value">
+                <number>10</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="tickPosition">
+                <enum>QSlider::TickPosition::TicksBothSides</enum>
+               </property>
+               <property name="tickInterval">
+                <number>5</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="KeysafeSpinBox" name="spinGradientsDistMaxEffect">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="keyboardTracking">
+                <bool>false</bool>
+               </property>
+               <property name="minimum">
+                <number>-100</number>
+               </property>
+               <property name="maximum">
+                <number>100</number>
+               </property>
+               <property name="value">
+                <number>10</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Orientation::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_11">
+             <item>
+              <widget class="QLabel" name="label_38">
+               <property name="text">
+                <string>Dist min</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="SliderBoost_6">
+               <property name="minimum">
+                <number>0</number>
+               </property>
+               <property name="maximum">
+                <number>5000</number>
+               </property>
+               <property name="value">
+                <number>0</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="tickPosition">
+                <enum>QSlider::TickPosition::NoTicks</enum>
+               </property>
+               <property name="tickInterval">
+                <number>5</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="KeysafeSpinBox" name="spinGradientsDistMin">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="keyboardTracking">
+                <bool>false</bool>
+               </property>
+               <property name="minimum">
+                <number>0</number>
+               </property>
+               <property name="maximum">
+                <number>5000</number>
+               </property>
+               <property name="value">
+                <number>0</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_12">
+             <item>
+              <widget class="QLabel" name="label_39">
+               <property name="text">
+                <string>Dist max</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="SliderBoost_7">
+               <property name="minimum">
+                <number>0</number>
+               </property>
+               <property name="maximum">
+                <number>5000</number>
+               </property>
+               <property name="value">
+                <number>100</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="tickPosition">
+                <enum>QSlider::TickPosition::NoTicks</enum>
+               </property>
+               <property name="tickInterval">
+                <number>5</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="KeysafeSpinBox" name="spinGradientsDistMax">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="keyboardTracking">
+                <bool>false</bool>
+               </property>
+               <property name="minimum">
+                <number>0</number>
+               </property>
+               <property name="maximum">
+                <number>5000</number>
+               </property>
+               <property name="value">
+                <number>100</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Orientation::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_14">
+             <item>
+              <widget class="QLabel" name="label_40">
+               <property name="text">
+                <string>Point Density</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="SliderBoost_8">
+               <property name="minimum">
+                <number>0</number>
+               </property>
+               <property name="maximum">
+                <number>20</number>
+               </property>
+               <property name="value">
+                <number>0</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="tickPosition">
+                <enum>QSlider::TickPosition::NoTicks</enum>
+               </property>
+               <property name="tickInterval">
+                <number>5</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="KeysafeSpinBox" name="spinGradientsPointDensity">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="keyboardTracking">
+                <bool>false</bool>
+               </property>
+               <property name="minimum">
+                <number>0</number>
+               </property>
+               <property name="maximum">
+                <number>20</number>
+               </property>
+               <property name="value">
+                <number>3</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_5">
+             <property name="orientation">
+              <enum>Qt::Orientation::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_13">
+             <item>
+              <widget class="QLabel" name="lblGradientsWarning">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Select ONE curve to apply gradient.</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="chkGradientsPreview">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Preview</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </item>
@@ -2076,7 +2388,7 @@
     <bool>true</bool>
    </property>
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -2084,7 +2396,7 @@
    <property name="minimumSize">
     <size>
      <width>350</width>
-     <height>253</height>
+     <height>249</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -2097,10 +2409,10 @@
     <bool>false</bool>
    </property>
    <property name="features">
-    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+    <set>QDockWidget::DockWidgetFeature::DockWidgetFloatable|QDockWidget::DockWidgetFeature::DockWidgetMovable</set>
    </property>
    <property name="allowedAreas">
-    <set>Qt::RightDockWidgetArea</set>
+    <set>Qt::DockWidgetArea::RightDockWidgetArea</set>
    </property>
    <property name="windowTitle">
     <string>Output (F7)</string>
@@ -2149,7 +2461,7 @@
         </size>
        </property>
        <property name="tabShape">
-        <enum>QTabWidget::Rounded</enum>
+        <enum>QTabWidget::TabShape::Rounded</enum>
        </property>
        <property name="currentIndex">
         <number>0</number>
@@ -2160,24 +2472,24 @@
         </attribute>
         <layout class="QHBoxLayout">
          <item>
-          <layout class="QGridLayout" name="gridLayout" columnstretch="0,1">
+          <layout class="QGridLayout" name="gridLayout_3" columnstretch="0,1">
            <item row="4" column="0">
             <widget class="QLabel" name="label_12">
              <property name="layoutDirection">
-              <enum>Qt::LeftToRight</enum>
+              <enum>Qt::LayoutDirection::LeftToRight</enum>
              </property>
              <property name="text">
               <string>Sequence front to back?</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
            <item row="4" column="1">
             <widget class="QCheckBox" name="CheckMirror">
              <property name="layoutDirection">
-              <enum>Qt::LeftToRight</enum>
+              <enum>Qt::LayoutDirection::LeftToRight</enum>
              </property>
              <property name="text">
               <string/>
@@ -2190,7 +2502,7 @@
               <string>mm/slice Left:</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -2200,7 +2512,7 @@
               <string>Files: First</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -2210,7 +2522,7 @@
               <string>Slices/mm:</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -2220,7 +2532,7 @@
               <string>mm/slice Down:</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -2249,7 +2561,7 @@
               <string>Files: Last</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -2259,7 +2571,7 @@
               <string>Bin: Z</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -2288,7 +2600,7 @@
               <string>Pixel Sens.:</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -2298,7 +2610,7 @@
               <string>Bin: XY</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -2330,7 +2642,7 @@
               </sizepolicy>
              </property>
              <property name="buttonSymbols">
-              <enum>QAbstractSpinBox::UpDownArrows</enum>
+              <enum>QAbstractSpinBox::ButtonSymbols::UpDownArrows</enum>
              </property>
              <property name="keyboardTracking">
               <bool>false</bool>
@@ -2412,7 +2724,7 @@
               <string>Pixels/mm:</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -2451,7 +2763,7 @@
            <item row="10" column="0">
             <spacer name="verticalSpacer">
              <property name="orientation">
-              <enum>Qt::Vertical</enum>
+              <enum>Qt::Orientation::Vertical</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -2482,10 +2794,10 @@
             <bool>true</bool>
            </property>
            <property name="dragDropMode">
-            <enum>QAbstractItemView::InternalMove</enum>
+            <enum>QAbstractItemView::DragDropMode::InternalMove</enum>
            </property>
            <property name="selectionMode">
-            <enum>QAbstractItemView::ExtendedSelection</enum>
+            <enum>QAbstractItemView::SelectionMode::ExtendedSelection</enum>
            </property>
            <property name="animated">
             <bool>false</bool>
@@ -2530,7 +2842,7 @@
               <string>Fidelity</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -2543,7 +2855,7 @@
               </sizepolicy>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
              <property name="keyboardTracking">
               <bool>false</bool>
@@ -2565,7 +2877,7 @@
            <item>
             <spacer>
              <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+              <enum>Qt::Orientation::Horizontal</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -2585,7 +2897,7 @@
            <item>
             <spacer>
              <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+              <enum>Qt::Orientation::Horizontal</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -2601,7 +2913,7 @@
               <string>Next Key</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -2701,7 +3013,7 @@
   </widget>
   <widget class="QDockWidget" name="DockHist">
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -2722,10 +3034,10 @@
     <bool>false</bool>
    </property>
    <property name="features">
-    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+    <set>QDockWidget::DockWidgetFeature::DockWidgetFloatable|QDockWidget::DockWidgetFeature::DockWidgetMovable</set>
    </property>
    <property name="allowedAreas">
-    <set>Qt::RightDockWidgetArea</set>
+    <set>Qt::DockWidgetArea::RightDockWidgetArea</set>
    </property>
    <property name="windowTitle">
     <string>Histogram (F8)</string>
@@ -2759,7 +3071,7 @@
     <bool>true</bool>
    </property>
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -2780,10 +3092,10 @@
     <bool>false</bool>
    </property>
    <property name="features">
-    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+    <set>QDockWidget::DockWidgetFeature::DockWidgetFloatable|QDockWidget::DockWidgetFeature::DockWidgetMovable</set>
    </property>
    <property name="allowedAreas">
-    <set>Qt::RightDockWidgetArea</set>
+    <set>Qt::DockWidgetArea::RightDockWidgetArea</set>
    </property>
    <property name="windowTitle">
     <string>Segments (F5)</string>
@@ -2814,13 +3126,13 @@
      <item>
       <widget class="QTreeWidget" name="SegmentsTreeWidget">
        <property name="editTriggers">
-        <set>QAbstractItemView::NoEditTriggers</set>
+        <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
        </property>
        <property name="selectionMode">
-        <enum>QAbstractItemView::ExtendedSelection</enum>
+        <enum>QAbstractItemView::SelectionMode::ExtendedSelection</enum>
        </property>
        <property name="textElideMode">
-        <enum>Qt::ElideMiddle</enum>
+        <enum>Qt::TextElideMode::ElideMiddle</enum>
        </property>
        <property name="rootIsDecorated">
         <bool>false</bool>
@@ -2921,7 +3233,7 @@
   </widget>
   <widget class="QDockWidget" name="DockInfo">
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -2939,10 +3251,10 @@
     </size>
    </property>
    <property name="features">
-    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+    <set>QDockWidget::DockWidgetFeature::DockWidgetFloatable|QDockWidget::DockWidgetFeature::DockWidgetMovable</set>
    </property>
    <property name="allowedAreas">
-    <set>Qt::RightDockWidgetArea</set>
+    <set>Qt::DockWidgetArea::RightDockWidgetArea</set>
    </property>
    <property name="windowTitle">
     <string>Info (F9)</string>
@@ -2986,7 +3298,7 @@ Interpreted Images:</string>
             <bool>true</bool>
            </property>
            <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+            <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTop|Qt::AlignmentFlag::AlignTrailing</set>
            </property>
           </widget>
          </item>
@@ -2996,7 +3308,7 @@ Interpreted Images:</string>
             <string>TextLabel</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+            <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
            </property>
           </widget>
          </item>
@@ -3015,7 +3327,7 @@ Interpreted Images:</string>
     <bool>true</bool>
    </property>
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -3036,10 +3348,10 @@ Interpreted Images:</string>
     <bool>true</bool>
    </property>
    <property name="features">
-    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+    <set>QDockWidget::DockWidgetFeature::DockWidgetFloatable|QDockWidget::DockWidgetFeature::DockWidgetMovable</set>
    </property>
    <property name="allowedAreas">
-    <set>Qt::RightDockWidgetArea</set>
+    <set>Qt::DockWidgetArea::RightDockWidgetArea</set>
    </property>
    <property name="windowTitle">
     <string>Masks (F4)</string>
@@ -3070,19 +3382,19 @@ Interpreted Images:</string>
      <item>
       <widget class="QTreeWidget" name="MasksTreeWidget">
        <property name="editTriggers">
-        <set>QAbstractItemView::NoEditTriggers</set>
+        <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
        </property>
        <property name="alternatingRowColors">
         <bool>false</bool>
        </property>
        <property name="selectionMode">
-        <enum>QAbstractItemView::ExtendedSelection</enum>
+        <enum>QAbstractItemView::SelectionMode::ExtendedSelection</enum>
        </property>
        <property name="selectionBehavior">
-        <enum>QAbstractItemView::SelectRows</enum>
+        <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
        </property>
        <property name="textElideMode">
-        <enum>Qt::ElideMiddle</enum>
+        <enum>Qt::TextElideMode::ElideMiddle</enum>
        </property>
        <property name="rootIsDecorated">
         <bool>false</bool>
@@ -3192,7 +3504,7 @@ Interpreted Images:</string>
     <bool>true</bool>
    </property>
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -3213,10 +3525,10 @@ Interpreted Images:</string>
     <bool>true</bool>
    </property>
    <property name="features">
-    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+    <set>QDockWidget::DockWidgetFeature::DockWidgetFloatable|QDockWidget::DockWidgetFeature::DockWidgetMovable</set>
    </property>
    <property name="allowedAreas">
-    <set>Qt::RightDockWidgetArea</set>
+    <set>Qt::DockWidgetArea::RightDockWidgetArea</set>
    </property>
    <property name="windowTitle">
     <string>Curves (F6)</string>
@@ -3247,10 +3559,10 @@ Interpreted Images:</string>
      <item>
       <widget class="QTreeWidget" name="CurvesTreeWidget">
        <property name="selectionMode">
-        <enum>QAbstractItemView::ExtendedSelection</enum>
+        <enum>QAbstractItemView::SelectionMode::ExtendedSelection</enum>
        </property>
        <property name="textElideMode">
-        <enum>Qt::ElideMiddle</enum>
+        <enum>Qt::TextElideMode::ElideMiddle</enum>
        </property>
        <property name="rootIsDecorated">
         <bool>false</bool>
@@ -3286,6 +3598,11 @@ Interpreted Images:</string>
        <column>
         <property name="text">
          <string>End Slice</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Auto</string>
         </property>
        </column>
       </widget>
@@ -3354,7 +3671,7 @@ Interpreted Images:</string>
     <bool>true</bool>
    </property>
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -3368,17 +3685,17 @@ Interpreted Images:</string>
    <property name="maximumSize">
     <size>
      <width>180</width>
-     <height>100000</height>
+     <height>524287</height>
     </size>
    </property>
    <property name="floating">
     <bool>false</bool>
    </property>
    <property name="features">
-    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+    <set>QDockWidget::DockWidgetFeature::DockWidgetFloatable|QDockWidget::DockWidgetFeature::DockWidgetMovable</set>
    </property>
    <property name="allowedAreas">
-    <set>Qt::LeftDockWidgetArea</set>
+    <set>Qt::DockWidgetArea::LeftDockWidgetArea</set>
    </property>
    <property name="windowTitle">
     <string>Slice Selector (F2) </string>
@@ -3415,7 +3732,7 @@ Interpreted Images:</string>
         </sizepolicy>
        </property>
        <property name="selectionMode">
-        <enum>QAbstractItemView::ExtendedSelection</enum>
+        <enum>QAbstractItemView::SelectionMode::ExtendedSelection</enum>
        </property>
       </widget>
      </item>
@@ -3434,7 +3751,7 @@ Interpreted Images:</string>
     <bool>true</bool>
    </property>
    <property name="orientation">
-    <enum>Qt::Horizontal</enum>
+    <enum>Qt::Orientation::Horizontal</enum>
    </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
@@ -3454,6 +3771,346 @@ Interpreted Images:</string>
    <addaction name="separator"/>
    <addaction name="actionSquare"/>
    <addaction name="action3D_Brush"/>
+  </widget>
+  <widget class="QDockWidget" name="DockPreview3D">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>348</width>
+     <height>200</height>
+    </size>
+   </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetFeature::DockWidgetFloatable|QDockWidget::DockWidgetFeature::DockWidgetMovable</set>
+   </property>
+   <property name="windowTitle">
+    <string>3D Preview (F10)</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_Preview3D">
+    <layout class="QVBoxLayout" name="verticalLayout_Preview3D">
+     <property name="spacing">
+      <number>2</number>
+     </property>
+     <property name="leftMargin">
+      <number>2</number>
+     </property>
+     <property name="topMargin">
+      <number>2</number>
+     </property>
+     <property name="rightMargin">
+      <number>2</number>
+     </property>
+     <property name="bottomMargin">
+      <number>2</number>
+     </property>
+     <item>
+      <widget class="PreviewWidget" name="previewWidget3D" native="true">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="preview3DControlBar">
+       <property name="spacing">
+        <number>2</number>
+       </property>
+       <item>
+        <widget class="QComboBox" name="preview3DModeCombo">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>1</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="toolTip">
+          <string>Render mode — None: blank viewport; Segments: activated segments; Outputs: output objects</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>None</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Segments</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Outputs</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="preview3DPositionChk">
+         <property name="toolTip">
+          <string>Show current slice plane and hover crosshair in 3D view</string>
+         </property>
+         <property name="text">
+          <string>Pos.</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="preview3DControlSpacer">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>10</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QToolButton" name="preview3DZoomOutBtn">
+         <property name="toolTip">
+          <string>Zoom Out</string>
+         </property>
+         <property name="text">
+          <string>−</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="preview3DZoomInBtn">
+         <property name="toolTip">
+          <string>Zoom In</string>
+         </property>
+         <property name="text">
+          <string>+</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="preview3DResetBtn">
+         <property name="toolTip">
+          <string>Reset View (double-click viewport also resets)</string>
+         </property>
+         <property name="text">
+          <string>Reset</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="preview3DAutoRenderChk">
+         <property name="toolTip">
+          <string>When checked, the 3D view rebuilds automatically whenever data changes. Uncheck to freeze the current render; use Refresh to rebuild manually.</string>
+         </property>
+         <property name="text">
+          <string>Auto</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="preview3DRefreshBtn">
+         <property name="toolTip">
+          <string>Force a full rebuild of the 3D preview now (works even when Auto Render is off)</string>
+         </property>
+         <property name="text">
+          <string>Refresh</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../../SPIERScommon/commonresources.qrc">
+           <normaloff>:/customstyle/light/icon_refresh.svg</normaloff>:/customstyle/light/icon_refresh.svg</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="preview3DRoiBar">
+       <property name="spacing">
+        <number>3</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="preview3DZLabel">
+         <property name="text">
+          <string>Z:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="preview3DZMinSpin">
+         <property name="toolTip">
+          <string>First slice to include in 3D preview (Z-range start)</string>
+         </property>
+         <property name="minimum">
+          <number>0</number>
+         </property>
+         <property name="maximum">
+          <number>9999</number>
+         </property>
+         <property name="value">
+          <number>0</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="preview3DZToLabel">
+         <property name="text">
+          <string>–</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="preview3DZMaxSpin">
+         <property name="toolTip">
+          <string>Last slice to include in 3D preview (Z-range end)</string>
+         </property>
+         <property name="minimum">
+          <number>0</number>
+         </property>
+         <property name="maximum">
+          <number>9999</number>
+         </property>
+         <property name="value">
+          <number>9999</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="preview3DRoiSpacer">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>8</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QLabel" name="preview3DXYLabel">
+         <property name="text">
+          <string>XY Bin:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="preview3DXYStepCombo">
+         <property name="toolTip">
+          <string>XY resolution of 3D preview — lower values load faster and use less GPU memory</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>Full</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>½</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>¼</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>⅛</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="preview3DZStepLabel">
+         <property name="text">
+          <string>Z Bin:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="preview3DZStepCombo">
+         <property name="toolTip">
+          <string>Z slice sampling — Full uses every slice; ½ uses every 2nd slice (half as many texture layers, same rendered height)</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>Full</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>½</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>¼</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>⅛</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="DockGenerateTestData">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>300</width>
+     <height>400</height>
+    </size>
+   </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetFeature::DockWidgetFloatable|QDockWidget::DockWidgetFeature::DockWidgetMovable</set>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::DockWidgetArea::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>Generate Test Data</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
   </widget>
   <action name="actionA_command">
    <property name="text">
@@ -3591,7 +4248,7 @@ Interpreted Images:</string>
     <string>Ctrl+B</string>
    </property>
    <property name="shortcutContext">
-    <enum>Qt::WindowShortcut</enum>
+    <enum>Qt::ShortcutContext::WindowShortcut</enum>
    </property>
   </action>
   <action name="actionSegment">
@@ -3615,7 +4272,7 @@ Interpreted Images:</string>
     <string>Ctrl+S</string>
    </property>
    <property name="shortcutContext">
-    <enum>Qt::WindowShortcut</enum>
+    <enum>Qt::ShortcutContext::WindowShortcut</enum>
    </property>
   </action>
   <action name="actionRecalc">
@@ -3821,7 +4478,7 @@ Interpreted Images:</string>
     <string>Ctrl+Space</string>
    </property>
    <property name="shortcutContext">
-    <enum>Qt::WindowShortcut</enum>
+    <enum>Qt::ShortcutContext::WindowShortcut</enum>
    </property>
   </action>
   <action name="actionThreshold">
@@ -3838,7 +4495,7 @@ Interpreted Images:</string>
     <string>Ctrl+T</string>
    </property>
    <property name="shortcutContext">
-    <enum>Qt::WindowShortcut</enum>
+    <enum>Qt::ShortcutContext::WindowShortcut</enum>
    </property>
   </action>
   <action name="actionShowMasks">
@@ -3860,6 +4517,16 @@ Interpreted Images:</string>
   <action name="actionAb_out">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="actionCheck_for_Updates">
+   <property name="text">
+    <string>Check for Updates...</string>
+   </property>
+  </action>
+  <action name="actionTestCrashHandler">
+   <property name="text">
+    <string>Test Crash Handler</string>
    </property>
   </action>
   <action name="actionKeyboard_Commands">
@@ -4394,6 +5061,31 @@ Interpreted Images:</string>
     <string>F9</string>
    </property>
   </action>
+  <action name="action3DPreview">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>3D Preview</string>
+   </property>
+   <property name="shortcut">
+    <string>F10</string>
+   </property>
+  </action>
+  <action name="actionGenerateTestData">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Generate Test Data</string>
+   </property>
+  </action>
   <action name="actionShow_position_slice_selector">
    <property name="checkable">
     <bool>true</bool>
@@ -4452,6 +5144,29 @@ Interpreted Images:</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+I</string>
+   </property>
+  </action>
+  <action name="actionAutomate_curve_over_selected_slices">
+   <property name="text">
+    <string>Automate curve over selected slices</string>
+   </property>
+  </action>
+  <action name="actionStop_automatic_curve_interpolation">
+   <property name="text">
+    <string>Stop automatic interpolation</string>
+   </property>
+  </action>
+  <action name="actionMake_node_under_cursor_calculated">
+   <property name="text">
+    <string>Make node under cursor calculated</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+X</string>
+   </property>
+  </action>
+  <action name="actionMake_current_slice_nodes_calculated">
+   <property name="text">
+    <string>Make all nodes on current slice calculated</string>
    </property>
   </action>
   <action name="action3D_Brush">
@@ -4530,6 +5245,100 @@ Interpreted Images:</string>
     <string>Code on GitHub</string>
    </property>
   </action>
+  <action name="actionCycle_Bright_Segment_Mask">
+   <property name="text">
+    <string>Cycle Bright/Segment/Mask</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+C</string>
+   </property>
+  </action>
+  <action name="actionIncrease_Size">
+   <property name="text">
+    <string>Increase Size</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+=</string>
+   </property>
+  </action>
+  <action name="actionDecrease_Size">
+   <property name="text">
+    <string>Decrease Size</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+-</string>
+   </property>
+  </action>
+  <action name="actionSegment_brush_applies_locks">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Segment brush applies locks</string>
+   </property>
+  </action>
+  <action name="actionCalculate_Features">
+   <property name="text">
+    <string>Precalculate features</string>
+   </property>
+  </action>
+  <action name="actionSave_feature_set">
+   <property name="text">
+    <string>Save feature set...</string>
+   </property>
+  </action>
+  <action name="actionLoad_feature_set">
+   <property name="text">
+    <string>Load feature set...</string>
+   </property>
+  </action>
+  <action name="actionCT_simpl">
+   <property name="text">
+    <string>CT simple</string>
+   </property>
+  </action>
+  <action name="actionCT_complex">
+   <property name="text">
+    <string>CT complex</string>
+   </property>
+  </action>
+  <action name="actionColour_simple">
+   <property name="text">
+    <string>Colour simple</string>
+   </property>
+  </action>
+  <action name="actionColour_complex">
+   <property name="text">
+    <string>Colour complex</string>
+   </property>
+  </action>
+  <action name="actionRemove_feature_files">
+   <property name="text">
+    <string>Remove feature files</string>
+   </property>
+  </action>
+  <action name="actionIncremental_sampling">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Incremental sampling</string>
+   </property>
+  </action>
+  <action name="actionClear_sample">
+   <property name="text">
+    <string>Clear sample</string>
+   </property>
+  </action>
+  <action name="actionMLAuto_Update">
+   <property name="text">
+    <string>Train/Generate this slice</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
+   </property>
+  </action>
+  <zorder>DockPreview3D</zorder>
  </widget>
  <customwidgets>
   <customwidget>
@@ -4542,8 +5351,14 @@ Interpreted Images:</string>
    <extends>QGraphicsView</extends>
    <header>src/mainview.h</header>
   </customwidget>
+  <customwidget>
+   <class>PreviewWidget</class>
+   <extends>QWidget</extends>
+   <header>src/previewwidget.h</header>
+  </customwidget>
  </customwidgets>
  <resources>
+  <include location="../../SPIERScommon/commonresources.qrc"/>
   <include location="../SPIERSedit.qrc"/>
  </resources>
  <connections>
@@ -4559,7 +5374,7 @@ Interpreted Images:</string>
     </hint>
     <hint type="destinationlabel">
      <x>60</x>
-     <y>604</y>
+     <y>922</y>
     </hint>
    </hints>
   </connection>
@@ -4571,7 +5386,7 @@ Interpreted Images:</string>
    <hints>
     <hint type="sourcelabel">
      <x>60</x>
-     <y>604</y>
+     <y>922</y>
     </hint>
     <hint type="destinationlabel">
      <x>32</x>
@@ -4587,7 +5402,7 @@ Interpreted Images:</string>
    <hints>
     <hint type="sourcelabel">
      <x>116</x>
-     <y>604</y>
+     <y>922</y>
     </hint>
     <hint type="destinationlabel">
      <x>110</x>
@@ -4607,7 +5422,7 @@ Interpreted Images:</string>
     </hint>
     <hint type="destinationlabel">
      <x>116</x>
-     <y>604</y>
+     <y>922</y>
     </hint>
    </hints>
   </connection>
@@ -4623,7 +5438,7 @@ Interpreted Images:</string>
     </hint>
     <hint type="destinationlabel">
      <x>172</x>
-     <y>604</y>
+     <y>922</y>
     </hint>
    </hints>
   </connection>
@@ -4635,7 +5450,7 @@ Interpreted Images:</string>
    <hints>
     <hint type="sourcelabel">
      <x>172</x>
-     <y>604</y>
+     <y>922</y>
     </hint>
     <hint type="destinationlabel">
      <x>164</x>
@@ -4651,11 +5466,11 @@ Interpreted Images:</string>
    <hints>
     <hint type="sourcelabel">
      <x>910</x>
-     <y>212</y>
+     <y>273</y>
     </hint>
     <hint type="destinationlabel">
-     <x>944</x>
-     <y>209</y>
+     <x>949</x>
+     <y>273</y>
     </hint>
    </hints>
   </connection>
@@ -4666,140 +5481,12 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>944</x>
-     <y>209</y>
+     <x>949</x>
+     <y>273</y>
     </hint>
     <hint type="destinationlabel">
      <x>910</x>
-     <y>212</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>SliderSparsity</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>SpinBoxSparsity</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>912</x>
-     <y>115</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>946</x>
-     <y>115</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>SpinBoxSparsity</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>SliderSparsity</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>946</x>
-     <y>115</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>912</x>
-     <y>115</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>SliderOrder</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>SpinBoxOrder</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>907</x>
-     <y>139</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>946</x>
-     <y>139</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>SpinBoxOrder</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>SliderOrder</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>946</x>
-     <y>139</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>907</x>
-     <y>139</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>SliderRetries</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>SpinBoxRetries</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>907</x>
-     <y>163</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>946</x>
-     <y>163</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>SpinBoxRetries</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>SliderRetries</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>946</x>
-     <y>163</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>907</x>
-     <y>163</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>SliderContrast</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>SpinBoxContrast</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>890</x>
-     <y>202</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>938</x>
-     <y>202</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>SpinBoxContrast</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>SliderContrast</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>938</x>
-     <y>202</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>890</x>
-     <y>202</y>
+     <y>273</y>
     </hint>
    </hints>
   </connection>
@@ -4811,11 +5498,11 @@ Interpreted Images:</string>
    <hints>
     <hint type="sourcelabel">
      <x>117</x>
-     <y>1354</y>
+     <y>1838</y>
     </hint>
     <hint type="destinationlabel">
      <x>105</x>
-     <y>1230</y>
+     <y>1816</y>
     </hint>
    </hints>
   </connection>
@@ -4827,11 +5514,11 @@ Interpreted Images:</string>
    <hints>
     <hint type="sourcelabel">
      <x>904</x>
-     <y>133</y>
+     <y>154</y>
     </hint>
     <hint type="destinationlabel">
      <x>938</x>
-     <y>133</y>
+     <y>154</y>
     </hint>
    </hints>
   </connection>
@@ -4843,11 +5530,11 @@ Interpreted Images:</string>
    <hints>
     <hint type="sourcelabel">
      <x>904</x>
-     <y>174</y>
+     <y>216</y>
     </hint>
     <hint type="destinationlabel">
      <x>943</x>
-     <y>174</y>
+     <y>216</y>
     </hint>
    </hints>
   </connection>
@@ -4859,11 +5546,11 @@ Interpreted Images:</string>
    <hints>
     <hint type="sourcelabel">
      <x>938</x>
-     <y>133</y>
+     <y>154</y>
     </hint>
     <hint type="destinationlabel">
      <x>904</x>
-     <y>133</y>
+     <y>154</y>
     </hint>
    </hints>
   </connection>
@@ -4875,11 +5562,11 @@ Interpreted Images:</string>
    <hints>
     <hint type="sourcelabel">
      <x>943</x>
-     <y>174</y>
+     <y>216</y>
     </hint>
     <hint type="destinationlabel">
      <x>904</x>
-     <y>174</y>
+     <y>216</y>
     </hint>
    </hints>
   </connection>
@@ -4890,12 +5577,12 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>722</x>
-     <y>212</y>
+     <x>904</x>
+     <y>278</y>
     </hint>
     <hint type="destinationlabel">
      <x>947</x>
-     <y>215</y>
+     <y>278</y>
     </hint>
    </hints>
   </connection>
@@ -4906,12 +5593,12 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>920</x>
-     <y>210</y>
+     <x>947</x>
+     <y>278</y>
     </hint>
     <hint type="destinationlabel">
-     <x>827</x>
-     <y>215</y>
+     <x>904</x>
+     <y>278</y>
     </hint>
    </hints>
   </connection>
@@ -4922,12 +5609,12 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>774</x>
-     <y>192</y>
+     <x>902</x>
+     <y>287</y>
     </hint>
     <hint type="destinationlabel">
-     <x>916</x>
-     <y>199</y>
+     <x>946</x>
+     <y>287</y>
     </hint>
    </hints>
   </connection>
@@ -4938,12 +5625,12 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>919</x>
-     <y>188</y>
+     <x>946</x>
+     <y>287</y>
     </hint>
     <hint type="destinationlabel">
-     <x>882</x>
-     <y>186</y>
+     <x>902</x>
+     <y>287</y>
     </hint>
    </hints>
   </connection>
@@ -4954,12 +5641,12 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>828</x>
-     <y>218</y>
+     <x>903</x>
+     <y>314</y>
     </hint>
     <hint type="destinationlabel">
-     <x>917</x>
-     <y>225</y>
+     <x>946</x>
+     <y>314</y>
     </hint>
    </hints>
   </connection>
@@ -4970,12 +5657,172 @@ Interpreted Images:</string>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>932</x>
-     <y>214</y>
+     <x>946</x>
+     <y>314</y>
     </hint>
     <hint type="destinationlabel">
-     <x>883</x>
-     <y>219</y>
+     <x>903</x>
+     <y>314</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SliderBoost_4</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinGradientsDistMinEffect</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>902</x>
+     <y>119</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>945</x>
+     <y>119</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinGradientsDistMinEffect</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SliderBoost_4</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>945</x>
+     <y>119</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>902</x>
+     <y>119</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SliderBoost_8</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>spinGradientsPointDensity</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>784</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>925</x>
+     <y>263</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinGradientsPointDensity</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SliderBoost_8</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>930</x>
+     <y>248</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>822</x>
+     <y>253</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SliderBoost_7</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>spinGradientsDistMax</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>758</x>
+     <y>209</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>911</x>
+     <y>220</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinGradientsDistMax</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SliderBoost_7</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>921</x>
+     <y>204</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>832</x>
+     <y>211</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SliderBoost_6</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>spinGradientsDistMin</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>783</x>
+     <y>180</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>925</x>
+     <y>185</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinGradientsDistMin</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SliderBoost_6</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>937</x>
+     <y>175</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>791</x>
+     <y>188</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SliderBoost_5</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>spinGradientsDistMaxEffect</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>808</x>
+     <y>138</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>921</x>
+     <y>140</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinGradientsDistMaxEffect</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SliderBoost_5</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>923</x>
+     <y>129</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>796</x>
+     <y>143</y>
     </hint>
    </hints>
   </connection>

@@ -2,10 +2,10 @@
  * @file
  * Header: Main Window
  *
- * All SPIERSview code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSview code is Copyright 2008-2023 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERS code is Copyright 2008-2026 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -23,15 +23,16 @@
 #include <QTimer>
 #include <QtWidgets/QListWidgetItem>
 #include <QHBoxLayout>
-#include <QtWidgets/QShortcut>
+#include <QShortcut>
+#include <QElapsedTimer>
 
 #include "gl3widget.h"
 #include "fullscreenwindow.h"
 
 class QTreeWidgetItem;
 
-class vtkObject;
 class SPV;
+class ScaleGridOverlay;
 
 namespace Ui {
 class MainWindow;
@@ -52,7 +53,7 @@ public:
     void RefreshObjects();
     void EnableRenderCommands();
     void DisableRenderCommands();
-    void RefreshInfo();
+    void RefreshUIFromData();
     void setSamples(int i);
     void setSpecificProgress(int p);
     void setSpecificLabel(QString t);
@@ -60,10 +61,15 @@ public:
 
     Ui::MainWindow *ui;
     GlWidget *gl3widget;
+    ScaleGridOverlay *gridOverlay;
+
     QHBoxLayout *gllayout;
 
+    void updateLightColourButtons();
 public slots:
     void showSpecificProgress();
+    void releaseStartup();
+    void onConnectivityChanged(bool online);
 
 protected:
     bool eventFilter(QObject *object, QEvent *event);
@@ -88,11 +94,12 @@ private:
     QLabel *scalelabel;
     QLabel *ktrlabel;
 
+    bool m_isStartTimerFired = false;
     QTimer *StartTimer;
     QTimer *SpinTimer;
     QTimer *PBtimer;
 
-    QElapsedTimer *time;
+    QElapsedTimer  *time;
     void UnsetAllStereo();
     void DrawChildObjects(QList <bool> selflags, int parent);
     void RefreshOneItem(QTreeWidgetItem *item, int i);
@@ -159,6 +166,8 @@ private slots:
     void on_actionObject_Panel_triggered();
     void on_actionProgress_Bars_triggered();
     void on_actionAbout_triggered();
+    void on_actionCheck_for_Updates_triggered();
+    void on_actionTestCrashHandler_triggered();
     void on_actionQuick_Guide_triggered();
     void on_actionSave_Changes_triggered();
     void on_actionSave_As_triggered();
@@ -233,10 +242,31 @@ private slots:
     void on_actionBounding_Box_triggered();
     void on_MultipleStepButton_pressed();
     void on_actionFull_Screen_triggered();
-    void on_actionScale_Grid_Font_Size_triggered();
     void on_actionReset_Scale_Grid_to_Defaults_triggered();
     void on_actionShow_Minor_Scale_Lines_triggered();
+    void on_actionQuadric_Fidelity_Reduction_triggered();
+    void on_actionLighting_Panel_triggered();
+    void on_mainLightColourButton_clicked();
+    void on_dialMainLightXY_valueChanged(int value);
+    void on_mainLightZ_valueChanged(int value);
+    void on_mainLightPower_valueChanged(int value);
+    void on_secondaryLightColourButton_clicked();
+    void on_headlightColourButton_clicked();
+    void on_dialSecondaryLightXY_valueChanged(int value);
+    void on_secondaryLightZ_valueChanged(int value);
+    void on_secondaryLightPower_valueChanged(int value);
+    void on_headlightPower_valueChanged(int value);
+    void on_chkSecondaryLightActive_stateChanged(int newState);
+    void on_chkHeadlightActive_stateChanged(int newState);
+    void on_cmbShadowsMain_currentIndexChanged(int index);
+    void on_cmbShadowsSecondary_currentIndexChanged(int index);
+    void on_actionClear_Scale_Markers_triggered();
+    void on_actionAdvancedPrefs_triggered();
+    void on_actionExport_as_OBJ_triggered();
+    void on_actionExport_as_FBX_triggered();
+    void on_actionExport_as_Blend_triggered();
 };
+
 
 extern MainWindow *mainWindow;
 

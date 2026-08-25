@@ -35,7 +35,7 @@ curve are only visible if the curve is selected.
 
 Each curve can only appear once on any one slice. If more than one curve
 is needed on one slice then multiple curves must be created. The same
-curve can be used to model different objects as long as they never don’t
+curve can be used to model different objects as long as they never don't
 appear on the same slice, but it is better practice to create a new
 curve for each new object. If a large number of curves are used it can
 become difficult to keep track of them; the *Grey-out curves not on
@@ -79,8 +79,8 @@ double-clicking.
 *Segment*: The segment the curve is assigned to, or [None] if not
 assigned. Double click to edit.
 
-*Slices*: [Added v2.14, not shown in Fig 17] – gives the flrst and last
-slice on which the curve is used, or ‘Not Used’ if not currently active
+*Slices*: [Added v2.14, not shown in Fig 17] - gives the first and last
+slice on which the curve is used, or 'Not Used' if not currently active
 on any slice.
 
 *Selecting curves*: One or more curves can be selected by left clicking
@@ -111,11 +111,11 @@ nodes. *To perform this sort of editing, a single curve must be selected
 in the *Curves* panel, and SPIERSedit must be in curve mode*. Curve
 editing uses the brush for position, but brush size is ignored.
 
-*Creating nodes:* The ‘=’ key adds a node to the curve at the current
+*Creating nodes:* The '=' key adds a node to the curve at the current
 mouse cursor position. If no nodes exist for the curve on the current
 slice, the minimum of 4 are created near the cursor position.
 
-*Removing nodes*: The ‘-‘ key removes a node from the current mouse
+*Removing nodes*: The '-' key removes a node from the current mouse
 cursor position. If this would reduce the number of nodes on the slice
 below four, the user is asked if they want to entirely remove the curve
 from the slice or not.
@@ -170,6 +170,73 @@ then interpolating them is a fast way to rather precisely specify
 regions to be masked, and is a technique the authors make extensive use
 of.
 
+Automatic Curve Interpolation
+-----------------------------
+
+SPIERSedit versions 4.0.4 and higher feature an improved 'automatic'
+interpolation mode which streamlines the workflow described above, by
+automating the interpolation step.
+
+An automated curve divides its nodes into two kinds. *Fixed* nodes are
+those the user has positioned explicitly; they behave exactly like nodes
+on an ordinary curve. *Calculated* nodes are those SPIERSedit works out
+for itself, by interpolating between the nearest fixed nodes above and
+below. The two are distinguished on screen: fixed nodes are drawn at
+normal size in the usual colours, while calculated nodes are drawn
+smaller and in grey. Importantly, this distinction applies to each node
+individually rather than to whole slices. A single slice can hold a
+mixture of fixed and calculated nodes, so one part of a curve can be
+pinned down precisely while the rest is left to follow the
+interpolation. This is what makes the system useful in practice: a
+structure can be tracked through a stack by correcting only the parts
+that need correcting, slice by slice, rather than redefining entire
+curves.
+
+.. figure:: _static/figure_AUTO1.png
+    :align: center
+	
+    Figure AUTO1. An automated curve, shown on a slice partway through its automated range. The large filled markers are fixed nodes, positioned explicitly by the user; the small outlined markers are calculated nodes, interpolated by SPIERSedit from the nearest fixed nodes above and below. Note that both kinds occur together on this single slice.
+
+*Setting up an automated curve*: select a single curve in the *Curves*
+panel which has nodes on precisely one slice and no others, select the
+range of slices to be automated in the *Slice Selector* panel (at least
+two slices, including the slice the curve is defined on), and use the
+*Automate curve over selected slices* command on the *Curves* menu. The
+curve is copied to every slice in the range; the nodes on the first and
+last slices of the range are made fixed, and all the nodes in between
+are made calculated. Curves which are automated are marked with a tick
+in the *Auto* column of the *Curves* panel. Note that nodes cannot be
+added to or removed from a curve while it is automated, so you should
+ensure that the initial curve used when setting up automation has enough
+nodes for your purposes.
+
+*Editing an automated curve*: drag any node in the usual way. If the
+node was calculated it becomes fixed at the position it is dropped, and
+the curve is immediately re-interpolated in slices before and after it.
+In effect, editing a slice pins that part of the curve there and lets
+the rest flow around it. As with normal curve editing, ticking *Lock
+curve shape* enables dragging of the whole curve; all nodes then become
+fixed on that slice. Note that the *Interpolate over selected slices*
+command is disabled for automated curves, as the automation performs
+this task itself.
+
+*Un-fixing nodes*: a fixed node can be 'un-fixed' - handed back to the
+interpolation, i.e. turned back into a calculated node. *Make node under
+cursor calculated* (Ctrl+Shift+X) un-fixes a single node, and *Make all
+nodes on current slice calculated* un-fixes the whole slice. Both
+commands are on the *Curves* menu, although note that you will need to
+use the keyboard shortcut for *Make node under cursor calculated*
+(Ctrl+Shift+X), as moving the mouse to the menu means your cursor is no
+longer over the node! The nodes on the first and last slices of the
+automated range cannot be un-fixed.
+
+*Ending automation*: the *Stop automatic interpolation* command on the
+*Curves* menu turns off automation for a selected curve. The curve keeps
+whatever shape it currently has on every slice - nothing is lost - but
+it will no longer update in response to later edits. There is no need to
+end automation of a curve before using the Mask from Curve command -
+ending automation is optional.
+
 Creating Masks from Curves
 --------------------------
 
@@ -178,7 +245,7 @@ especially interpolated curves, is to draw masks. To create a mask from
 a curve or curves, select the curve (or curves) in the *Curves* Panel,
 select the slices involved in the *Slice Selector* panel (it doesn’t
 matter if slices are selected on which the curve does not exist, so
-often it’s fine to use the *Select All* button here), and select the
+often it's fine to use the *Select All* button here), and select the
 mask which the curve is draw into in the *Masks* panel. To trigger the
 operation use the *Mask from curve* command in the *Masks* menu. All
 pixels from the curves on all selected slices will then be drawn into

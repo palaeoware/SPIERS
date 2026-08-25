@@ -1,12 +1,12 @@
 .. _LCE:
 
 Local Contrast Enhancement (LCE)
-================
+================================
 
 Concept
 -------
 
-Range generation is a generation mode that applies an enhancement filter
+LCE generation is a generation mode that applies an enhancement filter
 to data - unlike other modes, it does not replace existing working data,
 but applies a filter to modify it. The LCE filter is designed to pick out 
 structures that are consistently brighter or darker than their *local* surroundings,
@@ -43,7 +43,7 @@ over a region should be done with a single brush stroke, to avoid applying the e
  .. figure:: _static/figure_LCE3.png
     :align: center
 	
-    Figure LCE3. The data from Figure LCE2, with an LCE generation applied to the green mask subsequent to the linear generation. Note that many more spines are visible, and that the red curved stripe on the left has been supressed.
+    Figure LCE3. The data from Figure LCE2, with an LCE generation applied to the green mask subsequent to the linear generation. Note that many more spines are visible, and that the red curved stripe on the left has been suppressed.
 
 
 LCE Generation Panel

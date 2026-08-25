@@ -2,10 +2,10 @@
  * @file
  * Source: BackThread
  *
- * All SPIERSversion code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSversion code is Copyright 2008-2023 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERS code is Copyright 2008-2026 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,7 @@ MyThread *BackThread;
 
 void MyThread::run()
 {
+    qDebug()<<"IN OLD THREADING CODE1";
     QTimer *t = new QTimer();
     connect(t, SIGNAL(timeout()), this, SLOT(TimerFired()));
     t->start(2000);
@@ -62,8 +63,7 @@ bool MyThread::TryCaching(int fnumber)
             QString sfname = Fname.left(lastsep);
             QString actfn = Fname.mid(lastsep + 1, lastdot - lastsep - 1);
             QString temp = "/" + SettingsFileName + "/" + "s";
-            QString t2;
-            t2.sprintf("%d_", seg + 1);
+            QString t2 = QString::asprintf("%d_", seg + 1);
             temp.append(t2);
             temp.append(actfn);
             sfname.append(temp);

@@ -1,11 +1,11 @@
 /**
  * @file
- * Source: MainWindow 3
+ * Source: Main Window
  *
- * All SPIERSversion code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSversion code is Copyright 2008-2023 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERS code is Copyright 2008-2026 by Russell J. Garwood, Mark D. Sutton,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,30 +15,22 @@
  * hope that it will be useful, but WITHOUT ANY WARRANTY.
  */
 
-#include "dialogaboutimpl.h"
-#include "importdialogimpl.h"
-#include "curves.h"
-#include "resampleimpl.h"
-#include "mainwindowimpl.h"
-#include "copyingimpl.h"
+#include "mainwindow.h"
 #include "globals.h"
 #include "display.h"
-#include "myrangescene.h"
-#include "mygraphicsview.h"
 #include "brush.h"
-#include "fileio.h"
-#include "moreimpl.h"
-#include "undo.h"
-#include "contrastimpl.h"
-#include "deletemaskdialogimpl.h"
-#include "settingsimpl.h"
-#include "backthread.h"
 #include "histogram.h"
+#include "generatetestdata.h"
 #include "globals.h"
+#include "keysafespinbox.h"
 
 #include <QColorDialog>
+#include <QCheckBox>
+#include <QDockWidget>
 #include <QFileDialog>
+#include <QFormLayout>
 #include <QShortcut>
+#include <QSpinBox>
 #include <QTimer>
 #include <QTime>
 #include <QInputDialog>
@@ -47,54 +39,74 @@
 #include <QDesktopServices>
 #include <QHeaderView>
 
-
-void MainWindowImpl::SetUpDocks()
+/**
+ * @brief MainWindow::SetUpDocks
+ * Initializes and configures all dock widgets and the main toolbar.
+ * Sets up dock positions, visibility states, and the brush size toolbar control.
+ */
+void MainWindow::SetUpDocks()
 {
-    //DOCK STUFF
-
-    //current plan - delete ALL docks, first reparenting to save their contents widget
-    //Create new ones, put widgets in. See if they work
-    /*  qDebug()<<"parent of first dock"<<dockWidgetContents->parent()<<"dock is ";
-
-
-        removeDockWidget (dockWidget_Generate);
-        removeDockWidget (SliceSelector);
-        removeDockWidget (DockMasksSettings);
-        removeDockWidget (DockCurvesSettings);
-        removeDockWidget (DockSegmentsSettings);
-        removeDockWidget (DockOutputSettings);
-        removeDockWidget (DockHist);
-        removeDockWidget (DockInfo);
-
-        dockWidgetContents->setParent(0); //unparent
-        removeDockWidget(dockWidget_Main);
-        delete dockWidget_Main;
-        dockWidget_Main = new QDockWidget("Main Toolbox (F1)");
-        dockWidget_Main->setWidget(dockWidgetContents);
-        addDockWidget(Qt::LeftDockWidgetArea, dockWidget_Main);
-
-    */
-
-    //to get round designer bug with parenting of docks
-//  SliceSelector->setParent(this);
-//  DockMasksSettings->setParent(this);
-//  DockCurvesSettings->setParent(this);
-//  DockOutputSettings->setParent(this);
-//  DockSegmentsSettings->setParent(this);
-//  DockInfo->setParent(this);
-//  DockHist->setParent(this);
-
-//  removeDockWidget (dockWidget_Main);
-
     addDockWidget (Qt::LeftDockWidgetArea, dockWidget_Main);
-    addDockWidget (Qt::RightDockWidgetArea, dockWidget_Generate);
     addDockWidget (Qt::LeftDockWidgetArea, SliceSelector);
+    addDockWidget (Qt::RightDockWidgetArea, DockPreview3D);
+    addDockWidget (Qt::RightDockWidgetArea, DockInfo);
+    addDockWidget (Qt::RightDockWidgetArea, dockWidget_Generate);
+    addDockWidget (Qt::RightDockWidgetArea, DockSegmentsSettings);
     addDockWidget (Qt::RightDockWidgetArea, DockMasksSettings);
     addDockWidget (Qt::RightDockWidgetArea, DockCurvesSettings);
-    addDockWidget (Qt::RightDockWidgetArea, DockSegmentsSettings);
     addDockWidget (Qt::RightDockWidgetArea, DockOutputSettings);
     addDockWidget (Qt::RightDockWidgetArea, DockHist);
-    addDockWidget (Qt::RightDockWidgetArea, DockInfo);
+    addDockWidget (Qt::RightDockWidgetArea, DockGenerateTestData);
+
+    maskFloodFillDock = new QDockWidget(QStringLiteral("Mask Flood Fill (F11)"), this);
+    maskFloodFillDock->setObjectName(QStringLiteral("DockMLFloodFill"));
+    maskFloodFillDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    maskFloodFillDock->setFeatures(
+        QDockWidget::DockWidgetClosable
+        | QDockWidget::DockWidgetFloatable
+        | QDockWidget::DockWidgetMovable);
+
+    QWidget *maskFloodFillWidget = new QWidget(maskFloodFillDock);
+    QFormLayout *maskFloodFillLayout = new QFormLayout(maskFloodFillWidget);
+
+    maskFloodFillSegmentationInfluenceSpinBox = new KeysafeSpinBox(maskFloodFillWidget);
+    maskFloodFillSegmentationInfluenceSpinBox->setRange(0, 100);
+    maskFloodFillSegmentationInfluenceSpinBox->setSuffix(QStringLiteral("%"));
+    maskFloodFillSegmentationInfluenceSpinBox->setValue(60);
+    maskFloodFillSegmentationInfluenceSpinBox->setToolTip(
+        QStringLiteral("Relative strength of the generated segment data, as against the source image"));
+    maskFloodFillLayout->addRow(
+        QStringLiteral("Segmentation influence"),
+        maskFloodFillSegmentationInfluenceSpinBox);
+
+    maskFloodFillGrabCutIterationsSpinBox = new KeysafeSpinBox(maskFloodFillWidget);
+    maskFloodFillGrabCutIterationsSpinBox->setRange(1, 10);
+    maskFloodFillGrabCutIterationsSpinBox->setValue(3);
+    maskFloodFillGrabCutIterationsSpinBox->setToolTip(
+        QStringLiteral("Number of refinement passes used to settle the fill boundary"));
+    maskFloodFillLayout->addRow(
+        QStringLiteral("Iterations"),
+        maskFloodFillGrabCutIterationsSpinBox);
+
+    maskFloodFillFillHolesCheckBox = new QCheckBox(QStringLiteral("Fill enclosed holes"), maskFloodFillWidget);
+    maskFloodFillFillHolesCheckBox->setChecked(true);
+    maskFloodFillLayout->addRow(maskFloodFillFillHolesCheckBox);
+
+    maskFloodFillDock->setWidget(maskFloodFillWidget);
+    addDockWidget(Qt::RightDockWidgetArea, maskFloodFillDock);
+
+    maskFloodFillDockAction = maskFloodFillDock->toggleViewAction();
+    maskFloodFillDockAction->setText(QStringLiteral("Mask Flood Fill"));
+    maskFloodFillDockAction->setShortcut(QKeySequence(Qt::Key_F11));
+    menuWindow->addAction(maskFloodFillDockAction);
+
+    maskFloodFillAllClicksAction = new QAction(
+        QStringLiteral("All mask clicks are flood fills"),
+        this);
+    maskFloodFillAllClicksAction->setCheckable(true);
+    maskFloodFillAllClicksAction->setChecked(false);
+    menuMasks->addSeparator();
+    menuMasks->addAction(maskFloodFillAllClicksAction);
 
     tabifyDockWidget(dockWidget_Main, SliceSelector);
 
@@ -107,6 +119,8 @@ void MainWindowImpl::SetUpDocks()
     DockHist->setVisible(false);
     DockInfo->setVisible(false);
     dockWidget_Generate->setVisible(true);
+    DockGenerateTestData->setVisible(false);
+    maskFloodFillDock->setVisible(false);
 
     SliceSelector->setFloating(false);
     DockMasksSettings->setFloating(false);
@@ -115,10 +129,17 @@ void MainWindowImpl::SetUpDocks()
     DockSegmentsSettings->setFloating(false);
     DockInfo->setFloating(false);
     DockHist->setFloating(false);
+    DockPreview3D->setVisible(true);
+    DockPreview3D->setFloating(false);
     dockWidget_Generate->setFloating(false);
+    DockGenerateTestData->setFloating(false);
+    maskFloodFillDock->setFloating(false);
 
     GVHist = new histgv;
     DockHist->setWidget(GVHist);
+
+    GenerateTestData *generateTestDataWidget = new GenerateTestData;
+    DockGenerateTestData->setWidget(generateTestDataWidget);
 
     //sort out toolbar too
     toolBar->addSeparator();
@@ -131,72 +152,25 @@ void MainWindowImpl::SetUpDocks()
     BrushSize->setMinimum(1);
     BrushSize->setMaximum(2000);
     BrushSize->setValue(1);
-    toolBar->addWidget(BrushSize);
-
-    /*  BrushSizeY = new QSpinBox;
-        BrushSizeY->setKeyboardTracking(false);
-        BrushSizeY->setMinimum(1);
-        BrushSizeY->setMaximum(2000);
-        BrushSizeY->setPrefix("Y: ");
-        BrushSizeY->setValue(1);
-        BrushSizeY->setEnabled(false);
-        toolBar->addWidget(BrushSizeY);
-
-        BrushSizeZ = new QSpinBox;
-        BrushSizeZ->setKeyboardTracking(false);
-        BrushSizeZ->setMinimum(1);
-        BrushSizeZ->setMaximum(2000);
-        BrushSizeZ->setPrefix("Z: ");
-        BrushSizeZ->setValue(1);
-        BrushSizeZ->setEnabled(false);
-        toolBar->addWidget(BrushSizeZ);
-
-
-        Yaw = new QDoubleSpinBox;
-        Yaw->setKeyboardTracking(false);
-        Yaw->setMinimum(-180);
-        Yaw->setMaximum(180);
-        Yaw->setPrefix("Yaw: ");
-        Yaw->setValue(0);
-        Yaw->setEnabled(false);
-        toolBar->addWidget(Yaw);
-
-        Pitch = new QDoubleSpinBox;
-        Pitch->setKeyboardTracking(false);
-        Pitch->setMinimum(-180);
-        Pitch->setMaximum(180);
-        Pitch->setPrefix("Pitch: ");
-        Pitch->setValue(0);
-        Pitch->setEnabled(false);
-        toolBar->addWidget(Pitch);
-
-        Roll = new QDoubleSpinBox;
-        Roll->setKeyboardTracking(false);
-        Roll->setMinimum(-180);
-        Roll->setMaximum(180);
-        Roll->setPrefix("Roll: ");
-        Roll->setValue(0);
-        Roll->setEnabled(false);
-        toolBar->addWidget(Roll);
-
-    */
-
-
+    toolBar->addWidget(BrushSize);   
 }
 
-
-void MainWindowImpl::on_actionRefresh_triggered()
+/**
+ * @brief MainWindow::on_actionRefresh_triggered
+ * Slot called when the refresh action is triggered. Redraws the current image view.
+ */
+void MainWindow::on_actionRefresh_triggered()
 {
     ShowImage(graphicsView);
-    /*  QRect size =SliceSelector->geometry();
-        size.setWidth(size.width()-2);
-        SliceSelector->setGeometry(size);
-    */
 }
 
-
-
-void MainWindowImpl::on_action3D_Brush_toggled(bool mode)
+/**
+ * @brief MainWindow::on_action3D_Brush_toggled
+ * Slot called when the 3D brush mode toggle is changed.
+ * Updates brush mode and redraws the brush preview.
+ * @param mode  True to enable 3D brush mode, false for 2D mode
+ */
+void MainWindow::on_action3D_Brush_toggled(bool mode)
 {
     ThreeDmode = mode;
     SetUpBrushEnabling();
@@ -214,7 +188,12 @@ void MainWindowImpl::on_action3D_Brush_toggled(bool mode)
     }
 }
 
-void MainWindowImpl::SetUpBrushEnabling()
+/**
+ * @brief MainWindow::SetUpBrushEnabling
+ * Configures the enabled/disabled state of brush-related controls based on the current mode.
+ * Currently placeholder for future brush mode-specific UI state management.
+ */
+void MainWindow::SetUpBrushEnabling()
 {
     if (ThreeDmode)
     {
@@ -234,20 +213,29 @@ void MainWindowImpl::SetUpBrushEnabling()
     }
 }
 
-void MainWindowImpl::on_actionManual_triggered()
+/**
+ * @brief MainWindow::on_actionManual_triggered
+ * Slot called when the manual/help action is triggered.
+ * Opens the Read the Docs documentation page in the default web browser.
+ */
+void MainWindow::on_actionManual_triggered()
 {
     QDesktopServices::openUrl(QUrl(QString(READTHEDOCS)));
 }
 
-
-void MainWindowImpl::wheelEvent(QWheelEvent *event)
+/**
+ * @brief MainWindow::wheelEvent
+ * Handles mouse wheel events for zooming the image view.
+ * Each wheel tick increments/decrements the zoom slider.
+ * @param event  The wheel event
+ */
+void MainWindow::wheelEvent(QWheelEvent *event)
 {
-    ZoomSlider->setValue(ZoomSlider->value() + event->delta() / 12);
+    ZoomSlider->setValue(ZoomSlider->value() + event->angleDelta().y() / 12);
     event->ignore();
 }
 
-
-void MainWindowImpl::on_actionExport_Curves_as_CSV_triggered()
+void MainWindow::on_actionExport_Curves_as_CSV_triggered()
 {
     QString filen = QFileDialog::getSaveFileName(
                         this,
@@ -278,14 +266,24 @@ void MainWindowImpl::on_actionExport_Curves_as_CSV_triggered()
                 out << "," << Curves[i]->SplinePoints[j]->X[k];
                 out << "," << Curves[i]->SplinePoints[j]->Y[k];
             }
-            out << endl;
+            out << Qt::endl;
         }
     }
     file.close();
 }
 
-void MainWindowImpl::on_actionImport_Curves_as_CSV_triggered()
+void MainWindow::on_actionImport_Curves_as_CSV_triggered()
 {
+    for (Curve *curve : Curves)
+    {
+        if (curve->AutomaticallyInterpolated)
+        {
+            Message(
+                "CSV curve import is disabled while any curve "
+                "uses automatic interpolation");
+            return;
+        }
+    }
     Message("This is an experimental bodge. Only use if the curves dataset you are importing has the same number of curves and the same number of tomograms");
     QString filen = QFileDialog::getOpenFileName(
                         this,
@@ -315,6 +313,7 @@ void MainWindowImpl::on_actionImport_Curves_as_CSV_triggered()
             Curves[i]->SplinePoints[j]->Count = items[0].toInt();
             Curves[i]->SplinePoints[j]->X.clear();
             Curves[i]->SplinePoints[j]->Y.clear();
+            Curves[i]->SplinePoints[j]->Fixed.clear();
             int pos = 1;
 
             for (int k = 0; k < Curves[i]->SplinePoints[j]->Count; k++)
@@ -327,7 +326,7 @@ void MainWindowImpl::on_actionImport_Curves_as_CSV_triggered()
     file.close();
 }
 
-void MainWindowImpl::on_actionOutput_visible_image_set_triggered()
+void MainWindow::on_actionOutput_visible_image_set_triggered()
 {
     int SaveCurrentFile = CurrentFile = SliderPos->value();
     if (ExportingImages == true)
@@ -357,8 +356,7 @@ void MainWindowImpl::on_actionOutput_visible_image_set_triggered()
         QString outstring;
         QTextStream out(&outstring);
 
-        QString formattedi;
-        formattedi.sprintf("%05i", i);
+        QString formattedi = QString::asprintf("%05i", i);
         out << targetdir << "/" << formattedi << ".png";
         SaveMainImage(outstring);
 
@@ -369,12 +367,35 @@ void MainWindowImpl::on_actionOutput_visible_image_set_triggered()
     statusBar()->showMessage("Done.");
 }
 
-void MainWindowImpl::on_actionBugIssueFeatureRequest_triggered()
+/**
+ * @brief MainWindow::on_actionBugIssueFeatureRequest_triggered
+ * Slot called when the bug/issue/feature request action is triggered.
+ * Opens the GitHub issues page for the SPIERS repository in the default web browser.
+ */
+void MainWindow::on_actionBugIssueFeatureRequest_triggered()
 {
     QDesktopServices::openUrl(QUrl(QString(GITURL) + QString(GITREPOSITORY) + QString(GITISSUE)));
 }
 
-void MainWindowImpl::on_actionCode_on_GitHub_triggered()
+/**
+ * @brief MainWindow::on_actionCode_on_GitHub_triggered
+ * Slot called when the GitHub code action is triggered.
+ * Opens the SPIERS repository main page in the default web browser.
+ */
+void MainWindow::on_actionCode_on_GitHub_triggered()
 {
     QDesktopServices::openUrl(QUrl(QString(GITURL) + QString(GITREPOSITORY)));
 }
+
+/**
+ * @brief MainWindow::DoGradientsUpdate
+ * Called when gradient settings change in the UI to trigger a preview update.
+ * Refreshes the image view to reflect the new gradient values.
+ */
+void MainWindow::DoGradientsUpdate()
+{
+    /// Redo preview with updated gradient values
+    ShowImage(graphicsView);
+}
+
+

@@ -2,10 +2,10 @@
  * @file
  * Source: Brush
  *
- * All SPIERSversion code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSversion code is Copyright 2008-2023 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERS code is Copyright 2008-2026 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -725,6 +725,49 @@ void Brush_class::brighten(int x, int y, int segment, int effect)
     //FilesDirty[CurrentFile]=true;
 }
 
+void Brush_class::recalcForML(int x, int y, QByteArray *locks)
+{
+    int n;
+    int pos;
+    int xoff, yoff;
+    int ax, ay;
+
+    xoff = x / ColMonoScale;
+    yoff = y / ColMonoScale;
+
+    for (n = 0; n < PixelCount; n++)
+    {
+        ay = Ypos[n] + yoff;
+        if (ay >= 0)
+            if (ay < fheight)
+            {
+                ax = Xpos[n] + xoff;
+                if (ax >= 0)
+                    if (ax < fwidth)
+                    {
+                        pos = ay * fwidth + ax;
+                        int pos4 = ay * fwidth4 + ax;
+                        if (locks->at(pos)==0)
+                        {
+                            mlInterface->GetProbabilitiesAllSegments(ax,ay,CurrentFile,segBuffer);
+                            for (int i=0; i<SegmentCount; i++)
+                            {
+                                if (!Segments[i]->Locked)
+                                {
+                                    GA[i]->bits()[pos4] = (uchar) segBuffer[i];
+                                    Segments[i]->Dirty = true;
+                                    Segments[i]->UndoDirty = true;
+                                }
+                            }
+                            dirty[pos] = 1;
+                        }
+                    }
+            }
+    }
+    ;
+
+}
+
 void Brush_class::recalc(int x, int y, int segment, QVector<uchar> *sample, QByteArray *locks)
 {
     int n;
@@ -732,6 +775,12 @@ void Brush_class::recalc(int x, int y, int segment, QVector<uchar> *sample, QByt
     int pos;
     int xoff, yoff;
     int ax, ay;
+
+    if (tabwidget->currentIndex() == 1) //Special case - recalc for ML - affects all segments
+    {
+        recalcForML(x,y,locks);
+        return;
+    }
 
     if (Segments[segment]->Locked) return;
     xoff = x / ColMonoScale;
@@ -752,9 +801,10 @@ void Brush_class::recalc(int x, int y, int segment, QVector<uchar> *sample, QByt
                         pos = ay * fwidth + ax;
                         int pos4 = ay * fwidth4 + ax;
                         if (locks->at(pos)==0)
+                        {
                             data[pos4] = GenPixel(ax, ay, segment, sample, locks);
-
-                        dirty[pos] = 1;
+                            dirty[pos] = 1;
+                        }
                     }
             }
     }
@@ -841,6 +891,7 @@ void Brush_class::segment(int x, int y, int effect)
     int ax, ay;
     uchar tmp;
     uchar *mdata = (uchar *) Masks.data(); //for seg applies mask case
+    uchar *ldata = (uchar *) Locks.data(); //ditto locks
     int m, s; //will be mask to apply
     QList <uchar *> data;
 
@@ -864,11 +915,15 @@ void Brush_class::segment(int x, int y, int effect)
                 if (ax >= 0)
                     if (ax < fwidth)
                     {
+
+
                         if (SegmentBrushAppliesMasks)
                         {
                             pos = ((fheight - ay - 1) * fwidth + ax);
                             tmp = mdata[pos];
-                            if (tmp <= MaxUsedMask) if ((MasksSettings[static_cast<int>(tmp)]->Lock) == false) mdata[pos] = static_cast<uchar>(m);
+                            if (tmp <= MaxUsedMask)
+                                if ((MasksSettings[static_cast<int>(tmp)]->Lock) == false)
+                                    mdata[pos] = static_cast<uchar>(m);
                         }
                         //now do actual segmentation effect
 
@@ -901,11 +956,25 @@ void Brush_class::segment(int x, int y, int effect)
                                     if (smax == 0)
                                     {
                                         (data[s])[pos] = static_cast<uchar>(255);
+
                                     }
                                     else
                                     {
-                                        for (n = 0; n < SegmentCount; n++) if ((data[n])[pos] == 255) if (!(Segments[n]->Locked)) (data[n])[pos] = static_cast<uchar>(254); // all segments capped at 254
+                                        for (n = 0; n < SegmentCount; n++)
+                                            if ((data[n])[pos] == 255)
+                                                if (!(Segments[n]->Locked))
+                                                    (data[n])[pos] = static_cast<uchar>(254); // all segments capped at 254
                                         (data[s])[pos] = static_cast<uchar>(255);
+                                    }
+
+                                    if (SegmentBrushAppliesLocks)
+                                    {
+
+                                        pos = ((fheight - ay - 1) * fwidth + ax) * 2;
+                                        if (s==-2)
+                                            ldata[pos] = 0;
+                                        else
+                                            ldata[pos] = 255;
                                     }
                                 }
                             }
@@ -918,7 +987,8 @@ void Brush_class::segment(int x, int y, int effect)
         s->Dirty = true;
         s->UndoDirty = true;
     }
-    if (SegmentBrushAppliesMasks)   MasksDirty = true;
+    if (SegmentBrushAppliesMasks) MasksDirty = true;
+    if (SegmentBrushAppliesLocks) LocksDirty = true;
     //FilesDirty[CurrentFile]=true;
 }
 

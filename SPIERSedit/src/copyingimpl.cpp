@@ -2,10 +2,10 @@
  * @file
  * Source: CopyImpl
  *
- * All SPIERSversion code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSversion code is Copyright 2008-2023 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERS code is Copyright 2008-2026 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -46,7 +46,6 @@ CopyingImpl::CopyingImpl(QWidget *parent, Qt::WindowFlags f)
 {
     setupUi(this);
     setWindowIcon(QIcon(":/icons/ProgramIcon.bmp"));
-    CountMessage = "";
     copying = false;
 
     new QShortcut(QKeySequence(Qt::Key_Escape), this, SLOT(escape()));
@@ -64,6 +63,11 @@ void CopyingImpl::closeEvent(QCloseEvent *event)
         escapeFlag = true;
     else
         event->accept();
+}
+
+void CopyingImpl::escape()
+{
+    escapeFlag = true;
 }
 
 /**
@@ -103,7 +107,7 @@ void CopyingImpl::Copy(QDir source, QDir dest)
             if (f.size() == 408518)
             {
 
-                f.open(QIODevice::ReadOnly);
+                if (!f.open(QIODevice::ReadOnly)) continue;
                 QDataStream in(&f);    // Set up the datastream object
                 in.setByteOrder(QDataStream::LittleEndian);  //Windows is LE, so will keep ALL our datafiles LE
                 double dummy;
@@ -394,13 +398,53 @@ void CopyingImpl::GenerateLCE(QListWidget *SliceSelectorList)
     if (c > 1) close(); //close dialog
 }
 
+void CopyingImpl::GenerateGradient(QListWidget *SliceSelectorList)
+{
+    int curveCount = 0;
+    for (int i=0; i<Curves.count(); i++)
+        if (Curves[i]->widgetitem->isSelected())
+            curveCount++;
+    if (SelectedCurve==-1 || curveCount!=1)
+    {
+        QMessageBox::warning(nullptr, "Cannot proceed", "You must have one and only one curve selected to use gradient generation", QMessageBox::Ok);
+        return;
+    }
+
+    int c = SliceSelectorList->selectedItems().count();
+    if (c > 1) show(); //show progress dialog if multifile
+    copying = true; //what does this do? Block GUI?
+
+    this->setWindowTitle("Applying gradient corrections ...");
+    WriteAllData(CurrentFile);
+    if (c > 1)  progressBar->setMaximum(c);
+    int item_count=0;
+    for (int i = 0; i < Files.count(); i++)
+    {
+        //for each file
+        if ((SliceSelectorList->item(i))->isSelected())
+        {
+            for (int j = 0; j < SegmentCount; j++) if (Segments[j]->Activated) ApplyGradient(CurrentSegment, i);
+            item_count++;
+            if (c > 1)
+            {
+                progressBar->setValue(item_count);
+                qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
+            }
+        }
+    }
+    //restore setup
+    LoadAllData(CurrentFile);
+    copying = false;
+    if (c > 1) close(); //close dialog
+}
+
 void CopyingImpl::GenerateRadial(QListWidget *SliceSelectorList, BeamHardening *bh)
 {
-    qDebug()<<"Here";
+    //qDebug()<<"Here";
     if (!bh->HasSample())
         return;
 
-    qDebug()<<"... and Here";
+    //qDebug()<<"... and Here";
     int c = SliceSelectorList->selectedItems().count();
     if (c > 1) show(); //show progress dialog if multifile
     copying = true; //what does this do? Block GUI?
@@ -443,16 +487,17 @@ void CopyingImpl::GenerateLinear(QListWidget *SliceSelectorList)
     if (c > 1) close();
 }
 
+
 /**
  * @brief CopyingImpl::GeneratePoly
  * @param SliceSelectorList
  */
-void CopyingImpl::GeneratePoly(QListWidget *SliceSelectorList)
+void CopyingImpl::GenerateML(QListWidget *SliceSelectorList)
 {
     int c = SliceSelectorList->selectedItems().count();
     if (c > 1) show();
     copying = true;
-    this->setWindowTitle("Generating polynomial segment files...");
+    this->setWindowTitle("Generating machine learning predictions...");
     WriteAllData(CurrentFile);
     if (c > 1)  progressBar->setMaximum(c);
     int item_count=0;
@@ -466,6 +511,7 @@ void CopyingImpl::GeneratePoly(QListWidget *SliceSelectorList)
     copying = false;
     if (c > 1) close();
 }
+
 
 /**
  * @brief CopyingImpl::GenerateRange
@@ -543,53 +589,11 @@ void CopyingImpl::GenerateAllBlank()
 }
 
 /**
- * @brief CopyingImpl::ReverseStretches
- * @param stretches
- * @param Sstart
- * @param Sstop
- */
-void CopyingImpl::ReverseStretches(QList <double> *stretches, int Sstart, int Sstop)
-{
-    int n;
-
-    QVector <double> thicks;
-    thicks.resize(Sstop + 1);
-    //work out thicknesses
-    for (n = Sstart + 2; n <= Sstop; n++)
-    {
-        thicks[n] = (*stretches)[n] - (*stretches)[n - 1];
-    }
-
-    //now redo stretches
-    for (n = Sstart + 2; n <= Sstop; n++)
-    {
-        (*stretches)[n] = (*stretches)[n - 1] + thicks[Sstop - (n - 2)];
-    }
-}
-
-/**
- * @brief CopyingImpl::DoIHaveChildren
- * @param parent
- * @return
- */
-bool CopyingImpl::DoIHaveChildren(int parent)
-//Yes, I do - MDS
-{
-    for (int i = 0; i < OutputObjectsCount; i++)
-        if (OutputObjects[i]->IsGroup == false && OutputObjects[i]->Parent == parent && OutputObjects[i]->Show) return true;
-        else
-        {
-            if (OutputObjects[i]->IsGroup && OutputObjects[i]->Parent == parent && OutputObjects[i]->Show) if (DoIHaveChildren(i)) return true;
-        }
-    return false;
-}
-
-/**
  * @brief CopyingImpl::MaskCopy
  * @param fromfile
  * @param mw
  */
-void CopyingImpl::MaskCopy(int fromfile, MainWindowImpl *mw)
+void CopyingImpl::MaskCopy(int fromfile, MainWindow *mw)
 {
     bool IsShow = false;
     int count = 0;
@@ -654,7 +658,7 @@ void CopyingImpl::MaskCopy(int fromfile, MainWindowImpl *mw)
  * @param fromfile
  * @param mw
  */
-void CopyingImpl::MaskCopy2(int fromfile, MainWindowImpl *mw) //this is copy from selected TO currentfile
+void CopyingImpl::MaskCopy2(int fromfile, MainWindow *mw) //this is copy from selected TO currentfile
 {
     QList <QTreeWidgetItem *> selitems = mw->MasksTreeWidget->selectedItems();
     if (selitems.count() == 0) Message("No masks selected to copy");
@@ -685,7 +689,7 @@ void CopyingImpl::MaskCopy2(int fromfile, MainWindowImpl *mw) //this is copy fro
  * @brief CopyingImpl::CurvesToMasks
  * @param mw
  */
-void CopyingImpl::CurvesToMasks(MainWindowImpl *mw) //create a mask from a curve
+void CopyingImpl::CurvesToMasks(MainWindow *mw) //create a mask from a curve
 {
     QList <QTreeWidgetItem *> selitems = mw->CurvesTreeWidget->selectedItems();
     if (selitems.count() == 0)
@@ -966,10 +970,8 @@ void CopyingImpl::Apply3DBrush(int button)
                     // get data from GA array
 
                     memcpy(LCE_sample.data(),GA[CurrentSegment]->bits(),fwidth4*fheight);
-
-                    NewLocks = DoMaskLocking();
-
                 }
+                NewLocks = DoMaskLocking();
                 for (int i = 0; i < SegmentCount; i++) if (Segments[i]->Activated) Brush.recalc(LastMouseX, LastMouseY, i, &LCE_sample, &NewLocks);
             }
             break;

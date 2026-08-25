@@ -2,10 +2,10 @@
  * @file
  * Source: Display
  *
- * All SPIERSversion code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSversion code is Copyright 2008-2023 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERS code is Copyright 2008-2026 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,21 +18,22 @@
 #include "display.h"
 #include "globals.h"
 #include "fileio.h"
-#include "mainwindowimpl.h"
+#include "mainwindow.h"
 #include "histogram.h"
 
 #include <QGraphicsPixmapItem>
 #include <QImage>
 #include <QColor>
 #include <QTime>
+#include <QTransform>
 #include <math.h>
 #include "curves.h"
 #include "myscene.h"
 #include "brush.h"
+#include "mainwindow.h"
+#include "mlupdateblockingdialog.h"
 
-QGraphicsPixmapItem *MainImage;
-double LastZoom;
-double CurrentPolyContrast;
+#include <QDebug>
 
 //add these to scene at some point!
 
@@ -41,9 +42,169 @@ void SaveMainImage(QString fname)
     MainImage->pixmap().save(fname);
 }
 
+
+// Calculate the distance between
+// point pt and the segment p1 --> p2.
+
+//From http://www.csharphelper.com/howtos/howto_point_segment_distance.html
+double FindDistanceToSegment(
+    double ptx, double pty, double p1x, double p1y, double p2x, double p2y)
+{
+    float dx = p2x - p1x;
+    float dy = p2y - p1y;
+    if ((dx == 0) && (dy == 0))
+    {
+        // It's a point not a line segment.
+        dx = ptx - p1x;
+        dy = pty - p1y;
+        return sqrt(dx * dx + dy * dy);
+    }
+
+    // Calculate the t that minimizes the distance.
+    double t = ((ptx - p1x) * dx + (pty - p1y) * dy) /
+              (dx * dx + dy * dy);
+
+    // See if this represents one of the segment's
+    // end points or a point in the middle.
+    if (t < 0)
+    {
+//        closest = new PointF(p1.X, p1.Y);
+        dx = ptx - p1x;
+        dy = pty - p1y;
+    }
+    else if (t > 1)
+    {
+//        closest = new PointF(p2.X, p2.Y);
+        dx = ptx - p2x;
+        dy = pty - p2y;
+    }
+    else
+    {
+        double closestx = p1x + t*dx;
+        double closesty = p1y+t*dy;
+
+        dx = ptx - closestx;
+        dy = pty - closesty;
+    }
+
+    return sqrt(dx * dx + dy * dy);
+}
+
+//This gets (as char array -128 to +127) the additions for each pixel to the gradient
+QByteArray* GetGradientArray()
+{
+    QByteArray* gradientData = new QByteArray(fheight * fwidth, 0);
+
+    int curveIndex = SelectedCurve;
+
+    if (curveIndex==-1) return gradientData;
+
+    QList<int> xPoints;
+    QList<int> yPoints;
+
+    GetPointsOnSpline(curveIndex, &xPoints, &yPoints);
+
+    //qDebug()<<GradientDensity<<GradientMinDist<<GradientMaxDist<<GradientMinDistValue<<GradientMaxDistValue;
+
+    bool insideNeeded = Curves[curveIndex]->Filled;
+
+    QByteArray curveInsides(fwidth * fheight, 0);
+    if (insideNeeded)
+    {
+        QList<bool> useMasks;
+        for (int i=0; i<=MaxUsedMask; i++) useMasks.append(true);  //use all - get excluded later
+        DrawCurveOutput(curveIndex, CurrentFile, (uchar *)curveInsides.data(), &useMasks, false);
+    }
+
+    for (int x=0; x<fwidth; x++)
+    for (int y=0; y<fheight; y++)
+    {
+        int closestDist=99999;
+        for (int i=0; i<xPoints.count()-1; i++)
+        {
+
+
+            int dist = (int)(FindDistanceToSegment(x,y,xPoints[i], yPoints[i], xPoints[i+1],yPoints[i+1]) +.5);
+            if (dist<closestDist) closestDist = dist;
+
+        }
+
+        char v;
+
+        bool amInside=((uchar)curveInsides.at(y * fwidth + x) ==255 && insideNeeded);
+
+        if (amInside)
+        {
+            v = GradientMinDistValue;
+        }
+        else
+        {
+            //if (x==0) qDebug()<<closestDist<<GradientMaxDist<<GradientMinDist;
+            if(closestDist >= GradientMaxDist)
+                v = (char)GradientMaxDistValue;
+            else if (closestDist <= GradientMinDist)
+                v = (char)GradientMinDistValue;
+            else
+            {
+                // between two values
+                double pos = (double)(closestDist - GradientMinDist) / (double) (GradientMaxDist - GradientMinDist);
+                v = (char)((double)GradientMaxDistValue * pos + (double)GradientMinDistValue * (1-pos) + .5);
+                //qDebug()<<x<<y<<closestDist<<pos<<v;
+            }
+        }
+         (*gradientData)[y*fwidth + x] = v;
+    }
+
+    return gradientData;
+}
+
+QVector<int> GetSegmentMap()
+{
+    QVector<int> segMap;
+
+    //First - work out segments at each point
+    segMap.resize(fwidth * fheight);
+
+    QList <uchar *> GApointers;
+    //set up my pointers - an optimisation to point straight to data
+    for (int n = 0; n < SegmentCount; n++)
+        GApointers.append(GA[n]->bits());
+
+
+    for (int jx = 0; jx < fwidth; jx++)
+        for (int jy = 0; jy < fheight; jy++)
+        {
+            int high = 128;
+            int seg = -1;
+
+            for (int i = 0; i < SegmentCount; i++)
+            {
+                if (Segments[i]->Activated)
+                {
+                    int temp = (int)  * ((GApointers[i]) + jy * fwidth4 + jx);
+
+                    if (temp>255) temp=255;
+                    if (temp<0) temp=0;
+
+                    if (temp >= high)
+                    {
+                        high = temp;
+                        seg = i;
+                    }
+                }
+            }
+            segMap[jy * fwidth + jx] = seg;
+        }
+    return segMap;
+}
+
 QImage GenerateThresh()
 {
     //Using current settings generate the threshold file for output
+    // GA[] data is shared with the background PreviewBuilderWorker thread.
+    // Hold the global recursive mutex for the entire function so that
+    // LoadGreyData() cannot modify/replace GA images while we hold raw bits() pointers.
+    QMutexLocker<QRecursiveMutex> locker(&mutex);
 
 //        qDebug()<<"In GT";
 //        qDebug()<<GA[0]->size();
@@ -56,6 +217,10 @@ QImage GenerateThresh()
     int high, seg, i;
     bool lockmode, maskmode, greymode, MergeMasks, MergeMasks2;
 
+    QByteArray *gradientArray;
+    if (previewGradient) gradientArray = GetGradientArray();
+
+
     //First - work out segments at each point
     SegmentMap.resize(fwidth * fheight);
 
@@ -63,6 +228,11 @@ QImage GenerateThresh()
     //set up my pointers - an optimisation to point straight to data
     for (n = 0; n < SegmentCount; n++)
         GApointers.append(GA[n]->bits());
+
+
+    //additions for preview of radial
+
+    int gradientAddition = 0;
 
     for (int jx = 0; jx < fwidth; jx++)
         for (int jy = 0; jy < fheight; jy++)
@@ -74,7 +244,16 @@ QImage GenerateThresh()
             {
                 if (Segments[i]->Activated)
                 {
-                    temp = (int)  * ((GA[i]->bits()) + jy * fwidth4 + jx);
+                    if (previewGradient)
+                        gradientAddition = ((int)(gradientArray->at(jy * fwidth + jx)));
+                    else
+                        gradientAddition = 0;
+
+                    temp = (int)  * ((GApointers[i]) + jy * fwidth4 + jx);
+                    temp += gradientAddition;
+                    if (temp>255) temp=255;
+                    if (temp<0) temp=0;
+
                     if (temp >= high)
                     {
                         high = temp;
@@ -84,6 +263,7 @@ QImage GenerateThresh()
             }
             SegmentMap[jy * fwidth + jx] = seg;
         }
+
 
 
     //Code here is direct VB translation - hence superflous copying of bools!
@@ -101,12 +281,32 @@ QImage GenerateThresh()
 
     if (greymode)   // just copy the image
     {
-//      qDebug()<<"Format of GA"<<GA[CurrentSegment]->format();
-        //RetThresh = GA[CurrentSegment]->scaled(QSize(fwidth*ColMonoScale, fheight*ColMonoScale), Qt::IgnoreAspectRatio,Qt::FastTransformation);
-//      qDebug()<<"Format of GA rescales"<<RetThresh.format();
-        RetThresh = GA[CurrentSegment]->convertToFormat(QImage::Format_RGB32); //make sure it's in 32 bit ARGB
-//      qDebug()<<"Format of rescaled and converted"<<RetThresh.format();
-        //RetThresh = RetThresh.convertToFormat(QImage::Format_RGB888); //make sure it's in 32 bit ARGB
+        //but modify for gradient preview
+        if (previewGradient)
+        {
+            uchar * oldData = GA[CurrentSegment]->bits();
+            QImage tempImage(fwidth, fheight, QImage::Format_Grayscale8);
+
+            uchar * newData = tempImage.bits();
+
+            for (int jx = 0; jx < fwidth; jx++)
+            for (int jy = 0; jy < fheight; jy++)
+            {
+                invertedpos = (fheight - 1 - jy) * fwidth + jx;
+                gradientAddition = ((int)(gradientArray->at(jy * fwidth + jx)));
+
+                int v = oldData[jy *fwidth4 + jx];
+                v+=gradientAddition;
+                if (v>255) v=255;
+                if (v<0) v=0;
+                newData[jy * fwidth4 + jx] = (uchar)v;
+            }
+            RetThresh = tempImage.convertToFormat(QImage::Format_RGB32);
+        }
+        else
+        {
+            RetThresh = GA[CurrentSegment]->convertToFormat(QImage::Format_RGB32); //make sure it's in 32 bit ARGB
+        }
     }
     else
     {
@@ -255,13 +455,95 @@ QImage GenerateThresh()
         else if (CurrentMode == 1 || MergeMasks2)  for (sn = 0; sn < CurveCount; sn++) DrawCurve(sn, 2, CurrentFile, &Thresh);
         else for (sn = 0; sn < CurveCount; sn++) DrawCurve(sn, 0, CurrentFile, &Thresh);
 
-
+        if (previewGradient) delete gradientArray;
         return Thresh;
         //RetThresh = Thresh.scaled(fwidth*ColMonoScale, fheight*ColMonoScale, Qt::IgnoreAspectRatio, Qt::FastTransformation);
 
     }
+    if (previewGradient) delete gradientArray;
     return RetThresh;
 
+}
+
+//For the label generator percentage system. Chat GPT generated
+uint32_t SampleHash(int x, int y, int z)
+{
+    uint32_t h = static_cast<uint32_t>(x) * 73856093u
+                 ^ static_cast<uint32_t>(y) * 19349663u
+                 ^ static_cast<uint32_t>(z) * 83492791u;
+
+    h ^= h >> 13;
+    h *= 0x85ebca6bu;
+    h ^= h >> 16;
+    return h;
+}
+
+//Modified GenerateThresh to generate a byte array of segment numbers (=labels for ML)
+//A few other simplfications too
+QList<LabelledPoint> GenerateLabels(MainWindow *mw, int percentage)
+{
+    SaveLocks(CurrentFile);
+
+    //First - work out segments at each point
+    QList<LabelledPoint> labels;
+
+    for (int k = 0; k < Files.count(); k++)
+    {
+        if (mw->SliceSelectorList->item(k)->isSelected())
+        {
+            MLUpdateBlockingDialog::updateDetailText(QString("Slice %1").arg(k));
+            for (int n = 0; n < SegmentCount; n++)
+            {
+                LoadGreyData(k, n);
+            }
+            LoadLocks(k);
+
+
+            QList <uchar *> GApointers;
+            //set up my pointers - an optimisation to point straight to data
+            for (int n = 0; n < SegmentCount; n++)
+                GApointers.append(GA[n]->bits());
+
+            uchar *ldata = (uchar *) Locks.data(); //ditto locks
+
+            for (int jx = 0; jx < fwidth; jx++)
+                for (int jy = 0; jy < fheight; jy++)
+                {
+                    if (ldata[((fheight - jy - 1) * fwidth + jx) * 2] > 0) //if locked
+                    {
+                        //qDebug()<<"Pixel locked "<<k<<jx<<jy;
+                        int high = 128;
+                        int seg = -1;
+                        //n=j*4;
+                        for (int i = 0; i < SegmentCount; i++)
+                        {
+                            int temp = (int)  * ((GA[i]->bits()) + jy * fwidth4 + jx);
+                            if (temp>255) temp=255;
+                            if (temp<0) temp=0;
+
+                            if (temp >= high)
+                            {
+                                high = temp;
+                                seg = i;
+                            }
+                        }
+                        if (seg!=-1)
+                        {
+                            if ((int)(SampleHash(jx,jy,k)%100)<percentage)
+                                labels.append(LabelledPoint(jx, jy, k, seg));
+                        }
+                    }
+                }
+        }
+    }
+
+    //Restore data for normal operation
+    for (int n = 0; n < SegmentCount; n++)
+    {
+        LoadGreyData(CurrentFile, n);
+    }
+    LoadLocks(CurrentFile);
+    return labels;
 }
 
 
@@ -502,13 +784,15 @@ void AlterImage(QImage *myimage)
 
 void ShowImage(QGraphicsView *gv)
 {
-//        qDebug()<<"Here in Graphics View";
-//        qDebug()<<GA.count();
+        //qDebug()<<"Here in Graphics View2";
+        //qDebug()<<GA.count();
 //        for (int i=0; i<GA.count(); i++) qDebug()<<GA[i];
-    QMatrix identity; //will default to this
+    QTransform identity; //will default to this
     if (Active == false) return;
     QImage myimage(cwidth, cheight, QImage::Format_RGB32);
 
+    //qDebug()<<cwidth;
+    //qDebug()<<cheight;
 
     AlterImage(&myimage); //Preprocess original image (contrast, transparency), add new one
     MainImage->setPixmap(QPixmap::fromImage(myimage));
@@ -516,7 +800,7 @@ void ShowImage(QGraphicsView *gv)
     gv->setSceneRect(myimage.rect()); //keep scene size to this image - in case of curve markers for instance dragging it out
     if (LastZoom != CurrentZoom)
     {
-        gv->setMatrix(identity);
+        gv->setTransform(identity);
         gv->scale(CurrentZoom, CurrentZoom);
         LastZoom = CurrentZoom;
     }
@@ -528,7 +812,7 @@ void ShowImage(QGraphicsView *gv)
 
     DrawCurveMarkers(gv->scene());
 
-    MainWindowImpl *mw = static_cast<MainWindowImpl *>(gv->parent()->parent());
+    MainWindow *mw = static_cast<MainWindow *>(gv->parent()->parent());
     if (GreyImage)
     {
         mw->LinearRedSpinBox->setVisible(false);
@@ -558,15 +842,60 @@ QByteArray DoMaskLocking()
 {
     //This needs to look through all masks and segments. Any hidden masks and any locked segments shouldn't be written - write in
     //a 1 to the relevent lock entry
-    QByteArray newlocks(fwidth * fheight, 0);
+    const qsizetype pixelCount = static_cast<qsizetype>(fwidth) * fheight;
+    QByteArray newlocks(pixelCount, 0);
 
+    if (Locks.size() < pixelCount * 2)
+    {
+        qWarning() << "Cannot calculate mask locking: lock data has"
+                   << Locks.size() << "bytes; expected" << pixelCount * 2;
+        newlocks.fill(static_cast<char>(255));
+        return newlocks;
+    }
+
+    if (HiddenMasksLockedForGeneration && Masks.size() < pixelCount)
+    {
+        qWarning() << "Cannot calculate hidden-mask locking: mask data has"
+                   << Masks.size() << "bytes; expected" << pixelCount;
+        newlocks.fill(static_cast<char>(255));
+        return newlocks;
+    }
+
+    int firstInvalidMaskId = -1;
+    int invalidMaskPixelCount = 0;
     for (int x = 0; x < fwidth; x++)
         for (int y = 0; y < fheight; y++)
         {
-            int hpos = (fheight - y - 1) * fwidth + x;
-            if (Locks[hpos * 2]) newlocks[fwidth * y + x] = static_cast<uchar>(255);
-            if (HiddenMasksLockedForGeneration) if (!MasksSettings[static_cast<quint8>(Masks[hpos])]->Show) newlocks[fwidth * y + x] = 255;
+            const int hpos = (fheight - y - 1) * fwidth + x;
+            const int outputPosition = fwidth * y + x;
+            if (Locks[hpos * 2])
+                newlocks[outputPosition] = static_cast<char>(255);
+
+            if (HiddenMasksLockedForGeneration)
+            {
+                const int maskId = static_cast<quint8>(Masks[hpos]);
+                if (maskId >= MasksSettings.size() || MasksSettings.at(maskId) == nullptr)
+                {
+                    newlocks[outputPosition] = static_cast<char>(255);
+                    invalidMaskPixelCount++;
+                    if (firstInvalidMaskId == -1)
+                        firstInvalidMaskId = maskId;
+                }
+                else if (!MasksSettings.at(maskId)->Show)
+                {
+                    newlocks[outputPosition] = static_cast<char>(255);
+                }
+            }
         }
+
+    if (invalidMaskPixelCount > 0)
+    {
+        qWarning() << "Hidden-mask locking found" << invalidMaskPixelCount
+                   << "pixels referring to invalid mask IDs; first ID:"
+                   << firstInvalidMaskId << "mask settings count:"
+                   << MasksSettings.size();
+    }
+
     return newlocks;
 }
 void ApplyRadial(int seg, int fnum, BeamHardening *bh,  bool flag = false)
@@ -621,6 +950,49 @@ void ApplyLCE(int seg, int fnum, bool flag = false)
     if (!flag) SaveGreyData(fnum, seg);
 
 
+}
+
+
+//Do LCE - based on MakeLinearGreyScale
+void ApplyGradient(int seg, int fnum)
+{
+    //load data for file - can and should assume existing data is safe
+    LoadAllData(fnum);
+
+    if (Segments[seg]->Locked) return;
+    uchar *data= GA[seg]->bits(); // get data from GA array
+
+    //make a copy of underlying data
+    QVector<uchar> data_original_vector(fwidth4 * fheight);
+    uchar *data_original = data_original_vector.data();
+    memcpy(data_original,data,fwidth4*fheight);
+
+    QByteArray NewLocks = DoMaskLocking();
+
+    //GetGradientArray uses currentfile - so bodge this
+    int oldCurrentFile = CurrentFile;
+    CurrentFile = fnum;
+    QByteArray *gradientData = GetGradientArray();
+    CurrentFile = oldCurrentFile;
+
+    for (int h = 0; h < fheight; h++)
+        for (int w = 0; w < fwidth; w++)
+        {
+            if (!(NewLocks[(fwidth * h + w)]))
+            {
+                int gradientAddition = ((int)(gradientData->at(h * fwidth + w)));
+
+                int temp = (int) *(data + (fwidth4 * h + w));
+                temp += gradientAddition;
+                if (temp>255) temp=255;
+                if (temp<0) temp=0;
+
+                *(data + (fwidth4 * h + w)) = (uchar)temp;
+            }
+        }
+
+    delete gradientData;
+    SaveGreyData(fnum, seg);
 }
 
 
@@ -785,6 +1157,7 @@ uchar PolyPixel(int w, int h, int s)
     return static_cast<uchar>(temp);
 }
 
+
 uchar RangePixel(int w, int h, int bot, int top, double cen, double gra, int seg)
 {
     Q_UNUSED(bot);
@@ -877,8 +1250,7 @@ void MakePolyGreyScale(int seg, int fnum, bool flag = false)
 
 uchar GenPixel(int x, int y, int s, QVector<uchar> *sample, QByteArray *locks)
 {
-    CurrentPolyContrast = pow(static_cast<double>(2), Segments[s]->PolyContrast) / Segments[s]->PolyScale;
-    //generate a pixel using whatever method
+     //generate a pixel using whatever method
     if (tabwidget->currentIndex() == 0)
     {
         uchar t = GreyScalePixel( x,  y,  Segments[s]->LinPercent[0],
@@ -890,9 +1262,7 @@ uchar GenPixel(int x, int y, int s, QVector<uchar> *sample, QByteArray *locks)
 
     if (tabwidget->currentIndex() == 1)
     {
-        uchar t = PolyPixel(x, y, s);
-        if (Segments[s]->LinInvert) return 255 - t;
-        else return t;
+        qDebug()<<"ERROR!!!";
     }
 
     if (tabwidget->currentIndex() == 2)
@@ -918,6 +1288,7 @@ uchar GenPixel(int x, int y, int s, QVector<uchar> *sample, QByteArray *locks)
 
 uchar RadialPixel(int w, int h, uchar *original_data, QByteArray *new_locks, BeamHardening *bh)
 {
+    Q_UNUSED(new_locks)
 
     int val = (int)original_data[w + fwidth4*h];
 

@@ -75,4 +75,4 @@ Transformations:
 | Ctrl + Shift + R        | Fit image to window                                 |
 +-------------------------+-----------------------------------------------------+
 
-*Note: On some international keyboards some of these shortcuts may not work – for example on German laptop keyboards ‘=’ and ‘0’ are on the same key, disabling the zoom in and some rotate functions. If users experience problems relating to keyboard setup, please contact the authors, who may be able to supply a custom-version of the program with different keyboard shortcuts.*
+*Note: On some international keyboards some of these shortcuts may not work - for example on German laptop keyboards '=' and '0' are on the same key, disabling the zoom in and some rotate functions. If users experience problems relating to keyboard setup, please contact the authors, who may be able to supply a custom-version of the program with different keyboard shortcuts.*

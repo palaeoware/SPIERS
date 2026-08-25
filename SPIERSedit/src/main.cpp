@@ -2,10 +2,10 @@
  * @file
  * Source: Main
  *
- * All SPIERSversion code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSversion code is Copyright 2008-2023 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERS code is Copyright 2008-2026 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -24,13 +24,18 @@
 #include <QMessageBox>
 #include <QSplashScreen>
 #include <QStyle>
-#include <QDesktopWidget>
+#include <QScreen>
+#include <QGuiApplication>
+#include <QDebug>
+#include <QSurfaceFormat>
+#include <QImageReader>
 
-#include "mainwindowimpl.h"
-#include "display.h"
+#include "mainwindow.h"
 #include "globals.h"
-#include "../../SPIERScommon/src/darkstyletheme.h"
+#include "mlinterface.h"
+#include "../../SPIERScommon/src/customstyletheme.h"
 #include "../../SPIERScommon/src/netmodule.h"
+#include "../../SPIERScommon/src/crashdetector.h"
 
 /**
  * @brief logMessageOutput
@@ -67,50 +72,59 @@ void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const Q
         // Save to debug.log
         QString path = QString("%1/SPIERSEdit_debug.log").arg(QDir::homePath());
         QFile outFile(path);
-        outFile.open(QIODevice::WriteOnly | QIODevice::Append);
+        if (!outFile.open(QIODevice::WriteOnly | QIODevice::Append)) return;
         QTextStream log(&outFile);
-        log << txt << endl;
+        log << txt << Qt::endl;
 
         // Now print to stout too
         QTextStream console(stdout);
-        console << txt << endl;
+        console << txt << Qt::endl;
     }
     else
     {
         // Print to stout only
         QTextStream console(stdout);
-        console << txt << endl;
+        console << txt << Qt::endl;
     }
 }
 
 #ifndef __APPLE__
 int main(int argc, char **argv)
 {
-    //This has the app draw at HiDPI scaling on HiDPI displays, usually two pixels for every one logical pixel
-    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QImageReader::setAllocationLimit(2048);
 
-    //This has QPixmap images use the @2x images when available
-    //See this bug for more details on how to get this right: https://bugreports.qt.io/browse/QTBUG-44486#comment-327410
-#if (QT_VERSION >= 0x050600)
-    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-#endif
+    /// Install crash handlers early
+    //CrashDetector::installCrashHandlers(QStringLiteral("SPIERSedit"));
+
+    // Set OpenGL surface format as global
+    surfaceFormat.setMajorVersion(GL_MAJOR);
+    surfaceFormat.setMinorVersion(GL_MINOR);
+    surfaceFormat.setRenderableType(QSurfaceFormat::OpenGL);
+    surfaceFormat.setProfile(QSurfaceFormat::CoreProfile);
+    QSurfaceFormat::setDefaultFormat(surfaceFormat);
+
+    // Allow OpenGL context sharing between normal and full screen mode
+    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 
     QApplication app( argc, argv );
 
     //Style program with our dark style
-    QApplication::setStyle(new DarkStyleTheme);
+    QApplication::setStyle(new CustomStyleTheme(CustomStyleTheme::readThemeSetting()));
 
     QPixmap splashPixmap(":/logo/palaeoware_square.png");
     QSplashScreen *splash = new QSplashScreen(splashPixmap, Qt::WindowStaysOnTopHint);
     splash->show();
     splash->showMessage("<font><b>" + QString(PRODUCTNAME) + " v" + QString(SOFTWARE_VERSION) + " </b></font>", Qt::AlignHCenter, Qt::white);
     app.processEvents();
-    QTimer::singleShot(3000, splash, SLOT(close()));
+    QTimer::singleShot(3000, splash, &QSplashScreen::close);
 
-    app.connect( &app, SIGNAL( lastWindowClosed() ), &app, SLOT( quit() ) );
+    MLInterface::TestML();
 
-    NetModule n;
-    n.checkForNew();
+    qDebug() << "OpenCV enabled? " << MLInterface::enabled;
+    if (MLInterface::enabled)
+    {
+        mlInterface = new MLInterface();
+    }
 
     QStringList args = app.arguments();
 
@@ -120,8 +134,20 @@ int main(int argc, char **argv)
     }
     else openfile = "";
 
-    MainWindowImpl mainWindow;
+    MainWindow mainWindow;
     mainWindow.show();
+
+    // Kick off the update check.
+    NetModule *netModule = new NetModule(&app);
+    //netModule->setTestVersion("1.0.0");
+    // Test for and watch for an internet connection
+    netModule->startConnectivityWatch();
+    // Set initial enabled state for network-dependent menu items.
+    mainWindow.onConnectivityChanged(NetModule::isOnline());
+    QObject::connect(netModule, &NetModule::connectivityChanged,
+                     &mainWindow, &MainWindow::onConnectivityChanged);
+    netModule->checkForNew();
+
     return app.exec();
 }
 #endif
@@ -230,10 +256,22 @@ int main(int argc, char *argv[])
     }
 
 
+    // Set OpenGL surface format as global
+    {
+        surfaceFormat.setDepthBufferSize(24);
+        surfaceFormat.setMajorVersion(GL_MAJOR_MAC);
+        surfaceFormat.setMinorVersion(GL_MINOR_MAC);
+        surfaceFormat.setRenderableType(QSurfaceFormat::OpenGL);
+        surfaceFormat.setProfile(QSurfaceFormat::CoreProfile);
+        QSurfaceFormat::setDefaultFormat(surfaceFormat);
+    }
+    // Allow OpenGL context sharing between normal and full screen mode
+    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+
     class main app(argc, argv);
 
     //Style program with our dark style
-    QApplication::setStyle(new DarkStyleTheme);
+    QApplication::setStyle(new CustomStyleTheme(CustomStyleTheme::readThemeSetting()));
 
     app.setQuitOnLastWindowClosed(true);
 
@@ -286,11 +324,23 @@ int main(int argc, char *argv[])
 
     qDebug() << "Moving to start application mainwindow...";
 
-    NetModule n;
-    n.checkForNew();
+    MLInterface::TestML();
 
-    MainWindowImpl win;
+    qDebug() << "OpenCV enabled? " << MLInterface::enabled;
+    if (MLInterface::enabled)
+    {
+        mlInterface = new MLInterface();
+    }
+
+    MainWindow win;
     win.show();
+
+    NetModule *netModule = new NetModule(&app);
+    netModule->startConnectivityWatch();
+    win.onConnectivityChanged(NetModule::isOnline());
+    QObject::connect(netModule, &NetModule::connectivityChanged,
+                     &win, &MainWindow::onConnectivityChanged);
+    netModule->checkForNew();
 
     return app.exec();
 }

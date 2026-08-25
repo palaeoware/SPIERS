@@ -2,10 +2,10 @@
  * @file
  * Header: My Scene
  *
- * All SPIERSedit code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSview code is Copyright 2008-2023 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERS code is Copyright 2008-2026 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,6 +18,7 @@
 #ifndef __MYSCENE_H__
 #define __MYSCENE_H__
 
+#include "qelapsedtimer.h"
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
 #include <QString>
@@ -39,8 +40,13 @@ private:
     void DoAction(int x, int y);
     void MouseUp();
     void DoMouse(int x, int y, int PressedButton);
-    QTime mousetimer;
+    QElapsedTimer mousetimer;
     int CurrentClosestNode;
+    bool automaticCurveDrag;
+    int automaticCurveDragCurve;
+    int automaticCurveDragNode;
+    bool automaticCurveDragWholeCurve;
+    bool maskFloodFillStroke;
     bool mouse_down;
     bool got_LCE_sample;
     QVector<uchar> LCE_sample;

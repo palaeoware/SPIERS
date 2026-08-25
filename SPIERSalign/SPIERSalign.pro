@@ -26,7 +26,9 @@ DESTDIR \
     bin
 
 # Needed to make binaries launchable from file in Ubuntu - GCC default link flag -pie on newer Ubuntu versions this so otherwise recognised as shared library
-QMAKE_LFLAGS += -no-pie
+unix:!macx {
+    QMAKE_LFLAGS += -no-pie
+}
 
 RC_FILE += resources/icon.rc
 
@@ -44,27 +46,39 @@ FORMS += ui/mainwindow.ui \
 HEADERS += src/mainwindowimpl.h \
     src/globals.h \
     src/scene.h \
-    ../SPIERScommon/src/darkstyletheme.h \
+    ../SPIERScommon/src/customstyletheme.h \
+    ../SPIERScommon/src/advancedpreferencesdialog.h \
+    ../SPIERScommon/src/colourswatchlabel.h \
+    ../SPIERScommon/src/themeselectorwidget.h \
     src/about.h \
     ../SPIERScommon/src/netmodule.h \
+    ../SPIERScommon/src/updatedialog.h \
     ../SPIERScommon/src/semanticversion.h \
-    ../SPIERScommon/src/prereleasecomponent.h
+    ../SPIERScommon/src/prereleasecomponent.h \
+    ../SPIERScommon/src/crashdetector.h
 
 SOURCES += src/mainwindowimpl.cpp \
     src/main.cpp \
     src/globals.cpp \
     src/scene.cpp \
-    ../SPIERScommon/src/darkstyletheme.cpp \
+    ../SPIERScommon/src/customstyletheme.cpp \
+    ../SPIERScommon/src/advancedpreferencesdialog.cpp \
+    ../SPIERScommon/src/colourswatchlabel.cpp \
+    ../SPIERScommon/src/themeselectorwidget.cpp \
     src/about.cpp \
     ../SPIERScommon/src/netmodule.cpp \
+    ../SPIERScommon/src/updatedialog.cpp \
     ../SPIERScommon/src/semanticversion.cpp \
-    ../SPIERScommon/src/prereleasecomponent.cpp
+    ../SPIERScommon/src/prereleasecomponent.cpp \
+    ../SPIERScommon/src/crashdetector.cpp
 
 # MacOS common build here
 macx {
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 26.0
+    QMAKE_APPLE_DEVICE_ARCHS = arm64 x86_64
+
     #Mac icon
     ICON = resources/SPIERSalignIcon.icns
-
 
     # macOS file associations are done through the Info.plist files under the application pakages
     # QT/qmake should be able to overwrite the default generated file with this custom file

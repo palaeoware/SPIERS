@@ -2,10 +2,10 @@
  * @file
  * Source: Undo
  *
- * All SPIERSversion code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSversion code is Copyright 2008-2023 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERS code is Copyright 2008-2026 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -25,9 +25,17 @@ QList <UndoEvent *> RedoEvents;
 int TotalUndoSize;
 
 //constructor for data holding object - pass it type and it grabs data
-UndoDataObject::UndoDataObject(int type, int curve_index = -1)
+UndoDataObject::UndoDataObject(
+    int type,
+    int curve_index,
+    int storedCurveSlice)
 {
     Type = type;
+    FileNumber = CurrentFile;
+    CurveFileNumberIsStoredIndex = false;
+    CurveAutomaticallyInterpolated = false;
+    CurveAutomaticStartSlice = -1;
+    CurveAutomaticEndSlice = -1;
     //todo - get my data from the object in question
     if (type == -3)
     {
@@ -43,17 +51,42 @@ UndoDataObject::UndoDataObject(int type, int curve_index = -1)
     }
     if (type == -1)
     {
-        CurvePoints.X = Curves[curve_index]->SplinePoints[CurrentFile * zsparsity]->X;
-        CurvePoints.Y = Curves[curve_index]->SplinePoints[CurrentFile * zsparsity]->Y;
-        CurvePoints.Count = Curves[curve_index]->SplinePoints[CurrentFile * zsparsity]->Count;
+        const int sourceSlice =
+            storedCurveSlice >= 0
+                ? storedCurveSlice
+                : CurrentFile * zsparsity;
+        CurvePoints.X =
+            Curves[curve_index]->SplinePoints[sourceSlice]->X;
+        CurvePoints.Y =
+            Curves[curve_index]->SplinePoints[sourceSlice]->Y;
+        CurvePoints.Fixed =
+            Curves[curve_index]->SplinePoints[sourceSlice]
+                ->Fixed;
+        CurvePoints.Count =
+            Curves[curve_index]->SplinePoints[sourceSlice]
+                ->Count;
         CurveNumber = curve_index;
-        undosize = CurvePoints.Count * (sizeof(double)) * 2;
+        FileNumber =
+            storedCurveSlice >= 0
+                ? storedCurveSlice
+                : CurrentFile;
+        CurveFileNumberIsStoredIndex =
+            storedCurveSlice >= 0;
+        CurveAutomaticallyInterpolated =
+            Curves[curve_index]->AutomaticallyInterpolated;
+        CurveAutomaticStartSlice =
+            Curves[curve_index]->AutomaticStartSlice;
+        CurveAutomaticEndSlice =
+            Curves[curve_index]->AutomaticEndSlice;
+        undosize = static_cast<int>(
+            CurvePoints.Count * sizeof(double) * 2
+            + CurvePoints.Fixed.size());
         TotalUndoSize += undosize;
     }
     if (type >= 0)
     {
         StoredImage = *GA[type];
-        undosize = GA[type]->byteCount();
+        undosize = (int) (GA[type]->sizeInBytes());
         TotalUndoSize += undosize;
     }
 }
@@ -80,20 +113,20 @@ UndoEvent::UndoEvent(int Dfrom, int Dto)
     {
         if (FileTo == -2) //store all curves
         {
-            int oldCurrentFile = CurrentFile;
-            //qDebug()<<"FileCount is "<<FileCount;
-            for (int f = 0; f < FileCount; f++)
+            for (int i = 0; i < CurveCount; i++)
             {
-                CurrentFile = f; //bodge - constructor uses this
-                for (int i = 0; i < CurveCount; i++)
+                for (int storedSlice = 0;
+                     storedSlice
+                     < Curves[i]->SplinePoints.size();
+                     storedSlice++)
                 {
-                    UndoDataObject *d = new  UndoDataObject(-1, i);
-                    d->FileNumber = f;
-                    //qDebug()<<"Storing curve, filenumber is "<<d->FileNumber;
-                    DataObjects.append(d);
+                    DataObjects.append(
+                        new UndoDataObject(
+                            -1,
+                            i,
+                            storedSlice));
                 }
             }
-            CurrentFile = oldCurrentFile;
         }
         else
             for (int i = 0; i < CurveCount; i++)
@@ -128,7 +161,7 @@ UndoEvent::~UndoEvent()
 }
 
 //Copy undo information back whence it came - assumes currentfile is correct
-void UndoEvent::Undo(MainWindowImpl *m)
+void UndoEvent::Undo(MainWindow *m)
 {
     //qDebug()<<"Doing an undo pointer is "<<this<<" object count is "<<DataObjects.count()<<" type is "<<Type;
     TotalUndoSize += 100; // guess for overhead on one of these classes - those empty lists/images must take up something though!
@@ -161,9 +194,33 @@ void UndoEvent::Undo(MainWindowImpl *m)
                 //qDebug()<<"Undoing a curve, filenumber "<<o->FileNumber;
                 if (o->CurveNumber >= 0 && o->CurveNumber < CurveCount)
                 {
-                    Curves[o->CurveNumber]->SplinePoints[o->FileNumber * zsparsity]->X = o->CurvePoints.X;
-                    Curves[o->CurveNumber]->SplinePoints[o->FileNumber * zsparsity]->Y = o->CurvePoints.Y;
-                    Curves[o->CurveNumber]->SplinePoints[o->FileNumber * zsparsity]->Count = o->CurvePoints.Count;
+                    const int storedSlice =
+                        o->CurveFileNumberIsStoredIndex
+                            ? o->FileNumber
+                            : o->FileNumber * zsparsity;
+                    if (storedSlice < 0
+                        || storedSlice
+                               >= Curves[o->CurveNumber]
+                                      ->SplinePoints.size())
+                    {
+                        continue;
+                    }
+                    PointList *points =
+                        Curves[o->CurveNumber]
+                            ->SplinePoints[storedSlice];
+                    points->X = o->CurvePoints.X;
+                    points->Y = o->CurvePoints.Y;
+                    points->Fixed = o->CurvePoints.Fixed;
+                    points->Count = o->CurvePoints.Count;
+                    Curves[o->CurveNumber]
+                        ->AutomaticallyInterpolated =
+                        o->CurveAutomaticallyInterpolated;
+                    Curves[o->CurveNumber]
+                        ->AutomaticStartSlice =
+                        o->CurveAutomaticStartSlice;
+                    Curves[o->CurveNumber]
+                        ->AutomaticEndSlice =
+                        o->CurveAutomaticEndSlice;
                     CurvesDirty = true;
                     CurvesUndoDirty = false;
                 }
@@ -179,7 +236,7 @@ void UndoEvent::Undo(MainWindowImpl *m)
 }
 
 //Similar to undo - but moves work in opposite direction
-void UndoEvent::Redo(MainWindowImpl *m)
+void UndoEvent::Redo(MainWindow *m)
 {
     if (FileNumber != -1) //move event
     {
@@ -209,9 +266,33 @@ void UndoEvent::Redo(MainWindowImpl *m)
             {
                 if (o->CurveNumber >= 0 && o->CurveNumber < CurveCount)
                 {
-                    Curves[o->CurveNumber]->SplinePoints[o->FileNumber * zsparsity]->X = o->CurvePoints.X;
-                    Curves[o->CurveNumber]->SplinePoints[o->FileNumber * zsparsity]->Y = o->CurvePoints.Y;
-                    Curves[o->CurveNumber]->SplinePoints[o->FileNumber * zsparsity]->Count = o->CurvePoints.Count;
+                    const int storedSlice =
+                        o->CurveFileNumberIsStoredIndex
+                            ? o->FileNumber
+                            : o->FileNumber * zsparsity;
+                    if (storedSlice < 0
+                        || storedSlice
+                               >= Curves[o->CurveNumber]
+                                      ->SplinePoints.size())
+                    {
+                        continue;
+                    }
+                    PointList *points =
+                        Curves[o->CurveNumber]
+                            ->SplinePoints[storedSlice];
+                    points->X = o->CurvePoints.X;
+                    points->Y = o->CurvePoints.Y;
+                    points->Fixed = o->CurvePoints.Fixed;
+                    points->Count = o->CurvePoints.Count;
+                    Curves[o->CurveNumber]
+                        ->AutomaticallyInterpolated =
+                        o->CurveAutomaticallyInterpolated;
+                    Curves[o->CurveNumber]
+                        ->AutomaticStartSlice =
+                        o->CurveAutomaticStartSlice;
+                    Curves[o->CurveNumber]
+                        ->AutomaticEndSlice =
+                        o->CurveAutomaticEndSlice;
                     CurvesDirty = true;
                     CurvesUndoDirty = false;
                 }

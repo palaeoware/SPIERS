@@ -2,10 +2,10 @@
  * @file
  * Header: GL Widget
  *
- * All SPIERSview code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSview code is Copyright 2008-2023 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERS code is Copyright 2008-2026 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -26,43 +26,56 @@
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLDebugLogger>
 #include <QOpenGLContext>
+#include <QOpenGLExtraFunctions>
 
 #include "globals.h"
-#include "drawglscalegrid.h"
-#include "drawglscaleball.h"
+
+#define SHADOW_MAP_SIZE 2048
 
 class GlWidget : public QOpenGLWidget, protected QOpenGLFunctions
 {
     Q_OBJECT
 
+signals:
+    void resized();  //for comms with the overlying painter
+    void worldPositionClicked(QVector3D pos, bool validHit, int objectIndex);
+    void glUpdate();
 public:
     GlWidget(QWidget *parent);
     ~GlWidget();
     void grabGestures(const QList<Qt::GestureType> &gestures);
-
     void glDebug(QString string);
 
-    float cameraX;
-    float cameraY;
-    float cameraZ;
-    float centerX;
-    float centerY;
-    float centerZ;
-    float ClipStart;
-    float ClipDepth;
-    float ClipAngle;
-    float defaultClipAngle;
+    float cameraX, cameraY, cameraZ;
+    float centerX, centerY, centerZ;
+    float ClipStart, ClipDepth, ClipAngle, defaultClipAngle;
     float StereoSeparation;
-
-    int LastMouseXpos;
-    int LastMouseYpos;
-    int xdim;
-    int ydim;
+    int LastMouseXpos, LastMouseYpos;
+    int xdim, ydim;
 
     QOpenGLVertexArrayObject vao;
-    QOpenGLFunctions *glfunctions;
-    QOpenGLShaderProgram lightingShaderProgram;
-    QOpenGLShaderProgram lightingShaderProgramForColour;
+    QOpenGLFunctions      *glfunctions;
+    QOpenGLExtraFunctions *glextrafunctions;
+
+    // Lighting shaders — three shadow variants compiled from one source
+    QOpenGLShaderProgram lightingShaderProgram;        // no shadows
+    QOpenGLShaderProgram lightingShaderProgramShadow;  // hard shadows
+    QOpenGLShaderProgram lightingShaderProgramPCF;     // soft shadows (PCF)
+
+    // Shadow depth pass shader
+    QOpenGLShaderProgram shadowDepthShaderProgram;
+
+    // OIT accumulation shaders — three shadow variants, same as lighting
+    QOpenGLShaderProgram oitAccumShaderProgram;        // no shadows
+    QOpenGLShaderProgram oitAccumShaderProgramShadow;  // hard shadows
+    QOpenGLShaderProgram oitAccumShaderProgramPCF;     // soft shadows (PCF)
+
+    // OIT composite shader — single variant, no shadows
+    QOpenGLShaderProgram oitCompositeShaderProgram;
+
+    // Colour pick shader — flat colour, no lighting
+    QOpenGLShaderProgram pickShaderProgram;
+
     QMatrix4x4 pMatrix;
 
     bool CanISee(int index);
@@ -83,20 +96,60 @@ public:
     double getFOV();
     void updateFOV();
 
+    double realOrthoWidthMm, realOrthoHeightMm;
 protected:
-    // Overrides
     bool event(QEvent *event) override;
     void initializeGL() override;
     void resizeGL(int width, int height) override;
     void paintGL() override;
     void mouseMoveEvent(QMouseEvent *event) override;
-
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
 private:
     bool gestureEvent(QGestureEvent *event);
     void pinchTriggered(QPinchGesture *gesture);
+    QVector3D GetLightColour(int lightPower, QColor lightColour);
+    QVector3D GetLightDirection(int xyAngle, int zPos);
+    float GetLightPowerMultiplier(int power);
 
-    DrawGLScaleGrid *scaleGrid;
-    DrawGLScaleBall *scaleBall;
+    // Shadow infrastructure
+    void initShadowFBOs();
+    void renderShadowPass(int lightIndex, QVector3D lightDir, QMatrix4x4 &lightSpaceMatrixOut);
+    QMatrix4x4 computeLightSpaceMatrix(QVector3D lightDir);
+    QOpenGLShaderProgram *selectShader();
+    QOpenGLShaderProgram *selectOITShader();
+
+    GLuint shadowFBO[3];
+    GLuint shadowDepthTexture[3];
+    QMatrix4x4 lightSpaceMatrix[3];
+    GLuint dummyShadowTexture;
+
+    // OIT infrastructure
+    void initOIT();
+    void resizeOIT(int w, int h);
+    void renderOITAccumPass(bool rightview, QMatrix4x4 &vMatrix);
+    void renderOITCompositePass();
+    void setLightAndShadowUniforms(QOpenGLShaderProgram *shader,
+                                   bool shadowsActive,
+                                   const QMatrix4x4 &objMatrix,
+                                   int lightCount,
+                                   const QVector3D *directions,
+                                   const QVector3D *colors);
+
+    GLuint oitFBO;
+    GLuint oitAccumTexture;   // RGBA16F — weighted colour accumulation
+    GLuint oitRevealTexture;  // R16F    — reveal (transmittance) factor
+    GLuint oitDepthRBO;       // shared depth renderbuffer (matches opaque pass)
+    GLuint fullscreenQuadVBO; // [-1,1] quad for composite pass
+
+    // Colour pick infrastructure
+    void   initPickFBO();
+    void   resizePickFBO(int w, int h);
+    int    pickObject(int mouseX, int mouseY);
+
+    GLuint pickFBO;
+    GLuint pickColourTexture;  // RGBA8 — encoded object index
+    GLuint pickDepthRBO;       // depth for correct front-surface selection
 };
 
 #endif // GL3WIDGET_H

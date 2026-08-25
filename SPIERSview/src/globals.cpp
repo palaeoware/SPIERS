@@ -1,3 +1,19 @@
+/**
+ * @file
+ * Source: Globals
+ *
+ * All SPIERS code is released under the GNU General Public License.
+ * See LICENSE.md files in the programme directory.
+ *
+ * All SPIERS code is Copyright 2008-2026 by Russell J. Garwood, Mark D. Sutton,
+ * and Alan R.T. Spencer.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version. This program is distributed in the
+ * hope that it will be useful, but WITHOUT ANY WARRANTY.
+ */
 #include "globals.h"
 
 MainWindow *mainWindow;
@@ -50,7 +66,6 @@ int modelKTr;
 int nextActualDlist = 1;
 int totalTriangles = 0;
 int scaleBallColour[3]; //info stuff
-int fontSizeGrid = 3;
 
 QList<QScreen *> availableScreens;
 QSurfaceFormat surfaceFormat;
@@ -68,3 +83,17 @@ QStringList infoClassificationName;
 QStringList infoClassificationRank;
 QStringList infoTitle;
 QMatrix4x4 globalMatrix;
+
+int mainLightXYAngle = 120;
+int mainLightZPos = -20;
+int mainLightPower = 5;
+QColor mainLightColour = Qt::white;
+bool secondaryLightActive=true, headlightActive=false;
+int secondaryLightXYAngle= 260;;
+int secondaryLightZPos = -10;
+int secondaryLightPower = 4;
+QColor secondaryLightColour = Qt::white;
+int headlightPower = 3;
+QColor headlightColour = Qt::white;
+ShadowMode mainLightShadows = ShadowMode::Soft, secondaryLightShadows = ShadowMode::None,
+    headlightShadows= ShadowMode::None; //always

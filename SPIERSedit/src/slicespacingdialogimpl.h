@@ -2,10 +2,10 @@
  * @file
  * Header: Slice Spacing Dialog Impl.
  *
- * All SPIERSedit code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSview code is Copyright 2008-2023 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERS code is Copyright 2008-2026 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ class slicespacingdialogImpl : public QDialog, public Ui::slicespacingdialog
 {
     Q_OBJECT
 public:
-    slicespacingdialogImpl( QWidget *parent = nullptr, Qt::WindowFlags f = nullptr );
+    slicespacingdialogImpl( QWidget *parent = nullptr, Qt::WindowFlags f = {} );
     double relative;
 private slots:
     void on_Relative_valueChanged(double );

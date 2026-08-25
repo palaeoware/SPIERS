@@ -2,10 +2,10 @@
  * @file
  * Source: FileIO
  *
- * All SPIERSversion code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSversion code is Copyright 2008-2023 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERS code is Copyright 2008-2026 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,6 +17,11 @@
 
 #include "fileio.h"
 #include "globals.h"
+#include "mlinterface.h"
+#include "sourceimagenormalizer.h"
+#include <QDateTime>
+#include <QDir>
+#include <QFileInfo>
 #include "undo.h"
 #include <QImage>
 #include <QRgb>
@@ -28,6 +33,112 @@
 #include <QBuffer>
 
 QList <Cache *> Caches;
+
+namespace
+{
+QString speBackupDirectoryFor(const QString &fullSettingsFileName, const QString &settingsFileName)
+{
+    const QFileInfo fileInfo(fullSettingsFileName);
+    return fileInfo.absolutePath() + "/" + settingsFileName + "_spe_backups";
+}
+
+void retainLatestPerBucket(
+    const QList<QFileInfo> &files,
+    QSet<QString> &keepPaths,
+    QSet<QString> &claimedBuckets,
+    const char *formatString,
+    int maxCount)
+{
+    int kept = 0;
+    for (const QFileInfo &fi : files)
+    {
+        const QDateTime ts = fi.lastModified();
+        const QString bucket = ts.toString(QString::fromLatin1(formatString));
+        if (bucket.isEmpty() || claimedBuckets.contains(bucket))
+        {
+            continue;
+        }
+        claimedBuckets.insert(bucket);
+        keepPaths.insert(fi.absoluteFilePath());
+        kept++;
+        if (kept >= maxCount)
+        {
+            break;
+        }
+    }
+}
+
+void createTieredSpeBackup(const QString &fullSettingsFileName, const QString &settingsFileName)
+{
+    const QFileInfo sourceInfo(fullSettingsFileName);
+    if (!sourceInfo.exists())
+    {
+        return;
+    }
+
+    const QString backupDirectoryPath =
+        speBackupDirectoryFor(fullSettingsFileName, settingsFileName);
+    QDir backupDir(backupDirectoryPath);
+    if (!backupDir.exists() && !QDir().mkpath(backupDirectoryPath))
+    {
+        Message("Warning - unable to create SPE backup directory " + backupDirectoryPath);
+        return;
+    }
+
+    const QDateTime now = QDateTime::currentDateTime();
+    const QString stamp = now.toString("yyyyMMdd-HHmmss-zzz");
+    const QString backupFileName = settingsFileName + "_" + stamp + ".spe";
+    const QString backupFilePath = backupDir.filePath(backupFileName);
+    if (!QFile::copy(fullSettingsFileName, backupFilePath))
+    {
+        Message("Warning - unable to create SPE backup file " + backupFilePath);
+        return;
+    }
+
+    QList<QFileInfo> backups;
+    const QFileInfoList entries = backupDir.entryInfoList(
+        QStringList() << "*.spe",
+        QDir::Files,
+        QDir::Time);
+    for (const QFileInfo &fi : entries)
+    {
+        if (fi.fileName().startsWith(settingsFileName + "_"))
+        {
+            backups.append(fi);
+        }
+    }
+
+    QSet<QString> keepPaths;
+    QSet<QString> claimedBuckets;
+
+    // 1) Keep most recent 20 snapshots
+    for (int i = 0; i < backups.count() && i < 20; i++)
+    {
+        keepPaths.insert(backups.at(i).absoluteFilePath());
+    }
+
+    // 2) Keep one snapshot per hour for up to 48 unique hours
+    retainLatestPerBucket(backups, keepPaths, claimedBuckets, "yyyyMMddHH", 48);
+
+    // 3) Keep one snapshot per day for up to 30 unique days
+    retainLatestPerBucket(backups, keepPaths, claimedBuckets, "yyyyMMdd", 30);
+
+    // 4) Keep one snapshot per ISO week for up to 12 unique weeks
+    retainLatestPerBucket(backups, keepPaths, claimedBuckets, "yyyyWW", 12);
+
+    for (const QFileInfo &fi : backups)
+    {
+        const QString filePath = fi.absoluteFilePath();
+        if (!keepPaths.contains(filePath))
+        {
+            QFile::remove(filePath);
+        }
+    }
+}
+}
+
+static constexpr quint32 kCurveAutomationMagic =
+    0x43415554; // "CAUT"
 
 CacheGreyData::CacheGreyData()
 {
@@ -72,7 +183,7 @@ void Cache::CalcMySize()
     int csize, cmsize;
     Q_UNUSED(csize);
     Q_UNUSED(cmsize);
-    if (ColData) Size += ColData->byteCount();
+    if (ColData) Size += (int)ColData->sizeInBytes();
     if (ColDataCompressed) Size += ColDataCompressed->size();
     csize = Size;
     if (Locks) Size += Locks->size();
@@ -81,7 +192,7 @@ void Cache::CalcMySize()
     for (int i = 0; i < GreyData.count(); i++)
     {
         if (GreyData[i]->CompressedData) Size += (GreyData[i]->CompressedData->size());
-        if (GreyData[i]->Data) Size += (GreyData[i]->Data->byteCount());
+        if (GreyData[i]->Data) Size += (int)(GreyData[i]->Data->sizeInBytes());
     }
 
 
@@ -137,6 +248,7 @@ int CacheIndex(int fnum)
     {
         if (Caches[i]->Filenum == fnum)
         {
+            //qDebug()<<"Found entry "<<fnum<<" i is "<<i<< " lastused "<<Caches[i]->LastUsed;
             Caches[i]->LastUsed = QDateTime::currentDateTime();
             return i;
         }
@@ -203,7 +315,6 @@ int GetCacheIndex(int fnum)
     }
 }
 
-int Counter;
 int Errors;
 
 void LoadAllData(int fnum)
@@ -251,11 +362,8 @@ bool SimpleLoadColourData(QString fname)
         Error("File is not in a valid format");
     else
     {
-        //bodge - everything is expected to be in indexed 8 if greyscale, so fix anything that isn't!
-        if (d == QImage::Format_Grayscale8)
-            ColArray = Data.convertToFormat(QImage::Format_Indexed8);
-        else
-            ColArray = Data;
+        normalizeIndexedSourceImage(Data);
+        ColArray = Data;
     }
     return true;
 }
@@ -310,14 +418,14 @@ past:  //so can get here with a valid cache entry but no colour file
         }
         else
         {
-            //bodge - everything is expected to be in indexed 8 if greyscale, so fix anything that isn't!
-            if (d == QImage::Format_Grayscale8) ColArray = Data.convertToFormat(QImage::Format_Indexed8);
-            else ColArray = Data;
+            normalizeIndexedSourceImage(Data);
+            ColArray = Data;
         }
 
         if (!RenderCache)
         {
             //Store a copy in cache
+
             int newcache = GetCacheIndex(fnum); //gets index (may be new) for this to be cached in
             //store data
             if (CacheCompressionLevel == 0) //no compression -stash data
@@ -343,6 +451,8 @@ past:  //so can get here with a valid cache entry but no colour file
         }
     }
 
+    // Cached data created by older code may still contain palette indices.
+    normalizeIndexedSourceImage(ColArray);
     if (ColArray.format() == QImage::Format_Indexed8 || ColArray.format() == QImage::Format_Grayscale8) GreyImage = true;
     else GreyImage = false;
     cwidth4 = cwidth;
@@ -353,16 +463,19 @@ past:  //so can get here with a valid cache entry but no colour file
 
 bool SimpleLoadGreyData(int fnum, int seg, QImage *greydata)
 {
+    return SimpleLoadGreyDataForFile(FullFiles.at(fnum), seg, greydata);
+}
 
+bool SimpleLoadGreyDataForFile(const QString &fileName, int seg, QImage *greydata)
+{
     int lastsep, lastdot;
-    QString Fname = FullFiles.at(fnum);
+    QString Fname = fileName;
     lastsep = qMax(Fname.lastIndexOf("\\"), Fname.lastIndexOf("/")); //this is last separator in path
     lastdot = Fname.lastIndexOf(".");
     QString sfname = Fname.left(lastsep);
     QString actfn = Fname.mid(lastsep + 1, lastdot - lastsep - 1);
     QString temp = "/" + SettingsFileName + "/" + "s";
-    QString t2;
-    t2.sprintf("%d_", seg + 1);
+    QString t2= QString::asprintf("%d_", seg + 1);
     temp.append(t2);
     temp.append(actfn);
     sfname.append(temp);
@@ -384,8 +497,6 @@ bool SimpleLoadGreyData(int fnum, int seg, QImage *greydata)
 void LoadGreyData(int fnum, int seg)
 //Get info from segment file
 {
-    //qDebug()<<"In LGD, file"<<fnum<<"seg"<<seg<<"GA count"<<GA.count();
-
     while (GA.count() <= seg) GA.append(static_cast<QImage *>(nullptr)); //put in a blank if we don't have enough!
     //qDebug()<<"In LGD, file"<<fnum<<"seg"<<seg<<"GA count"<<GA.count();
     //check cache
@@ -394,7 +505,7 @@ void LoadGreyData(int fnum, int seg)
 
     if (i >= 0)
     {
-        //qDebug()<<"Using cache copy";
+        //qDebug()<<"Trying cache copy";
         //Use cache copy
         if (CacheCompressionLevel > 0)
         {
@@ -423,8 +534,10 @@ void LoadGreyData(int fnum, int seg)
 
                 return;
             }
+
         }
-        //qDebug()<<"Shouldn't see this"; Error("Cache error");
+        //qDebug()<<"Not cached";
+        //Error("Cache error");
     }
 
     //qDebug()<<"Past cache";
@@ -435,8 +548,8 @@ void LoadGreyData(int fnum, int seg)
     QString sfname = Fname.left(lastsep);
     QString actfn = Fname.mid(lastsep + 1, lastdot - lastsep - 1);
     QString temp = "/" + SettingsFileName + "/" + "s";
-    QString t2;
-    t2.sprintf("%d_", seg + 1);
+    QString t2 = QString::asprintf("%d_", seg + 1);
+
     temp.append(t2);
     temp.append(actfn);
     sfname.append(temp);
@@ -470,7 +583,7 @@ void LoadGreyData(int fnum, int seg)
 
         bool r = GA[seg]->load(sfname);
 
-//                qDebug()<<"Loaded "<<sfname<<"- success is "<<r;
+        //qDebug()<<"Loaded "<<sfname<<"- success is "<<r;
         //if it fails - just try again!
         while (r == false || GA[seg]->isNull())
         {
@@ -492,7 +605,7 @@ void LoadGreyData(int fnum, int seg)
         GA[seg]->setColorTable(clut);
     }
 
-
+    //qDebug()<<"GCI2";
     int newcache = GetCacheIndex(fnum); //gets index (may be new) for this to be cached in
     //add new entries for segments
 
@@ -572,7 +685,7 @@ void OldLoadGreyData(int fnum, int seg)
             QString sfname=Fname.left(lastsep);
             QString actfn=Fname.mid(lastsep+1, lastdot-lastsep-1);
             QString temp = "/" + SettingsFileName + "/" + "s";
-            QString t2; t2.sprintf("%d_",seg+1);
+            QString t2 = QString::asprintf("%d_", seg + 1);
             temp.append(t2); temp.append(actfn);
             sfname.append(temp);
 
@@ -651,7 +764,8 @@ void WriteAllData(int fnum)
         if (Segments[i]->Dirty) SaveGreyData(fnum, i);
         Segments[i]->Dirty = false;
     }
-    if (MasksDirty) SaveMasks(fnum);
+    const bool masksWereDirty = MasksDirty;
+    if (masksWereDirty) SaveMasks(fnum);
     if (LocksDirty) SaveLocks(fnum);
     MasksDirty = false;
     LocksDirty = false;
@@ -669,8 +783,7 @@ void SimpleSaveGreyData(int fnum, int seg, QImage greydata)
     QString sfname = Fname.left(lastsep);
     QString actfn = Fname.mid(lastsep + 1, lastdot - lastsep - 1);
     QString temp = "/" + SettingsFileName + "/" + "s";
-    QString t2;
-    t2.sprintf("%d_", seg + 1);
+    QString t2= QString::asprintf("%d_", seg + 1);
     temp.append(t2);
     temp.append(actfn);
     sfname.append(temp);
@@ -704,8 +817,7 @@ void SaveGreyData(int fnum, int seg)
     QString sfname = Fname.left(lastsep);
     QString actfn = Fname.mid(lastsep + 1, lastdot - lastsep - 1);
     QString temp = "/" + SettingsFileName + "/" + "s";
-    QString t2;
-    t2.sprintf("%d_", seg + 1);
+    QString t2= QString::asprintf("%d_", seg + 1);
     temp.append(t2);
     temp.append(actfn);
     sfname.append(temp);
@@ -726,6 +838,7 @@ void SaveGreyData(int fnum, int seg)
     }
 
     //and insert into cache
+                //qDebug()<<"GCI3";
     int newcache = GetCacheIndex(fnum); //gets index (may be new) for this to be cached in
 
     //Caching
@@ -756,7 +869,7 @@ void SaveGreyData(int fnum, int seg)
 void LoadMasks(int fnum)
 //Load the masks as a byte array
 {
-//  qDebug()<<"In Load Masks"<<fnum;
+
     mutex.lock();
 
     //check cache
@@ -819,6 +932,7 @@ past:  //so can get here with a valid cache entry but no grey file
         }
 
         //Store a copy in cache
+                    //qDebug()<<"GCI4";
         int newcache = GetCacheIndex(fnum); //gets index (may be new) for this to be cached in
         if (newcache != -1) if (Caches[newcache]->Masks != nullptr) delete  Caches[newcache]->Masks; //delete any old one
 
@@ -880,6 +994,7 @@ void SaveMasks(int fnum)
     else file.write(Masks.data(), static_cast<qint64>(Masks.size()));
 
     //and insert into cache
+    //qDebug()<<"GCI5";
     int newcache = GetCacheIndex(fnum); //gets index (may be new) for this to be cached in
     if (newcache != -1) if (Caches[newcache]->Masks != nullptr) delete  Caches[newcache]->Masks; //delete any old one
 
@@ -998,9 +1113,14 @@ bool SimpleLoadLocks(int fnum, int expectedsize, QByteArray *array)
 
 bool SimpleLoadMasks(int fnum, int expectedsize, QByteArray *array)
 {
+    return SimpleLoadMasksForFile(FullFiles.at(fnum), expectedsize, array);
+}
+
+bool SimpleLoadMasksForFile(const QString &fileName, int expectedsize, QByteArray *array)
+{
     int lastsep, lastdot;
 
-    QString Fname = FullFiles.at(fnum);
+    QString Fname = fileName;
     lastsep = qMax(Fname.lastIndexOf("\\"), Fname.lastIndexOf("/")); //this is last separator in path
     lastdot = Fname.lastIndexOf(".");
     QString sfname = Fname.left(lastsep);
@@ -1101,6 +1221,7 @@ past:  //so can get here with a valid cache entry but no grey file
         {
             //qDebug()<<"H3-storing";
             //Store a copy in cache
+            //qDebug()<<"GCI6";
             int newcache = GetCacheIndex(fnum); //gets index (may be new) for this to be cached in
             if (newcache != -1) if (Caches[newcache]->Locks != nullptr) delete  Caches[newcache]->Locks; //delete any old one
 
@@ -1176,6 +1297,7 @@ void SaveLocks(int fnum)
     if (!RenderCache)
     {
         //Store a copy in cache
+        //qDebug()<<"GCI7";
         int newcache = GetCacheIndex(fnum); //gets index (may be new) for this to be cached in
         if (newcache != -1) if (Caches[newcache]->Locks != nullptr) delete  Caches[newcache]->Locks; //delete any old one
         //OK, work out what to do with compression
@@ -1234,6 +1356,13 @@ void ApplyDefaultSettings()
     OutputObjectsCount = 0;
     LastMouseX = -1; //no cursor yet
     SquareBrush = true;
+    GradientDensity = 3;
+    GradientMinDist=0;
+    GradientMinDistValue=0;
+    GradientMaxDist=100;
+    GradientMaxDistValue=10;
+    //qDebug()<<"Done defaults";
+    previewGradient = false;
     CurrentFile = 0;
     CurrentZoom = 1;
     //ColMonoScale=2;
@@ -1293,6 +1422,8 @@ void ApplyDefaultSettings()
     OutputMirroring = false;
     HiddenMasksLockedForGeneration = false;
     SegmentBrushAppliesMasks = false;
+    SegmentBrushAppliesLocks = false;
+
     CurveShapeLocked = false;
     SegmentsLocked = false;
     CurveMarkersAsCrosses = false;
@@ -1318,6 +1449,9 @@ void ApplyDefaultSettings()
     MenuSliceSelectorChecked = true;
     MenuHistSelectedOnly = false;
     MenuHistChecked = false;
+    Menu3DPreviewChecked = true;
+
+    FeaturesByteArray.clear();
 }
 
 
@@ -1328,7 +1462,7 @@ int GetShort(QDataStream *in)
     Counter += 2;
     if (in->status())
     {
-        qDebug() << "getshort" << in->status();
+        //qDebug() << "getshort" << in->status();
         Errors++;
     }
     return static_cast<int>(val);
@@ -1341,7 +1475,7 @@ int GetInt(QDataStream *in)
     Counter += 4;
     if (in->status())
     {
-        qDebug() << "getint" << in->status();
+        //qDebug() << "getint" << in->status();
         Errors++;
     }
     return val;
@@ -1354,7 +1488,7 @@ int GetBool(QDataStream *in)
     Counter += 2;
     if (in->status())
     {
-        qDebug() << "getbool" << in->status();
+        //qDebug() << "getbool" << in->status();
         Errors++;
     }
     if (val < 0) return true;
@@ -1375,7 +1509,7 @@ int GetVariantInt(QDataStream *in)
         test = GetShort(in);
         if (in->status())
         {
-            qDebug() << "getvariantint" << in->status();
+            //qDebug() << "getvariantint" << in->status();
             Errors++;
         };
         return test;
@@ -1389,7 +1523,7 @@ double GetDouble(QDataStream *in)
     Counter += 8;
     if (in->status())
     {
-        qDebug() << "getdouble" << in->status();
+        //qDebug() << "getdouble" << in->status();
         Errors++;
     };
     return test;
@@ -1401,7 +1535,7 @@ void GetBytes(QDataStream *in, char *ptr, int bytes)
     Counter += bytes;
     if (in->status())
     {
-        qDebug() << "getbytes" << in->status();
+        //qDebug() << "getbytes" << in->status();
         Errors++;
     };
     return;
@@ -1418,7 +1552,7 @@ QString GetString(QDataStream *in)
     {
         *in >> a;
         Counter++;
-        text.append(a);
+        text.append(QChar::fromLatin1(char(a)));
     }
     while (a != 0);
     *in >> a;
@@ -1437,7 +1571,7 @@ QString GetString(QDataStream *in)
 
     if (in->status())
     {
-        qDebug() << "getstring" << in->status();
+        //qDebug() << "getstring" << in->status();
         Errors++;
     };
     return text;
@@ -1485,7 +1619,7 @@ void GetSettingsMinus6(QDataStream *in)
     QString stemp;
     int itemp;
     double dtemp;
-    QString sstring;
+
     Errors = 0;
     BrightUp = GetShort(in);
     BrightDown = GetShort(in);
@@ -1496,8 +1630,7 @@ void GetSettingsMinus6(QDataStream *in)
     Segments.clear();
     for (n = 0; n < SegmentCount; n++)
     {
-        sstring.sprintf("Segment %d", n + 1);
-        Segments.append(new Segment(sstring));
+        Segments.append(new Segment(QString::asprintf("Segment %d", n + 1)));
     }
 
 
@@ -1625,8 +1758,7 @@ void GetSettingsMinus6(QDataStream *in)
     MasksSettings.clear();
     for (n = 0; n <= MaxUsedMask; n++)
     {
-        sstring.sprintf("Mask %d", n + 1);
-        MasksSettings.append(new Mask(sstring));
+        MasksSettings.append(new Mask(QString::asprintf("Mask %d", n + 1)));
         MasksSettings[n]->Name = MaskNames[n];
         for (m = 0; m < 3; m++) MasksSettings[n]->ForeColour[m] = MaskForeColours[n][m]; //r,g,b
         for (m = 0; m < 3; m++) MasksSettings[n]->BackColour[m] = MaskBackColours[n][m]; //r,g,b
@@ -1699,8 +1831,7 @@ void GetSettingsMinus6(QDataStream *in)
     FullFiles = Files; //need this for appending a curve.... might do some harm later, so will clear it
     for (n = 0; n < CurveCount; n++)
     {
-        sstring.sprintf("Curve %d", n + 1);
-        Curves.append(new Curve(sstring));
+        Curves.append(new Curve(QString::asprintf("Curve %d", n + 1)));
     }
 
     //a dummy - don't ask why
@@ -1888,8 +2019,7 @@ void GetSettingsMinus6(QDataStream *in)
 
     if (Errors > 0)
     {
-        QString Mess;
-        Mess.sprintf("Warning - %d read errors encountered in settings file", Errors);
+        QString Mess = QString::asprintf("Warning - %d read errors encountered in settings file", Errors);
         Message(Mess);
         DumpSettings();
     }
@@ -1952,8 +2082,7 @@ bool GetSettings(QDir srcdir)
         GetSettingsMinus6(&in);
         break;
     default:
-        QString temp;
-        temp.sprintf("Settings file is version %d - too recent for this version of SPIERSedit, sorry!", tempint);
+        QString temp = QString::asprintf("Settings file is version %d - too recent for this version of SPIERSedit, sorry!", tempint);
         Error(temp);
     }
     file.close();
@@ -2054,6 +2183,11 @@ void WriteSettings()
     sfname.append("/" + SettingsFileName + ".spe");
     QString dummy;
 
+    if (QFile::exists(sfname))
+    {
+        createTieredSpeBackup(sfname, SettingsFileName);
+    }
+
     QFile file(sfname);
     if (!file.open(QIODevice::WriteOnly))
     {
@@ -2072,7 +2206,7 @@ void WriteSettings()
     //Do all the simple stuff first
     out << FileNotes;
 
-    out << FullFiles.count();
+    out << (int)FullFiles.count();
 
     out << CurrentFile << cwidth << cheight;
     out << fwidth << fheight;
@@ -2130,7 +2264,7 @@ void WriteSettings()
         out << c->Closed << c->Filled << c->Segment;
         out << c->ListOrder;
         //now the hard stuff
-        for (int i = 0; i < FullFiles.count(); i++)
+        for (int i = 0; i < (int)FullFiles.count(); i++)
         {
             out << c->SplinePoints[i]->Count;
             for (int k = 0; k < (c->SplinePoints[i]->Count); k++)
@@ -2146,12 +2280,12 @@ void WriteSettings()
         out << o->Name;
         out << o->Resample;
         out << o->Colour[0] << o->Colour[1] << o->Colour[2]; //r,g,b
-        out << o->ComponentMasks.count();
-        out << o->ComponentSegments.count();
-        out << o->CurveComponents.count();
-        for (n = 0; n < o->ComponentMasks.count(); n++) out << o->ComponentMasks[n];
-        for (n = 0; n < o->ComponentSegments.count(); n++) out << o->ComponentSegments[n];
-        for (n = 0; n < o->CurveComponents.count(); n++) out << o->CurveComponents[n];
+        out << (int)o->ComponentMasks.count();
+        out <<(int) o->ComponentSegments.count();
+        out << (int)o->CurveComponents.count();
+        for (n = 0; n < (int)o->ComponentMasks.count(); n++) out << o->ComponentMasks[n];
+        for (n = 0; n < (int)o->ComponentSegments.count(); n++) out << o->ComponentSegments[n];
+        for (n = 0; n < (int)o->CurveComponents.count(); n++) out << o->CurveComponents[n];
         out << o->ListOrder;
         out << o->IsGroup;
         out << o->Parent;
@@ -2181,7 +2315,7 @@ void WriteSettings()
     out << CurrentZoom;
 
     out << ShowSlicePosition;
-    for (int i = 0; i < FullStretches.count(); i++)
+    for (int i = 0; i < (int)FullStretches.count(); i++)
         out << FullStretches[i];
     out << zsparsity;
     out << ThreeDmode;
@@ -2200,6 +2334,40 @@ void WriteSettings()
     out << mainwin->GetRadialCentreY();
     out << mainwin->GetRadialRadius();
     out << mainwin->GetRadialAdjust();
+
+    out << GradientDensity;
+    out << GradientMaxDist;
+    out << GradientMaxDistValue;
+    out << GradientMinDist;
+    out << GradientMinDistValue;
+
+    //ML stuff
+    out << SegmentBrushAppliesLocks;
+    out << mainwin->actionIncremental_sampling->isChecked();
+    out << mainwin->spinBoxMLSampling->value();
+    out << mainwin->spinBoxMLDepth->value();
+    out << mainwin->spinBoxMLTrees->value();
+    out << mainwin->spinBoxMinSampleCount->value();
+    
+    out << mlInterface->DumpFeaturesToByteArray();
+
+    out << Menu3DPreviewChecked;
+
+    // Appended in SPE version 4 so older readers can still consume all
+    // traditional curve geometry before ignoring this extension.
+    out << kCurveAutomationMagic;
+    out << static_cast<quint32>(Curves.size());
+    for (const Curve *curve : Curves)
+    {
+        out << curve->AutomaticallyInterpolated;
+        out << curve->AutomaticStartSlice;
+        out << curve->AutomaticEndSlice;
+        out << static_cast<quint32>(
+            curve->SplinePoints.size());
+        for (const PointList *points : curve->SplinePoints)
+            out << points->Fixed;
+    }
+
     file.close();
 }
 
@@ -2208,6 +2376,9 @@ void WriteSettings()
  */
 void ReadSettings()
 {
+
+    Active = false;
+
     // Initially SettingsFileName has full name and path
     QString dummy;
     int version, dummy_int;
@@ -2238,51 +2409,62 @@ void ReadSettings()
     }
 
     in >> version;
-    if (version > SPEFILEVERSION) Message("Warning - settings file " + SettingsFileName + " is too recent for this version of SPIERSedit. Will try to read anyway...");
+    if (version > SPEFILEVERSION)
+    {
+        Message(
+            "Error - settings file "
+            + SettingsFileName
+            + ".spe was created by a newer SPIERSedit version ("
+            + QString::number(version)
+            + ") than this build supports ("
+            + QString::number(static_cast<int>(SPEFILEVERSION))
+            + "). Refusing to open this file.");
+        return;
+    }
 
     in >> dummy;
     if (dummy != SettingsFileName) Message("Warning - settings file name has been changed (from " + dummy + ") - it will be reset to " + SettingsFileName + ".spe when next saved");
 
 
-    // At this point we assume the file is valid, so we make a backupcopy (xxxxx.spe_backup) before going anyfuther.
-    // This is to give an option to recover back to a last known working .spe - and hopefull allow the recovery of the curves etc...
-    // this does not protect the mask and segment files from being damaged
-    QString temp = FullSettingsFileName;
-    QString backupFilePath = temp.replace(QString("%1.spe").arg(SettingsFileName), QString("%1.spe_backup").arg(SettingsFileName));
-    if (QFile(backupFilePath).exists())
-    {
-        QFile(backupFilePath).remove();
-    }
-    QFile::copy(FullSettingsFileName, backupFilePath);
+    // At this point we assume the file is valid, so create a timestamped backup.
+    createTieredSpeBackup(FullSettingsFileName, SettingsFileName);
 
     //Do all the simple stuff first
     in >> FileNotes;
     in >> FileCount >> CurrentFile >> cwidth >> cheight;
-
     in >> fwidth >> fheight;
     in >> dummy_int >> ColMonoScale >> Trans;
     in >> CMin >> CMax;
+
     in >> HiddenMasksLockedForGeneration;
     in >> SegmentBrushAppliesMasks;
     in >> SegmentsLocked; //this no longer used
     in >> CurveMarkersAsCrosses >> CurveShapeLocked;
     in >> CurrentMode >> CurrentSegment >> CurrentRSegment;
+
     in >> Brush_Size >> BrightUp >> BrightDown;
+
     in >> BrightSoft >> LastTrans >> ThreshFlag >> MasksFlag;
     in >> SegsFlag >> SampleArraySize >> MaxUsedMask >> SelectedMask;
     in >> SelectedRMask >> SelectedCurve >> CurveCount >> OutputObjectsCount;
+
     in >> PixPerMM >> SlicePerMM >> SkewDown >> SkewLeft;
     in >> FirstOutputFile >> LastOutputFile >> MaxTriangles;
+
     in >> RangeHardFill >> RangeSelectedOnly >> OutputMirroring;
     in >> PixSens >> XYDownsample >> ZDownsample >> SquareBrush;
+
     in >> SegmentCount;
 
+    //return;
     //Read sample array
     SampleArray.resize(SampleArraySize * 4);
+
     in.readRawData(SampleArray.data(), SampleArraySize * 4);
 
     //Read Filenames
     Files.clear();
+
     for (n = 0; n < FileCount; n++)
     {
         in >> dummy;
@@ -2300,6 +2482,7 @@ void ReadSettings()
     //Segments
     qDeleteAll(Segments.begin(), Segments.end());
     Segments.clear();
+
     Segment *seg;
     for (i = 0; i < SegmentCount; i++)
     {
@@ -2425,7 +2608,6 @@ void ReadSettings()
     in >> MenuToolboxChecked;
     in >> MenuSliceSelectorChecked;
 
-    //qDebug("RS7");
     //new - check available on reload
     if (!in.atEnd()) in >> MenuHistChecked;
     if (!in.atEnd()) in >> MenuHistSelectedOnly;
@@ -2448,7 +2630,6 @@ void ReadSettings()
     {
         CurrentZoom = 1.0;
     }
-
     //Filenames are stored as absolute files - means can't relocate SPEs
     //To fix and retain back-compatibility, code belows fixes path of files
     //to path of SPE
@@ -2485,6 +2666,18 @@ void ReadSettings()
         mainwin->SetRadialAdjust(tempAdjust);
     }
 
+    if (!in.atEnd()) in >> GradientDensity;
+    if (!in.atEnd()) in >> GradientMaxDist;
+    if (!in.atEnd()) in >> GradientMaxDistValue;
+    if (!in.atEnd()) in >> GradientMinDist;
+    if (!in.atEnd()) in >> GradientMinDistValue;
+
+    mainwin->SetGradientDensity(GradientDensity);
+    mainwin->SetGradientMaxDist(GradientMaxDist);
+    mainwin->SetGradientMaxDistValue(GradientMaxDistValue);
+    mainwin->SetGradientMinDist(GradientMinDist);
+    mainwin->SetGradientMinDistValue(GradientMinDistValue);
+
     //now doctor Files array using zsparsity, if necessary
     if (zsparsity > 1)
     {
@@ -2505,7 +2698,178 @@ void ReadSettings()
         }
     }
     else Stretches = FullStretches;
+
+
+    //ML stuff
+    //ML stuff
+    bool tempBool;
+    int tempInt;
+    if (!in.atEnd())
+    {
+        in >> SegmentBrushAppliesLocks;
+        mainwin->actionSegment_brush_applies_locks->setChecked(SegmentBrushAppliesLocks);
+    }
+    if (!in.atEnd())
+    {
+        in >> tempBool;
+        mainwin->actionIncremental_sampling->setChecked(tempBool);
+    }
+
+    if (!in.atEnd())
+    {
+        in >> tempInt; mainwin->spinBoxMLSampling->setValue(tempInt);
+    }
+
+    if (!in.atEnd())
+    {
+        in >> tempInt; mainwin->spinBoxMLDepth->setValue(tempInt);
+    }
+
+    if (!in.atEnd())
+    {
+        in >> tempInt; mainwin->spinBoxMLTrees->setValue(tempInt);
+    }
+
+    if (!in.atEnd())
+    {
+        in >> tempInt; mainwin->spinBoxMinSampleCount->setValue(tempInt);
+    }
+
+    if (!in.atEnd())
+    {
+        in >> FeaturesByteArray;
+    }
+
+    // Added after FeaturesByteArray so old .spe files default to visible
+    if (!in.atEnd()) in >> Menu3DPreviewChecked; else Menu3DPreviewChecked = true;
+
+    if (version >= 4 && !in.atEnd())
+    {
+        quint32 magic = 0;
+        quint32 storedCurveCount = 0;
+        in >> magic;
+        in >> storedCurveCount;
+        if (magic == kCurveAutomationMagic
+            && storedCurveCount
+                   == static_cast<quint32>(Curves.size()))
+        {
+            bool metadataValid = true;
+            for (Curve *curve : Curves)
+            {
+                quint32 storedSliceCount = 0;
+                in >> curve->AutomaticallyInterpolated;
+                in >> curve->AutomaticStartSlice;
+                in >> curve->AutomaticEndSlice;
+                in >> storedSliceCount;
+
+                if (in.status() != QDataStream::Ok
+                    || storedSliceCount
+                           != static_cast<quint32>(
+                               curve->SplinePoints.size()))
+                {
+                    metadataValid = false;
+                    break;
+                }
+
+                for (quint32 slice = 0;
+                     slice < storedSliceCount;
+                     slice++)
+                {
+                    QByteArray fixed;
+                    in >> fixed;
+                    curve->SplinePoints[
+                        static_cast<int>(slice)]
+                        ->Fixed = fixed;
+                }
+
+                bool valid = in.status() == QDataStream::Ok;
+                if (curve->AutomaticallyInterpolated)
+                {
+                    valid = valid
+                            && curve->AutomaticStartSlice >= 0
+                            && curve->AutomaticStartSlice
+                                   < curve->AutomaticEndSlice
+                            && curve->AutomaticEndSlice
+                                   < curve->SplinePoints.size();
+                    if (valid)
+                    {
+                        const int nodeCount =
+                            curve->SplinePoints[
+                                curve->AutomaticStartSlice]
+                                ->Count;
+                        valid = nodeCount > 0;
+                        for (int slice =
+                                 curve->AutomaticStartSlice;
+                             valid
+                             && slice
+                                    <= curve
+                                           ->AutomaticEndSlice;
+                             slice++)
+                        {
+                            const PointList *points =
+                                curve->SplinePoints[slice];
+                            valid =
+                                points->Count == nodeCount
+                                && points->Fixed.size()
+                                       == nodeCount;
+                        }
+                        if (valid)
+                        {
+                            valid =
+                                !curve
+                                     ->SplinePoints[
+                                         curve
+                                             ->AutomaticStartSlice]
+                                     ->Fixed.contains(char(0))
+                                && !curve
+                                     ->SplinePoints[
+                                         curve
+                                             ->AutomaticEndSlice]
+                                     ->Fixed.contains(char(0));
+                        }
+                    }
+                }
+
+                if (!valid)
+                {
+                    qWarning()
+                        << "Ignoring invalid automatic curve "
+                           "metadata for"
+                        << curve->Name;
+                    curve->AutomaticallyInterpolated = false;
+                    curve->AutomaticStartSlice = -1;
+                    curve->AutomaticEndSlice = -1;
+                    for (PointList *points :
+                         curve->SplinePoints)
+                    {
+                        points->Fixed.clear();
+                    }
+                }
+            }
+
+            if (!metadataValid)
+            {
+                qWarning()
+                    << "Ignoring truncated or incompatible automatic "
+                       "curve metadata";
+                for (Curve *curve : Curves)
+                {
+                    curve->AutomaticallyInterpolated = false;
+                    curve->AutomaticStartSlice = -1;
+                    curve->AutomaticEndSlice = -1;
+                    for (PointList *points : curve->SplinePoints)
+                        points->Fixed.clear();
+                }
+            }
+        }
+        else
+        {
+            qWarning()
+                << "Ignoring incompatible automatic curve metadata";
+        }
+    }
+
     file.close();
+    Active = true;
 
 }
-

@@ -2,10 +2,10 @@
  * @file
  * Main Window
  *
- * All SPIERSview code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSview code is Copyright 2008-2023 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERS code is Copyright 2008-2026 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,10 @@
  */
 
 #include <QtWidgets/QApplication>
-#include <QtWidgets/QActionGroup>
+#include "../../SPIERScommon/src/colourswatchlabel.h"
+#include "../../SPIERScommon/src/customstyletheme.h"
+#include "settingsimpl.h"
+#include <QActionGroup>
 #include <QFileDialog>
 #include <QMenuBar>
 #include <QDebug>
@@ -36,9 +39,9 @@
 #include <QMutableListIterator>
 #include <QStandardPaths>
 #include <QDesktopServices>
-#include <QGLFormat>
-#include <QtWidgets/QShortcut>
-#include <QDesktopWidget>
+#include <QImageWriter>
+#include "scalegridoverlay.h"
+
 #include <QScreen>
 
 #include "mainwindow.h"
@@ -48,14 +51,17 @@
 #include "vaxml.h"
 #include "quickhelpbox.h"
 #include "aboutdialog.h"
+#include "blenderbridge.h"
+#include "fbxexporter.h"
 #include "globals.h"
+#include "marchingcubes.h"
+#include "objexporter.h"
 #include "spvreader.h"
 #include "spvwriter.h"
 #include "../SPIERScommon/src/netmodule.h"
-#include <vtkProperty2D.h>
+#include "../SPIERScommon/src/crashdetector.h"
 #include "movetogroup.h"
-#include "gridfontsizedialog.h"
-
+#include "positionclickhandler.h"
 /**
  * @brief MainWindow::MainWindow
  * Constructor sets up VTK widget and one-shot timer to do load.
@@ -76,6 +82,18 @@ MainWindow::MainWindow(QWidget *parent)
     showMaximized();
 
     setWindowTitle(QString(PRODUCTNAME) + " - Version " + QString(SOFTWARE_VERSION));
+
+    // Disable "Export as Blend" menu item if Blender is not available
+    if (!BlenderBridge::isBlenderAvailable())
+    {
+        ui->actionExport_as_Blend->setEnabled(false);
+        ui->actionExport_as_Blend->setText(ui->actionExport_as_Blend->text() + " (Blender not found)");
+    }
+
+    // Hide Test menu in Release builds
+#ifndef QT_DEBUG
+    ui->menuTest->setVisible(false);
+#endif
 
     FilterKeys = true; //set to true to turn off interception of keys needed for type-in boxes
 
@@ -106,11 +124,23 @@ MainWindow::MainWindow(QWidget *parent)
     ui->actionNo_Stereo->setChecked(true);
 
     gl3widget = new GlWidget(ui->frameVTK);
+    gridOverlay = new ScaleGridOverlay(gl3widget, ui->frameVTK);
+    gridOverlay->setGeometry(gl3widget->geometry());
+    gridOverlay->show();
+    // And connect to resize events so it stays aligned:
+    connect(gl3widget, &GlWidget::resized, this, [=]() {
+        gridOverlay->setGeometry(gl3widget->geometry());
+        gridOverlay->update();
+    });
+
+    //and update event
+    connect(gl3widget, &GlWidget::glUpdate,
+            gridOverlay, [=]() { gridOverlay->update(); });
 
     gllayout = new QHBoxLayout;
     gllayout->addWidget(gl3widget);
     gllayout->setSpacing(2);
-    gllayout->setMargin(2);
+    gllayout->setContentsMargins(2, 2, 2, 2);
     ui->frameVTK->setLayout(gllayout);
 
     QObject::connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close())); //quit
@@ -118,9 +148,8 @@ MainWindow::MainWindow(QWidget *parent)
     //qDebug() << "[Where I'm I?] In MainWindow - Starting Timers";
     StartTimer = new QTimer(this);
     StartTimer->setSingleShot(true);
-    StartTimer->setInterval(2000);// 2 sec after lauch to give NetModule and Splash time to do their thing
+    StartTimer->setInterval(0); // fires as soon as the event loop is idle after releaseStartup() starts it
     QObject::connect(StartTimer, SIGNAL(timeout()), this, SLOT(StartTimer_fired()));
-    StartTimer->start();
 
     SpinTimer = new QTimer(this);
     SpinTimer->setSingleShot(true);
@@ -142,6 +171,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->ProgressDock->setVisible(true);
     ui->ClipDock->setVisible(false);
     ui->AnimDock->setVisible(false);
+    ui->dockWidgetLighting->setVisible(false);
 
     QPalette p = ui->PiecesList->palette();
     p.setColor(QPalette::Highlight, Qt::blue);
@@ -210,8 +240,15 @@ MainWindow::MainWindow(QWidget *parent)
     containsPresurfaced = false;
     containsNonPresurfaced = false;
 
+    mainLightPower = 5;
+    mainLightColour = Qt::white;
+    mainLightXYAngle = 120;
+    mainLightZPos = -20;
+
     AnimOutputDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
     mainWindowReady = true;
+
+    new PositionClickHandler(gridOverlay, this);
 }
 
 /**
@@ -240,17 +277,44 @@ MainWindow::~MainWindow()
 void MainWindow::UpdateGL()
 {
     //qDebug() << "[Where I'm I?] In UpdateGL";
+
     gl3widget->update();
 }
 
 // Timer handlers
+
+/**
+ * @brief MainWindow::releaseStartup
+ * Called once the update check has finished (or timed out) so it is safe
+ * to start the file-open sequence.  Starting the timer here guarantees that
+ * the update dialog has already closed before StartTimer_fired() runs.
+ * Qt::QueuedConnection (used from main.cpp) means this slot is always called
+ * from the event loop, so no re-entrancy issues.
+ */
+void MainWindow::releaseStartup()
+{
+    if (!StartTimer->isActive() && !m_isStartTimerFired) {
+        m_isStartTimerFired = true; // guard against double starts
+        StartTimer->start();
+    }
+}
+
+/**
+ * @brief MainWindow::onConnectivityChanged
+ * Enables or disables network-dependent menu items as internet access changes.
+ */
+void MainWindow::onConnectivityChanged(bool online)
+{
+    ui->actionCheck_for_Updates->setEnabled(online);
+}
+
 /**
  * @brief MainWindow::StartTimer_fired
  * start up timer should fire this only once - starts SPV load process
  */
 void MainWindow::StartTimer_fired()
 {
-    //qDebug() << "[Where I'm I?] In StartTimer_fired | fname = " << fname;
+    qDebug() << "[Where I'm I?] In StartTimer_fired | fname = " << fname;
 
     //Some General initialisation
     nextActualDlist = 1;
@@ -261,14 +325,14 @@ void MainWindow::StartTimer_fired()
     if (fname == "") //no filename provided
     {
         //qDebug() << "[Where I'm I?] In StartTimer_fired - no fname provided... opening file dialog";
-agin:
+    agin:
         FilterKeys = false;
 
         fname = QFileDialog::getOpenFileName(
-                    this,
-                    "Select " + QString(PRODUCTNAME) + " file",
-                    QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),
-                    QString(PRODUCTNAME) + " files (*.spv *.sp2 *spvf *.xml *.vaxml)");
+            this,
+            "Select " + QString(PRODUCTNAME) + " file",
+            QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),
+            QString(PRODUCTNAME) + " files (*.spv *.sp2 *spvf *.xml *.vaxml)");
         FilterKeys = true;
 
         if (macClickedNoForUpdateDownload == true && fname.isNull())
@@ -276,10 +340,7 @@ agin:
             macClickedNoForUpdateDownload = false;
             goto agin;
         }
-        if (fname.isNull() || fname == "") {
-            QCoreApplication::quit(); //if nothing there, cancel
-            return;
-        }
+        if (fname.isNull()) QCoreApplication::quit(); //if nothing there, cancel
     }
 
     //qDebug() << "[Where I'm I?] In StartTimer_fired - fname should now be set fname = " << fname;
@@ -298,14 +359,12 @@ agin:
             StripDownForVoxml(); //reduce interface to view-only level
 
             //qDebug() << "[Where I'm I?] In StartTimer_fired - about to call RefreshInfo()";
-            RefreshInfo();
+            RefreshUIFromData();
 
             //qDebug() << "[Where I'm I?] In StartTimer_fired - about to call UpdateGL()";
             UpdateGL();
-        } else {
-            QCoreApplication::quit();
-            return;
         }
+        else QCoreApplication::quit();
     }
     else if (fname.right(4) == "spvf") //finalised files
     {
@@ -321,14 +380,12 @@ agin:
             StripDownForVoxml(); //reduce interface to view-only level
 
             //qDebug() << "[Where I'm I?] In StartTimer_fired - about to call RefreshInfo()";
-            RefreshInfo();
+            RefreshUIFromData();
 
             //qDebug() << "[Where I'm I?] In StartTimer_fired - about to call UpdateGL()";
             UpdateGL();
-        }else {
-            QCoreApplication::quit();
-            return;
         }
+        else QCoreApplication::quit();
     }
     else
     {
@@ -340,7 +397,7 @@ agin:
         reader.processFile(fname);
 
         //qDebug() << "[Where I'm I?] In StartTimer_fired - about to call RefreshInfo()";
-        RefreshInfo();
+        RefreshUIFromData();
 
         //qDebug() << "[Where I'm I?] In StartTimer_fired - about to call UpdateGL()";
         UpdateGL();
@@ -417,7 +474,9 @@ QString MainWindow::DegConvert(float angle)
     while (angle < 0)
         angle += 360;
 
-    return QString("%1").arg(static_cast<double>(angle), 5,'f', 1, '0');
+    QString retval;
+    retval = QString::asprintf("%05.1f", static_cast<double>(angle));
+    return retval;
 }
 
 /**
@@ -427,7 +486,9 @@ QString MainWindow::DegConvert(float angle)
  */
 QString MainWindow::TransConvert(float trans)
 {
-    return QString("%1").arg(static_cast<double>(trans), 4,'f', 1, '0');
+    QString retval;
+    retval = QString::asprintf("%04.1f", static_cast<double>(trans));
+    return retval;
 }
 
 /**
@@ -495,7 +556,8 @@ void MainWindow::SpinTimer_fired()
     int wwidth = gl3widget->width();
 
     int aheight = static_cast<int>(static_cast<double>(wheight) / (static_cast<double>(wwidth) / static_cast<double>(ui->AnimRescaleX->value())));
-    QString s = QString("%1 px").arg(aheight);
+    QString s;
+    s = QString::asprintf("%d px", aheight);
     ui->LabelAnimHeight->setText(s);
 
     if (ui->actionAuto_Spin->isChecked())
@@ -535,7 +597,7 @@ void MainWindow::SpinTimer_fired()
     }
 
     if (ObjCount == 0)
-        mess = QString("Whole Model: %1 KTr  ").arg(modelKTr / 1000);
+        mess = QString::asprintf("Whole Model: %d KTr  ", modelKTr / 1000);
     else
     {
         QString oc;
@@ -761,11 +823,11 @@ void MainWindow::on_actionScreen_Capture_triggered()
 
     FilterKeys = false;
     QString fileName = QFileDialog::getSaveFileName(
-                           this,
-                           tr("Save Current View"),
-                           "",
-                           tr(availableFormats.toLocal8Bit())
-                       );
+        this,
+        tr("Save Current View"),
+        "",
+        tr(availableFormats.toLocal8Bit())
+        );
     FilterKeys = true;
 
     // Only save if there is a file name, otherwise assume it is canceled
@@ -870,18 +932,7 @@ void MainWindow::RefreshOneItem(QTreeWidgetItem *item, int i)
     //8 - Shininess
 
     //Sort out colour box (2)
-    QLabel *test = new QLabel();
-
-    QPicture picture;
-    QPainter painter;
-    painter.begin(&picture);           // paint in picture
-    painter.setPen(QPen(Qt::NoPen));
-    painter.setBrush(QBrush(QColor(SVObjects[i]->Colour[0], SVObjects[i]->Colour[1], SVObjects[i]->Colour[2])));
-
-    painter.drawRect(0, 0, 28, 20);     // draw a rect
-    painter.end();                     // painting done
-    test->setPicture(picture);
-    test->setAutoFillBackground(true);
+    QLabel *test = new ColourSwatchLabel(QColor(SVObjects[i]->Colour[0], SVObjects[i]->Colour[1], SVObjects[i]->Colour[2]));
 
     if (SVObjects[i]->IsGroup)
     {
@@ -911,18 +962,16 @@ void MainWindow::RefreshOneItem(QTreeWidgetItem *item, int i)
         item->setText(0, SVObjects[i]->Name);
     }
 
+    auto themedPixmap = [](const QString &iconName) -> QPixmap {
+        return QPixmap(CustomStyleTheme::themedIconPath(iconName));
+    };
+
     QLabel *show = new QLabel();
     show->setAlignment(Qt::AlignCenter);
     if (SVObjects[i]->Visible)
-    {
-        QPixmap p = QPixmap(":/darkstyle/icon_eye_open");
-        show->setPixmap(p.scaled(18, 18, Qt::KeepAspectRatio));
-    }
+        show->setPixmap(themedPixmap(QStringLiteral("icon_eye_open.svg")).scaled(18, 18, Qt::KeepAspectRatio));
     else
-    {
-        QPixmap p = QPixmap(":/darkstyle/icon_eye_closed.png");
-        show->setPixmap(p.scaled(18, 18, Qt::KeepAspectRatio));
-    }
+        show->setPixmap(themedPixmap(QStringLiteral("icon_eye_closed.svg")).scaled(18, 18, Qt::KeepAspectRatio));
     ui->treeWidget->setItemWidget(item, 1, show);
 
     item->setText(2, KeySt);
@@ -947,7 +996,7 @@ void MainWindow::RefreshOneItem(QTreeWidgetItem *item, int i)
         if (SVObjects[i]->Transparency == 2) t = "Lowish";
         if (SVObjects[i]->Transparency == 3) t = "Med";
         if (SVObjects[i]->Transparency == 4) t = "High";
-        if (SVObjects[i]->Transparency < 0) t = QString("Custom (%1)").arg(0 - SVObjects[i]->Transparency);
+        if (SVObjects[i]->Transparency < 0) t = QString::asprintf("Custom (%d%%)", 0 - SVObjects[i]->Transparency);
         item->setText(5, t);
 
         if (SVObjects[i]->IslandRemoval == 0) t = "Off";
@@ -956,7 +1005,7 @@ void MainWindow::RefreshOneItem(QTreeWidgetItem *item, int i)
         if (SVObjects[i]->IslandRemoval == 3) t = "Remove Medium";
         if (SVObjects[i]->IslandRemoval == 4) t = "Remove Large";
         if (SVObjects[i]->IslandRemoval == 5) t = "Remove All";
-        if (SVObjects[i]->IslandRemoval < 0) t = QString("Custom (%1)").arg(0 - SVObjects[i]->IslandRemoval);
+        if (SVObjects[i]->IslandRemoval < 0) t = QString::asprintf("Custom (%d)", 0 - SVObjects[i]->IslandRemoval);
         item->setText(6, t);
 
         if (SVObjects[i]->Smoothing == 0) t = "Off";
@@ -966,14 +1015,14 @@ void MainWindow::RefreshOneItem(QTreeWidgetItem *item, int i)
         if (SVObjects[i]->Smoothing == 4) t = "Strongish";
         if (SVObjects[i]->Smoothing == 5) t = "Strong";
         if (SVObjects[i]->Smoothing == 6) t = "Strongest";
-        if (SVObjects[i]->Smoothing < 0) t = QString("Custom (%1)").arg(0 - SVObjects[i]->Smoothing);
+        if (SVObjects[i]->Smoothing < 0) t = QString::asprintf("Custom (%d)", 0 - SVObjects[i]->Smoothing);
         item->setText(7, t);
 
         if (SVObjects[i]->Shininess == 0) t = "Off";
         if (SVObjects[i]->Shininess == 1) t = "Less";
         if (SVObjects[i]->Shininess == 2) t = "Default";
         if (SVObjects[i]->Shininess == 3) t = "Full";
-        if (SVObjects[i]->Shininess < 0) t = QString("Custom (%1)").arg(0 - SVObjects[i]->Shininess);
+        if (SVObjects[i]->Shininess < 0) t = QString::asprintf("Custom (%d%%)", 0 - SVObjects[i]->Shininess);
         item->setText(8, t);
     }
 
@@ -1069,8 +1118,6 @@ void MainWindow::RefreshObjects()
         selflags.append(sf);
     }
 
-    //qDebug() << "[Draw Child Objects]";
-
     ui->treeWidget->clear();
     DrawChildObjects(selflags, -1); //start by drawing root children
 
@@ -1089,9 +1136,9 @@ void MainWindow::RefreshObjects()
 }
 
 /**
- * @brief MainWindow::RefreshInfo
+ * @brief MainWindow::RefreshUIFromData
  */
-void MainWindow::RefreshInfo()
+void MainWindow::RefreshUIFromData()
 {
     //redo the info window
     if (SPVs.count() == 0) return;
@@ -1205,6 +1252,28 @@ void MainWindow::RefreshInfo()
     ui->infoTreeWidget->addTopLevelItem(comments);
 
     RedoInfoText();
+
+
+
+    //Lighting UI
+    updateLightColourButtons();
+    ui->dialMainLightXY->setValue(mainLightXYAngle);
+    ui->mainLightZ->setValue(mainLightZPos);
+    ui->mainLightPower->setValue(mainLightPower);
+    ui->dialSecondaryLightXY->setValue(secondaryLightXYAngle);
+    ui->secondaryLightZ->setValue(secondaryLightZPos);
+    ui->secondaryLightPower->setValue(secondaryLightPower);
+    if (secondaryLightActive)
+        ui->chkSecondaryLightActive->setCheckState(Qt::Checked);
+    else
+        ui->chkSecondaryLightActive->setCheckState(Qt::Unchecked);
+    if (headlightActive)
+        ui->chkHeadlightActive->setCheckState(Qt::Checked);
+    else
+        ui->chkHeadlightActive->setCheckState(Qt::Unchecked);
+
+    ui->cmbShadowsMain->setCurrentIndex((int)mainLightShadows);
+    ui->cmbShadowsSecondary->setCurrentIndex((int)secondaryLightShadows);
 }
 
 /**
@@ -1267,7 +1336,7 @@ void MainWindow::on_infoTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int 
             infoClassificationRank.append(text1);
             infoClassificationName.append(text2);
 
-            RefreshInfo();
+            RefreshUIFromData();
         }
         else
         {
@@ -1282,7 +1351,7 @@ void MainWindow::on_infoTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int 
                 if (item->text(0) == "References") infoReference.append(text);
                 if (item->text(0) == "Provenance") infoProvenance.append(text);
                 if (item->text(0) == "Specimen") infoSpecimen.append(text);
-                RefreshInfo();
+                RefreshUIFromData();
             }
         }
     }
@@ -1311,7 +1380,7 @@ void MainWindow::on_infoTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int 
                     infoClassificationName[i] = text2;
                 }
 
-            RefreshInfo();
+            RefreshUIFromData();
         }
         else
         {
@@ -1334,7 +1403,7 @@ void MainWindow::on_infoTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, int 
                 if (item->parent()->text(0) == "References")
                     for (int i = 0; i < infoReference.count(); i++) if (infoReference[i] == oldtext) infoReference[i] = text;
 
-                RefreshInfo();
+                RefreshUIFromData();
             }
         }
     }
@@ -1361,7 +1430,7 @@ void MainWindow::deleteinfo()
     if (item->text(0) == "Classification") title = "classification item";
 
     if (item->type() == QTreeWidgetItem::UserType)
-        //all of something
+    //all of something
     {
         if (item->text(0) == "Comments") title = "comment";
         if (item->text(0) == "Title") title = "title";
@@ -1384,11 +1453,11 @@ void MainWindow::deleteinfo()
                 infoClassificationName.clear();
                 infoClassificationRank.clear();
             }
-            RefreshInfo();
+            RefreshUIFromData();
         }
     }
     else
-        //single item
+    //single item
     {
         if (item->parent()->text(0) == "Title") title = "title";
         if (item->parent()->text(0) == "Comments") title = "comment";
@@ -1439,7 +1508,7 @@ void MainWindow::deleteinfo()
                         infoClassificationName.removeAt(i);
                         break;
                     }
-            RefreshInfo();
+            RefreshUIFromData();
         }
     }
 }
@@ -1511,8 +1580,8 @@ void MainWindow::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int colu
                 if (ok && !qitem.isEmpty())
                 {
                     isFileDirty = true;
-                    if (qitem == "[None]") SVObjects[i]->Key = 0;
-                    else SVObjects[i]->Key = static_cast<int>(qitem.toLatin1()[0]);
+                    if (qitem == "[None]") SVObjects[i]->Key = QChar(0);
+                    else SVObjects[i]->Key = QChar(qitem.toLatin1()[0]);
                 }
                 RefreshOneItem(item, i);
             }
@@ -1555,7 +1624,7 @@ void MainWindow::SetResample()
     bool flag;
     FilterKeys = false;
 
-    int temp = QInputDialog::getInt (this, "Resample Percentage", "Enter new resample value for all selected objects", 100, 0, 100, 1, &flag);;
+    int temp = QInputDialog::getInt (this, "Fidelity Percentage", "Enter new fidelity value for all selected objects", 50, 10, 100, 5, &flag);;
     FilterKeys = true;
     if (flag)
     {
@@ -1809,10 +1878,8 @@ void MainWindow::on_actionResurface_Now_triggered()
             if (SVObjects[i]->Dirty)
             {
                 qDeleteAll(SVObjects[i]->VertexBuffers);
-                qDeleteAll(SVObjects[i]->ColourBuffers);
                 SVObjects[i]->boundingBoxBuffer.destroy();
                 SVObjects[i]->VertexBuffers.clear();
-                SVObjects[i]->ColourBuffers.clear();
             }
         }
 
@@ -2076,7 +2143,30 @@ void MainWindow::on_actionAbout_triggered()
     FilterKeys = false;
     d.exec();
     FilterKeys = true;
+}
 
+/**
+ * @brief MainWindow::on_actionCheck_for_Updates_triggered
+ */
+void MainWindow::on_actionCheck_for_Updates_triggered()
+{
+    NetModule *netModule = new NetModule(this);
+    netModule->checkForNewManual();
+}
+
+/**
+ * @brief MainWindow::on_actionTestCrashHandler_triggered
+ * Tests the crash handler by triggering an intentional crash.
+ */
+void MainWindow::on_actionTestCrashHandler_triggered()
+{
+    if (QMessageBox::question(this, QStringLiteral("Test Crash Handler"),
+        QStringLiteral("This will intentionally crash the application to test the crash handler.\n\n"
+                       "Continue?"))
+        == QMessageBox::Yes)
+    {
+        CrashDetector::testCrash(QStringLiteral("SPIERSview"));
+    }
 }
 
 /**
@@ -2159,10 +2249,10 @@ void MainWindow::on_actionSave_Changes_triggered()
     if (containsPresurfaced && containsNonPresurfaced)
     {
         if (QMessageBox::question(
-                    this,
-                    "Ambiguous save",
-                    "This file contains items with both presurfaced and compact data. Proceeding will save as compact - is this OK?",
-                    QMessageBox::Yes | QMessageBox::No
+                this,
+                "Ambiguous save",
+                "This file contains items with both presurfaced and compact data. Proceeding will save as compact - is this OK?",
+                QMessageBox::Yes | QMessageBox::No
                 ) != QMessageBox::Yes) return;
     }
 
@@ -2185,11 +2275,11 @@ void MainWindow::on_actionSave_As_triggered()
     FilterKeys = false;
 
     QString f = QFileDialog::getSaveFileName(
-                    this,
-                    tr("Save File (Compact Mode)"),
-                    cpath,
-                    tr("SPV files (*.spv)")
-                );
+        this,
+        tr("Save File (Compact Mode)"),
+        cpath,
+        tr("SPV files (*.spv)")
+        );
     FilterKeys = true;
 
     if (f.isEmpty()) return;
@@ -2217,11 +2307,11 @@ void MainWindow::on_actionSave_Presurfaced_triggered()
 
     FilterKeys = false;
     QString f = QFileDialog::getSaveFileName(
-                    this,
-                    tr("Save File (Presurfaced Mode)"),
-                    cpath,
-                    tr("SPV files (*.spv)")
-                );
+        this,
+        tr("Save File (Presurfaced Mode)"),
+        cpath,
+        tr("SPV files (*.spv)")
+        );
     FilterKeys = true;
 
     if (f.isEmpty()) return;
@@ -2249,10 +2339,10 @@ void MainWindow::on_actionDXF_triggered()
     FilterKeys = false;
 
     QString filename = QFileDialog::getSaveFileName(
-                           this,
-                           "Filename for DXF export",
-                           "",
-                           "DXF files (*.dxf)");
+        this,
+        "Filename for DXF export",
+        "",
+        "DXF files (*.dxf)");
     FilterKeys = true;
 
     //Now we do a whole load of initialisation!
@@ -2282,7 +2372,7 @@ void MainWindow::on_actionDXF_triggered()
             {
                 counto++;
                 QString name;
-                if (SVObjects[i]->Name.isEmpty()) name = QString("%1").arg(counto);
+                if (SVObjects[i]->Name.isEmpty()) name = QString::asprintf("%d", counto);
                 else name = SVObjects[i]->Name;
                 dxf << "LAYER\n2\n" << name.toLatin1() << "\n70\n64\n62\n7\n6\nCONTINUOUS\n0\n";
             }
@@ -2298,12 +2388,16 @@ void MainWindow::on_actionDXF_triggered()
 
         dxf.flush();
         //now do all the objects
+        long count = 0;
         for (int i = 0; i < SVObjects.count(); i++)
             if (!(SVObjects[i]->IsGroup) && (SVObjects[i]->Visible || ui->actionExport_Hidden_Objects->isChecked()))
             {
-                QString status = QString("Exporting object %1 of %1").arg(i + 1).arg(SVObjects.count());
+                QString status;
+                status = QString::asprintf("Exporting object %d of %f", i + 1, SVObjects.count());
                 ui->OutputLabelOverall->setText(status);
                 ui->ProgBarOverall->setValue((i * 100) / SVObjects.count());
+                //find name
+                count += static_cast<long>(SVObjects[i]->WriteDXFfaces(&dxffile));
             }
 
         ui->OutputLabelOverall->setText("DXF export complete");
@@ -2346,21 +2440,26 @@ void MainWindow::on_actionSave_Finalised_As_triggered()
         return;
     }
 
+    long count = 0;
     for (int i = 0; i < SVObjects.count(); i++)
         if (!(SVObjects[i]->IsGroup && (SVObjects[i]->Visible || ui->actionExport_Hidden_Objects->isChecked())))
         {
-            QString status = QString("Saving object %1 of %1").arg(i + 1).arg(objcount);
+            QString status;
+            status = QString::asprintf("Saving object %d of %d", i + 1, objcount);
             ui->OutputLabelOverall->setText(status);
             ui->ProgBarOverall->setValue((i * 100) / objcount);
 
             //find name
-            QString fname2 = QString("%1").arg(SVObjects[i]->Index + 1);
+            QString fname2;
+            fname2 = QString::asprintf("%d", SVObjects[i]->Index + 1);
             if (!(SVObjects[i]->Name.isEmpty()))
             {
                 fname2.append("-");
                 fname2.append(SVObjects[i]->Name);
             }
             fname2.append(".stl");
+
+            count += static_cast<long>(SVObjects[i]->AppendCompressedFaces(fname, fname2, &(v.dataout)));
         }
 
     ui->OutputLabelOverall->setText("SPVF export complete");
@@ -2397,6 +2496,7 @@ void MainWindow::on_actionSTL_triggered()
     for (int i = 0; i < SVObjects.count(); i++)
         if (!(SVObjects[i]->IsGroup)) objcount++;
 
+    //    //qDebug()<<fname;
     //Now write the vaxml file - use current file name - do first to avoid finding problems after long STL export!
     VAXML v;
     if (v.writeVAXML(fname, false) == false)
@@ -2408,15 +2508,18 @@ void MainWindow::on_actionSTL_triggered()
     else
         ui->OutputLabelOverall->setText("VAXML export complete, exporting STL component objects");
 
+    long count = 0;
     for (int i = 0; i < SVObjects.count(); i++)
         if (!(SVObjects[i]->IsGroup))
         {
-            QString status = QString("Exporting object %1 of %1").arg(i + 1).arg(objcount);
+            QString status;
+            status = QString::asprintf("Exporting object %d of %d", i + 1, objcount);
             ui->OutputLabelOverall->setText(status);
             ui->ProgBarOverall->setValue((i * 100) / objcount);
             //find name
 
-            QString fname2 = QString("%1").arg(SVObjects[i]->Index + 1);
+            QString fname2;
+            fname2 = QString::asprintf("%d", SVObjects[i]->Index + 1);
             if (!(SVObjects[i]->Name.isEmpty()))
             {
                 fname2.append("-");
@@ -2427,6 +2530,8 @@ void MainWindow::on_actionSTL_triggered()
             QFileInfo fi(fname);
 
             fname2 = fi.dir().absolutePath() + "/" + fi.baseName() + "_stl/" + fname2;
+            // //qDebug()<<"Outputting"<<fname2<<fi.dir().absolutePath() + "/" + fi.baseName() + "_stl";
+            count += static_cast<long>(SVObjects[i]->WriteSTLfaces(fi.dir().absolutePath() + "/" + fi.baseName() + "_stl", fname2));
         }
 
     ui->OutputLabelOverall->setText("VAXML / STL export complete");
@@ -2537,10 +2642,10 @@ void MainWindow::on_actionImport_SPV_triggered()
     FilterKeys = false;
 
     QString ifname = QFileDialog::getOpenFileName(
-                         this,
-                         "Select " + QString(PRODUCTNAME) + " file to import",
-                         "",
-                         QString(PRODUCTNAME) + " files (*.spv)");
+        this,
+        "Select " + QString(PRODUCTNAME) + " file to import",
+        "",
+        QString(PRODUCTNAME) + " files (*.spv)");
     FilterKeys = true;
 
     //Now we do a whole load of initialisation!
@@ -2550,7 +2655,7 @@ void MainWindow::on_actionImport_SPV_triggered()
     SPVReader r;
     r.processFile(ifname);
     isFileDirty = true;
-    RefreshInfo();
+    RefreshUIFromData();
 }
 
 /**
@@ -2667,10 +2772,10 @@ void MainWindow::on_actionImport_Replacement_triggered()
         FilterKeys = false;
 
         QString ifname = QFileDialog::getOpenFileName(
-                             this,
-                             "Select " + QString(PRODUCTNAME) + " file to import",
-                             "",
-                             QString(PRODUCTNAME) + " files (*.spv)");
+            this,
+            "Select " + QString(PRODUCTNAME) + " file to import",
+            "",
+            QString(PRODUCTNAME) + " files (*.spv)");
         FilterKeys = true;
 
         //Now we do a whole load of initialisation!
@@ -2696,7 +2801,8 @@ void MainWindow::RefreshPieces()
     ui->PiecesList->clear();
     for (int i = 0; i < SPVs.count(); i++)
     {
-        QString name = QString("%1: ").arg(i + 1);
+        QString name;
+        name = QString::asprintf("%d: ", i + 1);
         name.append(SPVs[i]->filenamenopath);
         ui->PiecesList->addItem(name);
     }
@@ -2959,7 +3065,7 @@ void MainWindow::on_actionGroup_triggered()
                 }
 
         SVObject *o = new SVObject(nextindex);
-        o->Key = 0; //no key
+        o->Key = QChar(0); //no key
         o->Visible = true;
         o->Name = "Group";
         o->IsGroup = true;
@@ -3131,6 +3237,7 @@ void MainWindow::UnsetAllAA()
  */
 void MainWindow::setSamples(int i)
 {
+    Q_UNUSED(i)
     //qDebug()<<"InSS";
     //have to delete widget and recreate
 
@@ -3138,17 +3245,11 @@ void MainWindow::setSamples(int i)
     for (int i = 0; i < SVObjects.count(); i++) //have to clear VBOs first or there are problems
     {
         qDeleteAll(SVObjects[i]->VertexBuffers);
-        qDeleteAll(SVObjects[i]->ColourBuffers);
         SVObjects[i]->VertexBuffers.clear();
-        SVObjects[i]->ColourBuffers.clear();
         SVObjects[i]->boundingBoxBuffer.destroy();
     }
 
-    QGLFormat fmt;
-    fmt.setVersion(GL_MAJOR, GL_MINOR);
-    fmt.setSampleBuffers(true);
-    fmt.setSamples(i);
-    fmt.setStereo(ui->actionQuadBuffer_Stereo->isChecked());
+    // (Qt6: QGLFormat removed; fmt was already commented out of GlWidget constructor)
     GlWidget *gl3widget2 = new GlWidget(ui->frameVTK); //,fmt);
 
     gl3widget2->ClipStart = gl3widget->ClipStart;
@@ -3395,7 +3496,8 @@ void MainWindow::animationSaveImage()
     QString fileName;
     QTextStream s(&fileName);
 
-    QString num = QString("%1").arg(ui->AnimSpinFileNum->value(), 0, 'f', 5, '0');
+    QString num;
+    num = QString::asprintf("%.5d", ui->AnimSpinFileNum->value());
 
     QString formatstring = ".bmp";
     int qual = 100;
@@ -3600,7 +3702,7 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
             ui->actionApply_Step->activate(QAction::Trigger);
             return true;
         }
-        if (kevent->key() ==  Qt::Key_N  && kevent->modifiers() == Qt::ControlModifier + Qt::ShiftModifier && ui->actionSave_Image_and_Apply_Step->isEnabled())
+        if (kevent->key() ==  Qt::Key_N  && kevent->modifiers() == (Qt::ControlModifier | Qt::ShiftModifier) && ui->actionSave_Image_and_Apply_Step->isEnabled())
         {
             ui->actionSave_Image_and_Apply_Step->activate(QAction::Trigger);
             return true;
@@ -3755,12 +3857,12 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
             ui->actionLarge_Rotate_Anticlockwise->activate(QAction::Trigger);
             return true;
         }
-        if (kevent->key() ==  Qt::Key_D  && kevent->modifiers() == Qt::ControlModifier + Qt::AltModifier && ui->actionSet_new_default_position->isEnabled())
+        if (kevent->key() ==  Qt::Key_D  && kevent->modifiers() == (Qt::ControlModifier | Qt::AltModifier) && ui->actionSet_new_default_position->isEnabled())
         {
             ui->actionSet_new_default_position->activate(QAction::Trigger);
             return true;
         }
-        if (kevent->key() ==  Qt::Key_R  && kevent->modifiers() == Qt::ControlModifier + Qt::AltModifier && ui->actionReset_to_default_position->isEnabled())
+        if (kevent->key() ==  Qt::Key_R  && kevent->modifiers() == (Qt::ControlModifier | Qt::AltModifier) && ui->actionReset_to_default_position->isEnabled())
         {
             ui->actionReset_to_default_position->activate(QAction::Trigger);
             return true;
@@ -3907,6 +4009,15 @@ void MainWindow::on_actionCode_on_GitHub_triggered()
 }
 
 /**
+ * @brief MainWindow::on_actionAdvancedPrefs_triggered
+ */
+void MainWindow::on_actionAdvancedPrefs_triggered()
+{
+    SettingsImpl dlg;
+    dlg.exec();
+}
+
+/**
  * @brief MainWindow::resizeEvent
  * @param event
  */
@@ -3945,6 +4056,13 @@ void MainWindow::changeEvent(QEvent *event)
             updateScreenRatio();
         }
     }
+    else if (event->type() == QEvent::StyleChange)
+    {
+        /// RefreshObjects() guards on SVObjects.count() == 0 and returns early
+        /// when no dataset is loaded, so this is safe to call unconditionally.
+        RefreshObjects();
+    }
+    QMainWindow::changeEvent(event);
 }
 
 /**
@@ -3954,7 +4072,7 @@ void MainWindow::updateScreenRatio()
 {
     //qDebug() << "[SCREEN UPDATE] Main Window has been resized.";
 
-    currentScreen = availableScreens.at(QApplication::desktop()->screenNumber(this));
+    currentScreen = this->screen();
 
     double ratio = currentScreen->devicePixelRatio();
     applicationScaleX = ratio;
@@ -4060,16 +4178,6 @@ void MainWindow::on_actionShow_Minor_Values_triggered()
     UpdateGL();
 }
 
-/**
- * @brief MainWindow::on_actionScale_Grid_Font_Size_triggered
- */
-void MainWindow::on_actionScale_Grid_Font_Size_triggered()
-{
-    GridFontSizeDialog gridFontSizeDialog;
-    FilterKeys = false;
-    gridFontSizeDialog.exec();
-    FilterKeys = true;
-}
 
 /**
  * @brief MainWindow::on_actionShow_Minor_Scale_Lines_triggered
@@ -4109,8 +4217,569 @@ void MainWindow::on_actionReset_Scale_Grid_to_Defaults_triggered()
     colorGridMinorGreen = 181;
     colorGridMinorBlue = 212;
 
-    // Reset grid font size
-    fontSizeGrid = 3;
-
     UpdateGL();
+}
+
+/**
+ * @brief MainWindow::on_actionQuadric_Fidelity_Reduction_triggered
+ * Toggles between fast and quadric decimation algorithms.
+ * Marks all objects dirty so next resurface picks up the change.
+ */
+void MainWindow::on_actionQuadric_Fidelity_Reduction_triggered()
+{
+    for (int i = 0; i < SVObjects.count(); i++)
+        if (!SVObjects[i]->IsGroup)
+            SVObjects[i]->Dirty = true;
+    if (ui->actionAuto_Resurface->isChecked() && ui->actionResurface_Now->isEnabled())
+        on_actionResurface_Now_triggered();
+}
+
+void MainWindow::on_actionLighting_Panel_triggered()
+{
+    ui->dockWidgetLighting->setVisible(ui->actionLighting_Panel->isChecked());
+}
+
+
+
+void MainWindow::on_mainLightColourButton_clicked()
+{
+    QColor chosen = QColorDialog::getColor(
+        mainLightColour,          // start from the current colour
+        this,                   // parent — keeps it modal to this window
+        "Select Colour"
+        );
+
+    if (chosen.isValid()) {     // user didn't cancel
+        mainLightColour = chosen;
+        updateLightColourButtons();
+        UpdateGL();
+    }
+}
+
+void MainWindow::updateLightColourButtons()
+{
+    ui->mainLightColourButton->setStyleSheet(
+        QString("QPushButton { background-color: %1; border: 1px solid #555; border-radius: 4px; }"
+                "QPushButton:hover { border: 2px solid #000; }")
+            .arg(mainLightColour.name(QColor::HexArgb))
+        );
+
+    ui->secondaryLightColourButton->setStyleSheet(
+        QString("QPushButton { background-color: %1; border: 1px solid #555; border-radius: 4px; }"
+                "QPushButton:hover { border: 2px solid #000; }")
+            .arg(secondaryLightColour.name(QColor::HexArgb))
+        );
+
+    ui->headlightColourButton->setStyleSheet(
+        QString("QPushButton { background-color: %1; border: 1px solid #555; border-radius: 4px; }"
+                "QPushButton:hover { border: 2px solid #000; }")
+            .arg(headlightColour.name(QColor::HexArgb))
+        );
+}
+
+void MainWindow::on_dialMainLightXY_valueChanged(int value)
+{
+    mainLightXYAngle = value;
+    UpdateGL();
+}
+
+
+void MainWindow::on_mainLightZ_valueChanged(int value)
+{
+    mainLightZPos = value;
+    UpdateGL();
+}
+
+
+void MainWindow::on_mainLightPower_valueChanged(int value)
+{
+    mainLightPower = value;
+    UpdateGL();
+}
+
+
+void MainWindow::on_secondaryLightColourButton_clicked()
+{
+    QColor chosen = QColorDialog::getColor(
+        secondaryLightColour,          // start from the current colour
+        this,                   // parent — keeps it modal to this window
+        "Select Colour"
+        );
+
+    if (chosen.isValid()) {     // user didn't cancel
+        secondaryLightColour = chosen;
+        updateLightColourButtons();
+        UpdateGL();
+    }
+}
+
+void MainWindow::on_headlightColourButton_clicked()
+{
+    QColor chosen = QColorDialog::getColor(
+        headlightColour,          // start from the current colour
+        this,                   // parent — keeps it modal to this window
+        "Select Colour"
+        );
+
+    if (chosen.isValid()) {     // user didn't cancel
+        headlightColour = chosen;
+        updateLightColourButtons();
+        UpdateGL();
+    }
+}
+
+void MainWindow::on_dialSecondaryLightXY_valueChanged(int value)
+{
+    secondaryLightXYAngle = value;
+    UpdateGL();
+}
+
+
+void MainWindow::on_secondaryLightZ_valueChanged(int value)
+{
+    secondaryLightZPos = value;
+    UpdateGL();
+}
+
+
+void MainWindow::on_secondaryLightPower_valueChanged(int value)
+{
+    secondaryLightPower = value;
+    UpdateGL();
+}
+
+void MainWindow::on_headlightPower_valueChanged(int value)
+{
+    headlightPower = value;
+    //qDebug()<<"Headlightpower now "<<headlightPower;
+    UpdateGL();
+}
+
+void MainWindow::on_chkSecondaryLightActive_stateChanged(int newState)
+{
+    //qDebug()<<"HERE sec"<<newState;
+    secondaryLightActive = (newState == Qt::Checked);
+    UpdateGL();
+}
+
+
+void MainWindow::on_chkHeadlightActive_stateChanged(int newState)
+{
+    //qDebug()<<"HERE headlight"<<newState;;
+    headlightActive = (newState == Qt::Checked);
+    UpdateGL();
+}
+
+void MainWindow::on_cmbShadowsMain_currentIndexChanged(int index)
+{
+    switch (index)
+    {
+    case 0:
+        mainLightShadows = ShadowMode::None;
+        break;
+    case 1:
+        mainLightShadows = ShadowMode::Hard;
+        break;
+    case 2:
+        mainLightShadows = ShadowMode::Soft;
+        break;
+    }
+    UpdateGL();
+}
+
+
+void MainWindow::on_cmbShadowsSecondary_currentIndexChanged(int index)
+{
+    switch (index)
+    {
+    case 0:
+        secondaryLightShadows = ShadowMode::None;
+        break;
+    case 1:
+        secondaryLightShadows = ShadowMode::Hard;
+        break;
+    case 2:
+        secondaryLightShadows = ShadowMode::Soft;
+        break;
+    }
+    //qDebug()<<"Secondary shadow mode = "<<secondaryLightShadows;
+    UpdateGL();
+}
+
+void MainWindow::on_actionClear_Scale_Markers_triggered()
+{
+    gridOverlay->clearMarkers();
+}
+
+/**
+ *
+ * Export visible objects to OBJ format with accompanying MTL material file.
+ *
+ * OBJ is a widely-supported 3D model format that preserves vertex positions,
+ * normals, and per-object material assignments. Transform matrices are baked
+ * into vertex geometry before export.
+ *
+ **/
+void MainWindow::on_actionExport_as_OBJ_triggered()
+{
+    QString cpath = fname;
+    cpath = fname.left(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")));
+    FilterKeys = false;
+
+    QString objPath = QFileDialog::getSaveFileName(this, tr("Export as OBJ"),
+                                                    cpath,
+                                                    tr("OBJ files (*.obj)"));
+    FilterKeys = true;
+    if (objPath.isEmpty())
+    {
+        return;
+    }
+    if (!objPath.endsWith(".obj", Qt::CaseInsensitive))
+    {
+        objPath.append(".obj");
+    }
+
+    DisableRenderCommands();
+
+    // Check if any visible objects need surfacing
+    bool needsSurfacing = false;
+    for (int i = 0; i < SVObjects.count(); i++)
+    {
+        if (!SVObjects[i]->IsGroup && SVObjects[i]->Visible && SVObjects[i]->Dirty)
+        {
+            needsSurfacing = true;
+            break;
+        }
+    }
+
+    // Run surfacing if needed
+    if (needsSurfacing)
+    {
+        ui->OutputLabelOverall->setText("Surfacing objects...");
+        ui->ProgBarOverall->setValue(0);
+        qApp->processEvents();
+
+        // Run marching cubes on objects that need surfacing
+        int objcount = 0;
+        for (int i = 0; i < SVObjects.count(); i++)
+            if (SVObjects[i]->Dirty && !SVObjects[i]->IsGroup) objcount++;
+
+        int objindex = 0;
+        for (int i = 0; i < SVObjects.count(); i++)
+        {
+            if (SVObjects[i]->Dirty && !SVObjects[i]->IsGroup)
+            {
+                MarchingCubes surfacer(SVObjects[i]);
+                surfacer.surfaceObject();
+                SVObjects[i]->MakePolyData();
+                SVObjects[i]->ForceUpdates(objindex, objcount);
+                objindex++;
+                qApp->processEvents();
+            }
+        }
+        UpdateGL();
+    }
+
+    ui->OutputLabelOverall->setText("Exporting to OBJ format...");
+    ui->ProgBarOverall->setValue(0);
+    qApp->processEvents();
+
+    // Collect objects with geometry - must call GetFinalPolyData() first
+    QList<SVObject*> visibleObjects;
+    for (SVObject *obj : SVObjects)
+    {
+        if (!obj->IsGroup)
+        {
+            obj->GetFinalPolyData();
+            if (obj->localMesh.vertexCount() > 0)
+            {
+                visibleObjects.append(obj);
+            }
+        }
+    }
+
+    if (visibleObjects.empty())
+    {
+        ui->OutputLabelOverall->setText("No objects with geometry to export");
+        EnableRenderCommands();
+        return;
+    }
+
+    // Export to OBJ
+    if (OBJExporter::exportToOBJ(objPath, visibleObjects))
+    {
+        ui->OutputLabelOverall->setText("OBJ export complete");
+        ui->ProgBarOverall->setValue(100);
+    }
+    else
+    {
+        ui->OutputLabelOverall->setText("OBJ export failed - check file permissions");
+    }
+
+    EnableRenderCommands();
+}
+
+/**
+ * Export visible objects to FBX format with geometry and materials.
+ *
+ * This export path uses FBXExporter to create an FBX file.
+ *
+ */
+void MainWindow::on_actionExport_as_FBX_triggered()
+{
+    QString cpath = fname;
+    cpath = fname.left(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")));
+    FilterKeys = false;
+
+    QString fbxPath = QFileDialog::getSaveFileName(this, tr("Export as FBX File"),
+                                                     cpath,
+                                                     tr("FBX files (*.fbx)"));
+    FilterKeys = true;
+    if (fbxPath.isEmpty())
+    {
+        return;
+    }
+
+    if (!fbxPath.endsWith(".fbx", Qt::CaseInsensitive))
+    {
+        fbxPath.append(".fbx");
+    }
+
+    DisableRenderCommands();
+
+    // Check if any visible objects need surfacing
+    bool needsSurfacing = false;
+    for (int i = 0; i < SVObjects.count(); i++)
+    {
+        if (!SVObjects[i]->IsGroup && SVObjects[i]->Visible && SVObjects[i]->Dirty)
+        {
+            needsSurfacing = true;
+            break;
+        }
+    }
+
+    // Run surfacing if needed
+    if (needsSurfacing)
+    {
+        ui->OutputLabelOverall->setText("Surfacing objects...");
+        ui->ProgBarOverall->setValue(0);
+        qApp->processEvents();
+
+        // Run marching cubes on objects that need surfacing
+        int objcount = 0;
+        for (int i = 0; i < SVObjects.count(); i++)
+            if (SVObjects[i]->Dirty && !SVObjects[i]->IsGroup) objcount++;
+
+        int objindex = 0;
+        for (int i = 0; i < SVObjects.count(); i++)
+        {
+            if (SVObjects[i]->Dirty && !SVObjects[i]->IsGroup)
+            {
+                MarchingCubes surfacer(SVObjects[i]);
+                surfacer.surfaceObject();
+                SVObjects[i]->MakePolyData();
+                SVObjects[i]->ForceUpdates(objindex, objcount);
+                objindex++;
+                qApp->processEvents();
+            }
+        }
+        UpdateGL();
+    }
+
+    ui->OutputLabelOverall->setText("Exporting to FBX format...");
+    ui->ProgBarOverall->setValue(0);
+    qApp->processEvents();
+
+    // Collect objects with geometry - must call GetFinalPolyData() first
+    QList<SVObject*> visibleObjects;
+    for (SVObject *obj : SVObjects)
+    {
+        if (!obj->IsGroup)
+        {
+            obj->GetFinalPolyData();
+            if (obj->localMesh.vertexCount() > 0)
+            {
+                visibleObjects.append(obj);
+            }
+        }
+    }
+
+    if (visibleObjects.empty())
+    {
+        ui->OutputLabelOverall->setText("No objects with geometry to export");
+        EnableRenderCommands();
+        return;
+    }
+
+    ui->ProgBarOverall->setValue(50);
+    qApp->processEvents();
+
+    // Export to FBX
+    if (!FBXExporter::exportToFBX(fbxPath, visibleObjects))
+    {
+        ui->OutputLabelOverall->setText("FBX export failed");
+        QMessageBox::critical(this, "Error", QString("FBX export failed."));
+        EnableRenderCommands();
+        return;
+    }
+
+    ui->ProgBarOverall->setValue(100);
+    qApp->processEvents();
+
+    EnableRenderCommands();
+}
+
+/**
+ *
+ * Export visible objects to Blender .blend format with geometry and materials.
+ *
+ * This export path uses FBXExporter to create an intermediate FBX file,
+ * then BlenderBridge to convert it to .blend format with materials applied.
+ * If Blender is not installed, the FBX file is saved instead.
+ *
+ **/
+void MainWindow::on_actionExport_as_Blend_triggered()
+{
+    QString cpath = fname;
+    cpath = fname.left(qMax(fname.lastIndexOf("\\"), fname.lastIndexOf("/")));
+    FilterKeys = false;
+
+    QString blendPath = QFileDialog::getSaveFileName(this, tr("Export as Blender File"),
+                                                      cpath,
+                                                      tr("Blender files (*.blend);;FBX files (*.fbx)"));
+    FilterKeys = true;
+    if (blendPath.isEmpty())
+    {
+        return;
+    }
+
+    DisableRenderCommands();
+
+    // Check if any visible objects need surfacing
+    bool needsSurfacing = false;
+    for (int i = 0; i < SVObjects.count(); i++)
+    {
+        if (!SVObjects[i]->IsGroup && SVObjects[i]->Visible && SVObjects[i]->Dirty)
+        {
+            needsSurfacing = true;
+            break;
+        }
+    }
+
+    // Run surfacing if needed
+    if (needsSurfacing)
+    {
+        ui->OutputLabelOverall->setText("Surfacing objects...");
+        ui->ProgBarOverall->setValue(0);
+        qApp->processEvents();
+
+        // Run marching cubes on objects that need surfacing
+        int objcount = 0;
+        for (int i = 0; i < SVObjects.count(); i++)
+            if (SVObjects[i]->Dirty && !SVObjects[i]->IsGroup) objcount++;
+
+        int objindex = 0;
+        for (int i = 0; i < SVObjects.count(); i++)
+        {
+            if (SVObjects[i]->Dirty && !SVObjects[i]->IsGroup)
+            {
+                MarchingCubes surfacer(SVObjects[i]);
+                surfacer.surfaceObject();
+                SVObjects[i]->MakePolyData();
+                SVObjects[i]->ForceUpdates(objindex, objcount);
+                objindex++;
+                qApp->processEvents();
+            }
+        }
+        UpdateGL();
+    }
+
+    ui->OutputLabelOverall->setText("Exporting to Blender format...");
+    ui->ProgBarOverall->setValue(0);
+    qApp->processEvents();
+
+    // Collect objects with geometry - must call GetFinalPolyData() first
+    QList<SVObject*> visibleObjects;
+    for (SVObject *obj : SVObjects)
+    {
+        if (!obj->IsGroup)
+        {
+            obj->GetFinalPolyData();
+            if (obj->localMesh.vertexCount() > 0)
+            {
+                visibleObjects.append(obj);
+            }
+        }
+    }
+
+    if (visibleObjects.empty())
+    {
+        ui->OutputLabelOverall->setText("No objects with geometry to export");
+        EnableRenderCommands();
+        return;
+    }
+
+    // Create temporary FBX file for Blender import
+    QFileInfo blendInfo(blendPath);
+    QString tempDir = blendInfo.dir().absolutePath();
+    QString baseName = blendInfo.baseName();
+    QString fbxPath = tempDir + "/" + baseName + "_temp.fbx";
+
+    ui->ProgBarOverall->setValue(25);
+    qApp->processEvents();
+
+    // Export to FBX
+    if (!FBXExporter::exportToFBX(fbxPath, visibleObjects))
+    {
+        ui->OutputLabelOverall->setText("FBX export failed");
+        QMessageBox::critical(this, "Error", QString("FBX export failed."));
+        EnableRenderCommands();
+        return;
+    }
+
+    ui->ProgBarOverall->setValue(50);
+    qApp->processEvents();
+
+    // Check if Blender is available
+    if (!BlenderBridge::isBlenderAvailable())
+    {
+        // Blender not available - just return the FBX file path
+        if (blendPath.endsWith(".fbx", Qt::CaseInsensitive))
+        {
+            // User selected .fbx, so just use the temporary file as final output
+            QFile::rename(fbxPath, blendPath);
+            ui->OutputLabelOverall->setText("FBX export complete (Blender not found)");
+            ui->ProgBarOverall->setValue(100);
+        }
+        else
+        {
+            // User selected .blend but Blender not available
+            QFile::remove(fbxPath);
+            ui->OutputLabelOverall->setText("Blender not found.");
+            QMessageBox::critical(this, "Error", QString("Blender not found - cannot create .blend file. Please install Blender or export as FBX instead."));
+        }
+        EnableRenderCommands();
+        return;
+    }
+
+    ui->ProgBarOverall->setValue(75);
+    qApp->processEvents();
+
+    // Convert FBX to .blend using Blender
+    QString errorMsg;
+    if (BlenderBridge::convertFBXToBlend(fbxPath, blendPath, visibleObjects, errorMsg))
+    {
+        ui->OutputLabelOverall->setText("Blender export complete");
+        ui->ProgBarOverall->setValue(100);
+    }
+    else
+    {
+        ui->OutputLabelOverall->setText(QString("Blender conversion failed"));
+        QMessageBox::critical(this, "Error", QString("Blender conversion failed: %1").arg(errorMsg));
+    }
+
+    // Clean up temporary FBX file
+    QFile::remove(fbxPath);
+
+    EnableRenderCommands();
 }

@@ -2,10 +2,10 @@
  * @file
  * Header: Delete Mask Dialog Impl.
  *
- * All SPIERSedit code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSview code is Copyright 2008-2023 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERS code is Copyright 2008-2026 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -30,7 +30,7 @@ class DeleteMaskDialogImpl : public QDialog, public Ui::DeleteMaskDialog
 {
     Q_OBJECT
 public:
-    DeleteMaskDialogImpl(QList <int> MasksToDelete, QWidget *parent = nullptr, Qt::WindowFlags f = nullptr );
+    DeleteMaskDialogImpl(QList <int> MasksToDelete, QWidget *parent = nullptr, Qt::WindowFlags f = {} );
     bool Cancelled;
     int MaskToDeleteIndex;
     QList <int> MasksToDeleteList;

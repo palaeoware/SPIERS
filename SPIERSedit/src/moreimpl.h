@@ -2,10 +2,10 @@
  * @file
  * Header: More Impl.
  *
- * All SPIERSedit code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSview code is Copyright 2008-2023 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERS code is Copyright 2008-2026 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@ class moreimpl : public QDialog, public Ui::Dialog
 {
     Q_OBJECT
 public:
-    moreimpl( QWidget *parent = nullptr, Qt::WindowFlags f = nullptr );
+    moreimpl( QWidget *parent = nullptr, Qt::WindowFlags f = {} );
     QString fname;
     bool Cancelled;
 private slots:

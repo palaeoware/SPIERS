@@ -2,10 +2,10 @@
  * @file
  * Header: Brush Class
  *
- * All SPIERSedit code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSview code is Copyright 2008-2023 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERS code is Copyright 2008-2026 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -58,8 +58,9 @@ private:
     bool RestartFlag;
     QList <QGraphicsLineItem *> LineList;
     void ThreeDBrushPixels(QList <int> *X, QList <int> *Y, int *PointCount, double offset, int mode);
+    int segBuffer[256];
 
-
+    void recalcForML(int x, int y, QByteArray *locks);
 };
 
 extern Brush_class Brush;

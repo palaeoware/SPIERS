@@ -1,3 +1,19 @@
+/**
+ * @file
+ * Source: Spvwriter
+ *
+ * All SPIERS code is released under the GNU General Public License.
+ * See LICENSE.md files in the programme directory.
+ *
+ * All SPIERS code is Copyright 2008-2026 by Russell J. Garwood, Mark D. Sutton,
+ * and Alan R.T. Spencer.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version. This program is distributed in the
+ * hope that it will be useful, but WITHOUT ANY WARRANTY.
+ */
 #include <QFile>
 #include <QMessageBox>
 
@@ -75,7 +91,7 @@ void SPVWriter::writeSPV(bool withPolydata)
 
     // Total count of objects (for progress bar)
     int c = 0;
-    out << SPVs.count();
+    out << (int)SPVs.count();
     for (int i = 0; i < SPVs.count(); i++)
         c += SPVs[i]->ComponentObjects.count();
     out << c;
@@ -88,7 +104,7 @@ void SPVWriter::writeSPV(bool withPolydata)
     {
         SPV *s = SPVs[i];
         out << s->filenamenopath; //NEW
-        out << s->ComponentObjects.count();
+        out << (int)s->ComponentObjects.count();
         out << s->PixPerMM;
         out << s->SlicePerMM;
         out << s->SkewDown / s->PixPerMM;;
@@ -206,7 +222,7 @@ void SPVWriter::writeSPV(bool withPolydata)
         }
 
     // AllObs should now just list orphan groups
-    out << AllObs.count();
+    out << (int)AllObs.count();
     for (int i = 0; i < AllObs.count(); i++)
     {
         SVObject *o = AllObs[i];
@@ -251,7 +267,9 @@ void SPVWriter::writeSPV(bool withPolydata)
     // Scale Grid - colour, options, fonts
     out << colorGridRed << colorGridGreen << colorGridBlue;
     out << colorGridMinorRed << colorGridMinorGreen << colorGridMinorBlue;
-    out << fontSizeGrid << showMinorGridLines << showMinorGridValues << showScaleGrid;
+    out << int(3) << showMinorGridLines << showMinorGridValues << showScaleGrid;
+
+    //int(0) was font size, no longer used
 
     // This tagged on the end to keep some sort of file compatibility
     for (int i = 0; i < SPVs.count(); i++) //NEW - do each SPV
@@ -266,6 +284,25 @@ void SPVWriter::writeSPV(bool withPolydata)
             out << o->Smoothing; //these might now be <0
         }
     }
+
+    //lighting block
+
+    out << mainLightXYAngle;
+    out << mainLightZPos;
+    out << mainLightPower;
+    out << mainLightColour;
+    out << secondaryLightActive;
+    out << headlightActive;
+    out << secondaryLightXYAngle;
+    out << secondaryLightZPos;
+    out << secondaryLightPower;
+    out << secondaryLightColour;
+    out << headlightPower;
+    out << headlightColour;
+    out << mainLightShadows;
+    out << secondaryLightShadows;
+    out << headlightShadows;
+
 
     // Show saved message
     mainWindow->ui->statusBar->showMessage("Save Complete");

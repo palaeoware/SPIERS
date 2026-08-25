@@ -2,10 +2,10 @@
  * @file
  * Source: SettingsImpl
  *
- * All SPIERSversion code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSversion code is Copyright 2008-2023 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERS code is Copyright 2008-2026 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,9 @@
 #include "fileio.h"
 #include "globals.h"
 #include "copyingimpl.h"
+#include "../../SPIERScommon/src/themeselectorwidget.h"
+
+#include <QVBoxLayout>
 
 SettingsImpl::SettingsImpl(QWidget *parent, Qt::WindowFlags f)
     : QDialog(parent, f)
@@ -27,6 +30,7 @@ SettingsImpl::SettingsImpl(QWidget *parent, Qt::WindowFlags f)
     setWindowIcon(QIcon(":/icons/ProgramIcon.bmp"));
 
     SpinBoxCache->setValue(CacheMem);
+    spinBoxCacheMemMLGb->setValue(CacheMemMLGb);
     SpinBoxUndo->setValue(UndoMem);
     SpinBoxUndoTimer->setValue(UndoTimerSetting);
     BoxBackCache->setChecked(BackgroundCacheFilling);
@@ -36,6 +40,12 @@ SettingsImpl::SettingsImpl(QWidget *parent, Qt::WindowFlags f)
     SliderFileCompression->setValue(FileCompressionLevel);
 
     BoxBackCache->setVisible(false);
+
+    // Embed the shared theme selector into the placeholder widget from the .ui
+    m_themeSelector = new ThemeSelectorWidget(this);
+    QVBoxLayout *placeholderLayout = new QVBoxLayout(appearancePlaceholder);
+    placeholderLayout->setContentsMargins(0, 0, 0, 0);
+    placeholderLayout->addWidget(m_themeSelector);
 }
 
 void SettingsImpl::on_pushButton_clicked()
@@ -50,6 +60,8 @@ void SettingsImpl::on_pushButton_clicked()
 void SettingsImpl::on_buttonBox_accepted()
 {
     CacheMem = SpinBoxCache->value();
+    CacheMemMLGb = spinBoxCacheMemMLGb->value();
+    mlInterface->ResizeCache();
     UndoMem = SpinBoxUndo->value();
     UndoTimerSetting = SpinBoxUndoTimer->value();
     AutoSaveFrequency = AutoSave->value();
@@ -68,6 +80,10 @@ void SettingsImpl::on_buttonBox_accepted()
     if (SliderCacheCompression->value() == 1) CacheCompressionLevel = 1;
     if (SliderCacheCompression->value() == 2) CacheCompressionLevel = 9;
     if (ccl != CacheCompressionLevel) ClearCache();
+
+    // Apply theme immediately and save preference
+    m_themeSelector->applyTheme();
+
     close();
 }
 

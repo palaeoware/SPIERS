@@ -43,11 +43,13 @@ Table of Contents
    introduction
    requirements
    basicconcepts
+   3dpreview
    masks
    segments
    rangegeneration
-   polynomialgeneration
-   lce
+   machinelearninggeneration
+   LCE
+   gradientgeneration
    radial
    output
    volumes

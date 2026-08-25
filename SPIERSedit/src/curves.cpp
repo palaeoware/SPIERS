@@ -2,10 +2,10 @@
  * @file
  * Source: Curves
  *
- * All SPIERSversion code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSversion code is Copyright 2008-2023 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERS code is Copyright 2008-2026 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,8 +20,11 @@
 #include <math.h>
 
 #include <QGraphicsEllipseItem>
+#include <QGraphicsLineItem>
+#include <QGraphicsRectItem>
 #include <QImage>
 #include <QMessageBox>
+#include <QPen>
 
 
 #define M11 0
@@ -109,6 +112,14 @@ void AddNode()
     double sm2, mx, my;
 
     if (SelectedCurve == -1 || CurrentMode != 2) return; //Not appropriate
+    if (Curves[SelectedCurve]->AutomaticallyInterpolated)
+    {
+        Message(
+            "Nodes cannot be added to an automatically "
+            "interpolated curve. Stop automatic interpolation "
+            "first.");
+        return;
+    }
 
     FilesDirty[CurrentFile] = true;
     mx = static_cast<double>(LastMouseX) / static_cast<double>(ColMonoScale);
@@ -188,8 +199,18 @@ void AddNode()
     CurvesUndoDirty = true;
 }
 
-void KillNode(MainWindowImpl *th)
+void KillNode(MainWindow *th)
 {
+    if (SelectedCurve >= 0
+        && Curves[SelectedCurve]->AutomaticallyInterpolated)
+    {
+        Message(
+            "Nodes cannot be removed from an automatically "
+            "interpolated curve. Stop automatic interpolation "
+            "first.");
+        return;
+    }
+
     //find node
     int node = FindClosestNode(static_cast<double>(LastMouseX), static_cast<double>(LastMouseY));
     FilesDirty[CurrentFile] = true;
@@ -246,6 +267,403 @@ int FindClosestNode(double X, double Y)
         }
     }
     return which;
+}
+
+namespace
+{
+
+void SetCurveAutomationError(
+    QString *errorMessage,
+    const QString &message)
+{
+    if (errorMessage != nullptr)
+        *errorMessage = message;
+}
+
+void MarkCurveRangeDirty(
+    const Curve *curve,
+    int firstStoredSlice,
+    int lastStoredSlice)
+{
+    CurvesDirty = true;
+    CurvesUndoDirty = true;
+    if (curve->Segment == 0 || FilesDirty.isEmpty())
+        return;
+
+    const int firstFile = qMax(0, firstStoredSlice / zsparsity);
+    const int lastFile = qMin(
+        FilesDirty.size() - 1,
+        lastStoredSlice / zsparsity);
+    for (int file = firstFile; file <= lastFile; file++)
+        FilesDirty[file] = true;
+}
+
+bool AutomatedCurveIsConsistent(
+    const Curve *curve,
+    QString *errorMessage = nullptr)
+{
+    if (curve == nullptr
+        || !curve->AutomaticallyInterpolated
+        || curve->AutomaticStartSlice < 0
+        || curve->AutomaticEndSlice
+               >= curve->SplinePoints.size()
+        || curve->AutomaticStartSlice
+               >= curve->AutomaticEndSlice)
+    {
+        SetCurveAutomationError(
+            errorMessage,
+            QStringLiteral(
+                "The automatic curve range is invalid."));
+        return false;
+    }
+
+    const int nodeCount =
+        curve->SplinePoints[curve->AutomaticStartSlice]
+            ->Count;
+    if (nodeCount <= 0)
+    {
+        SetCurveAutomationError(
+            errorMessage,
+            QStringLiteral(
+                "The automatic curve has no nodes."));
+        return false;
+    }
+
+    for (int slice = curve->AutomaticStartSlice;
+         slice <= curve->AutomaticEndSlice;
+         slice++)
+    {
+        const PointList *points = curve->SplinePoints[slice];
+        if (points->Count != nodeCount
+            || points->X.size() != nodeCount
+            || points->Y.size() != nodeCount
+            || points->Fixed.size() != nodeCount)
+        {
+            SetCurveAutomationError(
+                errorMessage,
+                QStringLiteral(
+                    "The automatic curve has inconsistent "
+                    "node data."));
+            return false;
+        }
+    }
+
+    const PointList *first =
+        curve->SplinePoints[curve->AutomaticStartSlice];
+    const PointList *last =
+        curve->SplinePoints[curve->AutomaticEndSlice];
+    if (first->Fixed.contains(char(0))
+        || last->Fixed.contains(char(0)))
+    {
+        SetCurveAutomationError(
+            errorMessage,
+            QStringLiteral(
+                "Every node on the first and last slices "
+                "must be fixed."));
+        return false;
+    }
+    return true;
+}
+
+bool InterpolateAutomatedCurveNode(
+    Curve *curve,
+    int nodeIndex)
+{
+    if (!AutomatedCurveIsConsistent(curve)
+        || nodeIndex < 0
+        || nodeIndex
+               >= curve->SplinePoints[
+                      curve->AutomaticStartSlice]
+                      ->Count)
+    {
+        return false;
+    }
+
+    int previousFixed = curve->AutomaticStartSlice;
+    for (int slice = curve->AutomaticStartSlice + 1;
+         slice <= curve->AutomaticEndSlice;
+         slice++)
+    {
+        PointList *points = curve->SplinePoints[slice];
+        if (points->Fixed.at(nodeIndex) == 0)
+            continue;
+
+        const int nextFixed = slice;
+        const PointList *first =
+            curve->SplinePoints[previousFixed];
+        const PointList *last =
+            curve->SplinePoints[nextFixed];
+        const double span = nextFixed - previousFixed;
+        for (int calculatedSlice = previousFixed + 1;
+             calculatedSlice < nextFixed;
+             calculatedSlice++)
+        {
+            const double ratio =
+                (calculatedSlice - previousFixed) / span;
+            PointList *calculated =
+                curve->SplinePoints[calculatedSlice];
+            calculated->X[nodeIndex] =
+                first->X[nodeIndex]
+                + (last->X[nodeIndex] - first->X[nodeIndex])
+                      * ratio;
+            calculated->Y[nodeIndex] =
+                first->Y[nodeIndex]
+                + (last->Y[nodeIndex] - first->Y[nodeIndex])
+                      * ratio;
+        }
+        previousFixed = nextFixed;
+    }
+    return previousFixed == curve->AutomaticEndSlice;
+}
+
+}
+
+bool AutomateCurve(
+    int curveIndex,
+    int firstSlice,
+    int lastSlice,
+    int sourceSlice,
+    QString *errorMessage)
+{
+    if (curveIndex < 0 || curveIndex >= Curves.size())
+    {
+        SetCurveAutomationError(
+            errorMessage,
+            QStringLiteral("No curve is selected."));
+        return false;
+    }
+    if (firstSlice < 0
+        || lastSlice >= Files.size()
+        || firstSlice >= lastSlice
+        || sourceSlice < firstSlice
+        || sourceSlice > lastSlice)
+    {
+        SetCurveAutomationError(
+            errorMessage,
+            QStringLiteral(
+                "Select at least two slices containing the "
+                "curve source slice."));
+        return false;
+    }
+
+    Curve *curve = Curves[curveIndex];
+    if (curve->AutomaticallyInterpolated)
+    {
+        SetCurveAutomationError(
+            errorMessage,
+            QStringLiteral(
+                "This curve is already automatically "
+                "interpolated."));
+        return false;
+    }
+
+    const int firstStoredSlice = firstSlice * zsparsity;
+    const int lastStoredSlice = lastSlice * zsparsity;
+    const int sourceStoredSlice = sourceSlice * zsparsity;
+    if (lastStoredSlice >= curve->SplinePoints.size())
+    {
+        SetCurveAutomationError(
+            errorMessage,
+            QStringLiteral(
+                "The selected range is outside the curve "
+                "data."));
+        return false;
+    }
+
+    const PointList *source =
+        curve->SplinePoints[sourceStoredSlice];
+    if (source->Count <= 0
+        || source->X.size() != source->Count
+        || source->Y.size() != source->Count)
+    {
+        SetCurveAutomationError(
+            errorMessage,
+            QStringLiteral(
+                "The source slice has no valid curve data."));
+        return false;
+    }
+
+    for (int slice = 0;
+         slice < curve->SplinePoints.size();
+         slice++)
+    {
+        if (slice != sourceStoredSlice
+            && curve->SplinePoints[slice]->Count > 0)
+        {
+            SetCurveAutomationError(
+                errorMessage,
+                QStringLiteral(
+                    "The curve already has data outside its "
+                    "single source slice. Remove that data "
+                    "before automating it."));
+            return false;
+        }
+    }
+
+    const QList<double> sourceX = source->X;
+    const QList<double> sourceY = source->Y;
+    const int nodeCount = source->Count;
+    for (int slice = firstStoredSlice;
+         slice <= lastStoredSlice;
+         slice++)
+    {
+        PointList *points = curve->SplinePoints[slice];
+        points->X = sourceX;
+        points->Y = sourceY;
+        points->Count = nodeCount;
+        points->Fixed.fill(
+            slice == firstStoredSlice
+                    || slice == lastStoredSlice
+                ? char(1)
+                : char(0),
+            nodeCount);
+    }
+
+    curve->AutomaticallyInterpolated = true;
+    curve->AutomaticStartSlice = firstStoredSlice;
+    curve->AutomaticEndSlice = lastStoredSlice;
+    MarkCurveRangeDirty(
+        curve,
+        firstStoredSlice,
+        lastStoredSlice);
+    return true;
+}
+
+void DeautomateCurve(int curveIndex)
+{
+    if (curveIndex < 0 || curveIndex >= Curves.size())
+        return;
+
+    Curve *curve = Curves[curveIndex];
+    for (PointList *points : curve->SplinePoints)
+        points->Fixed.clear();
+    curve->AutomaticallyInterpolated = false;
+    curve->AutomaticStartSlice = -1;
+    curve->AutomaticEndSlice = -1;
+    CurvesDirty = true;
+    CurvesUndoDirty = true;
+}
+
+bool RecalculateAutomatedCurve(int curveIndex)
+{
+    if (curveIndex < 0 || curveIndex >= Curves.size())
+        return false;
+    Curve *curve = Curves[curveIndex];
+    if (!AutomatedCurveIsConsistent(curve))
+        return false;
+
+    const int nodeCount =
+        curve->SplinePoints[curve->AutomaticStartSlice]
+            ->Count;
+    for (int node = 0; node < nodeCount; node++)
+    {
+        if (!InterpolateAutomatedCurveNode(curve, node))
+            return false;
+    }
+    MarkCurveRangeDirty(
+        curve,
+        curve->AutomaticStartSlice,
+        curve->AutomaticEndSlice);
+    return true;
+}
+
+bool FixAndInterpolateCurveNode(
+    int curveIndex,
+    int sliceIndex,
+    int nodeIndex,
+    bool wholeCurve)
+{
+    if (curveIndex < 0 || curveIndex >= Curves.size())
+        return false;
+    Curve *curve = Curves[curveIndex];
+    const int storedSlice = sliceIndex * zsparsity;
+    if (!AutomatedCurveIsConsistent(curve)
+        || storedSlice < curve->AutomaticStartSlice
+        || storedSlice > curve->AutomaticEndSlice)
+    {
+        return false;
+    }
+
+    PointList *points = curve->SplinePoints[storedSlice];
+    if (nodeIndex < 0 || nodeIndex >= points->Count)
+        return false;
+
+    if (wholeCurve)
+    {
+        points->Fixed.fill(char(1), points->Count);
+        return RecalculateAutomatedCurve(curveIndex);
+    }
+
+    points->Fixed[nodeIndex] = 1;
+    const bool result =
+        InterpolateAutomatedCurveNode(curve, nodeIndex);
+    if (result)
+    {
+        MarkCurveRangeDirty(
+            curve,
+            curve->AutomaticStartSlice,
+            curve->AutomaticEndSlice);
+    }
+    return result;
+}
+
+bool ReleaseAutomatedCurveNode(
+    int curveIndex,
+    int sliceIndex,
+    int nodeIndex,
+    bool wholeSlice,
+    QString *errorMessage)
+{
+    if (curveIndex < 0 || curveIndex >= Curves.size())
+    {
+        SetCurveAutomationError(
+            errorMessage,
+            QStringLiteral("No curve is selected."));
+        return false;
+    }
+    Curve *curve = Curves[curveIndex];
+    const int storedSlice = sliceIndex * zsparsity;
+    if (!AutomatedCurveIsConsistent(curve, errorMessage))
+        return false;
+    if (storedSlice <= curve->AutomaticStartSlice
+        || storedSlice >= curve->AutomaticEndSlice)
+    {
+        SetCurveAutomationError(
+            errorMessage,
+            QStringLiteral(
+                "Nodes on the first and last automatic "
+                "slices must remain fixed."));
+        return false;
+    }
+
+    PointList *points = curve->SplinePoints[storedSlice];
+    if (!wholeSlice
+        && (nodeIndex < 0 || nodeIndex >= points->Count))
+    {
+        SetCurveAutomationError(
+            errorMessage,
+            QStringLiteral(
+                "There is no curve node under the cursor."));
+        return false;
+    }
+
+    if (wholeSlice)
+    {
+        points->Fixed.fill(char(0), points->Count);
+        return RecalculateAutomatedCurve(curveIndex);
+    }
+
+    points->Fixed[nodeIndex] = 0;
+    const bool result =
+        InterpolateAutomatedCurveNode(curve, nodeIndex);
+    if (result)
+    {
+        MarkCurveRangeDirty(
+            curve,
+            curve->AutomaticStartSlice,
+            curve->AutomaticEndSlice);
+    }
+    return result;
 }
 
 
@@ -330,7 +748,7 @@ void ScanlineFill(int c, int mycol, QImage *Thresh, class PointList *LPointList)
             //there are intersections!
             //sort them into order - this is insertion sort algorithm
 
-            qSort(intersections.begin(), intersections.end());
+            std::sort(intersections.begin(), intersections.end());
 
             //and make sure they can't go off the left!
             //for (int i=0; i<intersections.count(); i++) if (intersections[i]<0) intersections[i]=0;
@@ -436,7 +854,7 @@ void ScanlineFillOutput(int c, uchar *data, class PointList *LPointList, QList <
             //there are intersections!
             //sort them into order - this is insertion sort algorithm
 
-            qSort(intersections.begin(), intersections.end());
+            std::sort(intersections.begin(), intersections.end());
 
             //and make sure they can't go off the left!
             //for (int i=0; i<intersections.count(); i++) if (intersections[i]<0) intersections[i]=0;
@@ -562,7 +980,6 @@ void DrawCurveOutput(int c, int file, uchar *data, QList <bool> *UseMasks, bool 
         }
     }
 }
-
 
 
 void DrawCurve(int c, int mycol, int file, QImage *Thresh)
@@ -726,6 +1143,97 @@ void DrawCurve(int c, int mycol, int file, QImage *Thresh)
 
 QList <QGraphicsItem *> MarkerList;
 
+namespace
+{
+
+constexpr double MARKER_BASE_SIZE = 10.0; /// On-screen size of an ordinary curve node marker, in pixels before zoom scaling
+constexpr double AUTOMATED_MARKER_BASE_SIZE = 13.0; /// On-screen size of an automated curve node marker, in pixels before zoom scaling
+constexpr double MARKER_PEN_WIDTH = 3.0; /// Pen width used to draw ordinary curve node markers
+constexpr double AUTOMATED_MARKER_PEN_WIDTH = 2.0; /// Pen width used to draw automated curve node markers
+constexpr double MARKER_OUTLINE_EXTRA_WIDTH = 4.0; /// Added to the marker pen width to form the outline
+constexpr double MARKER_OUTLINE_Z = 1.9; /// Outlines sit just below the markers they outline
+constexpr double MARKER_Z = 2.0; /// Z value used by all curve node markers
+
+/**
+ *
+ * Builds the black outline pen used behind a curve node marker. Markers are
+ * drawn with thin cosmetic pens in green or blue, which can be very hard to
+ * make out against light or busy datasets. Each marker is therefore drawn
+ * twice - once in black at a greater pen width, and once in its own colour on
+ * top - leaving a black margin visible around the marker.
+ *
+ **/
+QPen markerOutlinePen(const QPen &markerPen)
+{
+    QPen outlinePen(QBrush(QColor(0, 0, 0)), markerPen.widthF() + MARKER_OUTLINE_EXTRA_WIDTH);
+    outlinePen.setCosmetic(true);
+    return outlinePen;
+}
+
+/**
+ *
+ * Adds an outlined ellipse marker to the scene and to the marker list.
+ *
+ **/
+void addMarkerEllipse(QGraphicsScene *scene, double x, double y, double width, double height, const QPen &markerPen, const QBrush &fillBrush = QBrush(Qt::NoBrush))
+{
+    QGraphicsEllipseItem *outline = new QGraphicsEllipseItem(x, y, width, height);
+    outline->setPen(markerOutlinePen(markerPen));
+    outline->setZValue(MARKER_OUTLINE_Z);
+    MarkerList.append(static_cast<QGraphicsItem *>(outline));
+    scene->addItem(outline);
+
+    QGraphicsEllipseItem *marker = new QGraphicsEllipseItem(x, y, width, height);
+    marker->setPen(markerPen);
+    marker->setBrush(fillBrush);
+    marker->setZValue(MARKER_Z);
+    MarkerList.append(static_cast<QGraphicsItem *>(marker));
+    scene->addItem(marker);
+}
+
+/**
+ *
+ * Adds an outlined rectangle marker to the scene and to the marker list.
+ *
+ **/
+void addMarkerRect(QGraphicsScene *scene, double x, double y, double width, double height, const QPen &markerPen)
+{
+    QGraphicsRectItem *outline = new QGraphicsRectItem(x, y, width, height);
+    outline->setPen(markerOutlinePen(markerPen));
+    outline->setZValue(MARKER_OUTLINE_Z);
+    MarkerList.append(static_cast<QGraphicsItem *>(outline));
+    scene->addItem(outline);
+
+    QGraphicsRectItem *marker = new QGraphicsRectItem(x, y, width, height);
+    marker->setPen(markerPen);
+    marker->setZValue(MARKER_Z);
+    MarkerList.append(static_cast<QGraphicsItem *>(marker));
+    scene->addItem(marker);
+}
+
+/**
+ *
+ * Adds an outlined line marker to the scene and to the marker list. Used for
+ * the arms of cross-style node markers.
+ *
+ **/
+void addMarkerLine(QGraphicsScene *scene, double x1, double y1, double x2, double y2, const QPen &markerPen)
+{
+    QGraphicsLineItem *outline = new QGraphicsLineItem(x1, y1, x2, y2);
+    outline->setPen(markerOutlinePen(markerPen));
+    outline->setZValue(MARKER_OUTLINE_Z);
+    MarkerList.append(static_cast<QGraphicsItem *>(outline));
+    scene->addItem(outline);
+
+    QGraphicsLineItem *marker = new QGraphicsLineItem(x1, y1, x2, y2);
+    marker->setPen(markerPen);
+    marker->setZValue(MARKER_Z);
+    MarkerList.append(static_cast<QGraphicsItem *>(marker));
+    scene->addItem(marker);
+}
+
+}
+
 void DrawCurveMarkers(QGraphicsScene *scene)
 {
     if (MarkerList.count() > 0)
@@ -741,14 +1249,77 @@ void DrawCurveMarkers(QGraphicsScene *scene)
     if (SelectedCurve < 0) return; //need a selected curve
 
 
-    double size = 10. / (CurrentZoom);
+    double size = MARKER_BASE_SIZE / (CurrentZoom);
     double size2 = size / 2.0;
 
     PointList *p = Curves[SelectedCurve]->SplinePoints[CurrentFile * zsparsity];
-    QPen mypen = QPen(QBrush(QColor(0, 255, 0)), 1);
+    QPen mypen = QPen(QBrush(QColor(0, 255, 0)), MARKER_PEN_WIDTH);
     mypen.setCosmetic(true);
-    QPen redpen = QPen(QBrush(QColor(0, 100, 255)), 1);
+    QPen redpen = QPen(QBrush(QColor(0, 100, 255)), MARKER_PEN_WIDTH);
     redpen.setCosmetic(true);
+
+    Curve *selectedCurve = Curves[SelectedCurve];
+    const int storedSlice = CurrentFile * zsparsity;
+    if (selectedCurve->AutomaticallyInterpolated
+        && storedSlice >= selectedCurve->AutomaticStartSlice
+        && storedSlice <= selectedCurve->AutomaticEndSlice
+        && p->Fixed.size() == p->Count)
+    {
+        const double automatedSize = AUTOMATED_MARKER_BASE_SIZE / (CurrentZoom);
+        const double automatedHalf = automatedSize / 2.0;
+        const double calculatedSize = automatedSize * 0.58;
+        const double calculatedHalf = calculatedSize / 2.0;
+        QPen calculatedPen(
+            QBrush(QColor(190, 190, 190)),
+            AUTOMATED_MARKER_PEN_WIDTH);
+        calculatedPen.setCosmetic(true);
+
+        for (int i = 0; i < p->Count; i++)
+        {
+            const bool fixed = p->Fixed.at(i) != 0;
+            const QColor fixedColour =
+                i >= p->Count - 2
+                    ? QColor(0, 100, 255)
+                    : QColor(0, 255, 0);
+            QPen fixedPen(QBrush(fixedColour), AUTOMATED_MARKER_PEN_WIDTH);
+            fixedPen.setCosmetic(true);
+            const double markerSize =
+                fixed ? automatedSize : calculatedSize;
+            const double markerHalf =
+                fixed ? automatedHalf : calculatedHalf;
+
+            if (CurveMarkersAsCrosses)
+            {
+                const QPen markerPen = fixed ? fixedPen : calculatedPen;
+                addMarkerLine(
+                    scene,
+                    p->X[i] * ColMonoScale - markerHalf,
+                    p->Y[i] * ColMonoScale,
+                    p->X[i] * ColMonoScale + markerHalf,
+                    p->Y[i] * ColMonoScale,
+                    markerPen);
+                addMarkerLine(
+                    scene,
+                    p->X[i] * ColMonoScale,
+                    p->Y[i] * ColMonoScale - markerHalf,
+                    p->X[i] * ColMonoScale,
+                    p->Y[i] * ColMonoScale + markerHalf,
+                    markerPen);
+            }
+            else
+            {
+                addMarkerEllipse(
+                    scene,
+                    p->X[i] * ColMonoScale - markerHalf,
+                    p->Y[i] * ColMonoScale - markerHalf,
+                    markerSize,
+                    markerSize,
+                    fixed ? fixedPen : calculatedPen,
+                    fixed ? QBrush(fixedColour) : QBrush(Qt::NoBrush));
+            }
+        }
+        return;
+    }
 
 
     //First job - delete all existing markers
@@ -768,71 +1339,34 @@ void DrawCurveMarkers(QGraphicsScene *scene)
             if (i == 0)
             {
                 //first - green box AND cross
-                QGraphicsRectItem *newitem = new QGraphicsRectItem((p->X[i])*ColMonoScale - size2, (p->Y[i])*ColMonoScale - size2, size, size);
-                newitem->setPen(mypen);
-                newitem->setZValue(2);
-                MarkerList.append(static_cast<QGraphicsItem *>(newitem));
-                scene->addItem(newitem);
+                addMarkerRect(scene, (p->X[i])*ColMonoScale - size2, (p->Y[i])*ColMonoScale - size2, size, size, mypen);
             }
             else if (i == p->Count - 1)
             {
                 //last - red box
-                QGraphicsRectItem *newitem = new QGraphicsRectItem((p->X[i])*ColMonoScale - size2, (p->Y[i])*ColMonoScale - size2, size, size);
-                newitem->setPen(redpen);
-                newitem->setZValue(2);
-                MarkerList.append(static_cast<QGraphicsItem *>(newitem));
-                scene->addItem(newitem);
+                addMarkerRect(scene, (p->X[i])*ColMonoScale - size2, (p->Y[i])*ColMonoScale - size2, size, size, redpen);
             }
             //always do a cross
-            QGraphicsLineItem *newitem1 = new QGraphicsLineItem((p->X[i])*ColMonoScale - size2, (p->Y[i])*ColMonoScale, (p->X[i])*ColMonoScale + size2, (p->Y[i])*ColMonoScale);
-            QGraphicsLineItem *newitem3 = new QGraphicsLineItem((p->X[i])*ColMonoScale, (p->Y[i])*ColMonoScale - size2, (p->X[i])*ColMonoScale, (p->Y[i])*ColMonoScale + size2);
-            if (i >= p->Count - 2)
-            {
-                newitem1->setPen(redpen);
-                newitem3->setPen(redpen);
-            }
-            else
-            {
-                newitem1->setPen(mypen);
-                newitem3->setPen(mypen);
-            }
-            newitem1->setZValue(2);
-            newitem3->setZValue(2);
-
-            MarkerList.append(static_cast<QGraphicsItem *>(newitem1));
-            MarkerList.append(static_cast<QGraphicsItem *>(newitem3));
-            scene->addItem(newitem1);
-            scene->addItem(newitem3);
+            const QPen crosspen = (i >= p->Count - 2) ? redpen : mypen;
+            addMarkerLine(scene, (p->X[i])*ColMonoScale - size2, (p->Y[i])*ColMonoScale, (p->X[i])*ColMonoScale + size2, (p->Y[i])*ColMonoScale, crosspen);
+            addMarkerLine(scene, (p->X[i])*ColMonoScale, (p->Y[i])*ColMonoScale - size2, (p->X[i])*ColMonoScale, (p->Y[i])*ColMonoScale + size2, crosspen);
         }
         else     //plain circle markers
         {
             if (i == 0)
             {
                 //first - green box
-                QGraphicsRectItem *newitem = new QGraphicsRectItem((p->X[i])*ColMonoScale - size2, (p->Y[i])*ColMonoScale - size2, size, size);
-                newitem->setPen(mypen);
-                newitem->setZValue(2);
-                MarkerList.append(static_cast<QGraphicsItem *>(newitem));
-                scene->addItem(newitem);
+                addMarkerRect(scene, (p->X[i])*ColMonoScale - size2, (p->Y[i])*ColMonoScale - size2, size, size, mypen);
             }
             else if (i == p->Count - 1)
             {
                 //last - red box
-                QGraphicsRectItem *newitem = new QGraphicsRectItem((p->X[i])*ColMonoScale - size2, (p->Y[i])*ColMonoScale - size2, size, size);
-                newitem->setPen(redpen);
-                newitem->setZValue(2);
-                MarkerList.append(static_cast<QGraphicsItem *>(newitem));
-                scene->addItem(newitem);
+                addMarkerRect(scene, (p->X[i])*ColMonoScale - size2, (p->Y[i])*ColMonoScale - size2, size, size, redpen);
             }
             else
             {
                 //otherwise - plain old marker
-                QGraphicsEllipseItem *newitem = new QGraphicsEllipseItem((p->X[i])*ColMonoScale - size2, (p->Y[i])*ColMonoScale - size2, size, size);
-                if (i == p->Count - 2) newitem->setPen(redpen);
-                else newitem->setPen(mypen);
-                newitem->setZValue(2);
-                MarkerList.append(static_cast<QGraphicsItem *>(newitem));
-                scene->addItem(newitem);
+                addMarkerEllipse(scene, (p->X[i])*ColMonoScale - size2, (p->Y[i])*ColMonoScale - size2, size, size, (i == p->Count - 2) ? redpen : mypen);
             }
         }
     }
@@ -1303,4 +1837,79 @@ void PopulateTriangleList(int OutObject, int firstfile, int lastfile, QList<doub
     //ReDim OutTrigArray(0) As Double
     for (n = 0; n < OutputObjects[OutObject]->CurveComponents.count(); n++)
         SurfaceCurve (n, firstfile, lastfile, stretches, resamps, TrigArray, TrigCount);
+}
+
+
+int GetGradientXPos(double pos, PointList *p)
+{
+    //get int and double parts of pos
+    int intPart = (int)pos;
+    double doublePart = pos - (double)intPart;
+    if (doublePart<0) doublePart = 0;
+    if (doublePart>1) doublePart = 1;
+
+    int i0 = intPart-1; if (i0<0) i0 += p->Count; if (i0>=p->Count) i0-=p->Count;
+    int i1 = intPart; if (i1<0) i1 += p->Count; if (i1>=p->Count) i1-=p->Count;
+    int i2 = intPart+1; if (i2<0) i2 += p->Count; if (i2>=p->Count) i2-=p->Count;
+    int i3 = intPart+2; if (i3<0) i3 += p->Count; if (i3>=p->Count) i3-=p->Count;
+
+    //points are, apparently, already in threshold space.
+    return CatmullRomSpline(doublePart, (*p).X[i0], (*p).X[i1],(*p).X[i2],(*p).X[i3]);
+
+}
+
+
+int GetGradientYPos(double pos, PointList *p)
+{
+    //get int and double parts of pos
+    int intPart = (int)pos;
+    double doublePart = pos - (double)intPart;
+    if (doublePart<0) doublePart = 0;
+    if (doublePart>1) doublePart = 1;
+
+    int i0 = intPart-1; if (i0<0) i0 += p->Count; if (i0>=p->Count) i0-=p->Count;
+    int i1 = intPart; if (i1<0) i1 += p->Count; if (i1>=p->Count) i1-=p->Count;
+    int i2 = intPart+1; if (i2<0) i2 += p->Count; if (i2>=p->Count) i2-=p->Count;
+    int i3 = intPart+2; if (i3<0) i3 += p->Count; if (i3>=p->Count) i3-=p->Count;
+
+    return CatmullRomSpline(doublePart, (*p).Y[i0], (*p).Y[i1],(*p).Y[i2],(*p).Y[i3]);
+
+}
+
+
+// for gradients system. Sample - in threshold image space - a series of positions
+// Assumed lists are empty
+void GetPointsOnSpline(int curveIndex, QList<int> *xPos, QList<int> *yPos)
+{
+    xPos->clear();
+    yPos->clear();
+
+    Curve *cv = Curves[curveIndex];
+    PointList *p = cv->SplinePoints[CurrentFile];
+
+    int pointCount = p->Count;
+    double posBase = 0;
+    if (!cv->Closed)
+    {
+        pointCount-=3;
+        posBase = 1;
+    }
+    double posAdd;
+
+    int numberOfPoints = GradientDensity * pointCount + 1;
+    //qDebug()<<numberOfPoints;
+    if (GradientDensity==0)
+    {
+        posAdd = 0;
+        numberOfPoints=1;
+    }
+    else
+        posAdd = 1.0 / (double)GradientDensity;
+
+    for (int i=0; i<numberOfPoints; i++)
+    {
+
+        xPos->append(GetGradientXPos(posBase + i * posAdd,p));
+        yPos->append(GetGradientYPos(posBase + i * posAdd,p));
+    }
 }

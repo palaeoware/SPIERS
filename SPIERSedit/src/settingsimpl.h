@@ -2,10 +2,10 @@
  * @file
  * Header: Settings Impl.
  *
- * All SPIERSedit code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSview code is Copyright 2008-2023 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERS code is Copyright 2008-2026 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -22,6 +22,8 @@
 
 #include "ui_settings.h"
 
+class ThemeSelectorWidget;
+
 /**
  * @brief The SettingsImpl class
  */
@@ -29,7 +31,7 @@ class SettingsImpl : public QDialog, public Ui::Settings
 {
     Q_OBJECT
 public:
-    SettingsImpl( QWidget *parent = nullptr, Qt::WindowFlags f = nullptr );
+    SettingsImpl( QWidget *parent = nullptr, Qt::WindowFlags f = {} );
 private slots:
     void on_RecompressSourceFiles_pressed();
     void on_RecompressFiles_pressed();
@@ -38,6 +40,9 @@ private slots:
     void on_buttonBox_accepted();
     void on_buttonBox_rejected();
     void on_pushButton_clicked();
+
+private:
+    ThemeSelectorWidget *m_themeSelector; /// Embedded shared theme selector
 };
 
 #endif

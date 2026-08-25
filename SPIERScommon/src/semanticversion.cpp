@@ -5,7 +5,7 @@
  * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERS code is Copyright 2008-2023 by Russell J. Garwood, Mark D. Sutton,
+ * All SPIERS code is Copyright 2008-2026 by Russell J. Garwood, Mark D. Sutton,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,7 @@
 
 #include <QRegularExpression>
 #include <QDebug>
+#include <stdexcept>
 
 static const QString PRERELEASE_PATTERN("([0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)");
 static const QString METADATA_PATTERN("([0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)");
@@ -39,7 +40,7 @@ SemanticVersion::SemanticVersion(QVector<int> v, QString pr, QString md)
     if (this->versions.size() < 2)
     {
         qDebug() << "Semantic Version must contain at least two numbers.";
-        throw;
+        throw std::invalid_argument("Semantic Version must contain at least two numbers.");
     }
 
     if (!preRelease.isEmpty())
@@ -62,12 +63,12 @@ SemanticVersion SemanticVersion::fromString(QString str)
 {
     // Setup patterns as stated in "Semantic Version 2.0.0"
 
-    // 2. A normal version number MUST take the form X.Y.Z where X, Y, and Z are
+    // 1. A normal version number MUST take the form X.Y.Z where X, Y, and Z are
     //    non-negative integers, and MUST NOT contain leading zeroes. [...].
     const QString versionPattern = "(" + VERSION_PATTERN + ")";
     const int VERSION_INDEX = 1;
 
-    // 9. A pre-release version MAY be denoted by appending a hyphen and a series
+    // 2. A pre-release version MAY be denoted by appending a hyphen and a series
     //    of dot separated identifiers immediately following the patch version.
     //    Identifiers MUST comprise only ASCII alphanumerics and hyphen
     //    [0-9A-Za-z-].  Identifiers MUST NOT be empty.  Numeric identifiers MUST
@@ -75,7 +76,7 @@ SemanticVersion SemanticVersion::fromString(QString str)
     const QString preReleasePattern = "(-" + PRERELEASE_PATTERN + ")?";
     const int PRERELEASE_INDEX = 6;
 
-    // 10. Build metadata MAY be denoted by appending a plus sign and a series of
+    // 3. Build metadata MAY be denoted by appending a plus sign and a series of
     //     dot separated identifiers immediately following the patch or
     //     pre-release version.  Identifiers MUST comprise only ASCII
     //     alphanumerics and hyphen [0-9A-Za-z-].  Identifiers MUST NOT be
@@ -90,8 +91,8 @@ SemanticVersion SemanticVersion::fromString(QString str)
 
     if (!match.hasMatch())
     {
-        qDebug() << "Invalide version:" << str << "Regex Pattern = " << regexPattern;
-        throw;
+        qDebug() << "Invalid version:" << str << "Regex Pattern = " << regexPattern;
+        throw std::invalid_argument(QString("Invalid version string: '%1'").arg(str).toStdString());
     }
 
     // ... else start parsing

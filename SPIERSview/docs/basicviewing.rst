@@ -4,10 +4,10 @@ Basic viewing and manipulation
 ==============================
 
 The default SPIERSview screen setup has the main view window (black) on
-the right, the ‘objects panel’ on the left, and progress panel at the
+the right, the 'objects panel' on the left, and progress panel at the
 bottom (see Fig. 1). The Main view window and the Zoom slider (see
-below) are permanently visible – the panels can be hidden, resized,
-repositioned or set to ‘float’ as the user desires. In addition to the
+below) are permanently visible - the panels can be hidden, resized,
+repositioned or set to 'float' as the user desires. In addition to the
 two initially visible panels there are three more, the Clipping panel,
 Info panel and Pieces panel (discussed later). Panels are switched on
 and off using the view menu, or the keyboard shortcuts indicated in
@@ -40,7 +40,7 @@ rotated in three dimensions by dragging with the right mouse button. You
 can also rotate around the z-axis (the viewing direction) using the left
 and right arrow keys (hold shift down to make rotate faster), or by
 holding the shift-key down while dragging with the right mouse button.
-It is also possible to ‘lock’ the viewer into rotate mode by ticking the
+It is also possible to 'lock' the viewer into rotate mode by ticking the
 *rotate lock* command (Ctrl-R) on the Mode menu (this is primarily
 useful on single-button OSX systems). Also see "Touch screens" below.
 
@@ -65,10 +65,10 @@ Touch screen support
 --------------------
 
 Modern computers with touch screens should be compatible with SPIERSview for basic object moving,
-roatating, and zooming. The model can be moved by one finger dragging, and 
+rotating, and zooming. The model can be moved by one finger dragging, and 
 rotated around around the z-axis (the viewing direction) using two finger rotation.
 Rotated in three dimensions can be achieved by toggling the *rotate lock* command (Ctrl-R),
-or by holding down Crlt while one finger dragging. Zooming in/out can be achieved
+or by holding down Ctrl while one finger dragging. Zooming in/out can be achieved
 by using the two finger pinch-to-zoom gesture.
 
 Object visibility
@@ -78,18 +78,18 @@ SPIERSview models consist of a number of *objects* and *groups* of
 objects (see below) which are listed in the *Object panel* on the left
 of the screen (Fig. 1). Each object is normally given a different
 colour, and each object or group can be independently turned on or off
-(hidden from view), enabling the user to perform ‘virtual dissections’.
-This can be done by double-clicking the ‘eye’ icon for each object in
+(hidden from view), enabling the user to perform 'virtual dissections'.
+This can be done by double-clicking the 'eye' icon for each object in
 the object panel (see Figure 1), or by using the keyboard key assigned
 to the object (the single character A-Z or 0-9 visible to the right of
 the eye icon). Objects are not required to have a key assigned, in which
-case they can only have their visibility toggled with the ‘eye’ icon. If
+case they can only have their visibility toggled with the 'eye' icon. If
 a group is hidden then all objects or groups within it, irrespective of
 their visibility setting, are not visible.
 
 The objects menu has *Show All* (Shift+H) and *Hide All* (Ctrl+H) commands which can be
 used to set the visibility of all objects either on or off. An *Invert
-Show* (Crtl+I) command also exists, which hides all currently shown objects, and
+Show* (Ctrl+I) command also exists, which hides all currently shown objects, and
 vice versa.
 
 Note that transparency (see section on transparency later on) can be used as an alternative to
@@ -135,7 +135,7 @@ mode to produce stereoscopic 3D output using most 3D screens and
 projectors. Please note that no guarantee of success for any particular
 hardware can be provided.
 
-The user may find that the default ‘medium’ stereo-separation (the
+The user may find that the default 'medium' stereo-separation (the
 strength of the stereoscopic effect) is too high or too low in some
 situations. Stereo-separation can be set to one of five preset
 strengths, accessed through the View menu or using the keyboard
@@ -144,12 +144,12 @@ shortcuts Alt+1 (very low) through Alt+5 (very high).
 Full Screen Mode
 ----------------
 
-SPIERSview can run in a full screen (Crtl+F) mode where the 3D view is maximised to
-the maxiumum monitor height and width. Under Windows a frameless and undecorated
+SPIERSview can run in a full screen (Ctrl+F) mode where the 3D view is maximised to
+the maximum monitor height and width. Under Windows a frameless and undecorated
 window is produced. While under Linux a minimal framed and decorated window is used. 
-When in full screen mode use (Crtl+F) to toggle back to normal mode.
+When in full screen mode use (Ctrl+F) to toggle back to normal mode.
 
-Note that under full screen mode only the 3D view is displayed, all other pannels and menus
+Note that under full screen mode only the 3D view is displayed, all other panels and menus
 are not shown. However, all shortcut key combinations will still work.
 
 Background Colour
@@ -167,3 +167,7 @@ Selecting the *Bounding Box Mode* command on the Mode menu causes all
 items to render as wireframe boxes. Bounding box rendering is far faster
 than normal rendering, and may, for instance, assist with the initial
 placement of objects when assembling multi-piece models.
+
+Lighting
+-----------------
+From SPIERSview 4, models are by default lit from the north-west of the view, and include shadows. Lighting setup can be configured using the lighting panel (F8).

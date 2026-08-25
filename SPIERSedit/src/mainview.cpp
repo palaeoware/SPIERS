@@ -2,10 +2,10 @@
  * @file
  * Source: MainView
  *
- * All SPIERSversion code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSversion code is Copyright 2008-2023 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERS code is Copyright 2008-2026 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  */
 
 #include "mainview.h"
-#include "mainwindowimpl.h"
+#include "mainwindow.h"
 #include <QDebug>
 #include <QEvent>
 #include <QWheelEvent>
@@ -38,7 +38,7 @@ mainview::mainview(QObject *parent) : QGraphicsView()
 void mainview::wheelEvent(QWheelEvent *event)
 {
     //event->ignore();
-    AppMainWindow->MouseZoom(event->delta());
+    AppMainWindow->MouseZoom(event->angleDelta().y());
 
 }
 
@@ -50,14 +50,11 @@ void mainview::wheelEvent(QWheelEvent *event)
  */
 bool mainview::eventFilter(QObject *obj, QEvent *event)
 {
-    if (event->type() == QEvent::Wheel)
+    if (event->type() == QEvent::Wheel && underMouse())
     {
-        AppMainWindow->MouseZoom((static_cast<QWheelEvent *>(event))->delta());
+        AppMainWindow->MouseZoom((static_cast<QWheelEvent *>(event))->angleDelta().y());
         return true; //stop further wheel processing
     }
-    else
-    {
-        // standard event processing
-        return QObject::eventFilter(obj, event);
-    }
+    // standard event processing
+    return QObject::eventFilter(obj, event);
 }

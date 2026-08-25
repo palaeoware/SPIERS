@@ -7,18 +7,18 @@ Concepts
 --------
 
 *Multi-segment datasets*: In the Basic Concepts section we assumed that
-data could be modelled simply by splitting into two ‘segments’ -
+data could be modelled simply by splitting into two 'segments' -
 background ('off') and fossil ('on'); these are called single-segment
 datasets in SPIERSedit (background is a special case, so not counted as
 a segment). In some datasets however the situation is more complex; for
 instance in Figure 11A two different types of material are present in
 the fossil (light and dark grey). This is best modelled as a
-multi-segment dataset *–* there are two types of material (recall that
+multi-segment dataset *-* there are two types of material (recall that
 background does not count), so it they requires *two* segments in
 SPIERSedit, rather than the default one. In a multi-segment dataset each
 source image has more than one corresponding working image, one for each
 segment; each segment has independently specified generation rules. The
-threshold image no longer consists of pixels simply ‘on’ or ‘off’;
+threshold image no longer consists of pixels simply 'on' or 'off';
 instead each pixel is assigned to one of the segments (or none,
 background). The threshold image is calculated from the working images
 using the following simple rules: if a pixel is below threshold level
@@ -30,7 +30,7 @@ working images and the corresponding combined threshold image.
 
 *Segments and Masks*: The segment and mask systems are independent and
 complementary. Each pixel in each slice assigned to one segment (or
-none, i.e. background, ‘off’) AND one mask. Segments are primarily used
+none, i.e. background, 'off') AND one mask. Segments are primarily used
 to pick out different types of material, masks to pick out regions. The
 way in which masks and segments interact to produce renderable objects
 is discussed in the *Output* section below.
@@ -59,21 +59,21 @@ affecting any pixels currently assigned to that segment.
 Working with segments
 ---------------------
 
-*Segment selection:* The upper of the two drop-downs in the ‘segments’
+*Segment selection:* The upper of the two drop-downs in the 'segments'
 section of the main toolbox is used to choose the segment you are
 working with at the moment. This affects the operation of slice
 generation, brighten mode and segmentation mode. The lower of the two
 drop-downs only affects the right mouse button in segmentation mode. As
 with masks, these choices are displayed as L and R (or B) in the
 leftmost column of the *Segments* panel, and left/right clicking in here
-will select them. Note that the R drop-down also has a ‘delete all’
-option – if set to this, the right mouse will remove pixels from all
+will select them. Note that the R drop-down also has a 'delete all'
+option - if set to this, the right mouse will remove pixels from all
 segments (i.e. turn them off).
 
 *Brush in segment mode*: In segment mode the brush is used to assign
 pixels directly to the selected segment (left mouse button) or segment
-specified in the ‘R’ drop-down (right mouse button). Note that the R
-drop-down also has a ‘delete all’ option – if set to this, the right
+specified in the 'R' drop-down (right mouse button). Note that the R
+drop-down also has a 'delete all' option - if set to this, the right
 mouse will remove pixels from all segments (i.e. turn them off).
 
 *Brush in brighten mode*: The brighten brush only affects the selected
@@ -108,10 +108,10 @@ generate a model of voids in a certain part of the model, for example
 inside a fossil otherwise reconstructed with a single segment. The
 segments system allows a simple trick to be used to handle this. First,
 the normal segment is created and properly edited (if desired). Once
-prepared, it is locked and a second ‘fill’ segment created. No
-slice-based generation is performed on this second segment – slices are
+prepared, it is locked and a second 'fill' segment created. No
+slice-based generation is performed on this second segment - slices are
 left blank. To fill the holes, the first segment is locked, and the
-‘fill’ segment then brushed roughly over the holes using the segment
+'fill' segment then brushed roughly over the holes using the segment
 brush.
 
 *Number of segments:* There is no formal limit on the number of
@@ -150,12 +150,12 @@ same thing. Selection of segments in the panel is used for bulk locking
 or activating/deactivation, bulk deleting, segment copying, and the
 creation of output objects.
 
-*Segment activation*: Double-clicking a mask’s ‘eye’ icon toggles its
+*Segment activation*: Double-clicking a mask's 'eye' icon toggles its
 activation status (visibility); this can be done to segments in bulk by
 selecting them (see above) and using the *Activate Selected Segments* or
 *Deactivate Selected Masks* commands on the *Segments* menu.
 
-*Segment locking*: Double-clicking a segment’s ‘padlock’ icon toggles
+*Segment locking*: Double-clicking a segment's 'padlock' icon toggles
 its lock status; this can be done to segments in bulk by selecting them
 (see above) and using the *Lock Selected Segments* or *Unlock Selected
 Segments* commands on the *Segments* menu.

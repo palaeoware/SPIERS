@@ -67,35 +67,33 @@ We recommend you install and use MSYS2 (64-bit) a Windows package manager, based
 8. You should now be able to find the required libraries under "{install location}/mingw64/bin" and the required header (.h) files for QT v5.x and VTK v8.1 under "{install location}/mingw64/include".
 9. Use the information above to setup a new 64-bit ming64 kit under QT creator and follow standard QT Creator debug/release procedure.
 
-#### Ubuntu 18.04/20.04 64-bit - QT Creator + QT v5.x and VTK v7.1 using GCC (64-bit)
+#### Ubuntu 22.04/24.04 64-bit - QT v6.x and OpenCV 4.10.0 using GCC (64-bit)
 
-1. Install GCC and QT5.X on your system. You can do this two ways, by using system packages:
+1. Install GCC and QT6.X on your system. You can do this two ways, by using system packages:
 
-  `sudo apt-get install build-essential libgl1-mesa-dev`
+  `sudo apt-get install build-essential libgl1-mesa-dev cmake`
 
-  `sudo apt install qt5-default`
+  `sudo apt install qt6-base-dev libqt6core5compat6-dev`
 
-  Or by downloading and running the installer from Qt: https://www.qt.io/download Further instructions are available here: https://wiki.qt.io/Install_Qt_5_on_Ubuntu
+  Or by downloading and running the installer from Qt: https://download.qt.io/official_releases/qt/
 
-2. SPIERSview requires VTK: The Linux version of SPIERSview currently uses VTK7.1. This can also be installed from the Ubuntu packages:
+2. SPIERSview requires OpenCV: The Linux version of SPIERSview uses a packaged version, that can also be installed from the Ubuntu packages:
 
-  `sudo apt-get install libvtk7-qt-dev`
+  `sudo apt-get install libopencv-dev`
 
-3. Using the above package, you should be able to find the required VTK libraries under /usr/include/vtk-7.1/ They can also be included, if needed, in the working directory, and added to the executable at link time using the QMAKE_RPATHDIR variable - e.g. #QMAKE_RPATHDIR += $$PWD/vtk-7.X/
-
-4. Download source code, or clone using Git:
+3. Download source code, or clone using Git:
 
   `git clone https://github.com/palaeoware/SPIERS.git`
 
   You can then compile SPIERS by opening the .pro file in QT creator and following standard debug/release procedure (or see alternative below). The resulting executables will be placed in their individual bin folders. SPIERS is set up to work with this directory structure. Copy the build folders to your required location if this differs from the build location.
 
-5. Alternatively you can build using the following commands -  navigate into the SPIERS source folder in a terminal window:
+4. Alternatively you can build using the following commands -  navigate into the SPIERS source folder in a terminal window:
 
   `cd SPIERS`
 
   Create a makefile:
 
-  `qmake ./SPIERS.pro`
+  `qmake6 ./SPIERS.pro`
 
   Build by running the make command:
 

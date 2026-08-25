@@ -2,10 +2,10 @@
  * @file
  * Source: MyScene
  *
- * All SPIERSversion code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSversion code is Copyright 2008-2023 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERS code is Copyright 2008-2026 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,6 +17,7 @@
 
 #include "myscene.h"
 #include "globals.h"
+#include "mainwindow.h"
 #include "brush.h"
 #include "display.h"
 #include "curves.h"
@@ -40,6 +41,11 @@ myscene::myscene() : QGraphicsScene()
     mousetimer.start();
     setBackgroundBrush(QColor(35, 35, 35));
     CurrentClosestNode = -1;
+    automaticCurveDrag = false;
+    automaticCurveDragCurve = -1;
+    automaticCurveDragNode = -1;
+    automaticCurveDragWholeCurve = false;
+    maskFloodFillStroke = false;
 }
 
 void myscene::DoMouse(int x, int y, int PressedButton)
@@ -59,15 +65,21 @@ void myscene::DoMouse(int x, int y, int PressedButton)
         //get the per pixel locks - need to load current masks and locks file first
         LoadMasks(CurrentFile);
         LoadLocks(CurrentFile);
-        gen_locks = DoMaskLocking();
+
         got_LCE_sample=true;
     }
+
+    if (CurrentMode==5 && Active) //recalc
+        gen_locks = DoMaskLocking();
 
     if (x != LastMouseX || y != LastMouseY) // an actual move
     {
 
         LastMouseX = x;
         LastMouseY = y;
+
+        if (AppMainWindow && AppMainWindow->previewWidget3D->isShowingPositionIndicator())
+            AppMainWindow->previewWidget3D->update();
 
         MoveFlag = true;
         if (button > 0)
@@ -187,8 +199,24 @@ void myscene::DoAction(int x, int y)
             else Brush.brighten(LastMouseX, LastMouseY, CurrentSegment, 0 - BrightDown);
             break;
         case 1: //masks
-            if (button == 1) Brush.mask(LastMouseX, LastMouseY, SelectedMask);
-            else Brush.mask(LastMouseX, LastMouseY, SelectedRMask);
+            if (maskFloodFillStroke)
+            {
+                if (Counter2 == 0)
+                {
+                    mainwin->ApplyMaskFloodFill(
+                        LastMouseX,
+                        LastMouseY,
+                        button == 1 ? SelectedMask : SelectedRMask);
+                }
+            }
+            else if (button == 1)
+            {
+                Brush.mask(LastMouseX, LastMouseY, SelectedMask);
+            }
+            else
+            {
+                Brush.mask(LastMouseX, LastMouseY, SelectedRMask);
+            }
             break;
         case 2:
             if (button == 1)
@@ -196,6 +224,30 @@ void myscene::DoAction(int x, int y)
                 if (CurrentClosestNode == -1) CurrentClosestNode = FindClosestNode((double)x, (double)y);
                 if (CurrentClosestNode >= 0) //selected curve must be 0 or more for this
                 {
+                    if (!automaticCurveDrag
+                        && Curves[SelectedCurve]
+                               ->AutomaticallyInterpolated)
+                    {
+                        const int storedSlice =
+                            CurrentFile * zsparsity;
+                        Curve *curve = Curves[SelectedCurve];
+                        if (storedSlice
+                                < curve->AutomaticStartSlice
+                            || storedSlice
+                                   > curve->AutomaticEndSlice)
+                        {
+                            break;
+                        }
+                        mainwin->MakeUndo(
+                            "automatic curve node edit");
+                        automaticCurveDrag = true;
+                        automaticCurveDragCurve =
+                            SelectedCurve;
+                        automaticCurveDragNode =
+                            CurrentClosestNode;
+                        automaticCurveDragWholeCurve =
+                            CurveShapeLocked;
+                    }
                     FilesDirty[CurrentFile] = true;
                     CurvesDirty = true;
                     CurvesUndoDirty = true;
@@ -252,6 +304,11 @@ void myscene::mousePressEvent(QGraphicsSceneMouseEvent *event )
     if (event->button() == Qt::RightButton) but = 2;
     if (event->button() == Qt::MiddleButton) but = 3;
 
+    maskFloodFillStroke =
+        CurrentMode == 1
+        && (event->modifiers().testFlag(Qt::ControlModifier)
+            || mainwin->MaskFloodFillForAllClicks());
+
     DoMouse(x, y, but);
     return;
 }
@@ -260,10 +317,30 @@ void myscene::MouseUp()
 //Handle mouse release - mainly resetting of dirty array
 {
     int n;
+    if (automaticCurveDrag)
+    {
+        if (!FixAndInterpolateCurveNode(
+                automaticCurveDragCurve,
+                CurrentFile,
+                automaticCurveDragNode,
+                automaticCurveDragWholeCurve))
+        {
+            Message(
+                "Automatic curve interpolation failed because "
+                "the curve data is inconsistent.");
+        }
+        mainwin->RefreshCurves();
+        ShowImage(mainwin->graphicsView);
+    }
+    automaticCurveDrag = false;
+    automaticCurveDragCurve = -1;
+    automaticCurveDragNode = -1;
+    automaticCurveDragWholeCurve = false;
     CurrentClosestNode = -1;
     button = 0;
     mouse_down=false;
     got_LCE_sample=false;
+    maskFloodFillStroke = false;
     for (n = 0; n < fwidth * fheight; n++) dirty[n] = 0;
     return;
 }

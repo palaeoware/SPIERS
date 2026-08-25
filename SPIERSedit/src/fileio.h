@@ -2,10 +2,10 @@
  * @file
  * Header: File IO
  *
- * All SPIERSedit code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSview code is Copyright 2008-2023 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERS code is Copyright 2008-2026 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -50,9 +50,11 @@ extern int GetShort(QDataStream *in);
 extern bool SimpleLoadLocks(int fnum, int expectedsize, QByteArray *array);
 extern void SimpleSaveLocks(int fnum, QByteArray array);
 extern bool SimpleLoadMasks(int fnum, int expectedsize, QByteArray *array);
+extern bool SimpleLoadMasksForFile(const QString &fileName, int expectedsize, QByteArray *array);
 extern void SimpleSaveMasks(int fnum, QByteArray array);
 extern void SimpleSaveGreyData(int fnum, int seg, QImage greydata);
 extern bool SimpleLoadGreyData(int fnum, int seg, QImage *greydata);
+extern bool SimpleLoadGreyDataForFile(const QString &fileName, int seg, QImage *greydata);
 extern bool SimpleLoadColourData(QString fname);
 
 /**

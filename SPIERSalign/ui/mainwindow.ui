@@ -98,6 +98,8 @@
     <addaction name="actionLoad_Settings_File"/>
     <addaction name="actionCompress_Dataset"/>
     <addaction name="actionConstant_autosave"/>
+    <addaction name="separator"/>
+    <addaction name="actionAdvancedPrefs"/>
    </widget>
    <widget class="QMenu" name="menuTransform">
     <property name="enabled">
@@ -146,7 +148,14 @@
     <addaction name="actionCode_on_GitHub"/>
     <addaction name="actionBugIssueFeatureRequest"/>
     <addaction name="separator"/>
+    <addaction name="actionCheck_for_Updates"/>
     <addaction name="actionAbout"/>
+   </widget>
+   <widget class="QMenu" name="menuTest">
+    <property name="title">
+     <string>Test</string>
+    </property>
+    <addaction name="actionTestCrashHandler"/>
    </widget>
    <widget class="QMenu" name="menuNavigate">
     <property name="enabled">
@@ -209,9 +218,15 @@
    <addaction name="menuTransform"/>
    <addaction name="menuMagnification"/>
    <addaction name="menuWindows"/>
+   <addaction name="menuTest"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionAdvancedPrefs">
+   <property name="text">
+    <string>Advanced prefs...</string>
+   </property>
+  </action>
   <action name="actionOpen">
    <property name="checkable">
     <bool>false</bool>
@@ -229,6 +244,16 @@
   <action name="actionAbout">
    <property name="text">
     <string>About...</string>
+   </property>
+  </action>
+  <action name="actionCheck_for_Updates">
+   <property name="text">
+    <string>Check for Updates...</string>
+   </property>
+  </action>
+  <action name="actionTestCrashHandler">
+   <property name="text">
+    <string>Test Crash Handler</string>
    </property>
   </action>
   <action name="actionNext_Image">

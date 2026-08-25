@@ -2,7 +2,6 @@ TEMPLATE = subdirs
 SUBDIRS = SPIERSalign \
           SPIERSedit \
           SPIERSview \
-          SPIERSutility/SPIERSversion \
+          SPIERScrashhandler
 
-CONFIG +=
-    sdk_no_version_check
+CONFIG += qt debug_and_release sdk_no_version_check ordered

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg1"
+   xml:space="preserve"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   sodipodi:docname="icon_padlock_closed.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><sodipodi:namedview
+     id="namedview1"
+     pagecolor="#edf6c6"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="1.0167041"
+     inkscape:cx="486.37554"
+     inkscape:cy="264.08864"
+     inkscape:window-width="1920"
+     inkscape:window-height="1009"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g3" /><defs
+     id="defs1" /><g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"><g
+       id="g3"
+       transform="matrix(1.0119578,0,0,0.88949911,-0.27518066,6.5649614)"
+       style="stroke-width:1.05401"
+       inkscape:export-filename="..\light\icon_padlock_open.svg"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"><path
+         id="rect2"
+         style="fill:#666666;fill-opacity:1;stroke:#666666;stroke-width:5.27005;stroke-dasharray:none;stroke-opacity:1"
+         d="m 32.449699,32.202686 c -5.54,0 -9.999907,4.459906 -9.999907,9.999906 v 7.786088 c 0,5.54 4.459907,9.999906 9.999907,9.999906 h 27.291874 c 5.54,0 9.999906,-4.459906 9.999906,-9.999906 v -7.786088 c 0,-5.54 -4.459906,-9.999906 -9.999906,-9.999906 z m 10.033496,5.520593 h 7.961271 c 1.108,0 1.999878,0.891878 1.999878,1.999878 v 13.481347 c 0,1.108 -0.891878,1.999878 -1.999878,1.999878 h -7.961271 c -1.108,0 -1.999878,-0.891878 -1.999878,-1.999878 V 39.723157 c 0,-1.108 0.891878,-1.999878 1.999878,-1.999878 z"
+         inkscape:export-filename="..\light\icon_padlock_closed_disabled.svg"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96" /><path
+         style="fill:none;fill-opacity:1;stroke:#666666;stroke-width:10.5401;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+         d="m 24.976279,47.475835 v -20.42565 c 0,0 0.984557,-5.554614 2.269538,-7.912639 1.256986,-2.306653 3.212186,-4.054809 5.106462,-5.704461 2.031155,-1.768854 4.186341,-3.5185444 6.619491,-4.4163564 2.650999,-0.9781964 5.538848,-1.0931152 8.321644,-0.9200745 2.893933,0.1799514 5.842482,0.7369825 8.510771,2.0241639 2.033835,0.981121 3.772635,2.644087 5.484719,4.232342 1.208137,1.120757 2.403144,2.303428 3.350419,3.711914 1.180105,1.754676 2.831857,5.792492 2.831857,5.792492 l -0.530973,24.411216"
+         id="path2"
+         sodipodi:nodetypes="ccssssssscc" /></g></g></svg>

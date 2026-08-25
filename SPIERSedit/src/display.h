@@ -2,10 +2,10 @@
  * @file
  * Header: Display
  *
- * All SPIERSedit code is released under the GNU General Public License.
+ * All SPIERS code is released under the GNU General Public License.
  * See LICENSE.md files in the programme directory.
  *
- * All SPIERSview code is Copyright 2008-2023 by Mark D. Sutton, Russell J. Garwood,
+ * All SPIERS code is Copyright 2008-2026 by Mark D. Sutton, Russell J. Garwood,
  * and Alan R.T. Spencer.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -22,14 +22,19 @@
 #include <QGraphicsScene>
 #include <QString>
 #include "globals.h"
+#include "bytearray2d.h"
 #include "beamhardening.h"
+#include <QList>
+#include "labelledpoint.h"
 
 extern void ShowImage(QGraphicsView *gv);
 extern void InitImage(QGraphicsView *gv);
 extern void DeleteDisplayObjects();
+extern QList<LabelledPoint> GenerateLabels(MainWindow *mw, int percentage);
 extern void ClearImages();
 extern void MakeLinearGreyScale(int seg, int fnum, bool flag);
 extern void ApplyLCE(int seg, int fnum, bool flag);
+extern void ApplyGradient(int seg, int fnum);
 extern void ApplyRadial(int seg, int fnum, BeamHardening *bh, bool flag);
 extern void MakeBlankGreyScale(int seg, int fnum, bool flag);
 extern uchar GreyScalePixel(int w, int h, int r, int g, int b, int glob);
@@ -43,5 +48,6 @@ extern uchar GenPixel(int x, int y, int s, QVector<uchar> *sample, QByteArray *l
 extern double CalcPoly(unsigned char r, unsigned char g, unsigned char b, Segment *seg);
 extern void SaveMainImage(QString fname);
 extern QByteArray DoMaskLocking();
+extern QVector<int> GetSegmentMap();
 
 #endif // __DISPLAY_H__
