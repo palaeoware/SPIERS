@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>          
+<dict>
         <key>CFBundleExecutable</key>
-        <string>SPIERSalign64</string>
+        <string>SPIERScrashhandler64</string>
         <key>CFBundleIconFile</key>
-        <string>SPIERSalignIcon.icns</string>
+        <string>SPIERScrashhandlerIcon.icns</string>
         <key>CFBundleIdentifier</key>
-        <string>com.palaeoware.spiers.align</string>
+        <string>com.palaeoware.spiers.crashhandler</string>
         <key>CFBundlePackageType</key>
         <string>APPL</string>
         <key>CFBundleSignature</key>
@@ -15,7 +15,7 @@
         <key>CFBundleVersion</key>
         <string>3.1.2</string>
         <key>CFBundleSpokenName</key>
-        <string>Spiers Align</string>
+        <string>Spiers Crash Handler</string>
         <key>CFBundleInfoDictionaryVersion</key>
         <string>6.0</string>
         <key>LSMinimumSystemVersion</key>

@@ -170,13 +170,27 @@ TEMP_MOUNT_DIR="/tmp/spiers_dmg_mount_$$"
 echo -e "${YELLOW}  Creating DMG structure...${NC}"
 hdiutil create -volname "SPIERS $VERSION" -srcfolder "$STAGING_DIR" -ov -format UDRW "$TEMP_RW_DMG" > /dev/null 2>&1
 
+# Detach any stale SPIERS volume left mounted by a previous failed run --
+# otherwise this run's volume gets mounted under a "SPIERS X.X.X 1" style
+# suffix that the mount-point parsing below would then miss, leaving this
+# image locked when we later try to convert it.
+for STALE_DISK in $(hdiutil info | awk -F'\t' -v pat="/Volumes/SPIERS ${VERSION}" '$3 ~ "^"pat {print $1}'); do
+    echo -e "${YELLOW}  Detaching stale mount from a previous run (${STALE_DISK})...${NC}"
+    hdiutil detach "$STALE_DISK" -force > /dev/null 2>&1 || true
+done
+
 # Mount the DMG to customize it
 echo -e "${YELLOW}  Customizing DMG layout...${NC}"
 MOUNT_RESULT=$(hdiutil attach "$TEMP_RW_DMG" -readwrite -noautoopen 2>&1)
-MOUNT_POINT=$(echo "$MOUNT_RESULT" | grep -oE '/Volumes/SPIERS [0-9]+\.[0-9]+\.[0-9]+' | head -1)
+# Parse the actual mount point from hdiutil's tab-separated output rather than
+# reconstructing it, so a suffixed volume name doesn't cause eject to target
+# the wrong path and leave this image locked.
+MOUNT_POINT=$(echo "$MOUNT_RESULT" | awk -F'\t' '/\/Volumes\// {print $NF}' | tail -1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
 
 if [ -z "$MOUNT_POINT" ]; then
-    MOUNT_POINT="/Volumes/SPIERS $VERSION"
+    echo -e "${RED}Error: Could not determine DMG mount point${NC}"
+    echo "$MOUNT_RESULT"
+    exit 1
 fi
 
 # Wait for mount

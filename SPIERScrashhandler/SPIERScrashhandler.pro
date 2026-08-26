@@ -26,7 +26,7 @@ win32 {
 }
 
 macx {
-    QMAKE_MACOSX_DEPLOYMENT_TARGET = 26.0
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 13.0
     ICON = resources/SPIERScrashhandlerIcon.icns
     QMAKE_INFO_PLIST = Info.plist
 }

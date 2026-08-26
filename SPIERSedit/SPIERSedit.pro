@@ -263,7 +263,7 @@ win32 {
 
 # MacOS common build here
 macx {
-    QMAKE_MACOSX_DEPLOYMENT_TARGET = 26.0
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 13.0
     QMAKE_APPLE_DEVICE_ARCHS = arm64 x86_64
 
     OPENCV_DIR = /Users/alanspencer/Documents/Programing/OpenCV

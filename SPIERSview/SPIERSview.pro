@@ -143,7 +143,7 @@ FORMS += ui/mainwindow.ui \
 
 # MacOS build here
 macx {
-    QMAKE_MACOSX_DEPLOYMENT_TARGET = 26.0
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 13.0
     QMAKE_APPLE_DEVICE_ARCHS = arm64 x86_64
 
     LIBS += -L/usr/local/homebrew/opt/icu4c/lib/ \
