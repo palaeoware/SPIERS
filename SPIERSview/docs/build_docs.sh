@@ -3,6 +3,6 @@
 #sudo apt-get install python3-sphinx
 #sudo apt install python3-pip
 #sudo pip3 install sphinx_rtd_theme
-echo "Now building trevosim doc"
+echo "Now building SPIERSview docs"
 sphinx-build ./ ../docs_build
 
