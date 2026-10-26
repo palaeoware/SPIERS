@@ -17,8 +17,8 @@ AppSupportURL=https://spiers-software.org/
 AppUpdatesURL=https://spiers-software.org/
 DefaultDirName={commonpf}\Palaeoware\SPIERS\v{#AppVersion}
 DefaultGroupName=Palaeoware\SPIERS
-ArchitecturesAllowed=x64
-ArchitecturesInstallIn64BitMode=x64
+ArchitecturesAllowed=x64compatible
+ArchitecturesInstallIn64BitMode=x64compatible
 LicenseFile=.\bin\LICENSE.md
 OutputDir=.\build
 OutputBaseFilename=SPIERSinstaller_v{#AppVersion}_win_x64
@@ -28,8 +28,6 @@ ChangesAssociations=yes
 AppCopyright=Copyright (C) 2008-2026 by Mark D. Sutton, Russell J. Garwood, and Alan R.T. Spencer
 AppContact=palaeoware@gmail.com
 AppComments=SPIERS (Serial Palaeontological Image Editing and Rendering System) is a package of three programs for the reconstruction and analysis of tomographic (serial image) datasets, such as those obtained from serial-grinding of specimens, or from CT scanning. More details are available in the documentation for each program.
-BackColor=$3e3e3e
-BackColor2=$3e3e3e
 WizardStyle=modern
 
 [Languages]
