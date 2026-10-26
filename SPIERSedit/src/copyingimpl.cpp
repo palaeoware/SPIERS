@@ -903,6 +903,13 @@ void CopyingImpl::CompressAllSourceFiles(int level)
  */
 void CopyingImpl::Apply3DBrush(int button)
 {
+    //ML recalc only predicts for the current slice, so would write wrong data to other slices
+    if (CurrentMode == 5 && tabwidget->currentIndex() == 1)
+    {
+        Message("The 3D recalc brush is not currently supported for ML generation - use the 2D brush.");
+        return;
+    }
+
     show();
     this->setWindowTitle("Applying 3D brush...");
     copying = true;
@@ -952,10 +959,10 @@ void CopyingImpl::Apply3DBrush(int button)
                     // get data from GA array
 
                     memcpy(LCE_sample.data(),GA[CurrentSegment]->bits(),fwidth4*fheight);
-
-                    NewLocks = DoMaskLocking();
-
                 }
+
+                //recalc reads a lock entry for every brushed pixel, in every mode
+                NewLocks = DoMaskLocking();
 
                 Brush.recalc(LastMouseX, LastMouseY, CurrentSegment, &LCE_sample, &NewLocks);
             }

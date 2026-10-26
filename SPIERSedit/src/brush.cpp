@@ -732,6 +732,9 @@ void Brush_class::recalcForML(int x, int y, QByteArray *locks)
     int xoff, yoff;
     int ax, ay;
 
+    //segBuffer is a fixed-size array
+    if (SegmentCount > static_cast<int>(std::size(segBuffer))) return;
+
     xoff = x / ColMonoScale;
     yoff = y / ColMonoScale;
 
@@ -749,7 +752,9 @@ void Brush_class::recalcForML(int x, int y, QByteArray *locks)
                         int pos4 = ay * fwidth4 + ax;
                         if (locks->at(pos)==0)
                         {
-                            mlInterface->GetProbabilitiesAllSegments(ax,ay,CurrentFile,segBuffer);
+                            //no model, failed prediction or visibility changed since training - leave pixel alone
+                            if (!mlInterface->GetProbabilitiesAllSegments(ax,ay,CurrentFile,segBuffer))
+                                continue;
                             for (int i=0; i<SegmentCount; i++)
                             {
                                 if (!Segments[i]->Locked)

@@ -57,7 +57,7 @@ Note also that feature files are cached in RAM to speed calculation. A setting i
 
 The ML system requires that the user identifies a set of pixels of known segment that it can use for training purposes. SPIERS uses 'lock/selection' mode for this. When creating a sample from a slice, SPIERSedit treats 'locked' pixels assigned to a segment on that slice as examples of correctly identified pixels.
 
-It is possible to use a pre-edited slice and lock regions of it to provide training data, but typically it is simplest to use the segment mode in conjunction with the 'segment brush applies locks' tickable menu item (Brush menu). With this turned on, you can use the segment brush (with appropriate segment selected) to provide a sample for a slice. Fig MLG3 shows an example of a slice with a good sample created. Where there is substantial colour/shade/textural variation within on segment, it is helpful to ensure that your sample covers as much of that variation as possible. Note that all segments in your dataset MUST be represented by at least a few pixels - you will receive a warning if you forget to do this.
+It is possible to use a pre-edited slice and lock regions of it to provide training data, but typically it is simplest to use the segment mode in conjunction with the 'segment brush applies locks' tickable menu item (Brush menu). With this turned on, you can use the segment brush (with appropriate segment selected) to provide a sample for a slice. Fig MLG3 shows an example of a slice with a good sample created. Where there is substantial colour/shade/textural variation within on segment, it is helpful to ensure that your sample covers as much of that variation as possible. Note that all visible segments in your dataset MUST be represented by at least a few pixels - you will receive a warning if you forget to do this. Hidden segments are treated as absent and are ignored by training (see 'Segments absent from a region of interest' below).
 
  .. figure:: _static/figure_MLG3.png
     :align: center
@@ -70,7 +70,7 @@ Once you have a viable first attempt at a sample, select all slices from which y
 
 *5. Generate slices using ML*
 
-Once the ML system has been trained, you can select any slices you wish to try it out on, and click generate. Be aware that this might be slow for the entire dataset, so you may wish to select a subset of the slices for your first try. Note that generation applies to ALL segments (unlike most generation modes) - you do not need to select all segments before generating.
+Once the ML system has been trained, you can select any slices you wish to try it out on, and click generate. Be aware that this might be slow for the entire dataset, so you may wish to select a subset of the slices for your first try. Note that generation applies to ALL segments (unlike most generation modes) - you do not need to select all segments before generating. Locked segments are never modified by ML generation, and hidden segments are set to zero in the region being generated.
 
 In the example of Figure MLG1b,c, reconstruction based on this initial prediction already clearly outperforms naive linear generation (Figure MLG1a). Nonetheless, unless your dataset is very simple and easily segmented, you will likely find that the ML system has made clear segmentation errors (see e.g. Figure MLG4). 
 
@@ -133,6 +133,16 @@ Segmentation may work better where your segment plan matches real material types
 You may not need to carefully segment regions away from the fossil that you can simply mask off in output. Restrict training samples and judgement of quality to the genuine region of interest. Remember as well that, if you are struggling to generate a single trained model that works over all your slices, you can train and use different models for a subset of slices if that works better.
 
 From version 4.0.5, spatial restriction also has a direct effect on speed. Feature calculation is performed in tiles rather than over whole slices, and only those tiles that are actually needed are calculated: when training, this means the tiles containing sample pixels, and when generating, it excludes regions locked off by hidden masks or locked segments. Concentrating your sample, and locking off material you do not care about, will therefore make training and generation faster as well as improving segmentation. Note that features need to see the pixels surrounding those they are calculated for, so a margin of neighbouring tiles is calculated as well; the saving is real but less than the proportion of the slice you have excluded, and high-sigma features widen that margin.
+
+*Segments absent from a region of interest*
+When re-segmenting a small region of interest (for instance one defined by hiding masks, with 'hidden masks locked for generation' turned on), some segments may genuinely not occur in that region - a 'crack' segment, say, in a fossil/matrix/crack project. Since every segment used for training needs samples, hide any such segment (untick its visibility in the segment list) before clicking 'Sample/Train'. The ML system treats hidden segments as absent:
+
+- sample pixels belonging to hidden segments are ignored, and hidden segments need no samples (at least two visible segments are still required);
+- the model only ever predicts the visible segments it was trained on;
+- when generating, hidden segments are set to zero in the region being generated, so they cannot claim any pixel there. You will be asked to confirm this before generation starts. Pixels outside the region (locked pixels, and hidden masks when these are locked for generation) are untouched;
+- the status text next to the Sample/Train button lists the absent segments, and shows '-' in place of their sample counts.
+
+The trained model records which segments were visible when it was trained. If you change segment visibility afterwards, retrain before generating - generation will refuse to run, and the ML recalc brush will do nothing, until you do. If a hidden segment is also locked, its lock takes precedence and its values are left unchanged.
 
 *Deactivating features*
 If processing is slow, consider disabling features (rather than removing them entirely). Removal may not be possible if the feature is a dependency of another, and reinstatement of removed features is more work. Disabling them retains files on disk for later use, but keeps them out of training and generation calculations.

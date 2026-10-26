@@ -37,7 +37,7 @@ public:
     static bool enabled;
     void SampleAndTrain(bool autoGen = false);
     void CalculateFeatureData();
-    void GetProbabilitiesAllSegments(int x, int y, int z, int *segBuffer);
+    bool GetProbabilitiesAllSegments(int x, int y, int z, int *segBuffer);
     void Generate(QListWidget *SliceSelectorList);
     void UIActivateSelectedFeatures(bool activate);
     void UIDeleteSelectedFeatures();
@@ -83,9 +83,16 @@ private:
     int samplePercent, minSampleCount, treeCount, treeDepth;
     void UpdateStatusLabel();
 
+    QVector<bool> m_trainedSegments; /// Segments that were visible (active) when the current model was trained
+    QString m_trainedDescription; /// Status text describing the sample the current model was trained on
+    QVector<bool> m_writableScratch; /// Reused per-pixel buffer for the recalc brush, avoids allocation
+    QVector<bool> activeSegments() const;
+    QVector<bool> writableSegments() const;
+    bool visibilityMatchesTrainedSegments() const;
+
     QLabel *lblStatus;
     MainWindow *mainWin;
-    QString DescribeSample();
+    QString DescribeSample(const QVector<LabelledPoint> &trainingLabels, const QVector<bool> &trained) const;
     QVector<LabelledPoint> labels;
     bool Sample(bool incremental, bool noMessages);
     bool Train(bool noMessages);

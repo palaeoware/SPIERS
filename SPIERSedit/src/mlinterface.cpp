@@ -30,6 +30,7 @@
 #include "mlfileio.h"
 #include "mlparallelforest.h"
 #include "mlroislice.h"
+#include "mlsegmentvalues.h"
 #include "mlupdateblockingdialog.h"
 #include "src/fileio.h"
 
@@ -243,6 +244,8 @@ void MLInterface::ResetRFAndSample()
     //reset rf
     rf->Clear();
     labels.clear();
+    m_trainedSegments.clear();
+    m_trainedDescription.clear();
     InvalidateProbabilityCache();
     UpdateStatusLabel();
 }
@@ -285,6 +288,33 @@ void MLInterface::Generate(QListWidget *SliceSelectorList)
         return;
     }
 
+    if (!visibilityMatchesTrainedSegments())
+    {
+        Message("Segment visibility has changed since the ML model was trained. Retrain (Sample/Train) before generating.");
+        return;
+    }
+
+    //Hidden segments are absent from the model - warn that generation will zero them
+    const QVector<bool> writable = writableSegments();
+    QStringList zeroedNames;
+    for (int s = 0; s < SegmentCount; s++)
+    {
+        if (!m_trainedSegments.at(s) && writable.at(s))
+            zeroedNames.append(Segments[s]->Name);
+    }
+
+    if (!zeroedNames.isEmpty())
+    {
+        if (QMessageBox::question(mainWin,
+                                  "Hidden segments",
+                                  QString("The following hidden segments will be set to 0 in the region being generated: %1. Continue?")
+                                  .arg(zeroedNames.join(", ")),
+                                  QMessageBox::Yes | QMessageBox::No,
+                                  QMessageBox::No)
+                != QMessageBox::Yes)
+            return;
+    }
+
     MLUpdateBlockingDialog::showDialog(mainwin, "", "", "Creating segments using ML data");
 
     for (int i = 0; i < Files.count(); i++)
@@ -305,7 +335,10 @@ void MLInterface::Generate(QListWidget *SliceSelectorList)
 
             MLUpdateBlockingDialog::updateDetailText(QString("Storing slice data"));
             for (int s = 0; s < SegmentCount; s++)
-                SaveGreyData(i, s);
+            {
+                if (writable.at(s))
+                    SaveGreyData(i, s);
+            }
         }
 
         if (MLUpdateBlockingDialog::isCancelled())
@@ -408,6 +441,10 @@ void MLInterface::ComputeSliceProbabilitiesFromVotes(int sliceID)
 
     MLUpdateBlockingDialog::updateDetailText(QString("Calculating segments from model outputs"));
 
+    //Segments absent from the model get 0; locked segments are never written
+    const QVector<bool> writable = writableSegments();
+    QVector<int> segmentValues(SegmentCount);
+
     int sampleRow = 0;
     for (int y = 0; y < fheight; ++y)
     {
@@ -421,25 +458,17 @@ void MLInterface::ComputeSliceProbabilitiesFromVotes(int sliceID)
             {
                 const float *probRow = cachedSliceProbabilities.ptr<float>(sampleRow);
 
-                int high = -1;
-                int highSeg = -1;
+                MLSegmentValues::probabilitiesToSegmentValues(
+                    probRow,
+                    SegmentCount,
+                    m_trainedSegments,
+                    writable,
+                    segmentValues.data());
+
                 for (int c = 0; c < SegmentCount; ++c)
                 {
-                    int v = static_cast<int>(probRow[c] * 255.0f + 0.5f);
-
-                    if (v < 0) v = 0;
-                    if (v > 255) v = 255;
-
-                    if (v > high)
-                    {
-                        high = v;
-                        highSeg = c;
-                    }
-                    outRows[c][x] = static_cast<uchar>(v);
-                }
-                if (high < 128) //ensure no black!
-                {
-                    outRows[highSeg][x] = static_cast<uchar>(128);
+                    if (writable.at(c))
+                        outRows[c][x] = static_cast<uchar>(segmentValues.at(c));
                 }
                 sampleRow++;
             }
@@ -448,9 +477,10 @@ void MLInterface::ComputeSliceProbabilitiesFromVotes(int sliceID)
     Q_ASSERT(sampleRow == cachedSliceProbabilities.rows);
 }
 
-QString MLInterface::DescribeSample()
+//Describes the labels actually used to train the model; absent (hidden) segments shown as '-'
+QString MLInterface::DescribeSample(const QVector<LabelledPoint> &trainingLabels, const QVector<bool> &trained) const
 {
-    if (labels.count() == 0)
+    if (trainingLabels.count() == 0)
     {
         return "[Not Defined]";
     }
@@ -460,40 +490,56 @@ QString MLInterface::DescribeSample()
         int maxSlice = -1;
         QVector<int> counts(SegmentCount, 0);
 
-        for (int i = 0; i < labels.count(); i++)
+        for (int i = 0; i < trainingLabels.count(); i++)
         {
-            if (labels[i].z < minSlice)
-                minSlice = labels[i].z;
-            if (labels[i].z > maxSlice)
-                maxSlice = labels[i].z;
-            counts[labels[i].segment]++;
+            if (trainingLabels[i].z < minSlice)
+                minSlice = trainingLabels[i].z;
+            if (trainingLabels[i].z > maxSlice)
+                maxSlice = trainingLabels[i].z;
+            counts[trainingLabels[i].segment]++;
         }
 
         QStringList parts;
-        for (int v : counts)
-            parts << QString::number(v);
+        QStringList absentNames;
+        for (int s = 0; s < SegmentCount; s++)
+        {
+            if (trained.at(s))
+            {
+                parts << QString::number(counts.at(s));
+            }
+            else
+            {
+                parts << QStringLiteral("-");
+                absentNames << Segments[s]->Name;
+            }
+        }
 
         QString details = parts.join(",");
 
+        QString description;
         if (minSlice < maxSlice)
-            return QString("%1 samples (%2) slices %3-%4")
-                   .arg(labels.count())
-                   .arg(details)
-                   .arg(minSlice + 1)
-                   .arg(maxSlice + 1);
+            description = QString("%1 samples (%2) slices %3-%4")
+                          .arg(trainingLabels.count())
+                          .arg(details)
+                          .arg(minSlice + 1)
+                          .arg(maxSlice + 1);
         else
-            return QString("%1 samples (%2) slice %3")
-                   .arg(labels.count())
-                   .arg(details)
-                   .arg(minSlice + 1);
+            description = QString("%1 samples (%2) slice %3")
+                          .arg(trainingLabels.count())
+                          .arg(details)
+                          .arg(minSlice + 1);
 
+        if (!absentNames.isEmpty())
+            description += QString("; absent: %1").arg(absentNames.join(", "));
+
+        return description;
     }
 }
 
 void MLInterface::UpdateStatusLabel()
 {
     if (rf->IsValid())
-        lblStatus->setText(QString("Trained on ") + DescribeSample());
+        lblStatus->setText(QString("Trained on ") + m_trainedDescription);
     else
         lblStatus->setText("Not trained, no sample");
 }
@@ -575,7 +621,8 @@ void MLInterface::AutoSampleTrainAndGenerate()
 
     for (int i = 0; i < SegmentCount; i++)
     {
-        SaveGreyData(CurrentFile, i);
+        if (!Segments[i]->Locked)
+            SaveGreyData(CurrentFile, i);
     }
 
     ShowImage(mainWin->graphicsView);
@@ -637,31 +684,56 @@ bool MLInterface::Sample(bool incremental, bool noMessages)
 
 bool MLInterface::Train(bool noMessages)
 {
-    QList<int> counts;
-    for (int i = 0; i < SegmentCount; i++)
-        counts.append(0);
-
-    for (int i = 0; i < labels.count(); i++)
-        counts[labels[i].segment]++;
-
-    int minValue = *std::min_element(counts.begin(), counts.end());
-    if (minValue < 2)
+    //Hidden segments are absent from ML work - only labels for visible segments are used
+    const QVector<bool> active = activeSegments();
+    if (active.count(true) < 2)
     {
-        if (!noMessages) MLUpdateBlockingDialog::hideDialog();
-        if (!noMessages) Message("You need at least two samples in each segment to perform training");
+        MLUpdateBlockingDialog::hideDialog();
+        if (!noMessages) Message("At least two visible segments are required for ML training. Hidden segments are treated as absent.");
         return false;
+    }
+
+    QVector<LabelledPoint> trainingLabels;
+    {
+        //scoped so the temporary index vectors are freed before feature extraction
+        QVector<int> labelSegments;
+        labelSegments.reserve(labels.count());
+        for (const LabelledPoint &point : std::as_const(labels))
+            labelSegments.append(point.segment);
+
+        QVector<int> counts;
+        const QVector<int> trainingRows = MLSegmentValues::selectTrainingRows(labelSegments, active, &counts);
+
+        const QList<int> shortSegments = MLSegmentValues::segmentsShortOfSamples(counts, active, 2);
+        if (!shortSegments.isEmpty())
+        {
+            QStringList names;
+            for (int s : shortSegments)
+                names.append(Segments[s]->Name);
+
+            MLUpdateBlockingDialog::hideDialog();
+            if (!noMessages)
+                Message(QString("You need at least two samples in each visible segment to perform training. Too few samples: %1. "
+                                "Add samples, or hide any segment that is absent from the region of interest.")
+                        .arg(names.join(", ")));
+            return false;
+        }
+
+        trainingLabels.reserve(trainingRows.count());
+        for (int row : trainingRows)
+            trainingLabels.append(labels.at(row));
     }
 
     QList<int> featureIDs = data->GetFeaturesInUse();
     int featureCount = featureIDs.count();
 
-    cv::Mat trainingDataMat(labels.count(), featureCount, CV_32F);
-    cv::Mat labelsMat(labels.count(), 1, CV_32S);
+    cv::Mat trainingDataMat(trainingLabels.count(), featureCount, CV_32F);
+    cv::Mat labelsMat(trainingLabels.count(), 1, CV_32S);
 
     QVector<QVector<int>> sampleRowsBySlice(FileCount);
-    for (int i = 0; i < labels.count(); i++)
+    for (int i = 0; i < trainingLabels.count(); i++)
     {
-        const LabelledPoint &point = labels.at(i);
+        const LabelledPoint &point = trainingLabels.at(i);
         Q_ASSERT(point.x >= 0 && point.x < fwidth);
         Q_ASSERT(point.y >= 0 && point.y < fheight);
         Q_ASSERT(point.z >= 0 && point.z < FileCount);
@@ -702,7 +774,7 @@ bool MLInterface::Train(bool noMessages)
             for (int sampleRow : sampleRows)
             {
                 const LabelledPoint &point =
-                    labels.at(sampleRow);
+                    trainingLabels.at(sampleRow);
                 excludedPixels[
                     static_cast<qsizetype>(point.y) * fwidth
                     + point.x] = 0;
@@ -736,7 +808,7 @@ bool MLInterface::Train(bool noMessages)
                 QString("Fetching features for training %1%")
                     .arg(
                         (processedSampleCount * 100)
-                        / labels.count()));
+                        / trainingLabels.count()));
             MLUpdateBlockingDialog::updateDetailText(
                 QString(
                     "Slice %1: %2 samples in %3 feature tiles")
@@ -758,7 +830,7 @@ bool MLInterface::Train(bool noMessages)
             for (int sampleRow : sampleRows)
             {
                 const LabelledPoint &point =
-                    labels.at(sampleRow);
+                    trainingLabels.at(sampleRow);
                 for (int feature = 0;
                      feature < featureCount;
                      feature++)
@@ -776,7 +848,7 @@ bool MLInterface::Train(bool noMessages)
     }
 
     qDebug() << "ML training feature ROIs:"
-             << labels.count() << "samples at"
+             << trainingLabels.count() << "samples at"
              << uniqueTrainingPixels << "unique pixels"
              << "- target tiles:" << trainingTargetTiles
              << "of" << trainingPossibleTiles
@@ -796,11 +868,16 @@ bool MLInterface::Train(bool noMessages)
 
     if (!rf->Train(trainingDataMat, labelsMat, SegmentCount))
     {
+        m_trainedSegments.clear();
+        m_trainedDescription.clear();
+        UpdateStatusLabel();
         if (!noMessages) MLUpdateBlockingDialog::hideDialog();
         if (!noMessages) Message("Training failed");
         return false;
     }
 
+    m_trainedSegments = active;
+    m_trainedDescription = DescribeSample(trainingLabels, active);
     InvalidateProbabilityCache();
     return true;
 }
@@ -1061,46 +1138,72 @@ bool MLInterface::EnsureSliceProbabilityCache(
     return true;
 }
 
-void MLInterface::GetProbabilitiesAllSegments(int x, int y, int z, int *segBuffer)
+//Returns false if no values could be computed - the caller must then write nothing
+bool MLInterface::GetProbabilitiesAllSegments(int x, int y, int z, int *segBuffer)
 {
     if (segBuffer == nullptr)
-        return;
+        return false;
 
     for (int i = 0; i < SegmentCount; i++)
         segBuffer[i] = 0;
 
     if (data == nullptr || !rf || !rf->IsValid())
-        return;
+        return false;
 
     if (x < 0 || x >= fwidth || y < 0 || y >= fheight)
-        return;
+        return false;
+
+    if (!visibilityMatchesTrainedSegments())
+        return false;
 
     if (!EnsureSliceProbabilityCache(z))
-        return;
+        return false;
 
     const int row = y * fwidth + x;
     const float *probRow = cachedSliceProbabilities.ptr<float>(row);
 
-    int high = -1;
-    int highseg = -1;
-    for (int i = 0; i < SegmentCount; i++)
-    {
-        int v = static_cast<int>(probRow[i] * 255.0f + 0.5f);
+    //Called per pixel, so refill a reused buffer rather than allocating
+    m_writableScratch.resize(SegmentCount);
+    for (int s = 0; s < SegmentCount; s++)
+        m_writableScratch[s] = !Segments[s]->Locked;
 
-        if (v < 0) v = 0;
-        if (v > 255) v = 255;
+    //Caller (recalc brush) writes only unlocked segments
+    MLSegmentValues::probabilitiesToSegmentValues(
+        probRow,
+        SegmentCount,
+        m_trainedSegments,
+        m_writableScratch,
+        segBuffer);
+    return true;
+}
 
-        if (v > high)
-        {
-            high = v;
-            highseg = i;
-        }
-        segBuffer[i] = v;
-    }
-    if (high < 128)
+bool MLInterface::visibilityMatchesTrainedSegments() const
+{
+    if (m_trainedSegments.size() != SegmentCount)
+        return false;
+
+    for (int s = 0; s < SegmentCount; s++)
     {
-        segBuffer[highseg] = 128; //ensure no black
+        if (m_trainedSegments.at(s) != Segments[s]->Activated)
+            return false;
     }
+    return true;
+}
+
+QVector<bool> MLInterface::activeSegments() const
+{
+    QVector<bool> active(SegmentCount, false);
+    for (int s = 0; s < SegmentCount; s++)
+        active[s] = Segments[s]->Activated;
+    return active;
+}
+
+QVector<bool> MLInterface::writableSegments() const
+{
+    QVector<bool> writable(SegmentCount, false);
+    for (int s = 0; s < SegmentCount; s++)
+        writable[s] = !Segments[s]->Locked;
+    return writable;
 }
 
 bool MLInterface::FloodFillMask(
